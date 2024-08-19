@@ -1,0 +1,20 @@
+version: "2"
+sql:
+  - engine: "postgresql"
+    queries: "app/db/query"
+    schema: 
+      - "app/doc/camunda_schema.sql"
+      - "app/db/migration"
+    gen:
+      go:
+        package: "db"
+        out: "app/db/sqlc"
+        sql_package: "pgx/v5"
+        emit_json_tags: true
+        emit_interface: true
+        emit_empty_slices: true
+        overrides:
+          - db_type: "timestamptz"
+            go_type: "time.Time"
+          - db_type: "bpm.type_var"
+            go_type: "string"

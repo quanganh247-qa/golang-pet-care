@@ -1,0 +1,5 @@
+app/static/temp/
+app/static/images/
+*.exe
+.idea/
+
