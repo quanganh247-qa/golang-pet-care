@@ -1,11 +1,11 @@
 DB_URL=postgresql://admin:MW0I7JWVOfRYTKstGCmJS7IO7IKELVBH@dpg-cqvkhntds78s739lgfag-a.virginia-postgres.render.com/blog_8g7e
-
+name= init_db
 mup:
 	migrate -path app/db/migration -database "$(DB_URL)" -verbose up
 mdown:
 	migrate -path app/db/migration -database "$(DB_URL)" -verbose down
 new_migration:
-	migrate create -ext sql -dir db/migration -seq $(name)
+	migrate create -ext sql -dir app/db/migration -seq $(name)
 mforce:
 	migrate -path app/db/migration -database "$(DB_URL)" -verbose force 1
 migrateup-github:
