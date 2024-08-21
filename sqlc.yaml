@@ -3,7 +3,6 @@ sql:
   - engine: "postgresql"
     queries: "app/db/query"
     schema: 
-      - "app/doc/camunda_schema.sql"
       - "app/db/migration"
     gen:
       go:
