@@ -13,11 +13,14 @@ func main() {
 		log.Fatal("cannot load config:", err)
 	}
 
-	_=runGinServer(*config)
+	server := runGinServer(*config)
+	defer func() {
+		server.Connection.Close()
+	}()
 
 }
 
-func runGinServer(config util.Config)(*api.Server) {
+func runGinServer(config util.Config) *api.Server {
 	server, err := api.NewServer(config)
 	if err != nil {
 		log.Fatal("cannot create server:", err)

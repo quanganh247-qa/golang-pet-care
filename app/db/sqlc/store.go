@@ -9,7 +9,8 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-var storeDB Store
+var StoreDB Store
+
 type Store interface {
 	Querier
 	ExecWithTransaction(ctx context.Context, fn func(*Queries) error) error
@@ -35,8 +36,8 @@ func NewStore(connPool *pgxpool.Pool) Store {
 }
 
 func InitStore(connPool *pgxpool.Pool) Store {
-	storeDB = NewStore(connPool)
-	return storeDB
+	StoreDB = NewStore(connPool)
+	return StoreDB
 }
 
 func (store *SQLStore) ExecWithTransaction(ctx context.Context, fn func(*Queries) error) error {
