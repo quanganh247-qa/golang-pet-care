@@ -1,15 +1,18 @@
 package user
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/quanganh247-qa/go-blog-be/app/service/token"
 	"github.com/quanganh247-qa/go-blog-be/app/util"
 )
 
 type UserControllerInterface interface {
 	createUser(ctx *gin.Context)
-
+	getAllUsers(ctx *gin.Context)
+	loginUser(ctx *gin.Context)
 }
 
 func (controller *UserController) createUser(ctx *gin.Context) {
@@ -18,6 +21,7 @@ func (controller *UserController) createUser(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, util.ErrorValidator(err))
 		return
 	}
+	fmt.Println("req", req)
 	// authPayload, err := middleware.GetAuthorizationPayload(ctx)
 	// if err != nil {
 	// 	ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
@@ -29,4 +33,42 @@ func (controller *UserController) createUser(ctx *gin.Context) {
 		return
 	}
 	ctx.JSON(http.StatusCreated, util.SuccessResponse("Success", res))
+}
+
+func (controller *UserController) getAllUsers(ctx *gin.Context) {
+	res, err := controller.service.getAllUsersService(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
+		return
+	}
+	ctx.JSON(http.StatusOK, util.SuccessResponse("Success", res))
+}
+
+func (controller *UserController) loginUser(ctx *gin.Context) {
+	var req loginUserRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, util.ErrorValidator(err))
+		return
+	}
+	err := controller.service.loginUserService(ctx, req)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
+		return
+	}
+	refreshToken, _, err := token.TokenMaker.CreateToken(req.Username, nil, util.Configs.RefreshTokenDuration)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
+		return
+	}
+	accessToken, _, err := token.TokenMaker.CreateToken(req.Username, nil, util.Configs.AccessTokenDuration)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
+		return
+	}
+
+	host, secure := util.SetCookieSameSite(ctx)
+
+	ctx.SetCookie("refresh_token", refreshToken, int(util.Configs.RefreshTokenDuration), "/", host, secure, true)
+	ctx.JSON(http.StatusOK, util.SuccessResponse("Success", loginUSerResponse{AccessToken: accessToken}))
+
 }
