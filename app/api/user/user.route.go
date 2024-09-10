@@ -3,6 +3,7 @@ package user
 import (
 	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
 	"github.com/quanganh247-qa/go-blog-be/app/middleware"
+	"github.com/quanganh247-qa/go-blog-be/app/service/rabbitmq"
 )
 
 func Routes(routerGroup middleware.RouterGroup) {
@@ -13,7 +14,8 @@ func Routes(routerGroup middleware.RouterGroup) {
 	userApi := &UserApi{
 		&UserController{
 			service: &UserService{
-				storeDB: db.StoreDB, // This should refer to the actual instance
+				storeDB:    db.StoreDB, // This should refer to the actual instance
+				emailQueue: rabbitmq.Client.Email,
 			},
 		},
 	}

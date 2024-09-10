@@ -14,6 +14,7 @@ func main() {
 	}
 
 	server := runGinServer(*config)
+
 	defer func() {
 		server.Connection.Close()
 	}()
@@ -30,5 +31,11 @@ func runGinServer(config util.Config) *api.Server {
 	if err != nil {
 		log.Fatal("cannot start server:", err)
 	}
+
 	return server
 }
+
+// func runTaskConsume(config util.Config) {
+// 	mailer := mail.NewGmailSender(config.EmailSenderName, config.EmailSenderAddress, config.EmailSenderPassword)
+// 	rabbitmq.Client.Email.ConsumeMessage(mailer)
+// }

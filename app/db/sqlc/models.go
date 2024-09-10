@@ -10,22 +10,22 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
-type Session struct {
-	ID           pgtype.UUID `json:"id"`
-	Username     string      `json:"username"`
-	RefreshToken string      `json:"refresh_token"`
-	UserAgent    string      `json:"user_agent"`
-	ClientIp     string      `json:"client_ip"`
-	IsBlocked    bool        `json:"is_blocked"`
-	ExpiresAt    time.Time   `json:"expires_at"`
-	CreatedAt    time.Time   `json:"created_at"`
+type User struct {
+	Username          string      `json:"username"`
+	HashedPassword    string      `json:"hashed_password"`
+	FullName          string      `json:"full_name"`
+	Email             string      `json:"email"`
+	PasswordChangedAt time.Time   `json:"password_changed_at"`
+	CreatedAt         time.Time   `json:"created_at"`
+	IsVerifiedEmail   pgtype.Bool `json:"is_verified_email"`
 }
 
-type User struct {
-	Username          string    `json:"username"`
-	HashedPassword    string    `json:"hashed_password"`
-	FullName          string    `json:"full_name"`
-	Email             string    `json:"email"`
-	PasswordChangedAt time.Time `json:"password_changed_at"`
-	CreatedAt         time.Time `json:"created_at"`
+type VerifyEmail struct {
+	ID         int64              `json:"id"`
+	Username   string             `json:"username"`
+	Email      string             `json:"email"`
+	SecretCode string             `json:"secret_code"`
+	IsUsed     bool               `json:"is_used"`
+	CreatedAt  pgtype.Timestamptz `json:"created_at"`
+	ExpiredAt  pgtype.Timestamptz `json:"expired_at"`
 }
