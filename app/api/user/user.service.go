@@ -1,15 +1,19 @@
 package user
 
 import (
+	"context"
 	"database/sql"
 	"fmt"
 	"log"
 	"net/http"
 
+	"github.com/jackc/pgx/v5/pgtype"
+
 	"github.com/gin-gonic/gin"
 	"github.com/lib/pq"
 	_ "github.com/lib/pq"
 	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
+	"github.com/quanganh247-qa/go-blog-be/app/service/rabbitmq"
 	"github.com/quanganh247-qa/go-blog-be/app/util"
 )
 
@@ -54,12 +58,26 @@ func (server *UserService) createUserService(ctx *gin.Context, req createUserReq
 		}
 	}
 
+	// **Send Email using RabbitMQ**
+	emailPayload := rabbitmq.PayloadVerifyEmail{
+		Username: arg.Username,
+	}
+
+	err = server.emailQueue.PublishEmail(emailPayload)
+
+	if err != nil {
+		log.Println("Error publishing email:", err)
+		ctx.JSON(http.StatusInternalServerError, "failed to send verification email")
+		return nil, fmt.Errorf("failed to send verification email: %v", err)
+	}
+
 	return &db.User{
 		Username:  user.Username,
 		FullName:  user.FullName,
 		Email:     user.Email,
 		CreatedAt: user.CreatedAt,
 	}, nil
+	// return nil, nil
 }
 
 func (server *UserService) getAllUsersService(ctx *gin.Context) ([]UserResponse, error) {
@@ -92,5 +110,36 @@ func (service *UserService) loginUserService(ctx *gin.Context, req loginUserRequ
 		ctx.JSON(http.StatusInternalServerError, "internal server error")
 		return fmt.Errorf("internal server error: %v", err)
 	}
+	return nil
+}
+
+func (server *UserService) VerifyEmail(ctx context.Context, arg VerrifyEmailTxParams) error {
+
+	var result VerrifyEmailTxResult
+
+	err := server.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
+		var err error
+
+		result.VerifyEmail, err = q.UpdateVerifyEmail(ctx, db.UpdateVerifyEmailParams{
+			ID:         arg.EmailId,
+			SecretCode: arg.SecretCode,
+		})
+		if err != nil {
+			return err
+		}
+
+		result.User, err = q.UpdateUser(ctx, db.UpdateUserParams{
+			Username: result.User.Username,
+			IsVerifiedEmail: pgtype.Bool{
+				Bool:  true,
+				Valid: true,
+			},
+		})
+		return err
+	})
+	if err != nil {
+		return fmt.Errorf("Transaction verify email")
+	}
+
 	return nil
 }

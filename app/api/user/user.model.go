@@ -5,19 +5,20 @@ import (
 
 	"github.com/gofrs/uuid"
 	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
+	"github.com/quanganh247-qa/go-blog-be/app/service/rabbitmq"
 )
 
 type UserController struct {
 	service UserServiceInterface
 }
 
-type UserService struct{
-	storeDB db.Store
+type UserService struct {
+	storeDB    db.Store
+	emailQueue *rabbitmq.EmailQueue
 }
 type UserApi struct {
 	controller UserControllerInterface
 }
-
 
 type createUserRequest struct {
 	Username string `json:"username" binding:"required,alphanum"`
@@ -55,4 +56,14 @@ func newUserResponse(user db.User) UserResponse {
 		PasswordChangedAt: user.PasswordChangedAt,
 		CreatedAt:         user.CreatedAt,
 	}
+}
+
+type VerrifyEmailTxParams struct {
+	EmailId    int64
+	SecretCode string
+}
+
+type VerrifyEmailTxResult struct {
+	User        db.User
+	VerifyEmail db.VerifyEmail
 }
