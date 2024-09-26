@@ -5,11 +5,11 @@ import (
 	"os"
 
 	"github.com/gin-gonic/gin"
+	"github.com/quanganh247-qa/go-blog-be/app/api/project"
 	"github.com/quanganh247-qa/go-blog-be/app/api/user"
 	"github.com/quanganh247-qa/go-blog-be/app/middleware"
 	"github.com/quanganh247-qa/go-blog-be/app/util"
 )
-
 
 func (server *Server) SetupRoutes() {
 	gin.SetMode(gin.ReleaseMode)
@@ -30,6 +30,7 @@ func (server *Server) SetupRoutes() {
 	}
 	// router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler, ginSwagger.URL("/static/swagger.json")))
 	user.Routes(routerGroup)
+	project.Routes(routerGroup)
 	server.Router = routerDefault
 
 }

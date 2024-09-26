@@ -1,7 +1,6 @@
 package user
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -13,6 +12,7 @@ type UserControllerInterface interface {
 	createUser(ctx *gin.Context)
 	getAllUsers(ctx *gin.Context)
 	loginUser(ctx *gin.Context)
+	verifyEmail(ctx *gin.Context)
 }
 
 func (controller *UserController) createUser(ctx *gin.Context) {
@@ -21,7 +21,6 @@ func (controller *UserController) createUser(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, util.ErrorValidator(err))
 		return
 	}
-	fmt.Println("req", req)
 	// authPayload, err := middleware.GetAuthorizationPayload(ctx)
 	// if err != nil {
 	// 	ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
@@ -70,5 +69,22 @@ func (controller *UserController) loginUser(ctx *gin.Context) {
 
 	ctx.SetCookie("refresh_token", refreshToken, int(util.Configs.RefreshTokenDuration), "/", host, secure, true)
 	ctx.JSON(http.StatusOK, util.SuccessResponse("Success", loginUSerResponse{AccessToken: accessToken}))
+
+}
+
+func (controller *UserController) verifyEmail(ctx *gin.Context) {
+	var req VerrifyEmailTxParams
+
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, util.ErrorValidator(err))
+		return
+	}
+
+	res, err := controller.service.verifyEmailService(ctx, req)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
+		return
+	}
+	ctx.JSON(http.StatusOK, util.SuccessResponse("Veried user", res))
 
 }

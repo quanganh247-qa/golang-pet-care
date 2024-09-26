@@ -1,5 +1,4 @@
-DB_URL=postgresql://admin:MW0I7JWVOfRYTKstGCmJS7IO7IKELVBH@dpg-cqvkhntds78s739lgfag-a.virginia-postgres.render.com/blog_8g7e
-name= init_db
+DB_URL=postgresql://postgres:postgres@127.0.0.1:5433/postgres?sslmode=disable
 mup:
 	migrate -path app/db/migration -database "$(DB_URL)" -verbose up
 mdown:
@@ -9,7 +8,7 @@ new_migration:
 mforce:
 	migrate -path app/db/migration -database "$(DB_URL)" -verbose force 1
 migrateup-github:
-	migrate -path app/db/migration -database "postgresql://admin:MW0I7JWVOfRYTKstGCmJS7IO7IKELVBH@dpg-cqvkhntds78s739lgfag-a.virginia-postgres.render.com/blog_8g7e" -verbose up
+	migrate -path app/db/migration -database "$(DB_URL)" -verbose up
 	 
 sqlc:
 	docker run --rm -v ".://src" -w //src sqlc/sqlc:1.20.0 generate 
@@ -33,7 +32,7 @@ evans:
 	evans --host localhost --port 9090 -r repl
 
 postgres:
-	docker run -d  --name postgres  -p 5432:5432 -e POSTGRES_PASSWORD=12345678  -e PGDATA=/var/lib/postgresql/data/pgdata  -v postgres_volume:/var/lib/postgresql/data  postgres:15-alpine
+	docker run -d  --name postgres  -p 5433:5432 -e POSTGRES_PASSWORD=12345678  -e PGDATA=/var/lib/postgresql/data/pgdata  -v postgres_volume:/var/lib/postgresql/data  postgres:15-alpine
 
 redis:
 	docker run -d --name redis -p 6379:6379 redis:7-alpine

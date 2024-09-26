@@ -59,8 +59,8 @@ func newUserResponse(user db.User) UserResponse {
 }
 
 type VerrifyEmailTxParams struct {
-	EmailId    int64
-	SecretCode string
+	EmailId    int64  `json:"email_id"`
+	SecretCode string `json:"secret_code"`
 }
 
 type VerrifyEmailTxResult struct {
