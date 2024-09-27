@@ -3,4 +3,10 @@
 
 -- DROP TABLE IF EXISTS "session";
 
-DROP TABLE IF EXISTS "users";
+-- DROP TABLE IF EXISTS "users";
+
+-- DROP TABLE IF EXISTS "pages";
+
+
+
+

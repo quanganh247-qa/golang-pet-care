@@ -9,14 +9,18 @@ import (
 )
 
 type Querier interface {
+	CreatePage(ctx context.Context, arg CreatePageParams) (Page, error)
 	CreateProject(ctx context.Context, arg CreateProjectParams) (Project, error)
 	CreateUser(ctx context.Context, arg CreateUserParams) (User, error)
 	CreateVerifyEmail(ctx context.Context, arg CreateVerifyEmailParams) (VerifyEmail, error)
+	DeletePage(ctx context.Context, id int64) (Page, error)
 	DeleteProject(ctx context.Context, id int64) (Project, error)
 	GetAllUsers(ctx context.Context) ([]User, error)
+	GetPages(ctx context.Context) ([]Page, error)
 	GetProject(ctx context.Context, id int64) (Project, error)
 	GetProjectsByUser(ctx context.Context, username string) ([]Project, error)
 	GetUser(ctx context.Context, username string) (User, error)
+	UpdatePage(ctx context.Context, arg UpdatePageParams) (Page, error)
 	UpdateProject(ctx context.Context, arg UpdateProjectParams) (Project, error)
 	UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error)
 	UpdateVerifyEmail(ctx context.Context, arg UpdateVerifyEmailParams) (VerifyEmail, error)

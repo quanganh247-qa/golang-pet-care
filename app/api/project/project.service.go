@@ -2,6 +2,7 @@ package project
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5/pgtype"
@@ -34,8 +35,8 @@ func (s *ProjectService) createProject(ctx *gin.Context, req createProjectReques
 		ID:          project.ID,
 		Name:        project.Name,
 		Description: project.Description.String,
-		CreateAt:    project.CreatedAt.Time.Format("2006-01-02 15:04:05"),
-		UpdateAt:    project.UpdatedAt.Time.Format("2006-01-02 15:04:05"),
+		CreateAt:    project.CreatedAt.Time.Format(time.RFC3339),
+		UpdateAt:    project.UpdatedAt.Time.Format(time.RFC3339),
 	}, nil
 
 }

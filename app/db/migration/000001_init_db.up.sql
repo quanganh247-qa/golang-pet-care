@@ -58,14 +58,16 @@ CREATE TABLE projects (
 
 -- Pages table (updated to store JSON)
 CREATE TABLE pages (
-    id bigserial PRIMARY KEY,
-    project_id INTEGER REFERENCES projects(id),
-    name VARCHAR(100) NOT NULL,
-    slug VARCHAR(100) NOT NULL,
-    content JSONB,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    UNIQUE (project_id, slug)
+	id bigserial NOT NULL,
+	project_id int4 NULL,
+	"name" varchar(100) NOT NULL,
+	slug varchar(100) NOT NULL,
+	created_at timestamptz DEFAULT CURRENT_TIMESTAMP NULL,
+	updated_at timestamptz DEFAULT CURRENT_TIMESTAMP NULL,
+	"content" text NULL,
+	CONSTRAINT pages_pkey PRIMARY KEY (id),
+	CONSTRAINT pages_project_id_slug_key UNIQUE (project_id, slug),
+	CONSTRAINT pages_project_id_fkey FOREIGN KEY (project_id) REFERENCES public.projects(id)
 );
 
 -- Assets table

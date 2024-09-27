@@ -34,9 +34,9 @@ type Page struct {
 	ProjectID pgtype.Int4        `json:"project_id"`
 	Name      string             `json:"name"`
 	Slug      string             `json:"slug"`
-	Content   []byte             `json:"content"`
 	CreatedAt pgtype.Timestamptz `json:"created_at"`
 	UpdatedAt pgtype.Timestamptz `json:"updated_at"`
+	Content   pgtype.Text        `json:"content"`
 }
 
 type Project struct {
