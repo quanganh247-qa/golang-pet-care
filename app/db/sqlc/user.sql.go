@@ -19,7 +19,7 @@ INSERT INTO users (
   email
 ) VALUES (
   $1, $2, $3, $4
-) RETURNING username, hashed_password, full_name, email, password_changed_at, created_at, is_verified_email
+) RETURNING id, username, hashed_password, full_name, email, password_changed_at, created_at, is_verified_email
 `
 
 type CreateUserParams struct {
@@ -38,6 +38,7 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 	)
 	var i User
 	err := row.Scan(
+		&i.ID,
 		&i.Username,
 		&i.HashedPassword,
 		&i.FullName,
@@ -50,7 +51,7 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 }
 
 const getAllUsers = `-- name: GetAllUsers :many
-SELECT username, hashed_password, full_name, email, password_changed_at, created_at, is_verified_email FROM users
+SELECT id, username, hashed_password, full_name, email, password_changed_at, created_at, is_verified_email FROM users
 `
 
 func (q *Queries) GetAllUsers(ctx context.Context) ([]User, error) {
@@ -63,6 +64,7 @@ func (q *Queries) GetAllUsers(ctx context.Context) ([]User, error) {
 	for rows.Next() {
 		var i User
 		if err := rows.Scan(
+			&i.ID,
 			&i.Username,
 			&i.HashedPassword,
 			&i.FullName,
@@ -82,7 +84,7 @@ func (q *Queries) GetAllUsers(ctx context.Context) ([]User, error) {
 }
 
 const getUser = `-- name: GetUser :one
-SELECT username, hashed_password, full_name, email, password_changed_at, created_at, is_verified_email FROM users
+SELECT id, username, hashed_password, full_name, email, password_changed_at, created_at, is_verified_email FROM users
 WHERE username = $1 LIMIT 1
 `
 
@@ -90,6 +92,7 @@ func (q *Queries) GetUser(ctx context.Context, username string) (User, error) {
 	row := q.db.QueryRow(ctx, getUser, username)
 	var i User
 	err := row.Scan(
+		&i.ID,
 		&i.Username,
 		&i.HashedPassword,
 		&i.FullName,
@@ -111,7 +114,7 @@ SET
   is_verified_email = COALESCE($5,is_verified_email)
 WHERE
   username = $6
-RETURNING username, hashed_password, full_name, email, password_changed_at, created_at, is_verified_email
+RETURNING id, username, hashed_password, full_name, email, password_changed_at, created_at, is_verified_email
 `
 
 type UpdateUserParams struct {
@@ -134,6 +137,7 @@ func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, e
 	)
 	var i User
 	err := row.Scan(
+		&i.ID,
 		&i.Username,
 		&i.HashedPassword,
 		&i.FullName,

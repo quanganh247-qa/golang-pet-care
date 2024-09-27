@@ -4,16 +4,15 @@
 
 -- DROP TABLE public.users;
 
-CREATE TABLE public.users (
+CREATE TABLE users (
+    id bigserial  PRIMARY KEY,
 	username varchar NOT NULL,
 	hashed_password varchar NOT NULL,
 	full_name varchar NOT NULL,
 	email varchar NOT NULL,
 	password_changed_at timestamptz DEFAULT '0001-01-01 06:42:04+06:42:04'::timestamp with time zone NOT NULL,
 	created_at timestamptz DEFAULT now() NOT NULL,
-	is_verified_email bool DEFAULT false NULL,
-	CONSTRAINT users_email_key UNIQUE (email),
-	CONSTRAINT users_pkey PRIMARY KEY (username)
+	is_verified_email bool DEFAULT false NULL
 );
 
 -- CREATE TABLE "sessions" (
@@ -33,7 +32,7 @@ CREATE TABLE public.users (
 
 -- DROP TABLE public.verify_emails;
 
-CREATE TABLE public.verify_emails (
+CREATE TABLE verify_emails (
 	id bigserial NOT NULL,
 	username varchar NOT NULL,
 	email varchar NOT NULL,
@@ -43,4 +42,51 @@ CREATE TABLE public.verify_emails (
 	expired_at timestamptz DEFAULT now() + '00:15:00'::interval NULL,
 	CONSTRAINT verify_emails_pk PRIMARY KEY (id),
 	CONSTRAINT verify_emails_users_fk FOREIGN KEY (username) REFERENCES public.users(username)
+);
+
+-- Projects table
+CREATE TABLE projects (
+  	id bigserial NOT NULL,
+	"name" varchar(100) NOT NULL,
+	description text NULL,
+	created_at timestamptz DEFAULT CURRENT_TIMESTAMP NULL,
+	updated_at timestamptz DEFAULT CURRENT_TIMESTAMP NULL,
+	username varchar NOT NULL,
+	CONSTRAINT projects_pkey PRIMARY KEY (id),
+	CONSTRAINT projects_users_fk FOREIGN KEY (username) REFERENCES public.users(username)
+);
+
+-- Pages table (updated to store JSON)
+CREATE TABLE pages (
+	id bigserial NOT NULL,
+	project_id int4 NULL,
+	"name" varchar(100) NOT NULL,
+	slug varchar(100) NOT NULL,
+	created_at timestamptz DEFAULT CURRENT_TIMESTAMP NULL,
+	updated_at timestamptz DEFAULT CURRENT_TIMESTAMP NULL,
+	"content" text NULL,
+	CONSTRAINT pages_pkey PRIMARY KEY (id),
+	CONSTRAINT pages_project_id_slug_key UNIQUE (project_id, slug),
+	CONSTRAINT pages_project_id_fkey FOREIGN KEY (project_id) REFERENCES public.projects(id)
+);
+
+-- Assets table
+CREATE TABLE assets (
+    id bigserial PRIMARY KEY,
+    project_id INTEGER REFERENCES projects(id),
+    name VARCHAR(255) NOT NULL,
+    file_path VARCHAR(255) NOT NULL,
+    file_type VARCHAR(50) NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Components table (for reusable GrapesJS components)
+CREATE TABLE components (
+    id bigserial PRIMARY KEY,
+    project_id INTEGER REFERENCES projects(id),
+    name VARCHAR(100) NOT NULL,
+    content JSONB NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );

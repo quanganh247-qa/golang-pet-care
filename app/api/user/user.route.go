@@ -9,6 +9,7 @@ import (
 func Routes(routerGroup middleware.RouterGroup) {
 	user := routerGroup.RouterDefault.Group("/user")
 	// authRoute := routerGroup.RouterAuth(user)
+	// user.Use(middleware.IPbasedRateLimitingMiddleware())
 
 	// Khoi tao api
 	userApi := &UserApi{
@@ -25,6 +26,7 @@ func Routes(routerGroup middleware.RouterGroup) {
 		user.POST("/create", userApi.controller.createUser)
 		user.GET("/all", userApi.controller.getAllUsers)
 		user.POST("/login", userApi.controller.loginUser)
+		user.PUT("/verify-email", userApi.controller.verifyEmail)
 	}
 
 }

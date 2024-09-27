@@ -10,7 +10,46 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+type Asset struct {
+	ID        int64              `json:"id"`
+	ProjectID pgtype.Int4        `json:"project_id"`
+	Name      string             `json:"name"`
+	FilePath  string             `json:"file_path"`
+	FileType  string             `json:"file_type"`
+	CreatedAt pgtype.Timestamptz `json:"created_at"`
+	UpdatedAt pgtype.Timestamptz `json:"updated_at"`
+}
+
+type Component struct {
+	ID        int64              `json:"id"`
+	ProjectID pgtype.Int4        `json:"project_id"`
+	Name      string             `json:"name"`
+	Content   []byte             `json:"content"`
+	CreatedAt pgtype.Timestamptz `json:"created_at"`
+	UpdatedAt pgtype.Timestamptz `json:"updated_at"`
+}
+
+type Page struct {
+	ID        int64              `json:"id"`
+	ProjectID pgtype.Int4        `json:"project_id"`
+	Name      string             `json:"name"`
+	Slug      string             `json:"slug"`
+	CreatedAt pgtype.Timestamptz `json:"created_at"`
+	UpdatedAt pgtype.Timestamptz `json:"updated_at"`
+	Content   pgtype.Text        `json:"content"`
+}
+
+type Project struct {
+	ID          int64              `json:"id"`
+	Name        string             `json:"name"`
+	Description pgtype.Text        `json:"description"`
+	CreatedAt   pgtype.Timestamptz `json:"created_at"`
+	UpdatedAt   pgtype.Timestamptz `json:"updated_at"`
+	Username    string             `json:"username"`
+}
+
 type User struct {
+	ID                int64       `json:"id"`
 	Username          string      `json:"username"`
 	HashedPassword    string      `json:"hashed_password"`
 	FullName          string      `json:"full_name"`

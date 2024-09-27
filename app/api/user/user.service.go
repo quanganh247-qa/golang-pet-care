@@ -1,7 +1,6 @@
 package user
 
 import (
-	"context"
 	"database/sql"
 	"fmt"
 	"log"
@@ -21,14 +20,10 @@ type UserServiceInterface interface {
 	createUserService(ctx *gin.Context, req createUserRequest) (*db.User, error)
 	getAllUsersService(ctx *gin.Context) ([]UserResponse, error)
 	loginUserService(ctx *gin.Context, req loginUserRequest) error
+	verifyEmailService(ctx *gin.Context, req VerrifyEmailTxParams) (VerrifyEmailTxResult, error)
 }
 
 func (server *UserService) createUserService(ctx *gin.Context, req createUserRequest) (*db.User, error) {
-	if server.storeDB == nil {
-		log.Println("storeDB is nil!")
-		ctx.JSON(http.StatusInternalServerError, "internal server error")
-		return nil, fmt.Errorf("storeDB is nil")
-	}
 
 	hashedPwd, err := util.HashPassword(req.Password)
 	if err != nil {
@@ -113,7 +108,7 @@ func (service *UserService) loginUserService(ctx *gin.Context, req loginUserRequ
 	return nil
 }
 
-func (server *UserService) VerifyEmail(ctx context.Context, arg VerrifyEmailTxParams) error {
+func (server *UserService) verifyEmailService(ctx *gin.Context, arg VerrifyEmailTxParams) (VerrifyEmailTxResult, error) {
 
 	var result VerrifyEmailTxResult
 
@@ -138,8 +133,8 @@ func (server *UserService) VerifyEmail(ctx context.Context, arg VerrifyEmailTxPa
 		return err
 	})
 	if err != nil {
-		return fmt.Errorf("Transaction verify email")
+		return VerrifyEmailTxResult{}, fmt.Errorf("failed to verify email: %w", err)
 	}
 
-	return nil
+	return result, nil
 }
