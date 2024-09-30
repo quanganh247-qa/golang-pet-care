@@ -99,3 +99,12 @@ func GetRequiredNumber(ctx *gin.Context, fieldName string) (int64, error) {
 	}
 	return idNum, nil
 }
+
+func ParseMapInterfaceToString(data map[string]interface{}) string {
+	contenJson, err := json.Marshal(data)
+	if err != nil {
+		log.Println("[ ERROR ] ParseInterfaceToString : ", err)
+		return ""
+	}
+	return string(contenJson)
+}

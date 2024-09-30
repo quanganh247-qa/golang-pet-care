@@ -20,23 +20,55 @@ type Asset struct {
 	UpdatedAt pgtype.Timestamptz `json:"updated_at"`
 }
 
+type Category struct {
+	ID           int64       `json:"id"`
+	CategoryName pgtype.Text `json:"category_name"`
+}
+
 type Component struct {
-	ID        int64              `json:"id"`
-	ProjectID pgtype.Int4        `json:"project_id"`
-	Name      string             `json:"name"`
-	Content   []byte             `json:"content"`
-	CreatedAt pgtype.Timestamptz `json:"created_at"`
-	UpdatedAt pgtype.Timestamptz `json:"updated_at"`
+	ID            int64              `json:"id"`
+	ProjectID     int32              `json:"project_id"`
+	Name          string             `json:"name"`
+	CreatedAt     pgtype.Timestamptz `json:"created_at"`
+	UpdatedAt     pgtype.Timestamptz `json:"updated_at"`
+	ComponentCode pgtype.Text        `json:"component_code"`
+	Description   pgtype.Text        `json:"description"`
+	Content       pgtype.Text        `json:"content"`
+	RemovedAt     pgtype.Timestamptz `json:"removed_at"`
+}
+
+type Domain struct {
+	ID         int64              `json:"id"`
+	Username   pgtype.Text        `json:"username"`
+	PageID     int64              `json:"page_id"`
+	DomainName pgtype.Text        `json:"domain_name"`
+	Status     pgtype.Text        `json:"status"`
+	CreatedAt  pgtype.Timestamptz `json:"created_at"`
 }
 
 type Page struct {
-	ID        int64              `json:"id"`
-	ProjectID pgtype.Int4        `json:"project_id"`
-	Name      string             `json:"name"`
-	Slug      string             `json:"slug"`
-	CreatedAt pgtype.Timestamptz `json:"created_at"`
-	UpdatedAt pgtype.Timestamptz `json:"updated_at"`
-	Content   pgtype.Text        `json:"content"`
+	ID            int64              `json:"id"`
+	ProjectID     pgtype.Int4        `json:"project_id"`
+	Name          string             `json:"name"`
+	Slug          string             `json:"slug"`
+	CreatedAt     pgtype.Timestamptz `json:"created_at"`
+	UpdatedAt     pgtype.Timestamptz `json:"updated_at"`
+	Content       pgtype.Text        `json:"content"`
+	CategoryName  pgtype.Text        `json:"category_name"`
+	ComponentCode pgtype.Text        `json:"component_code"`
+	RemovedAt     pgtype.Timestamptz `json:"removed_at"`
+}
+
+type PagesHistoric struct {
+	ID           int64              `json:"id"`
+	PageID       int64              `json:"page_id"`
+	PageVersion  pgtype.Int4        `json:"page_version"`
+	CreatedAt    pgtype.Timestamptz `json:"created_at"`
+	RemovedAt    pgtype.Timestamptz `json:"removed_at"`
+	Content      pgtype.Text        `json:"content"`
+	Name         pgtype.Text        `json:"name"`
+	Slug         pgtype.Text        `json:"slug"`
+	CategoryName pgtype.Text        `json:"category_name"`
 }
 
 type Project struct {
@@ -48,15 +80,26 @@ type Project struct {
 	Username    string             `json:"username"`
 }
 
+type Subscription struct {
+	ID        int64              `json:"id"`
+	Username  pgtype.Text        `json:"username"`
+	PlanType  pgtype.Text        `json:"plan_type"`
+	Price     pgtype.Numeric     `json:"price"`
+	StartDate pgtype.Timestamptz `json:"start_date"`
+	EndDate   pgtype.Timestamptz `json:"end_date"`
+}
+
 type User struct {
-	ID                int64       `json:"id"`
-	Username          string      `json:"username"`
-	HashedPassword    string      `json:"hashed_password"`
-	FullName          string      `json:"full_name"`
-	Email             string      `json:"email"`
-	PasswordChangedAt time.Time   `json:"password_changed_at"`
-	CreatedAt         time.Time   `json:"created_at"`
-	IsVerifiedEmail   pgtype.Bool `json:"is_verified_email"`
+	ID                int64              `json:"id"`
+	Username          string             `json:"username"`
+	HashedPassword    string             `json:"hashed_password"`
+	FullName          string             `json:"full_name"`
+	Email             string             `json:"email"`
+	PasswordChangedAt time.Time          `json:"password_changed_at"`
+	CreatedAt         time.Time          `json:"created_at"`
+	IsVerifiedEmail   pgtype.Bool        `json:"is_verified_email"`
+	PlanType          pgtype.Text        `json:"plan_type"`
+	RemovedAt         pgtype.Timestamptz `json:"removed_at"`
 }
 
 type VerifyEmail struct {

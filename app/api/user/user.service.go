@@ -24,7 +24,10 @@ type UserServiceInterface interface {
 }
 
 func (server *UserService) createUserService(ctx *gin.Context, req createUserRequest) (*db.User, error) {
-
+	// Check if PlanType is empty, and set default to FREE
+	if req.PlanType == "" {
+		req.PlanType = FREE
+	}
 	hashedPwd, err := util.HashPassword(req.Password)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, fmt.Sprintf("cannot hash password: %v", err))
@@ -36,6 +39,7 @@ func (server *UserService) createUserService(ctx *gin.Context, req createUserReq
 		HashedPassword: hashedPwd,
 		FullName:       req.FullName,
 		Email:          req.Email,
+		PlanType:       pgtype.Text{String: string(req.PlanType), Valid: true},
 	}
 
 	user, err := server.storeDB.CreateUser(ctx, arg) // Check this line carefully
@@ -71,6 +75,7 @@ func (server *UserService) createUserService(ctx *gin.Context, req createUserReq
 		FullName:  user.FullName,
 		Email:     user.Email,
 		CreatedAt: user.CreatedAt,
+		PlanType:  user.PlanType,
 	}, nil
 	// return nil, nil
 }

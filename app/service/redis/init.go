@@ -51,27 +51,27 @@ func (client *ClientType) get(ctx context.Context, key string, result interface{
 }
 
 func (client *ClientType) SetWithBackground(key string, value interface{}, duration time.Duration) error {
-	dataValue, err := json.Marshal(value)
+	dataValue, err := json.Marshal(value) // Serialize value to JSON
 	if err != nil {
-		return err
+		return err // Return error if serialization fails
 	}
-	cmdRes := client.RedisClient.Set(ctxRedis, key, dataValue, duration)
+	cmdRes := client.RedisClient.Set(ctxRedis, key, dataValue, duration) // Store in Redis
 	if cmdRes.Err() != nil {
-		return cmdRes.Err()
+		return cmdRes.Err() // Return error if Redis command fails
 	}
-	return nil
+	return nil // No error, return nil
 }
 
 func (client *ClientType) GetWithBackground(key string, result interface{}) error {
-	cmdRes := client.RedisClient.Get(ctxRedis, key)
+	cmdRes := client.RedisClient.Get(ctxRedis, key) // Retrieve value from Redis
 	if cmdRes.Err() != nil {
-		return cmdRes.Err()
+		return cmdRes.Err() // Return error if Redis command fails
 	}
-	err := json.Unmarshal([]byte(cmdRes.Val()), result)
+	err := json.Unmarshal([]byte(cmdRes.Val()), result) // Deserialize JSON to result
 	if err != nil {
-		return err
+		return err // Return error if deserialization fails
 	}
-	return nil
+	return nil // No error, return nil
 }
 
 func (client *ClientType) RemoveCacheByKey(key string) error {
