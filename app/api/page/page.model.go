@@ -17,7 +17,7 @@ type PageApi struct {
 }
 
 type createPageRequest struct {
-	ProjectID int64                  `json:"project_id"`
+	ProjectID int32                  `json:"project_id"`
 	Name      string                 `json:"name"`
 	Slug      string                 `json:"slug"`
 	Content   map[string]interface{} `json:"content"`
@@ -25,7 +25,7 @@ type createPageRequest struct {
 
 type createPageResponse struct {
 	ID        int64
-	ProjectID int64
+	ProjectID int32
 	Name      string
 	Slug      string
 	CreatedAt string

@@ -40,5 +40,4 @@ func (s *PageService) createPage(ctx *gin.Context, req createPageRequest) (*crea
 		CreatedAt: page.CreatedAt.Time.Format(time.RFC3339),
 		UpdatedAt: page.UpdatedAt.Time.Format(time.RFC3339),
 	}, nil
-
 }

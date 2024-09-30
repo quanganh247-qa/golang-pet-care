@@ -14,7 +14,7 @@ import (
 const createPage = `-- name: CreatePage :one
 INSERT INTO pages (name, content, project_id, slug, created_at, updated_at)
 VALUES ($1, $2, $3, $4,now(), now())
-RETURNING id, project_id, name, slug, created_at, updated_at, content
+RETURNING id, project_id, name, slug, created_at, updated_at, content, category_name, component_code, removed_at
 `
 
 type CreatePageParams struct {
@@ -40,12 +40,15 @@ func (q *Queries) CreatePage(ctx context.Context, arg CreatePageParams) (Page, e
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.Content,
+		&i.CategoryName,
+		&i.ComponentCode,
+		&i.RemovedAt,
 	)
 	return i, err
 }
 
 const deletePage = `-- name: DeletePage :one
-DELETE FROM pages WHERE id = $1 RETURNING id, project_id, name, slug, created_at, updated_at, content
+DELETE FROM pages WHERE id = $1 RETURNING id, project_id, name, slug, created_at, updated_at, content, category_name, component_code, removed_at
 `
 
 func (q *Queries) DeletePage(ctx context.Context, id int64) (Page, error) {
@@ -59,12 +62,15 @@ func (q *Queries) DeletePage(ctx context.Context, id int64) (Page, error) {
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.Content,
+		&i.CategoryName,
+		&i.ComponentCode,
+		&i.RemovedAt,
 	)
 	return i, err
 }
 
 const getPages = `-- name: GetPages :many
-SELECT id, project_id, name, slug, created_at, updated_at, content FROM pages ORDER BY created_at DESC
+SELECT id, project_id, name, slug, created_at, updated_at, content, category_name, component_code, removed_at FROM pages ORDER BY created_at DESC
 `
 
 func (q *Queries) GetPages(ctx context.Context) ([]Page, error) {
@@ -84,6 +90,9 @@ func (q *Queries) GetPages(ctx context.Context) ([]Page, error) {
 			&i.CreatedAt,
 			&i.UpdatedAt,
 			&i.Content,
+			&i.CategoryName,
+			&i.ComponentCode,
+			&i.RemovedAt,
 		); err != nil {
 			return nil, err
 		}
@@ -99,7 +108,7 @@ const updatePage = `-- name: UpdatePage :one
 UPDATE pages
 SET name = $1, content = $2, updated_at = $3
 WHERE id = $4
-RETURNING id, project_id, name, slug, created_at, updated_at, content
+RETURNING id, project_id, name, slug, created_at, updated_at, content, category_name, component_code, removed_at
 `
 
 type UpdatePageParams struct {
@@ -125,6 +134,9 @@ func (q *Queries) UpdatePage(ctx context.Context, arg UpdatePageParams) (Page, e
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.Content,
+		&i.CategoryName,
+		&i.ComponentCode,
+		&i.RemovedAt,
 	)
 	return i, err
 }

@@ -20,11 +20,20 @@ type UserApi struct {
 	controller UserControllerInterface
 }
 
+type planType string
+
+const (
+	FREE    planType = "FREE"
+	BASIC   planType = "BASIC"
+	PRENIUM planType = "PRENIUM"
+)
+
 type createUserRequest struct {
-	Username string `json:"username" binding:"required,alphanum"`
-	Password string `json:"password" binding:"required,min=6,max=25"`
-	FullName string `json:"full_name" binding:"required"`
-	Email    string `json:"email" binding:"required,email"`
+	Username string   `json:"username" binding:"required,alphanum"`
+	Password string   `json:"password" binding:"required,min=6,max=25"`
+	FullName string   `json:"full_name" binding:"required"`
+	Email    string   `json:"email" binding:"required,email"`
+	PlanType planType `json:"plan_type" binding:"required,oneof=FREE BASIC PREMIUM"`
 }
 
 type UserResponse struct {
