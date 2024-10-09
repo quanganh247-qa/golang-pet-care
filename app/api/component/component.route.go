@@ -20,6 +20,8 @@ func Routes(routerGroup middleware.RouterGroup) {
 	{
 		authRoute.POST("/create", componentAPI.controller.createComponent)
 		authRoute.GET("/:id", componentAPI.controller.getComponentByID)
+		authRoute.GET("/", componentAPI.controller.getComponentsByUser)
+		authRoute.DELETE("/:id", componentAPI.controller.removeComponent)
 
 	}
 }

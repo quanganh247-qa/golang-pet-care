@@ -37,4 +37,7 @@ postgres:
 redis:
 	docker run -d --name redis -p 6379:6379 redis:7-alpine
 
-.PHONY: mup mdown new_migration mforce sqlc test server mock proto evans postgres migrateup-github redis mup_test mdown_test mforce_test
+rabbitmq:
+	docker run -d --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:3-management
+
+.PHONY: mup mdown new_migration mforce sqlc test server mock proto evans postgres migrateup-github redis mup_test mdown_test mforce_test rabbitmq

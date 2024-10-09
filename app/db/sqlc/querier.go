@@ -9,6 +9,7 @@ import (
 )
 
 type Querier interface {
+	CountingComponentsByUser(ctx context.Context, arg CountingComponentsByUserParams) (int64, error)
 	CreateComponents(ctx context.Context, arg CreateComponentsParams) (Component, error)
 	CreatePage(ctx context.Context, arg CreatePageParams) (Page, error)
 	CreateProject(ctx context.Context, arg CreateProjectParams) (Project, error)
@@ -20,11 +21,13 @@ type Querier interface {
 	GetAllUsers(ctx context.Context) ([]User, error)
 	GetComponentsById(ctx context.Context, arg GetComponentsByIdParams) (Component, error)
 	GetComponentsByName(ctx context.Context, name string) (Component, error)
+	GetComponentsByUser(ctx context.Context, arg GetComponentsByUserParams) ([]GetComponentsByUserRow, error)
 	GetComponentss(ctx context.Context) ([]Component, error)
 	GetPages(ctx context.Context) ([]Page, error)
 	GetProject(ctx context.Context, id int64) (Project, error)
 	GetProjectsByUser(ctx context.Context, username string) ([]Project, error)
 	GetUser(ctx context.Context, username string) (User, error)
+	RemoveComponents(ctx context.Context, arg RemoveComponentsParams) (Component, error)
 	UpdateComponents(ctx context.Context, arg UpdateComponentsParams) (Component, error)
 	UpdatePage(ctx context.Context, arg UpdatePageParams) (Page, error)
 	UpdatePlanType(ctx context.Context, arg UpdatePlanTypeParams) (User, error)

@@ -33,3 +33,8 @@ type createComponentsResonse struct {
 	CreatedAt     string
 	UpdatedAt     string
 }
+type removedComponentResponse struct {
+	ID            int64
+	ComponentCode string
+	RemovedAt     string
+}

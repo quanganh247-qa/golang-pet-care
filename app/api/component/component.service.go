@@ -14,6 +14,8 @@ import (
 type ComponetServiceInterface interface {
 	createComponent(ctx *gin.Context, req createComponentsRequest) (*createComponentsResonse, error)
 	getComponentByID(ctx *gin.Context, id int64, projectId int32) (*createComponentsResonse, error)
+	getComponentsByUser(ctx *gin.Context, username string, projectId int32, pagination util.Pagination) (*util.PaginationResponse[createComponentsResonse], error)
+	removeComponent(ctx *gin.Context, id int64, projectId int32) (*removedComponentResponse, error)
 }
 
 func (s *ComponentService) createComponent(ctx *gin.Context, req createComponentsRequest) (*createComponentsResonse, error) {
@@ -61,5 +63,61 @@ func (s *ComponentService) getComponentByID(ctx *gin.Context, id int64, projectI
 		ComponentCode: com.ComponentCode.String,
 		CreatedAt:     com.CreatedAt.Time.Format(time.RFC3339),
 		UpdatedAt:     com.UpdatedAt.Time.Format(time.RFC3339),
+	}, nil
+}
+
+func (s *ComponentService) getComponentsByUser(ctx *gin.Context, username string, projectId int32, pagination util.Pagination) (*util.PaginationResponse[createComponentsResonse], error) {
+	var listComponent []createComponentsResonse
+	coms, err := s.store.GetComponentsByUser(ctx, db.GetComponentsByUserParams{
+		Username:  username,
+		ProjectID: projectId,
+		Limit:     int32(pagination.PageSize),
+		Offset:    int32(pagination.PageSize * (pagination.Page - 1)),
+	})
+	if err != nil {
+		if err == pgx.ErrNoRows {
+			return nil, fmt.Errorf("Cannot found component")
+		}
+	}
+
+	resPaginate := util.PaginationResponse[createComponentsResonse]{}
+	countComponent, err := s.store.CountingComponentsByUser(ctx, db.CountingComponentsByUserParams{
+		Username:  username,
+		ProjectID: projectId,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	for _, com := range coms {
+		listComponent = append(listComponent, createComponentsResonse{
+			ID:            com.ID,
+			ProjectID:     com.ProjectID,
+			Description:   com.Description.String,
+			Name:          com.Name,
+			Content:       com.Content.String,
+			ComponentCode: com.ComponentCode.String,
+			CreatedAt:     com.CreatedAt.Time.Format(time.RFC3339),
+			UpdatedAt:     com.UpdatedAt.Time.Format(time.RFC3339),
+		})
+	}
+
+	resPaginate.Rows = &listComponent
+	resPaginate.Count = countComponent
+	return resPaginate.Build(), nil
+}
+
+func (s *ComponentService) removeComponent(ctx *gin.Context, id int64, projectId int32) (*removedComponentResponse, error) {
+	res, err := s.store.RemoveComponents(ctx, db.RemoveComponentsParams{
+		ID:        id,
+		ProjectID: projectId,
+	})
+	if err != nil {
+		return nil, fmt.Errorf("Cannot remove component")
+	}
+	return &removedComponentResponse{
+		ID:            res.ID,
+		ComponentCode: res.ComponentCode.String,
+		RemovedAt:     res.RemovedAt.Time.Format(time.RFC3339),
 	}, nil
 }

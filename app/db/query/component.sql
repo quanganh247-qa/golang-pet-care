@@ -21,8 +21,25 @@ SELECT * FROM components;
 SELECT * FROM components
 WHERE id = $1 and project_id = $2 and removed_at is null;
 
+-- name: GetComponentsByUser :many
+SELECT * FROM components
+LEFT JOIN projects on components.project_id = projects.id 
+WHERE username = $1 and project_id = $2 and removed_at is null
+order by components.updated_at desc  limit $3 offset $4;
+
+-- name: CountingComponentsByUser :one
+SELECT count(*) FROM components
+LEFT JOIN projects on components.project_id = projects.id 
+WHERE username = $1 and project_id = $2 and removed_at is null;
+
 -- name: GetComponentsByName :one
 SELECT * FROM components
 WHERE name = $1;
+
+-- name: RemoveComponents :one
+UPDATE components
+SET removed_at = now()
+WHERE id = $1 and removed_at is null and project_id = $2
+RETURNING *;
 
 
