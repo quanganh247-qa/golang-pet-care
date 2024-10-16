@@ -27,6 +27,8 @@ func Routes(routerGroup middleware.RouterGroup) {
 		user.GET("/all", userApi.controller.getAllUsers)
 		user.POST("/login", userApi.controller.loginUser)
 		user.PUT("/verify-email", userApi.controller.verifyEmail)
+		user.GET("/refresh_token", userApi.controller.getAccessToken)
+
 	}
 
 }
