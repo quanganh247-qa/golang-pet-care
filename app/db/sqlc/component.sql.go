@@ -11,6 +11,24 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+const countingComponentsByUser = `-- name: CountingComponentsByUser :one
+SELECT count(*) FROM components
+LEFT JOIN projects on components.project_id = projects.id 
+WHERE username = $1 and project_id = $2 and removed_at is null
+`
+
+type CountingComponentsByUserParams struct {
+	Username  string `json:"username"`
+	ProjectID int32  `json:"project_id"`
+}
+
+func (q *Queries) CountingComponentsByUser(ctx context.Context, arg CountingComponentsByUserParams) (int64, error) {
+	row := q.db.QueryRow(ctx, countingComponentsByUser, arg.Username, arg.ProjectID)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
+}
+
 const createComponents = `-- name: CreateComponents :one
 INSERT INTO components (name, description, content , component_code,project_id, created_at, updated_at)
 VALUES ($1, $2, $3, $4, $5, now(),now())
@@ -120,6 +138,79 @@ func (q *Queries) GetComponentsByName(ctx context.Context, name string) (Compone
 	return i, err
 }
 
+const getComponentsByUser = `-- name: GetComponentsByUser :many
+SELECT components.id, project_id, components.name, components.created_at, components.updated_at, component_code, components.description, content, removed_at, projects.id, projects.name, projects.description, projects.created_at, projects.updated_at, username FROM components
+LEFT JOIN projects on components.project_id = projects.id 
+WHERE username = $1 and project_id = $2 and removed_at is null
+order by components.updated_at desc  limit $3 offset $4
+`
+
+type GetComponentsByUserParams struct {
+	Username  string `json:"username"`
+	ProjectID int32  `json:"project_id"`
+	Limit     int32  `json:"limit"`
+	Offset    int32  `json:"offset"`
+}
+
+type GetComponentsByUserRow struct {
+	ID            int64              `json:"id"`
+	ProjectID     int32              `json:"project_id"`
+	Name          string             `json:"name"`
+	CreatedAt     pgtype.Timestamptz `json:"created_at"`
+	UpdatedAt     pgtype.Timestamptz `json:"updated_at"`
+	ComponentCode pgtype.Text        `json:"component_code"`
+	Description   pgtype.Text        `json:"description"`
+	Content       pgtype.Text        `json:"content"`
+	RemovedAt     pgtype.Timestamptz `json:"removed_at"`
+	ID_2          pgtype.Int8        `json:"id_2"`
+	Name_2        pgtype.Text        `json:"name_2"`
+	Description_2 pgtype.Text        `json:"description_2"`
+	CreatedAt_2   pgtype.Timestamptz `json:"created_at_2"`
+	UpdatedAt_2   pgtype.Timestamptz `json:"updated_at_2"`
+	Username      pgtype.Text        `json:"username"`
+}
+
+func (q *Queries) GetComponentsByUser(ctx context.Context, arg GetComponentsByUserParams) ([]GetComponentsByUserRow, error) {
+	rows, err := q.db.Query(ctx, getComponentsByUser,
+		arg.Username,
+		arg.ProjectID,
+		arg.Limit,
+		arg.Offset,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetComponentsByUserRow{}
+	for rows.Next() {
+		var i GetComponentsByUserRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.ProjectID,
+			&i.Name,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.ComponentCode,
+			&i.Description,
+			&i.Content,
+			&i.RemovedAt,
+			&i.ID_2,
+			&i.Name_2,
+			&i.Description_2,
+			&i.CreatedAt_2,
+			&i.UpdatedAt_2,
+			&i.Username,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getComponentss = `-- name: GetComponentss :many
 SELECT id, project_id, name, created_at, updated_at, component_code, description, content, removed_at FROM components
 `
@@ -152,6 +243,35 @@ func (q *Queries) GetComponentss(ctx context.Context) ([]Component, error) {
 		return nil, err
 	}
 	return items, nil
+}
+
+const removeComponents = `-- name: RemoveComponents :one
+UPDATE components
+SET removed_at = now()
+WHERE id = $1 and removed_at is null and project_id = $2
+RETURNING id, project_id, name, created_at, updated_at, component_code, description, content, removed_at
+`
+
+type RemoveComponentsParams struct {
+	ID        int64 `json:"id"`
+	ProjectID int32 `json:"project_id"`
+}
+
+func (q *Queries) RemoveComponents(ctx context.Context, arg RemoveComponentsParams) (Component, error) {
+	row := q.db.QueryRow(ctx, removeComponents, arg.ID, arg.ProjectID)
+	var i Component
+	err := row.Scan(
+		&i.ID,
+		&i.ProjectID,
+		&i.Name,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.ComponentCode,
+		&i.Description,
+		&i.Content,
+		&i.RemovedAt,
+	)
+	return i, err
 }
 
 const updateComponents = `-- name: UpdateComponents :one

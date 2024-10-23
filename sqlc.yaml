@@ -15,5 +15,3 @@ sql:
         overrides:
           - db_type: "timestamptz"
             go_type: "time.Time"
-          - db_type: "bpm.type_var"
-            go_type: "string"

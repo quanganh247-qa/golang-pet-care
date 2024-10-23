@@ -25,9 +25,7 @@ type UserServiceInterface interface {
 
 func (server *UserService) createUserService(ctx *gin.Context, req createUserRequest) (*db.User, error) {
 	// Check if PlanType is empty, and set default to FREE
-	if req.PlanType == "" {
-		req.PlanType = FREE
-	}
+
 	hashedPwd, err := util.HashPassword(req.Password)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, fmt.Sprintf("cannot hash password: %v", err))
@@ -77,7 +75,6 @@ func (server *UserService) createUserService(ctx *gin.Context, req createUserReq
 		CreatedAt: user.CreatedAt,
 		PlanType:  user.PlanType,
 	}, nil
-	// return nil, nil
 }
 
 func (server *UserService) getAllUsersService(ctx *gin.Context) ([]UserResponse, error) {

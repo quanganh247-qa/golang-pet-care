@@ -3,3 +3,5 @@ app/static/images/
 *.exe
 .idea/
 
+app.env
+

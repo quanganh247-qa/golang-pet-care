@@ -10,25 +10,14 @@ CREATE TABLE users (
 	hashed_password varchar NOT NULL,
 	full_name varchar NOT NULL,
 	email varchar NOT NULL,
+	phone_number varchar NULL,
 	password_changed_at timestamptz DEFAULT '0001-01-01 06:42:04+06:42:04'::timestamp with time zone NOT NULL,
 	created_at timestamptz DEFAULT now() NOT NULL,
 	is_verified_email bool DEFAULT false NULL,
-	plan_type varchar NULL,
 	removed_at timestamptz NULL,
 	CONSTRAINT users_pkey PRIMARY KEY (id),
 	CONSTRAINT users_username_key UNIQUE (username)
 );
-
--- CREATE TABLE "sessions" (
---   "id" uuid PRIMARY KEY,
---   "username" varchar NOT NULL,
---   "refresh_token" varchar NOT NULL,
---   "user_agent" varchar NOT NULL,
---   "client_ip" varchar NOT NULL,
---   "is_blocked" boolean NOT NULL DEFAULT false,
---   "expires_at" timestamptz NOT NULL,
---   "created_at" timestamptz NOT NULL DEFAULT (now())
--- );
 
 -- public.verify_emails definition
 
@@ -48,127 +37,101 @@ CREATE TABLE verify_emails (
 	CONSTRAINT verify_emails_users_fk FOREIGN KEY (username) REFERENCES public.users(username)
 );
 
--- Projects table
-CREATE TABLE projects (
-  	id bigserial NOT NULL,
-	"name" varchar(100) NOT NULL,
-	description text NULL,
-	created_at timestamptz DEFAULT CURRENT_TIMESTAMP NULL,
-	updated_at timestamptz DEFAULT CURRENT_TIMESTAMP NULL,
-	username varchar NOT NULL,
-	CONSTRAINT projects_pkey PRIMARY KEY (id),
-	CONSTRAINT projects_users_fk FOREIGN KEY (username) REFERENCES public.users(username)
+CREATE TABLE Pet (
+    PetID INT PRIMARY KEY AUTO_INCREMENT,
+    UserID INT,
+    Name VARCHAR(100) NOT NULL,
+    Type VARCHAR(50) NOT NULL, -- Example: 'Chó', 'Mèo', 'Chim', etc.
+    Breed VARCHAR(100),
+    Age INT,
+    Weight DECIMAL(5, 2),
+    Gender VARCHAR(10),
+    HealthNotes TEXT,
+    ProfileImage VARCHAR(255),
+    FOREIGN KEY (UserID) REFERENCES User(id) ON DELETE CASCADE
 );
 
--- public.categories definition
-
--- Drop table
-
--- DROP TABLE public.categories;
-
-CREATE TABLE categories (
-	id bigserial NOT NULL,
-	category_name varchar NULL,
-	CONSTRAINT categories_pk PRIMARY KEY (id),
-	CONSTRAINT categories_unique UNIQUE (category_name)
+CREATE TABLE Vaccination (
+    VaccinationID INT PRIMARY KEY AUTO_INCREMENT,
+    PetID INT,
+    VaccineName VARCHAR(100) NOT NULL,
+    DateAdministered DATE NOT NULL,
+    NextDueDate DATE,
+    Notes TEXT,
+    FOREIGN KEY (PetID) REFERENCES Pet(PetID) ON DELETE CASCADE
 );
 
--- Pages table (updated to store JSON)
-CREATE TABLE pages (
-	id bigserial NOT NULL,
-	project_id int4 NULL,
-	"name" varchar(100) NOT NULL,
-	slug varchar(100) NOT NULL,
-	created_at timestamptz DEFAULT CURRENT_TIMESTAMP NULL,
-	updated_at timestamptz DEFAULT CURRENT_TIMESTAMP NULL,
-	"content" text NULL,
-	category_name varchar NULL,
-	component_code varchar NULL,
-	removed_at timestamptz NULL,
-	CONSTRAINT pages_pkey PRIMARY KEY (id),
-	CONSTRAINT pages_project_id_slug_key UNIQUE (project_id, slug),
-	CONSTRAINT pages_categories_fk FOREIGN KEY (category_name) REFERENCES categories(category_name),
-	CONSTRAINT pages_components_fk FOREIGN KEY (component_code) REFERENCES components(component_code),
-	CONSTRAINT pages_project_id_fkey FOREIGN KEY (project_id) REFERENCES projects(id)
+CREATE TABLE HealthCheck (
+    HealthCheckID INT PRIMARY KEY AUTO_INCREMENT,
+    PetID INT,
+    Date DATE NOT NULL,
+    ClinicName VARCHAR(100),
+    DoctorName VARCHAR(100),
+    Summary TEXT,
+    NextCheckupDate DATE,
+    FOREIGN KEY (PetID) REFERENCES Pet(PetID) ON DELETE CASCADE
 );
 
--- public.pages_historic definition
-
--- Drop table
-
--- DROP TABLE public.pages_historic;
-
-CREATE TABLE pages_historic (
-	id bigserial NOT NULL,
-	page_id bigserial NOT NULL,
-	page_version int4 NULL,
-	created_at timestamptz NULL,
-	removed_at timestamptz NULL,
-	"content" text NULL,
-	"name" varchar NULL,
-	slug varchar NULL,
-	category_name varchar NULL,
-	CONSTRAINT pages_historic_pk PRIMARY KEY (id),
-	CONSTRAINT pages_historic_pages_fk FOREIGN KEY (id) REFERENCES pages(id)
+CREATE TABLE FeedingSchedule (
+    FeedingScheduleID INT PRIMARY KEY AUTO_INCREMENT,
+    PetID INT,
+    MealTime TIME NOT NULL,
+    FoodType VARCHAR(100) NOT NULL,
+    Quantity DECIMAL(5, 2) NOT NULL,
+    Notes TEXT,
+    FOREIGN KEY (PetID) REFERENCES Pet(PetID) ON DELETE CASCADE
 );
 
--- Assets table
-CREATE TABLE assets (
-    id bigserial PRIMARY KEY,
-    project_id INTEGER REFERENCES projects(id),
-    name VARCHAR(255) NOT NULL,
-    file_path VARCHAR(255) NOT NULL,
-    file_type VARCHAR(50) NOT NULL,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+CREATE TABLE Reminder (
+    ReminderID INT PRIMARY KEY AUTO_INCREMENT,
+    UserID INT,
+    PetID INT,
+    ReminderType VARCHAR(50) NOT NULL, -- Example: 'Tiêm phòng', 'Kiểm tra sức khỏe', 'Cho ăn', etc.
+    ReminderDate DATE NOT NULL,
+    Description TEXT,
+    Status VARCHAR(20) CHECK (Status IN ('Pending', 'Completed')),
+    FOREIGN KEY (UserID) REFERENCES User(id) ON DELETE CASCADE,
+    FOREIGN KEY (PetID) REFERENCES Pet(PetID) ON DELETE CASCADE
 );
 
--- Components table (for reusable GrapesJS components)
-CREATE TABLE components (
-	id bigserial NOT NULL,
-	project_id int4 NOT NULL,
-	"name" varchar(100) NOT NULL,
-	created_at timestamptz DEFAULT CURRENT_TIMESTAMP NULL,
-	updated_at timestamptz DEFAULT CURRENT_TIMESTAMP NULL,
-	component_code varchar NULL,
-	description varchar NULL,
-	"content" text NULL,
-	removed_at timestamptz NULL,
-	CONSTRAINT components_pkey PRIMARY KEY (id),
-	CONSTRAINT components_unique UNIQUE (component_code),
-	CONSTRAINT components_project_id_fkey FOREIGN KEY (project_id) REFERENCES projects(id)
+CREATE TABLE Service (
+    ServiceID INT PRIMARY KEY AUTO_INCREMENT,
+    ServiceType VARCHAR(50) NOT NULL, -- Example: 'Phòng khám thú y', 'Cửa hàng thú cưng', 'Khách sạn thú cưng', etc.
+    Name VARCHAR(100) NOT NULL,
+    Address VARCHAR(255),
+    PhoneNumber VARCHAR(20),
+    Website VARCHAR(255),
+    Rating DECIMAL(3, 2)
 );
 
-
--- public.subscriptions definition
-
-CREATE TABLE subscriptions (
-	id bigserial NOT NULL,
-	username varchar NULL,
-	plan_type varchar NULL,
-	price numeric NULL,
-	start_date timestamptz NULL,
-	end_date timestamptz NULL,
-	CONSTRAINT subscriptions_pk PRIMARY KEY (id),
-	CONSTRAINT subscriptions_users_fk FOREIGN KEY (username) REFERENCES users(username)
+CREATE TABLE ServiceReview (
+    ReviewID INT PRIMARY KEY AUTO_INCREMENT,
+    ServiceID INT,
+    UserID INT,
+    Rating DECIMAL(3, 2) NOT NULL CHECK (Rating BETWEEN 1.0 AND 5.0),
+    Review TEXT,
+    Date DATE NOT NULL,
+    FOREIGN KEY (ServiceID) REFERENCES Service(ServiceID) ON DELETE CASCADE,
+    FOREIGN KEY (UserID) REFERENCES User(id) ON DELETE CASCADE
 );
 
--- public.domains definition
-
--- Drop table
-
--- DROP TABLE public.domains;
-
-CREATE TABLE domains (
-	id bigserial NOT NULL,
-	username varchar NULL,
-	page_id bigserial NOT NULL,
-	domain_name varchar NULL,
-	status varchar NULL,
-	created_at timestamptz NULL,
-	CONSTRAINT domains_pk PRIMARY KEY (id),
-	CONSTRAINT domains_unique_1 UNIQUE (domain_name),
-	CONSTRAINT domains_pages_fk FOREIGN KEY (id) REFERENCES pages(id),
-	CONSTRAINT domains_users_fk FOREIGN KEY (username) REFERENCES users(username)
+CREATE TABLE PetCommunityPost (
+    PostID INT PRIMARY KEY AUTO_INCREMENT,
+    UserID INT,
+    PetID INT,
+    Content TEXT NOT NULL,
+    Image VARCHAR(255),
+    PostDate DATE NOT NULL,
+    FOREIGN KEY (UserID) REFERENCES User(id) ON DELETE CASCADE,
+    FOREIGN KEY (PetID) REFERENCES Pet(PetID) ON DELETE CASCADE
 );
 
+CREATE TABLE PetCommunityComment (
+    CommentID INT PRIMARY KEY AUTO_INCREMENT,
+    PostID INT,
+    UserID INT,
+    Content TEXT NOT NULL,
+    CommentDate DATE NOT NULL,
+    FOREIGN KEY (PostID) REFERENCES PetCommunityPost(PostID) ON DELETE CASCADE,
+    FOREIGN KEY (UserID) REFERENCES User(UserID) ON DELETE CASCADE
+);

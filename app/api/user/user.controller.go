@@ -1,6 +1,7 @@
 package user
 
 import (
+	"errors"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -13,19 +14,17 @@ type UserControllerInterface interface {
 	getAllUsers(ctx *gin.Context)
 	loginUser(ctx *gin.Context)
 	verifyEmail(ctx *gin.Context)
+	getAccessToken(ctx *gin.Context)
 }
 
 func (controller *UserController) createUser(ctx *gin.Context) {
 	var req createUserRequest
+	req.PlanType = "FREE"
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, util.ErrorValidator(err))
 		return
 	}
-	// authPayload, err := middleware.GetAuthorizationPayload(ctx)
-	// if err != nil {
-	// 	ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
-	// 	return
-	// }
+
 	res, err := controller.service.createUserService(ctx, req)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
@@ -70,6 +69,36 @@ func (controller *UserController) loginUser(ctx *gin.Context) {
 	ctx.SetCookie("refresh_token", refreshToken, int(util.Configs.RefreshTokenDuration), "/", host, secure, true)
 	ctx.JSON(http.StatusOK, util.SuccessResponse("Success", loginUSerResponse{AccessToken: accessToken}))
 
+}
+
+func (controller *UserController) getAccessToken(ctx *gin.Context) {
+	util.SetCookieSameSite(ctx)
+	cookie, err := ctx.Cookie("refresh_token")
+	// nếu set default username thì sẽ luôn sử dụng username đó để tạo token
+	if util.Configs.DefaultAuthenticationUsername != "" && err != nil {
+		cookie, _, err = token.TokenMaker.CreateToken(util.Configs.DefaultAuthenticationUsername, nil, util.Configs.AccessTokenDuration)
+	}
+	if err != nil {
+		ctx.JSON(http.StatusForbidden, util.ErrorResponse(err))
+		return
+	}
+	if cookie == "" {
+		ctx.JSON(http.StatusForbidden, util.ErrorResponse(errors.New("refresh_token is not provided")))
+		return
+	}
+	payload, err := token.TokenMaker.VerifyToken(cookie)
+	if err != nil {
+		ctx.JSON(http.StatusForbidden, util.ErrorResponse(err))
+		return
+	}
+	accessToken, _, err := token.TokenMaker.CreateToken(payload.Username, nil, util.Configs.AccessTokenDuration)
+	if err != nil {
+		ctx.JSON(http.StatusForbidden, util.ErrorResponse(err))
+		return
+	}
+	res := loginUSerResponse{AccessToken: accessToken}
+
+	ctx.JSON(http.StatusOK, util.SuccessResponse("Success", res))
 }
 
 func (controller *UserController) verifyEmail(ctx *gin.Context) {
