@@ -3,10 +3,9 @@ INSERT INTO users (
   username,
   hashed_password,
   full_name,
-  email,
-  plan_type
+  email
 ) VALUES (
-  $1, $2, $3, $4, $5
+  $1, $2, $3, $4
 ) RETURNING *;
 
 -- name: GetUser :one
@@ -24,14 +23,6 @@ SET
   full_name =  COALESCE(sqlc.narg(full_name),full_name),
   email = COALESCE(sqlc.narg(email),email),
   is_verified_email = COALESCE(sqlc.narg(is_verified_email),is_verified_email)
-WHERE
-  username = sqlc.arg(username)
-RETURNING *;
-
--- name: UpdatePlanType :one
-UPDATE users
-SET
-  plan_type = sqlc.arg(plan_type)
 WHERE
   username = sqlc.arg(username)
 RETURNING *;

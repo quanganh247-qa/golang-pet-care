@@ -59,3 +59,5 @@ func GetAuthorizationPayload(ctx *gin.Context) (*token.Payload, error) {
 	}
 	return payload.(*token.Payload), nil
 }
+
+// http://localhost:8080/api/v1

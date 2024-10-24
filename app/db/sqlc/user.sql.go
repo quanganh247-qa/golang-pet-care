@@ -16,19 +16,17 @@ INSERT INTO users (
   username,
   hashed_password,
   full_name,
-  email,
-  plan_type
+  email
 ) VALUES (
-  $1, $2, $3, $4, $5
-) RETURNING id, username, hashed_password, full_name, email, password_changed_at, created_at, is_verified_email, plan_type, removed_at
+  $1, $2, $3, $4
+) RETURNING id, username, hashed_password, full_name, email, phone_number, password_changed_at, created_at, is_verified_email, removed_at
 `
 
 type CreateUserParams struct {
-	Username       string      `json:"username"`
-	HashedPassword string      `json:"hashed_password"`
-	FullName       string      `json:"full_name"`
-	Email          string      `json:"email"`
-	PlanType       pgtype.Text `json:"plan_type"`
+	Username       string `json:"username"`
+	HashedPassword string `json:"hashed_password"`
+	FullName       string `json:"full_name"`
+	Email          string `json:"email"`
 }
 
 func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, error) {
@@ -37,7 +35,6 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 		arg.HashedPassword,
 		arg.FullName,
 		arg.Email,
-		arg.PlanType,
 	)
 	var i User
 	err := row.Scan(
@@ -46,17 +43,17 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 		&i.HashedPassword,
 		&i.FullName,
 		&i.Email,
+		&i.PhoneNumber,
 		&i.PasswordChangedAt,
 		&i.CreatedAt,
 		&i.IsVerifiedEmail,
-		&i.PlanType,
 		&i.RemovedAt,
 	)
 	return i, err
 }
 
 const getAllUsers = `-- name: GetAllUsers :many
-SELECT id, username, hashed_password, full_name, email, password_changed_at, created_at, is_verified_email, plan_type, removed_at FROM users
+SELECT id, username, hashed_password, full_name, email, phone_number, password_changed_at, created_at, is_verified_email, removed_at FROM users
 `
 
 func (q *Queries) GetAllUsers(ctx context.Context) ([]User, error) {
@@ -74,10 +71,10 @@ func (q *Queries) GetAllUsers(ctx context.Context) ([]User, error) {
 			&i.HashedPassword,
 			&i.FullName,
 			&i.Email,
+			&i.PhoneNumber,
 			&i.PasswordChangedAt,
 			&i.CreatedAt,
 			&i.IsVerifiedEmail,
-			&i.PlanType,
 			&i.RemovedAt,
 		); err != nil {
 			return nil, err
@@ -91,7 +88,7 @@ func (q *Queries) GetAllUsers(ctx context.Context) ([]User, error) {
 }
 
 const getUser = `-- name: GetUser :one
-SELECT id, username, hashed_password, full_name, email, password_changed_at, created_at, is_verified_email, plan_type, removed_at FROM users
+SELECT id, username, hashed_password, full_name, email, phone_number, password_changed_at, created_at, is_verified_email, removed_at FROM users
 WHERE username = $1 LIMIT 1
 `
 
@@ -104,42 +101,10 @@ func (q *Queries) GetUser(ctx context.Context, username string) (User, error) {
 		&i.HashedPassword,
 		&i.FullName,
 		&i.Email,
+		&i.PhoneNumber,
 		&i.PasswordChangedAt,
 		&i.CreatedAt,
 		&i.IsVerifiedEmail,
-		&i.PlanType,
-		&i.RemovedAt,
-	)
-	return i, err
-}
-
-const updatePlanType = `-- name: UpdatePlanType :one
-UPDATE users
-SET
-  plan_type = $1
-WHERE
-  username = $2
-RETURNING id, username, hashed_password, full_name, email, password_changed_at, created_at, is_verified_email, plan_type, removed_at
-`
-
-type UpdatePlanTypeParams struct {
-	PlanType pgtype.Text `json:"plan_type"`
-	Username string      `json:"username"`
-}
-
-func (q *Queries) UpdatePlanType(ctx context.Context, arg UpdatePlanTypeParams) (User, error) {
-	row := q.db.QueryRow(ctx, updatePlanType, arg.PlanType, arg.Username)
-	var i User
-	err := row.Scan(
-		&i.ID,
-		&i.Username,
-		&i.HashedPassword,
-		&i.FullName,
-		&i.Email,
-		&i.PasswordChangedAt,
-		&i.CreatedAt,
-		&i.IsVerifiedEmail,
-		&i.PlanType,
 		&i.RemovedAt,
 	)
 	return i, err
@@ -155,7 +120,7 @@ SET
   is_verified_email = COALESCE($5,is_verified_email)
 WHERE
   username = $6
-RETURNING id, username, hashed_password, full_name, email, password_changed_at, created_at, is_verified_email, plan_type, removed_at
+RETURNING id, username, hashed_password, full_name, email, phone_number, password_changed_at, created_at, is_verified_email, removed_at
 `
 
 type UpdateUserParams struct {
@@ -183,10 +148,10 @@ func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, e
 		&i.HashedPassword,
 		&i.FullName,
 		&i.Email,
+		&i.PhoneNumber,
 		&i.PasswordChangedAt,
 		&i.CreatedAt,
 		&i.IsVerifiedEmail,
-		&i.PlanType,
 		&i.RemovedAt,
 	)
 	return i, err

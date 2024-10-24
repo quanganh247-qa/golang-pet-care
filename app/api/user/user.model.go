@@ -16,6 +16,8 @@ type UserService struct {
 	storeDB    db.Store
 	emailQueue *rabbitmq.EmailQueue
 }
+
+// route
 type UserApi struct {
 	controller UserControllerInterface
 }
@@ -29,11 +31,10 @@ const (
 )
 
 type createUserRequest struct {
-	Username string   `json:"username" binding:"required,alphanum"`
-	Password string   `json:"password" binding:"required,min=6,max=25"`
-	FullName string   `json:"full_name" binding:"required"`
-	Email    string   `json:"email" binding:"required,email"`
-	PlanType planType `json:"plan_type" binding:"required,oneof=FREE BASIC PREMIUM"`
+	Username string `json:"username" binding:"required,alphanum"`
+	Password string `json:"password" binding:"required,min=6,max=25"`
+	FullName string `json:"full_name" binding:"required"`
+	Email    string `json:"email" binding:"required,email"`
 }
 
 type UserResponse struct {

@@ -38,8 +38,8 @@ CREATE TABLE verify_emails (
 );
 
 CREATE TABLE Pet (
-    PetID INT PRIMARY KEY AUTO_INCREMENT,
-    UserID INT,
+    PetID BIGSERIAL PRIMARY KEY,
+    UserID BIGINT,
     Name VARCHAR(100) NOT NULL,
     Type VARCHAR(50) NOT NULL, -- Example: 'Chó', 'Mèo', 'Chim', etc.
     Breed VARCHAR(100),
@@ -48,12 +48,12 @@ CREATE TABLE Pet (
     Gender VARCHAR(10),
     HealthNotes TEXT,
     ProfileImage VARCHAR(255),
-    FOREIGN KEY (UserID) REFERENCES User(id) ON DELETE CASCADE
+    FOREIGN KEY (UserID) REFERENCES users(id) ON DELETE CASCADE
 );
 
 CREATE TABLE Vaccination (
-    VaccinationID INT PRIMARY KEY AUTO_INCREMENT,
-    PetID INT,
+    VaccinationID BIGSERIAL PRIMARY KEY,
+    PetID BIGINT,
     VaccineName VARCHAR(100) NOT NULL,
     DateAdministered DATE NOT NULL,
     NextDueDate DATE,
@@ -62,8 +62,8 @@ CREATE TABLE Vaccination (
 );
 
 CREATE TABLE HealthCheck (
-    HealthCheckID INT PRIMARY KEY AUTO_INCREMENT,
-    PetID INT,
+    HealthCheckID BIGSERIAL PRIMARY KEY,
+    PetID BIGINT,
     Date DATE NOT NULL,
     ClinicName VARCHAR(100),
     DoctorName VARCHAR(100),
@@ -73,8 +73,8 @@ CREATE TABLE HealthCheck (
 );
 
 CREATE TABLE FeedingSchedule (
-    FeedingScheduleID INT PRIMARY KEY AUTO_INCREMENT,
-    PetID INT,
+    FeedingScheduleID BIGSERIAL PRIMARY KEY,
+    PetID BIGINT,
     MealTime TIME NOT NULL,
     FoodType VARCHAR(100) NOT NULL,
     Quantity DECIMAL(5, 2) NOT NULL,
@@ -83,19 +83,19 @@ CREATE TABLE FeedingSchedule (
 );
 
 CREATE TABLE Reminder (
-    ReminderID INT PRIMARY KEY AUTO_INCREMENT,
-    UserID INT,
-    PetID INT,
+    ReminderID BIGSERIAL PRIMARY KEY,
+    UserID BIGINT,
+    PetID BIGINT,
     ReminderType VARCHAR(50) NOT NULL, -- Example: 'Tiêm phòng', 'Kiểm tra sức khỏe', 'Cho ăn', etc.
     ReminderDate DATE NOT NULL,
     Description TEXT,
     Status VARCHAR(20) CHECK (Status IN ('Pending', 'Completed')),
-    FOREIGN KEY (UserID) REFERENCES User(id) ON DELETE CASCADE,
+    FOREIGN KEY (UserID) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (PetID) REFERENCES Pet(PetID) ON DELETE CASCADE
 );
 
 CREATE TABLE Service (
-    ServiceID INT PRIMARY KEY AUTO_INCREMENT,
+    ServiceID BIGSERIAL PRIMARY KEY,
     ServiceType VARCHAR(50) NOT NULL, -- Example: 'Phòng khám thú y', 'Cửa hàng thú cưng', 'Khách sạn thú cưng', etc.
     Name VARCHAR(100) NOT NULL,
     Address VARCHAR(255),
@@ -105,33 +105,33 @@ CREATE TABLE Service (
 );
 
 CREATE TABLE ServiceReview (
-    ReviewID INT PRIMARY KEY AUTO_INCREMENT,
-    ServiceID INT,
-    UserID INT,
+    ReviewID BIGSERIAL PRIMARY KEY,
+    ServiceID BIGINT,
+    UserID BIGINT,
     Rating DECIMAL(3, 2) NOT NULL CHECK (Rating BETWEEN 1.0 AND 5.0),
     Review TEXT,
     Date DATE NOT NULL,
     FOREIGN KEY (ServiceID) REFERENCES Service(ServiceID) ON DELETE CASCADE,
-    FOREIGN KEY (UserID) REFERENCES User(id) ON DELETE CASCADE
+    FOREIGN KEY (UserID) REFERENCES users(id) ON DELETE CASCADE
 );
 
 CREATE TABLE PetCommunityPost (
-    PostID INT PRIMARY KEY AUTO_INCREMENT,
-    UserID INT,
-    PetID INT,
+    PostID BIGSERIAL PRIMARY KEY,
+    UserID BIGINT,
+    PetID BIGINT,
     Content TEXT NOT NULL,
     Image VARCHAR(255),
     PostDate DATE NOT NULL,
-    FOREIGN KEY (UserID) REFERENCES User(id) ON DELETE CASCADE,
+    FOREIGN KEY (UserID) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (PetID) REFERENCES Pet(PetID) ON DELETE CASCADE
 );
 
 CREATE TABLE PetCommunityComment (
-    CommentID INT PRIMARY KEY AUTO_INCREMENT,
-    PostID INT,
-    UserID INT,
+    CommentID BIGSERIAL PRIMARY KEY,
+    PostID BIGINT,
+    UserID BIGINT,
     Content TEXT NOT NULL,
     CommentDate DATE NOT NULL,
     FOREIGN KEY (PostID) REFERENCES PetCommunityPost(PostID) ON DELETE CASCADE,
-    FOREIGN KEY (UserID) REFERENCES User(UserID) ON DELETE CASCADE
+    FOREIGN KEY (UserID) REFERENCES users(id) ON DELETE CASCADE
 );
