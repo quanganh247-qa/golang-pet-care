@@ -8,7 +8,7 @@ import (
 
 func Routes(routerGroup middleware.RouterGroup) {
 	user := routerGroup.RouterDefault.Group("/user")
-	// authRoute := routerGroup.RouterAuth(user)
+	authRoute := routerGroup.RouterAuth(user)
 	// user.Use(middleware.IPbasedRateLimitingMiddleware())
 
 	// Khoi tao api
@@ -27,7 +27,7 @@ func Routes(routerGroup middleware.RouterGroup) {
 		user.GET("/all", userApi.controller.getAllUsers)
 		user.POST("/login", userApi.controller.loginUser)
 		user.PUT("/verify-email", userApi.controller.verifyEmail)
-		user.GET("/refresh_token", userApi.controller.getAccessToken)
+		authRoute.GET("/refresh_token", userApi.controller.getAccessToken)
 
 	}
 

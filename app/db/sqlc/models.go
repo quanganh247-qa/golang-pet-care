@@ -10,83 +10,82 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
-type Asset struct {
-	ID        int64              `json:"id"`
-	ProjectID pgtype.Int4        `json:"project_id"`
-	Name      string             `json:"name"`
-	FilePath  string             `json:"file_path"`
-	FileType  string             `json:"file_type"`
-	CreatedAt pgtype.Timestamptz `json:"created_at"`
-	UpdatedAt pgtype.Timestamptz `json:"updated_at"`
+type Feedingschedule struct {
+	Feedingscheduleid int64          `json:"feedingscheduleid"`
+	Petid             pgtype.Int8    `json:"petid"`
+	Mealtime          pgtype.Time    `json:"mealtime"`
+	Foodtype          string         `json:"foodtype"`
+	Quantity          pgtype.Numeric `json:"quantity"`
+	Notes             pgtype.Text    `json:"notes"`
 }
 
-type Category struct {
-	ID           int64       `json:"id"`
-	CategoryName pgtype.Text `json:"category_name"`
+type Healthcheck struct {
+	Healthcheckid   int64       `json:"healthcheckid"`
+	Petid           pgtype.Int8 `json:"petid"`
+	Date            pgtype.Date `json:"date"`
+	Clinicname      pgtype.Text `json:"clinicname"`
+	Doctorname      pgtype.Text `json:"doctorname"`
+	Summary         pgtype.Text `json:"summary"`
+	Nextcheckupdate pgtype.Date `json:"nextcheckupdate"`
 }
 
-type Component struct {
-	ID            int64              `json:"id"`
-	ProjectID     int32              `json:"project_id"`
-	Name          string             `json:"name"`
-	CreatedAt     pgtype.Timestamptz `json:"created_at"`
-	UpdatedAt     pgtype.Timestamptz `json:"updated_at"`
-	ComponentCode pgtype.Text        `json:"component_code"`
-	Description   pgtype.Text        `json:"description"`
-	Content       pgtype.Text        `json:"content"`
-	RemovedAt     pgtype.Timestamptz `json:"removed_at"`
+type Pet struct {
+	Petid        int64          `json:"petid"`
+	Userid       pgtype.Int8    `json:"userid"`
+	Name         string         `json:"name"`
+	Type         string         `json:"type"`
+	Breed        pgtype.Text    `json:"breed"`
+	Age          pgtype.Int4    `json:"age"`
+	Weight       pgtype.Numeric `json:"weight"`
+	Gender       pgtype.Text    `json:"gender"`
+	Healthnotes  pgtype.Text    `json:"healthnotes"`
+	Profileimage pgtype.Text    `json:"profileimage"`
 }
 
-type Domain struct {
-	ID         int64              `json:"id"`
-	Username   pgtype.Text        `json:"username"`
-	PageID     int64              `json:"page_id"`
-	DomainName pgtype.Text        `json:"domain_name"`
-	Status     pgtype.Text        `json:"status"`
-	CreatedAt  pgtype.Timestamptz `json:"created_at"`
+type Petcommunitycomment struct {
+	Commentid   int64       `json:"commentid"`
+	Postid      pgtype.Int8 `json:"postid"`
+	Userid      pgtype.Int8 `json:"userid"`
+	Content     string      `json:"content"`
+	Commentdate pgtype.Date `json:"commentdate"`
 }
 
-type Page struct {
-	ID            int64              `json:"id"`
-	ProjectID     pgtype.Int4        `json:"project_id"`
-	Name          string             `json:"name"`
-	Slug          string             `json:"slug"`
-	CreatedAt     pgtype.Timestamptz `json:"created_at"`
-	UpdatedAt     pgtype.Timestamptz `json:"updated_at"`
-	Content       pgtype.Text        `json:"content"`
-	CategoryName  pgtype.Text        `json:"category_name"`
-	ComponentCode pgtype.Text        `json:"component_code"`
-	RemovedAt     pgtype.Timestamptz `json:"removed_at"`
+type Petcommunitypost struct {
+	Postid   int64       `json:"postid"`
+	Userid   pgtype.Int8 `json:"userid"`
+	Petid    pgtype.Int8 `json:"petid"`
+	Content  string      `json:"content"`
+	Image    pgtype.Text `json:"image"`
+	Postdate pgtype.Date `json:"postdate"`
 }
 
-type PagesHistoric struct {
-	ID           int64              `json:"id"`
-	PageID       int64              `json:"page_id"`
-	PageVersion  pgtype.Int4        `json:"page_version"`
-	CreatedAt    pgtype.Timestamptz `json:"created_at"`
-	RemovedAt    pgtype.Timestamptz `json:"removed_at"`
-	Content      pgtype.Text        `json:"content"`
-	Name         pgtype.Text        `json:"name"`
-	Slug         pgtype.Text        `json:"slug"`
-	CategoryName pgtype.Text        `json:"category_name"`
+type Reminder struct {
+	Reminderid   int64       `json:"reminderid"`
+	Userid       pgtype.Int8 `json:"userid"`
+	Petid        pgtype.Int8 `json:"petid"`
+	Remindertype string      `json:"remindertype"`
+	Reminderdate pgtype.Date `json:"reminderdate"`
+	Description  pgtype.Text `json:"description"`
+	Status       pgtype.Text `json:"status"`
 }
 
-type Project struct {
-	ID          int64              `json:"id"`
-	Name        string             `json:"name"`
-	Description pgtype.Text        `json:"description"`
-	CreatedAt   pgtype.Timestamptz `json:"created_at"`
-	UpdatedAt   pgtype.Timestamptz `json:"updated_at"`
-	Username    string             `json:"username"`
+type Service struct {
+	Serviceid   int64          `json:"serviceid"`
+	Servicetype string         `json:"servicetype"`
+	Name        string         `json:"name"`
+	Address     pgtype.Text    `json:"address"`
+	Phonenumber pgtype.Text    `json:"phonenumber"`
+	Website     pgtype.Text    `json:"website"`
+	Rating      pgtype.Numeric `json:"rating"`
 }
 
-type Subscription struct {
-	ID        int64              `json:"id"`
-	Username  pgtype.Text        `json:"username"`
-	PlanType  pgtype.Text        `json:"plan_type"`
-	Price     pgtype.Numeric     `json:"price"`
-	StartDate pgtype.Timestamptz `json:"start_date"`
-	EndDate   pgtype.Timestamptz `json:"end_date"`
+type Servicereview struct {
+	Reviewid  int64          `json:"reviewid"`
+	Serviceid pgtype.Int8    `json:"serviceid"`
+	Userid    pgtype.Int8    `json:"userid"`
+	Rating    pgtype.Numeric `json:"rating"`
+	Review    pgtype.Text    `json:"review"`
+	Date      pgtype.Date    `json:"date"`
 }
 
 type User struct {
@@ -95,11 +94,20 @@ type User struct {
 	HashedPassword    string             `json:"hashed_password"`
 	FullName          string             `json:"full_name"`
 	Email             string             `json:"email"`
+	PhoneNumber       pgtype.Text        `json:"phone_number"`
 	PasswordChangedAt time.Time          `json:"password_changed_at"`
 	CreatedAt         time.Time          `json:"created_at"`
 	IsVerifiedEmail   pgtype.Bool        `json:"is_verified_email"`
-	PlanType          pgtype.Text        `json:"plan_type"`
 	RemovedAt         pgtype.Timestamptz `json:"removed_at"`
+}
+
+type Vaccination struct {
+	Vaccinationid    int64       `json:"vaccinationid"`
+	Petid            pgtype.Int8 `json:"petid"`
+	Vaccinename      string      `json:"vaccinename"`
+	Dateadministered pgtype.Date `json:"dateadministered"`
+	Nextduedate      pgtype.Date `json:"nextduedate"`
+	Notes            pgtype.Text `json:"notes"`
 }
 
 type VerifyEmail struct {

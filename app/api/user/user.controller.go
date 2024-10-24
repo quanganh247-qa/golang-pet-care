@@ -19,7 +19,6 @@ type UserControllerInterface interface {
 
 func (controller *UserController) createUser(ctx *gin.Context) {
 	var req createUserRequest
-	req.PlanType = "FREE"
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, util.ErrorValidator(err))
 		return

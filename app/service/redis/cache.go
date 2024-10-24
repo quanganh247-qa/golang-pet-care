@@ -51,7 +51,6 @@ func (c *ClientType) UserInfoLoadCache(username string) (*userInfo, error) {
 			Username: userData.ID,
 			Email:    userData.Email,
 			FullName: userData.FullName,
-			PlanType: userData.PlanType.String,
 		}
 		err = c.SetWithBackground(userKey, &userRes, time.Hour*12)
 		if err != nil {

@@ -1,4 +1,4 @@
-DB_URL=postgresql://postgres:12345678@localhost:5433/postgres-tlcn?sslmode=disable
+DB_URL=postgresql://postgres:12345678@localhost:5433/postgres?sslmode=disable
 mup:
 	migrate -path app/db/migration -database "$(DB_URL)" -verbose up
 mdown:
