@@ -84,11 +84,10 @@ func (server *UserService) getAllUsersService(ctx *gin.Context) ([]UserResponse,
 	listUser := make([]UserResponse, 0)
 	for _, u := range users {
 		listUser = append(listUser, UserResponse{
-			Username:          u.Username,
-			FullName:          u.FullName,
-			Email:             u.Email,
-			PasswordChangedAt: u.PasswordChangedAt,
-			CreatedAt:         u.CreatedAt,
+			Username:  u.Username,
+			FullName:  u.FullName,
+			Email:     u.Email,
+			CreatedAt: u.CreatedAt,
 		})
 	}
 	return listUser, nil

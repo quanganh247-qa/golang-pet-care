@@ -11,61 +11,61 @@ import (
 )
 
 type Appointment struct {
-	AppointmentID int64            `json:"AppointmentID"`
-	PetID         pgtype.Int8      `json:"PetID"`
-	DoctorID      pgtype.Int8      `json:"DoctorID"`
-	ServiceID     pgtype.Int8      `json:"ServiceID"`
-	Date          pgtype.Timestamp `json:"Date"`
-	Status        pgtype.Text      `json:"Status"`
+	Appointmentid int64            `json:"appointmentid"`
+	Petid         pgtype.Int8      `json:"petid"`
+	Doctorid      pgtype.Int8      `json:"doctorid"`
+	Serviceid     pgtype.Int8      `json:"serviceid"`
+	Date          pgtype.Timestamp `json:"date"`
+	Status        pgtype.Text      `json:"status"`
 }
 
 type Checkout struct {
-	CheckoutID  int64            `json:"CheckoutID"`
-	PetID       pgtype.Int8      `json:"PetID"`
-	DoctorID    pgtype.Int8      `json:"DoctorID"`
-	Date        pgtype.Timestamp `json:"Date"`
-	TotalAmount pgtype.Float8    `json:"Total_Amount"`
-	Note        pgtype.Text      `json:"Note"`
+	Checkoutid  int64            `json:"checkoutid"`
+	Petid       pgtype.Int8      `json:"petid"`
+	Doctorid    pgtype.Int8      `json:"doctorid"`
+	Date        pgtype.Timestamp `json:"date"`
+	TotalAmount pgtype.Float8    `json:"total_amount"`
+	Note        pgtype.Text      `json:"note"`
 }
 
 type CheckoutService struct {
-	CheckoutServiceID int64       `json:"Checkout_Service_ID"`
-	CheckoutID        pgtype.Int8 `json:"CheckoutID"`
-	ServiceID         pgtype.Int8 `json:"ServiceID"`
+	CheckoutServiceID int64       `json:"checkout_service_id"`
+	Checkoutid        pgtype.Int8 `json:"checkoutid"`
+	Serviceid         pgtype.Int8 `json:"serviceid"`
 }
 
-type FeedingSchedule struct {
-	FeedingScheduleID int64          `json:"FeedingScheduleID"`
-	PetID             pgtype.Int8    `json:"PetID"`
-	MealTime          pgtype.Time    `json:"MealTime"`
-	FoodType          string         `json:"FoodType"`
-	Quantity          pgtype.Numeric `json:"Quantity"`
-	Notes             pgtype.Text    `json:"Notes"`
+type Feedingschedule struct {
+	Feedingscheduleid int64          `json:"feedingscheduleid"`
+	Petid             pgtype.Int8    `json:"petid"`
+	Mealtime          pgtype.Time    `json:"mealtime"`
+	Foodtype          string         `json:"foodtype"`
+	Quantity          pgtype.Numeric `json:"quantity"`
+	Notes             pgtype.Text    `json:"notes"`
 }
 
 type Pet struct {
-	PetID        int64          `json:"PetID"`
-	UserID       pgtype.Int8    `json:"UserID"`
-	Name         string         `json:"Name"`
-	Type         string         `json:"Type"`
-	Breed        pgtype.Text    `json:"Breed"`
-	Age          pgtype.Int4    `json:"Age"`
-	Weight       pgtype.Numeric `json:"Weight"`
-	Gender       pgtype.Text    `json:"Gender"`
-	HealthNotes  pgtype.Text    `json:"HealthNotes"`
-	ProfileImage pgtype.Text    `json:"ProfileImage"`
+	Petid        int64          `json:"petid"`
+	Userid       pgtype.Int8    `json:"userid"`
+	Name         string         `json:"name"`
+	Type         string         `json:"type"`
+	Breed        pgtype.Text    `json:"breed"`
+	Age          pgtype.Int4    `json:"age"`
+	Weight       pgtype.Numeric `json:"weight"`
+	Gender       pgtype.Text    `json:"gender"`
+	Healthnotes  pgtype.Text    `json:"healthnotes"`
+	Profileimage pgtype.Text    `json:"profileimage"`
 }
 
 type Service struct {
-	ServiceID int64         `json:"ServiceID"`
-	TypeID    pgtype.Int8   `json:"TypeID"`
-	Name      pgtype.Text   `json:"Name"`
-	Price     pgtype.Float8 `json:"Price"`
+	Serviceid int64         `json:"serviceid"`
+	Typeid    pgtype.Int8   `json:"typeid"`
+	Name      pgtype.Text   `json:"name"`
+	Price     pgtype.Float8 `json:"price"`
 }
 
-type ServiceType struct {
-	TypeID int64       `json:"TypeID "`
-	Type   pgtype.Text `json:"Type"`
+type Servicetype struct {
+	Typeid          int64       `json:"typeid"`
+	Servicetypename pgtype.Text `json:"servicetypename"`
 }
 
 type User struct {
@@ -84,12 +84,12 @@ type User struct {
 }
 
 type Vaccination struct {
-	VaccinationID    int64       `json:"VaccinationID"`
-	PetID            pgtype.Int8 `json:"PetID"`
-	VaccineName      string      `json:"VaccineName"`
-	DateAdministered pgtype.Date `json:"DateAdministered"`
-	NextDueDate      pgtype.Date `json:"NextDueDate"`
-	Notes            pgtype.Text `json:"Notes"`
+	Vaccinationid    int64       `json:"vaccinationid"`
+	Petid            pgtype.Int8 `json:"petid"`
+	Vaccinename      string      `json:"vaccinename"`
+	Dateadministered pgtype.Date `json:"dateadministered"`
+	Nextduedate      pgtype.Date `json:"nextduedate"`
+	Notes            pgtype.Text `json:"notes"`
 }
 
 type VerifyEmail struct {

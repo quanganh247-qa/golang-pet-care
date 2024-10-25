@@ -22,14 +22,6 @@ type UserApi struct {
 	controller UserControllerInterface
 }
 
-type planType string
-
-const (
-	FREE    planType = "FREE"
-	BASIC   planType = "BASIC"
-	PRENIUM planType = "PRENIUM"
-)
-
 type createUserRequest struct {
 	Username string `json:"username" binding:"required,alphanum"`
 	Password string `json:"password" binding:"required,min=6,max=25"`
@@ -60,11 +52,10 @@ type loginUSerResponse struct {
 
 func newUserResponse(user db.User) UserResponse {
 	return UserResponse{
-		Username:          user.Username,
-		FullName:          user.FullName,
-		Email:             user.Email,
-		PasswordChangedAt: user.PasswordChangedAt,
-		CreatedAt:         user.CreatedAt,
+		Username:  user.Username,
+		FullName:  user.FullName,
+		Email:     user.Email,
+		CreatedAt: user.CreatedAt,
 	}
 }
 
