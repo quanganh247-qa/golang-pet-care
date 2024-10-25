@@ -3,12 +3,9 @@ package connection
 import (
 	"context"
 	"fmt"
-	"log"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
-	"github.com/quanganh247-qa/go-blog-be/app/mail"
-	"github.com/quanganh247-qa/go-blog-be/app/service/rabbitmq"
 	"github.com/quanganh247-qa/go-blog-be/app/service/token"
 	"github.com/quanganh247-qa/go-blog-be/app/util"
 )
@@ -30,16 +27,16 @@ func Init(config util.Config) (*Connection, error) {
 		return nil, fmt.Errorf("cannot connect to db: %w", err)
 	}
 
-	// Initialize RabbitMQ client
-	clientRabbitMQ := rabbitmq.Init(config.RabbitMQAddress)
-	sender := mail.NewGmailSender(config.EmailSenderName, config.EmailSenderAddress, config.EmailSenderPassword)
+	// // Initialize RabbitMQ client
+	// clientRabbitMQ := rabbitmq.Init(config.RabbitMQAddress)
+	// sender := mail.NewGmailSender(config.EmailSenderName, config.EmailSenderAddress, config.EmailSenderPassword)
 
-	err = clientRabbitMQ.Email.ConsumeMessage(sender)
+	// err = clientRabbitMQ.Email.ConsumeMessage(sender)
 
-	if err != nil {
-		log.Println("Error consuming RabbitMQ :", err)
+	// if err != nil {
+	// 	log.Println("Error consuming RabbitMQ :", err)
 
-	}
+	// }
 	// Initialize the database store
 	db.InitStore(connPool)
 
@@ -47,13 +44,13 @@ func Init(config util.Config) (*Connection, error) {
 		Close: func() {
 			// Close resources when `Close` is called
 			connPool.Close()
-			if err := clientRabbitMQ.Conn.Close(); err != nil {
-				log.Println("Error closing RabbitMQ connection:", err)
-			}
-			if err := clientRabbitMQ.Channel.Close(); err != nil {
-				log.Println("Error closing RabbitMQ channel:", err)
-			}
-			fmt.Println("Database and RabbitMQ connections closed.")
+			// if err := clientRabbitMQ.Conn.Close(); err != nil {
+			// 	log.Println("Error closing RabbitMQ connection:", err)
+			// }
+			// if err := clientRabbitMQ.Channel.Close(); err != nil {
+			// 	log.Println("Error closing RabbitMQ channel:", err)
+			// }
+			// fmt.Println("Database and RabbitMQ connections closed.")
 		},
 	}
 	return conn, nil

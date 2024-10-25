@@ -25,17 +25,25 @@ CREATE TABLE verify_emails (
   PRIMARY KEY (id)
 );
 
-CREATE TABLE Pet (
-  PetID BIGSERIAL PRIMARY KEY,
-  UserID BIGINT,
-  Name VARCHAR(100) NOT NULL,
-  Type VARCHAR(50) NOT NULL,
-  Breed VARCHAR(100),
-  Age INT,
-  Weight DECIMAL(5,2),
-  Gender VARCHAR(10),
-  HealthNotes TEXT,
-  ProfileImage VARCHAR(255)
+-- public.pet definition
+
+-- Drop table
+
+-- DROP TABLE public.pet;
+
+CREATE TABLE pet (
+	petid bigserial NOT NULL,
+	"name" varchar(100) NOT NULL,
+	"type" varchar(50) NOT NULL,
+	breed varchar(100) NULL,
+	age int4 NULL,
+	gender varchar(10) NULL,
+	healthnotes text NULL,
+	profileimage varchar(255) NULL,
+	weight float8 NULL,
+	username varchar NOT NULL,
+	CONSTRAINT pet_pkey PRIMARY KEY (petid),
+	CONSTRAINT pet_users_fk FOREIGN KEY (username) REFERENCES users(username)
 );
 
 CREATE TABLE Vaccination (
@@ -96,7 +104,7 @@ CREATE UNIQUE INDEX users_username_key ON users (username);
 
 ALTER TABLE verify_emails ADD CONSTRAINT verify_emails_users_fk FOREIGN KEY (username) REFERENCES users (username);
 
-ALTER TABLE Pet ADD FOREIGN KEY (UserID) REFERENCES users (id) ON DELETE CASCADE;
+ALTER TABLE Pet ADD FOREIGN KEY (username) REFERENCES users (id) ON DELETE CASCADE;
 
 ALTER TABLE Vaccination ADD FOREIGN KEY (PetID) REFERENCES Pet (PetID) ON DELETE CASCADE;
 
@@ -109,3 +117,4 @@ ALTER TABLE Appointment ADD FOREIGN KEY (PetID) REFERENCES Pet (PetID) ON DELETE
 ALTER TABLE Appointment ADD FOREIGN KEY (DoctorID) REFERENCES users (id) ON DELETE CASCADE;
 
 ALTER TABLE Checkout ADD FOREIGN KEY (DoctorID) REFERENCES users (id) ON DELETE CASCADE;
+

@@ -44,16 +44,16 @@ type Feedingschedule struct {
 }
 
 type Pet struct {
-	Petid        int64          `json:"petid"`
-	Userid       pgtype.Int8    `json:"userid"`
-	Name         string         `json:"name"`
-	Type         string         `json:"type"`
-	Breed        pgtype.Text    `json:"breed"`
-	Age          pgtype.Int4    `json:"age"`
-	Weight       pgtype.Numeric `json:"weight"`
-	Gender       pgtype.Text    `json:"gender"`
-	Healthnotes  pgtype.Text    `json:"healthnotes"`
-	Profileimage pgtype.Text    `json:"profileimage"`
+	Petid        int64         `json:"petid"`
+	Name         string        `json:"name"`
+	Type         string        `json:"type"`
+	Breed        pgtype.Text   `json:"breed"`
+	Age          pgtype.Int4   `json:"age"`
+	Gender       pgtype.Text   `json:"gender"`
+	Healthnotes  pgtype.Text   `json:"healthnotes"`
+	Profileimage pgtype.Text   `json:"profileimage"`
+	Weight       pgtype.Float8 `json:"weight"`
+	Username     string        `json:"username"`
 }
 
 type Service struct {

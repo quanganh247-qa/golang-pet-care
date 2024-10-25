@@ -3,7 +3,6 @@ package user
 import (
 	"database/sql"
 	"fmt"
-	"log"
 	"net/http"
 
 	"github.com/jackc/pgx/v5/pgtype"
@@ -12,7 +11,6 @@ import (
 	"github.com/lib/pq"
 	_ "github.com/lib/pq"
 	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
-	"github.com/quanganh247-qa/go-blog-be/app/service/rabbitmq"
 	"github.com/quanganh247-qa/go-blog-be/app/util"
 )
 
@@ -53,18 +51,18 @@ func (server *UserService) createUserService(ctx *gin.Context, req createUserReq
 		}
 	}
 
-	// **Send Email using RabbitMQ**
-	emailPayload := rabbitmq.PayloadVerifyEmail{
-		Username: arg.Username,
-	}
+	// // **Send Email using RabbitMQ**
+	// emailPayload := rabbitmq.PayloadVerifyEmail{
+	// 	Username: arg.Username,
+	// }
 
-	err = server.emailQueue.PublishEmail(emailPayload)
+	// err = server.emailQueue.PublishEmail(emailPayload)
 
-	if err != nil {
-		log.Println("Error publishing email:", err)
-		ctx.JSON(http.StatusInternalServerError, "failed to send verification email")
-		return nil, fmt.Errorf("failed to send verification email: %v", err)
-	}
+	// if err != nil {
+	// 	log.Println("Error publishing email:", err)
+	// 	ctx.JSON(http.StatusInternalServerError, "failed to send verification email")
+	// 	return nil, fmt.Errorf("failed to send verification email: %v", err)
+	// }
 
 	return &db.User{
 		Username:  user.Username,
