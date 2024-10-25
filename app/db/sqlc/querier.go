@@ -9,12 +9,9 @@ import (
 )
 
 type Querier interface {
-	CreatePet(ctx context.Context, arg CreatePetParams) (Pet, error)
-	CreateReminder(ctx context.Context, arg CreateReminderParams) (Reminder, error)
 	CreateUser(ctx context.Context, arg CreateUserParams) (User, error)
 	CreateVerifyEmail(ctx context.Context, arg CreateVerifyEmailParams) (VerifyEmail, error)
 	GetAllUsers(ctx context.Context) ([]User, error)
-	GetPet(ctx context.Context, petid int64) (Pet, error)
 	GetUser(ctx context.Context, username string) (User, error)
 	UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error)
 	UpdateVerifyEmail(ctx context.Context, arg UpdateVerifyEmailParams) (VerifyEmail, error)
