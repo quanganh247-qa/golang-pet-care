@@ -7,9 +7,8 @@ import (
 )
 
 type Server struct {
-	Router 	*gin.Engine
+	Router     *gin.Engine
 	Connection *connection.Connection
-
 }
 
 func NewServer(config util.Config) (*Server, error) {
