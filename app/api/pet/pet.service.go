@@ -10,6 +10,7 @@ import (
 
 type PetServiceInterface interface {
 	CreatePet(ctx *gin.Context, username string, req createPetRequest) (*createPetResponse, error)
+	GetPet(ctx *gin.Context, petid int64) (*createPetResponse, error)
 }
 
 func (s *PetService) CreatePet(ctx *gin.Context, username string, req createPetRequest) (*createPetResponse, error) {

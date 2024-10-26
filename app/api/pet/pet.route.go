@@ -14,13 +14,14 @@ func Routes(routerGroup middleware.RouterGroup) {
 	petApi := &PetApi{
 		&PetController{
 			service: &PetService{
-				storeDB: db.StoreDB, // This should refer to the actual instance
+				storeDB: db.StoreDB,
 			},
 		},
 	}
 
 	{
 		authRoute.POST("/create", petApi.controller.CreatePet)
+		authRoute.GET("/get", petApi.controller.GetPet)
 	}
 
 }
