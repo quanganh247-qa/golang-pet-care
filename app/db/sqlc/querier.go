@@ -10,13 +10,18 @@ import (
 
 type Querier interface {
 	CreatePet(ctx context.Context, arg CreatePetParams) (Pet, error)
-	CreateServiceType(ctx context.Context, servicetypename string) (Servicetype, error)
+	CreateService(ctx context.Context, arg CreateServiceParams) (Service, error)
+	CreateServiceType(ctx context.Context, arg CreateServiceTypeParams) (Servicetype, error)
 	CreateUser(ctx context.Context, arg CreateUserParams) (User, error)
 	CreateVerifyEmail(ctx context.Context, arg CreateVerifyEmailParams) (VerifyEmail, error)
 	DeletePet(ctx context.Context, petid int64) error
+	DeleteService(ctx context.Context, serviceid int64) error
+	DeleteServiceType(ctx context.Context, typeid int64) error
 	GetAllUsers(ctx context.Context) ([]User, error)
 	GetPetByID(ctx context.Context, petid int64) (Pet, error)
+	GetServiceType(ctx context.Context, typeid int64) (Servicetype, error)
 	GetUser(ctx context.Context, username string) (User, error)
+	InsertDoctor(ctx context.Context, arg InsertDoctorParams) (Doctor, error)
 	ListPets(ctx context.Context, arg ListPetsParams) ([]Pet, error)
 	UpdatePet(ctx context.Context, arg UpdatePetParams) error
 	UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error)

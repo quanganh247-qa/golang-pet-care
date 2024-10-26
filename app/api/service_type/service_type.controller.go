@@ -9,10 +9,11 @@ import (
 
 type ServiceTypeControllerInterface interface {
 	CreateServiceType(ctx *gin.Context)
+	DeleteServiceType(ctx *gin.Context)
 }
 
 func (controller *ServiceTypeController) CreateServiceType(ctx *gin.Context) {
-	var req ServiceType
+	var req createServiceTypeRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, util.ErrorValidator(err))
 		return
@@ -24,4 +25,18 @@ func (controller *ServiceTypeController) CreateServiceType(ctx *gin.Context) {
 	}
 	ctx.JSON(http.StatusCreated, util.SuccessResponse("Success", response))
 
+}
+
+func (controller *ServiceTypeController) DeleteServiceType(ctx *gin.Context) {
+	var req deleteServiceTypeRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, util.ErrorValidator(err))
+		return
+	}
+	err := controller.service.deleteServiceTypeService(ctx, req)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
+		return
+	}
+	ctx.JSON(http.StatusOK, util.SuccessResponse("Success", nil))
 }

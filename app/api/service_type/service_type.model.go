@@ -1,12 +1,17 @@
 package service_type
 
 import (
-	"github.com/jackc/pgx/pgtype"
 	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
 )
 
-type ServiceType struct {
-	Servicetypename pgtype.Text `json:"servicetypename"`
+type createServiceTypeRequest struct {
+	Servicetypename string `json:"servicetypename"`
+	Description     string `json:"description"`
+	IconURL         string `json:"iconurl"`
+}
+
+type deleteServiceTypeRequest struct {
+	Servicetypeid int64 `json:"servicetypeid"`
 }
 
 type ServiceTypeController struct {
