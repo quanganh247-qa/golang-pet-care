@@ -3,7 +3,9 @@ package user
 import (
 	"database/sql"
 	"fmt"
+	"math/big"
 	"net/http"
+	"time"
 
 	"github.com/jackc/pgx/v5/pgtype"
 
@@ -19,6 +21,7 @@ type UserServiceInterface interface {
 	getAllUsersService(ctx *gin.Context) ([]UserResponse, error)
 	loginUserService(ctx *gin.Context, req loginUserRequest) error
 	verifyEmailService(ctx *gin.Context, req VerrifyEmailTxParams) (VerrifyEmailTxResult, error)
+	createDoctorService(ctx *gin.Context, arg InsertDoctorRequest, username string) (*DoctorResponse, error)
 }
 
 func (server *UserService) createUserService(ctx *gin.Context, req createUserRequest) (*db.User, error) {
@@ -133,4 +136,94 @@ func (server *UserService) verifyEmailService(ctx *gin.Context, arg VerrifyEmail
 	}
 
 	return result, nil
+}
+
+func (server *UserService) createDoctorService(ctx *gin.Context, arg InsertDoctorRequest, username string) (*DoctorResponse, error) {
+
+	user, err := server.storeDB.GetUser(ctx, username)
+	fmt.Println(user.Username)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			ctx.JSON(http.StatusNotFound, "user not found")
+			return nil, fmt.Errorf("user not found")
+		}
+		ctx.JSON(http.StatusInternalServerError, "internal server error")
+		return nil, fmt.Errorf("internal server error: %v", err)
+	}
+	doctor, err := server.storeDB.InsertDoctor(ctx, db.InsertDoctorParams{
+		UserID:            user.ID,
+		Specialization:    pgtype.Text{String: arg.Specialization, Valid: true},
+		YearsOfExperience: pgtype.Int4{Int32: arg.YearsOfExperience, Valid: true},
+		Education:         pgtype.Text{String: arg.Education, Valid: true},
+		CertificateNumber: pgtype.Text{String: arg.CertificateNumber, Valid: true},
+		Bio:               pgtype.Text{String: arg.Bio, Valid: true},
+		ConsultationFee:   pgtype.Numeric{Int: big.NewInt(int64(arg.ConsultationFee)), Valid: true},
+	})
+	if err != nil {
+		return nil, fmt.Errorf("failed to create doctor: %w", err)
+	}
+
+	return &DoctorResponse{
+		ID:             doctor.ID,
+		Specialization: doctor.Specialization.String,
+		Name:           user.FullName,
+		YearsOfExp:     doctor.YearsOfExperience.Int32,
+		Education:      doctor.Education.String,
+		Certificate:    doctor.CertificateNumber.String,
+		Bio:            doctor.Bio.String,
+	}, nil
+}
+
+func (s *UserService) createDoctorScheduleService(ctx *gin.Context, arg InsertDoctorScheduleRequest, username string) (*DoctorScheduleResponse, error) {
+	user, err := s.storeDB.GetUser(ctx, username)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			ctx.JSON(http.StatusNotFound, "user not found")
+			return nil, fmt.Errorf("user not found")
+		}
+		ctx.JSON(http.StatusInternalServerError, "internal server error")
+		return nil, fmt.Errorf("internal server error: %v", err)
+	}
+	doctor, err := s.storeDB.GetDoctor(ctx, user.ID)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			ctx.JSON(http.StatusNotFound, "doctor not found")
+			return nil, fmt.Errorf("doctor not found")
+		}
+		ctx.JSON(http.StatusInternalServerError, "internal server error")
+		return nil, fmt.Errorf("internal server error: %v", err)
+	}
+
+	// string to pgtype.Time
+	startTime, err := time.Parse("15:04:05", arg.StartTime)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, "invalid start time")
+		return nil, fmt.Errorf("invalid start time: %w", err)
+	}
+	endTime, err := time.Parse("15:04:05", arg.EndTime)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, "invalid end time")
+		return nil, fmt.Errorf("invalid end time: %w", err)
+	}
+
+	doctorSchedule, err := s.storeDB.InsertDoctorSchedule(ctx, db.InsertDoctorScheduleParams{
+		DoctorID:        doctor.ID,
+		DayOfWeek:       pgtype.Int4{Int32: arg.Day, Valid: true},
+		StartTime:       startTime,
+		EndTime:         endTime,
+		MaxAppointments: pgtype.Int4{Int32: arg.MaxAppoin, Valid: true},
+	})
+	if err != nil {
+		return nil, fmt.Errorf("failed to create doctor schedule: %w", err)
+	}
+
+	return &DoctorScheduleResponse{
+		ID:              doctorSchedule.ID,
+		DoctorID:        doctorSchedule.DoctorID,
+		Day:             doctorSchedule.DayOfWeek.Int32,
+		StartTime:       doctorSchedule.StartTime.Format("15:04:05"),
+		EndTime:         doctorSchedule.EndTime.Format("15:04:05"),
+		MaxAppointments: doctorSchedule.MaxAppointments.Int32,
+	}, nil
+
 }

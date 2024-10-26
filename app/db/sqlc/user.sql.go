@@ -7,6 +7,7 @@ package db
 
 import (
 	"context"
+	"time"
 
 	"github.com/jackc/pgx/v5/pgtype"
 )
@@ -54,6 +55,67 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 	return i, err
 }
 
+const getActiveDoctors = `-- name: GetActiveDoctors :many
+SELECT 
+  d.id,
+  u.full_name AS name,
+  d.specialization,
+  d.years_of_experience,
+  d.consultation_fee
+FROM 
+  Doctors d
+JOIN 
+  users u ON d.user_id = u.id
+LEFT JOIN 
+  DoctorSchedules ds ON d.id = ds.doctor_id
+WHERE 
+  d.is_active = true
+  AND (ds.is_active = true OR ds.is_active IS NULL)
+  AND ($1::VARCHAR IS NULL OR d.specialization = $1)
+  AND ($2::INT IS NULL OR ds.day_of_week = $2)
+ORDER BY 
+  u.full_name
+`
+
+type GetActiveDoctorsParams struct {
+	Column1 string `json:"column_1"`
+	Column2 int32  `json:"column_2"`
+}
+
+type GetActiveDoctorsRow struct {
+	ID                int64          `json:"id"`
+	Name              string         `json:"name"`
+	Specialization    pgtype.Text    `json:"specialization"`
+	YearsOfExperience pgtype.Int4    `json:"years_of_experience"`
+	ConsultationFee   pgtype.Numeric `json:"consultation_fee"`
+}
+
+func (q *Queries) GetActiveDoctors(ctx context.Context, arg GetActiveDoctorsParams) ([]GetActiveDoctorsRow, error) {
+	rows, err := q.db.Query(ctx, getActiveDoctors, arg.Column1, arg.Column2)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetActiveDoctorsRow{}
+	for rows.Next() {
+		var i GetActiveDoctorsRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.Specialization,
+			&i.YearsOfExperience,
+			&i.ConsultationFee,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getAllUsers = `-- name: GetAllUsers :many
 SELECT id, username, hashed_password, full_name, email, phone_number, address, avatar, role, created_at, is_verified_email, removed_at FROM users
 `
@@ -89,6 +151,100 @@ func (q *Queries) GetAllUsers(ctx context.Context) ([]User, error) {
 		return nil, err
 	}
 	return items, nil
+}
+
+const getAvailableTimeSlots = `-- name: GetAvailableTimeSlots :many
+SELECT 
+  ts.id,
+  ts.start_time,
+  ts.end_time,
+  ts.duration_minutes
+FROM 
+  TimeSlots ts
+LEFT JOIN 
+  DoctorTimeOff dto ON ts.id = dto.time_slot_id AND dto.doctor_id = $1 AND dto.start_datetime::date = $2::date
+LEFT JOIN 
+  Appointment a ON ts.id = a.time_slot_id AND a.doctor_id = $1 AND a.date::date = $2::date
+WHERE 
+  dto.id IS NULL
+  AND (SELECT COUNT(*) FROM Appointment a2 WHERE a2.time_slot_id = ts.id AND a2.doctor_id = $1 AND a2.date::date = $2::date) < (SELECT max_appointments FROM DoctorSchedules ds WHERE ds.doctor_id = $1 AND ds.day_of_week = EXTRACT(DOW FROM $2::date))
+ORDER BY 
+  ts.start_time
+`
+
+type GetAvailableTimeSlotsParams struct {
+	DoctorID int64       `json:"doctor_id"`
+	Column2  pgtype.Date `json:"column_2"`
+}
+
+func (q *Queries) GetAvailableTimeSlots(ctx context.Context, arg GetAvailableTimeSlotsParams) ([]Timeslot, error) {
+	rows, err := q.db.Query(ctx, getAvailableTimeSlots, arg.DoctorID, arg.Column2)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []Timeslot{}
+	for rows.Next() {
+		var i Timeslot
+		if err := rows.Scan(
+			&i.ID,
+			&i.StartTime,
+			&i.EndTime,
+			&i.DurationMinutes,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getDoctor = `-- name: GetDoctor :one
+SELECT 
+  d.id,
+  u.full_name AS name,
+  d.specialization,
+  d.years_of_experience,
+  d.education,
+  d.certificate_number,
+  d.bio,
+  d.consultation_fee
+FROM
+  Doctors d
+JOIN
+  users u ON d.user_id = u.id
+WHERE
+  d.id = $1
+`
+
+type GetDoctorRow struct {
+	ID                int64          `json:"id"`
+	Name              string         `json:"name"`
+	Specialization    pgtype.Text    `json:"specialization"`
+	YearsOfExperience pgtype.Int4    `json:"years_of_experience"`
+	Education         pgtype.Text    `json:"education"`
+	CertificateNumber pgtype.Text    `json:"certificate_number"`
+	Bio               pgtype.Text    `json:"bio"`
+	ConsultationFee   pgtype.Numeric `json:"consultation_fee"`
+}
+
+func (q *Queries) GetDoctor(ctx context.Context, id int64) (GetDoctorRow, error) {
+	row := q.db.QueryRow(ctx, getDoctor, id)
+	var i GetDoctorRow
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.Specialization,
+		&i.YearsOfExperience,
+		&i.Education,
+		&i.CertificateNumber,
+		&i.Bio,
+		&i.ConsultationFee,
+	)
+	return i, err
 }
 
 const getUser = `-- name: GetUser :one
@@ -160,6 +316,50 @@ func (q *Queries) InsertDoctor(ctx context.Context, arg InsertDoctorParams) (Doc
 		&i.CertificateNumber,
 		&i.Bio,
 		&i.ConsultationFee,
+	)
+	return i, err
+}
+
+const insertDoctorSchedule = `-- name: InsertDoctorSchedule :one
+INSERT INTO DoctorSchedules (
+    doctor_id,
+    day_of_week,
+    start_time,
+    end_time,
+    is_active,
+    max_appointments
+) VALUES (
+    $1, $2, $3, $4, $5, $6
+) RETURNING id, doctor_id, day_of_week, start_time, end_time, is_active, max_appointments
+`
+
+type InsertDoctorScheduleParams struct {
+	DoctorID        int64       `json:"doctor_id"`
+	DayOfWeek       pgtype.Int4 `json:"day_of_week"`
+	StartTime       time.Time   `json:"start_time"`
+	EndTime         time.Time   `json:"end_time"`
+	IsActive        pgtype.Bool `json:"is_active"`
+	MaxAppointments pgtype.Int4 `json:"max_appointments"`
+}
+
+func (q *Queries) InsertDoctorSchedule(ctx context.Context, arg InsertDoctorScheduleParams) (Doctorschedule, error) {
+	row := q.db.QueryRow(ctx, insertDoctorSchedule,
+		arg.DoctorID,
+		arg.DayOfWeek,
+		arg.StartTime,
+		arg.EndTime,
+		arg.IsActive,
+		arg.MaxAppointments,
+	)
+	var i Doctorschedule
+	err := row.Scan(
+		&i.ID,
+		&i.DoctorID,
+		&i.DayOfWeek,
+		&i.StartTime,
+		&i.EndTime,
+		&i.IsActive,
+		&i.MaxAppointments,
 	)
 	return i, err
 }

@@ -50,13 +50,41 @@ type loginUSerResponse struct {
 	User                  UserResponse `json:"user"`
 }
 
-func newUserResponse(user db.User) UserResponse {
-	return UserResponse{
-		Username:  user.Username,
-		FullName:  user.FullName,
-		Email:     user.Email,
-		CreatedAt: user.CreatedAt,
-	}
+type InsertDoctorRequest struct {
+	UserID            int64  `json:"user_id"`
+	Specialization    string `json:"specialization"`
+	YearsOfExperience int32  `json:"years_of_experience"`
+	Education         string `json:"education"`
+	CertificateNumber string `json:"certificate_number"`
+	Bio               string `json:"bio"`
+	ConsultationFee   int32  `json:"consultation_fee"`
+}
+
+type DoctorResponse struct {
+	ID             int64  `json:"id"`
+	Specialization string `json:"specialization"`
+	Name           string `json:"name"`
+	YearsOfExp     int32  `json:"years_of_exp"`
+	Education      string `json:"education"`
+	Certificate    string `json:"certificate"`
+	Bio            string `json:"bio"`
+}
+
+type InsertDoctorScheduleRequest struct {
+	DoctorID  int64  `json:"doctor_id"`
+	Day       int32  `json:"day"`
+	StartTime string `json:"start_time"`
+	EndTime   string `json:"end_time"`
+	MaxAppoin int32  `json:"max_appointments"`
+}
+
+type DoctorScheduleResponse struct {
+	ID              int64  `json:"id"`
+	DoctorID        int64  `json:"doctor_id"`
+	Day             int32  `json:"day"`
+	StartTime       string `json:"start_time"`
+	EndTime         string `json:"end_time"`
+	MaxAppointments int32  `json:"max_appointments"`
 }
 
 type VerrifyEmailTxParams struct {

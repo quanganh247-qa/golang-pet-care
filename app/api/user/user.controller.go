@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/quanganh247-qa/go-blog-be/app/middleware"
 	"github.com/quanganh247-qa/go-blog-be/app/service/token"
 	"github.com/quanganh247-qa/go-blog-be/app/util"
 )
@@ -15,6 +16,7 @@ type UserControllerInterface interface {
 	loginUser(ctx *gin.Context)
 	verifyEmail(ctx *gin.Context)
 	getAccessToken(ctx *gin.Context)
+	createDoctor(ctx *gin.Context)
 }
 
 func (controller *UserController) createUser(ctx *gin.Context) {
@@ -115,4 +117,23 @@ func (controller *UserController) verifyEmail(ctx *gin.Context) {
 	}
 	ctx.JSON(http.StatusOK, util.SuccessResponse("Veried user", res))
 
+}
+
+func (controller *UserController) createDoctor(ctx *gin.Context) {
+	var req InsertDoctorRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, util.ErrorValidator(err))
+		return
+	}
+	authPayload, err := middleware.GetAuthorizationPayload(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
+		return
+	}
+	res, err := controller.service.createDoctorService(ctx, req, authPayload.Username)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
+		return
+	}
+	ctx.JSON(http.StatusCreated, util.SuccessResponse("Success", res))
 }
