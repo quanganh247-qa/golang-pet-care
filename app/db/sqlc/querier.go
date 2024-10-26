@@ -6,13 +6,11 @@ package db
 
 import (
 	"context"
-
-	"github.com/jackc/pgx/v5/pgtype"
 )
 
 type Querier interface {
 	CreatePet(ctx context.Context, arg CreatePetParams) (Pet, error)
-	CreateServiceType(ctx context.Context, servicetypename pgtype.Text) (Servicetype, error)
+	CreateServiceType(ctx context.Context, servicetypename string) (Servicetype, error)
 	CreateUser(ctx context.Context, arg CreateUserParams) (User, error)
 	CreateVerifyEmail(ctx context.Context, arg CreateVerifyEmailParams) (VerifyEmail, error)
 	DeletePet(ctx context.Context, petid int64) error

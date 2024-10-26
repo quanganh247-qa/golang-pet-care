@@ -7,8 +7,6 @@ package db
 
 import (
 	"context"
-
-	"github.com/jackc/pgx/v5/pgtype"
 )
 
 const createServiceType = `-- name: CreateServiceType :one
@@ -16,12 +14,17 @@ INSERT INTO ServiceType (
  ServiceTypeName
 ) VALUES (
   $1
-) RETURNING typeid, servicetypename
+) RETURNING typeid, servicetypename, description, iconurl
 `
 
-func (q *Queries) CreateServiceType(ctx context.Context, servicetypename pgtype.Text) (Servicetype, error) {
+func (q *Queries) CreateServiceType(ctx context.Context, servicetypename string) (Servicetype, error) {
 	row := q.db.QueryRow(ctx, createServiceType, servicetypename)
 	var i Servicetype
-	err := row.Scan(&i.Typeid, &i.Servicetypename)
+	err := row.Scan(
+		&i.Typeid,
+		&i.Servicetypename,
+		&i.Description,
+		&i.Iconurl,
+	)
 	return i, err
 }

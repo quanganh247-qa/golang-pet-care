@@ -14,7 +14,7 @@ import (
 const createPet = `-- name: CreatePet :one
 INSERT INTO Pet (username, Name, Type, Breed, Age, Weight, Gender, HealthNotes, ProfileImage)
 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
-RETURNING petid, name, type, breed, age, gender, healthnotes, profileimage, weight, username
+RETURNING petid, name, type, breed, age, gender, healthnotes, profileimage, weight, birth_date, username, microchip_number, last_checkup_date
 `
 
 type CreatePetParams struct {
@@ -52,7 +52,10 @@ func (q *Queries) CreatePet(ctx context.Context, arg CreatePetParams) (Pet, erro
 		&i.Healthnotes,
 		&i.Profileimage,
 		&i.Weight,
+		&i.BirthDate,
 		&i.Username,
+		&i.MicrochipNumber,
+		&i.LastCheckupDate,
 	)
 	return i, err
 }
@@ -67,7 +70,7 @@ func (q *Queries) DeletePet(ctx context.Context, petid int64) error {
 }
 
 const getPetByID = `-- name: GetPetByID :one
-SELECT petid, name, type, breed, age, gender, healthnotes, profileimage, weight, username FROM Pet WHERE PetID = $1
+SELECT petid, name, type, breed, age, gender, healthnotes, profileimage, weight, birth_date, username, microchip_number, last_checkup_date FROM Pet WHERE PetID = $1
 `
 
 func (q *Queries) GetPetByID(ctx context.Context, petid int64) (Pet, error) {
@@ -83,13 +86,16 @@ func (q *Queries) GetPetByID(ctx context.Context, petid int64) (Pet, error) {
 		&i.Healthnotes,
 		&i.Profileimage,
 		&i.Weight,
+		&i.BirthDate,
 		&i.Username,
+		&i.MicrochipNumber,
+		&i.LastCheckupDate,
 	)
 	return i, err
 }
 
 const listPets = `-- name: ListPets :many
-SELECT petid, name, type, breed, age, gender, healthnotes, profileimage, weight, username FROM Pet ORDER BY PetID LIMIT $1 OFFSET $2
+SELECT petid, name, type, breed, age, gender, healthnotes, profileimage, weight, birth_date, username, microchip_number, last_checkup_date FROM Pet ORDER BY PetID LIMIT $1 OFFSET $2
 `
 
 type ListPetsParams struct {
@@ -116,7 +122,10 @@ func (q *Queries) ListPets(ctx context.Context, arg ListPetsParams) ([]Pet, erro
 			&i.Healthnotes,
 			&i.Profileimage,
 			&i.Weight,
+			&i.BirthDate,
 			&i.Username,
+			&i.MicrochipNumber,
+			&i.LastCheckupDate,
 		); err != nil {
 			return nil, err
 		}

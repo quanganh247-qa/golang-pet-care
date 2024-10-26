@@ -46,3 +46,27 @@ func (s *PetService) CreatePet(ctx *gin.Context, username string, req createPetR
 	}
 	return &pet, nil
 }
+
+func (s *PetService) GetPet(ctx *gin.Context, petid int64) (*createPetResponse, error) {
+	var pet createPetResponse
+	err := s.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
+		res, err := q.GetPetByID(ctx, petid)
+		if err != nil {
+			return fmt.Errorf("failed to get pet: %w", err)
+		}
+		pet = createPetResponse{
+			Petid:    res.Petid,
+			Username: res.Username,
+			Name:     res.Name,
+			Type:     res.Type,
+			Breed:    res.Breed.String,
+			Age:      int16(res.Age.Int32),
+			Weight:   res.Weight.Float64,
+		}
+		return nil
+	})
+	if err != nil {
+		return nil, fmt.Errorf("transaction failed: %w", err)
+	}
+	return &pet, nil
+}
