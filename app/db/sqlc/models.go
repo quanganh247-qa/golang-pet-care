@@ -136,7 +136,7 @@ type Service struct {
 	Serviceid   int64           `json:"serviceid"`
 	Typeid      pgtype.Int8     `json:"typeid"`
 	Name        string          `json:"name"`
-	Price       interface{}     `json:"price"`
+	Price       pgtype.Float8   `json:"price"`
 	Duration    pgtype.Interval `json:"duration"`
 	Description pgtype.Text     `json:"description"`
 	Isavailable pgtype.Bool     `json:"isavailable"`

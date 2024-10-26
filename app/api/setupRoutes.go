@@ -6,6 +6,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/quanganh247-qa/go-blog-be/app/api/pet"
+	"github.com/quanganh247-qa/go-blog-be/app/api/service"
 	"github.com/quanganh247-qa/go-blog-be/app/api/service_type"
 	"github.com/quanganh247-qa/go-blog-be/app/api/user"
 	"github.com/quanganh247-qa/go-blog-be/app/middleware"
@@ -33,6 +34,7 @@ func (server *Server) SetupRoutes() {
 	user.Routes(routerGroup)
 	service_type.Routes(routerGroup)
 	pet.Routes(routerGroup)
+	service.Routes(routerGroup)
 	server.Router = routerDefault
 
 }

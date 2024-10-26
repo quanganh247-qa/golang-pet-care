@@ -7,18 +7,53 @@ package db
 
 import (
 	"context"
+
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 const createServiceType = `-- name: CreateServiceType :one
 INSERT INTO ServiceType (
- ServiceTypeName
+ ServiceTypeName,
+ Description,
+ IconURL
 ) VALUES (
-  $1
+  $1, $2, $3
 ) RETURNING typeid, servicetypename, description, iconurl
 `
 
-func (q *Queries) CreateServiceType(ctx context.Context, servicetypename string) (Servicetype, error) {
-	row := q.db.QueryRow(ctx, createServiceType, servicetypename)
+type CreateServiceTypeParams struct {
+	Servicetypename string      `json:"servicetypename"`
+	Description     pgtype.Text `json:"description"`
+	Iconurl         pgtype.Text `json:"iconurl"`
+}
+
+func (q *Queries) CreateServiceType(ctx context.Context, arg CreateServiceTypeParams) (Servicetype, error) {
+	row := q.db.QueryRow(ctx, createServiceType, arg.Servicetypename, arg.Description, arg.Iconurl)
+	var i Servicetype
+	err := row.Scan(
+		&i.Typeid,
+		&i.Servicetypename,
+		&i.Description,
+		&i.Iconurl,
+	)
+	return i, err
+}
+
+const deleteServiceType = `-- name: DeleteServiceType :exec
+DELETE FROM ServiceType WHERE TypeID = $1
+`
+
+func (q *Queries) DeleteServiceType(ctx context.Context, typeid int64) error {
+	_, err := q.db.Exec(ctx, deleteServiceType, typeid)
+	return err
+}
+
+const getServiceType = `-- name: GetServiceType :one
+SELECT typeid, servicetypename, description, iconurl FROM ServiceType WHERE TypeID = $1 LIMIT 1
+`
+
+func (q *Queries) GetServiceType(ctx context.Context, typeid int64) (Servicetype, error) {
+	row := q.db.QueryRow(ctx, getServiceType, typeid)
 	var i Servicetype
 	err := row.Scan(
 		&i.Typeid,

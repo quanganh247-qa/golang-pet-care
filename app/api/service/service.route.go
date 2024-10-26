@@ -1,4 +1,4 @@
-package service_type
+package service
 
 import (
 	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
@@ -6,14 +6,14 @@ import (
 )
 
 func Routes(routerGroup middleware.RouterGroup) {
-	SVT := routerGroup.RouterDefault.Group("/service-type")
-	authRoute := routerGroup.RouterAuth(SVT)
+	SV := routerGroup.RouterDefault.Group("/service")
+	authRoute := routerGroup.RouterAuth(SV)
 	// user.Use(middleware.IPbasedRateLimitingMiddleware())
 
 	// Khoi tao api
-	SVTApi := &ServiceTypeApi{
-		&ServiceTypeController{
-			service: &ServiceTypeService{
+	SVApi := &ServiceApi{
+		&ServiceController{
+			service: &ServiceService{
 				storeDB: db.StoreDB, // This should refer to the actual instance
 
 			},
@@ -21,8 +21,7 @@ func Routes(routerGroup middleware.RouterGroup) {
 	}
 
 	{
-		authRoute.POST("/create", SVTApi.controller.CreateServiceType)
-		authRoute.DELETE("/delete", SVTApi.controller.DeleteServiceType)
+		authRoute.POST("/create", SVApi.controller.CreateService)
 		// authRoute.POST("/create", userApi.controller.createUser)
 
 	}
