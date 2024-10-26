@@ -1,6 +1,6 @@
 CREATE TABLE users (
   id BIGSERIAL NOT NULL,
-  username varchar NOT NULL,
+  username varchar NOT NULL UNIQUE,
   hashed_password varchar NOT NULL,
   full_name varchar NOT NULL,
   email varchar NOT NULL,
@@ -96,7 +96,7 @@ CREATE TABLE Service (
   ServiceID BIGSERIAL PRIMARY KEY,
   TypeID BIGINT,
   Name varchar NOT NULL,
-  Price DOUBLEPRECISION,
+  Price float8,
   Duration INTERVAL,
   Description TEXT,
   IsAvailable BOOLEAN DEFAULT true
