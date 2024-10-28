@@ -23,6 +23,7 @@ type UserControllerInterface interface {
 	getDoctor(ctx *gin.Context)
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> 24ea3ee (time slot of doctor api)
 	insertTimeSlots(ctx *gin.Context)
@@ -39,6 +40,8 @@ type UserControllerInterface interface {
 =======
 	insertTokenInfo(ctx *gin.Context)
 >>>>>>> e52a297 (google calendar api)
+=======
+>>>>>>> 1ada478 (get doctor api)
 }
 
 func (controller *UserController) createUser(ctx *gin.Context) {
@@ -199,6 +202,7 @@ func (controller *UserController) getDoctor(ctx *gin.Context) {
 }
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> 24ea3ee (time slot of doctor api)
 
@@ -316,3 +320,5 @@ func (controller *UserController) insertTokenInfo(ctx *gin.Context) {
 >>>>>>> 24ea3ee (time slot of doctor api)
 =======
 >>>>>>> e52a297 (google calendar api)
+=======
+>>>>>>> 1ada478 (get doctor api)

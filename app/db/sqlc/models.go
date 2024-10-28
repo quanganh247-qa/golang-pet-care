@@ -24,6 +24,7 @@ type Appointment struct {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> 7cfffa9 (update dtb and appointment)
 	AppointmentID int64            `json:"appointment_id"`
@@ -61,6 +62,20 @@ type Checkout struct {
 }
 
 type Checkout struct {
+=======
+	Appointmentid int64            `json:"appointmentid"`
+	Petid         pgtype.Int8      `json:"petid"`
+	Doctorid      pgtype.Int8      `json:"doctorid"`
+	Serviceid     pgtype.Int8      `json:"serviceid"`
+	Date          pgtype.Timestamp `json:"date"`
+	Status        pgtype.Text      `json:"status"`
+	Notes         pgtype.Text      `json:"notes"`
+	Remindersent  pgtype.Bool      `json:"remindersent"`
+	TimeSlotID    pgtype.Int8      `json:"time_slot_id"`
+}
+
+type Checkout struct {
+>>>>>>> 1ada478 (get doctor api)
 	Checkoutid    int64            `json:"checkoutid"`
 	Petid         pgtype.Int8      `json:"petid"`
 	Doctorid      pgtype.Int8      `json:"doctorid"`
@@ -69,6 +84,7 @@ type Checkout struct {
 	Paymentstatus pgtype.Text      `json:"paymentstatus"`
 	Paymentmethod pgtype.Text      `json:"paymentmethod"`
 	Note          pgtype.Text      `json:"note"`
+<<<<<<< HEAD
 >>>>>>> 1ada478 (get doctor api)
 =======
 	Appointmentid int64              `json:"appointmentid"`
@@ -115,6 +131,8 @@ type Checkout struct {
 	PaymentMethod pgtype.Text      `json:"payment_method"`
 	Notes         pgtype.Text      `json:"notes"`
 >>>>>>> 7cfffa9 (update dtb and appointment)
+=======
+>>>>>>> 1ada478 (get doctor api)
 }
 
 type Checkoutservice struct {
@@ -166,9 +184,12 @@ type Doctortimeoff struct {
 	StartDatetime pgtype.Timestamp `json:"start_datetime"`
 	EndDatetime   pgtype.Timestamp `json:"end_datetime"`
 	Reason        pgtype.Text      `json:"reason"`
+<<<<<<< HEAD
 >>>>>>> 1ada478 (get doctor api)
 =======
 >>>>>>> 24ea3ee (time slot of doctor api)
+=======
+>>>>>>> 1ada478 (get doctor api)
 }
 
 type Feedingschedule struct {

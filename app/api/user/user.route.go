@@ -30,6 +30,7 @@ func Routes(routerGroup middleware.RouterGroup) {
 
 		// Doctor
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 		// Doctor
 		authRoute.POST("/create-doctor", userApi.controller.createDoctor)
@@ -56,6 +57,11 @@ func Routes(routerGroup middleware.RouterGroup) {
 		authRoute.PUT("/update-available/:id", userApi.controller.updateDoctorAvailableTime)
 =======
 >>>>>>> e52a297 (google calendar api)
+=======
+		authRoute.POST("/create-doctor", userApi.controller.createDoctor)
+		authRoute.POST("/add-schedule", userApi.controller.addSchedule)
+		authRoute.GET("/doctor/:id", userApi.controller.getDoctor)
+>>>>>>> 1ada478 (get doctor api)
 
 	}
 

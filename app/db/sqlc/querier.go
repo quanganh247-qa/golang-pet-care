@@ -74,6 +74,7 @@ type Querier interface {
 	GetPetByID(ctx context.Context, petid int64) (Pet, error)
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	GetServiceByID(ctx context.Context, serviceid int64) (Service, error)
 =======
 	GetService(ctx context.Context, serviceid int64) (Service, error)
@@ -81,6 +82,9 @@ type Querier interface {
 =======
 	GetServiceByID(ctx context.Context, serviceid int64) (Service, error)
 >>>>>>> 6e40c8e (update service api)
+=======
+	GetService(ctx context.Context, serviceid int64) (Service, error)
+>>>>>>> 1ada478 (get doctor api)
 	GetServiceType(ctx context.Context, typeid int64) (Servicetype, error)
 <<<<<<< HEAD
 <<<<<<< HEAD
