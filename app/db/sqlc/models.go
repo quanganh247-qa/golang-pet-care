@@ -17,30 +17,35 @@ type Activitylog struct {
 	Starttime    pgtype.Timestamp `json:"starttime"`
 	Duration     pgtype.Interval  `json:"duration"`
 	Notes        pgtype.Text      `json:"notes"`
+	Logid        int64            `json:"logid"`
+	Petid        pgtype.Int8      `json:"petid"`
+	Activitytype string           `json:"activitytype"`
+	Starttime    pgtype.Timestamp `json:"starttime"`
+	Duration     pgtype.Interval  `json:"duration"`
+	Notes        pgtype.Text      `json:"notes"`
 }
 
 type Appointment struct {
-	AppointmentID int64            `json:"appointment_id"`
+	Appointmentid int64            `json:"appointmentid"`
 	Petid         pgtype.Int8      `json:"petid"`
-	DoctorID      pgtype.Int8      `json:"doctor_id"`
-	ServiceID     pgtype.Int8      `json:"service_id"`
+	Doctorid      pgtype.Int8      `json:"doctorid"`
+	Serviceid     pgtype.Int8      `json:"serviceid"`
 	Date          pgtype.Timestamp `json:"date"`
 	Status        pgtype.Text      `json:"status"`
 	Notes         pgtype.Text      `json:"notes"`
-	ReminderSend  pgtype.Bool      `json:"reminder_send"`
+	Remindersent  pgtype.Bool      `json:"remindersent"`
 	TimeSlotID    pgtype.Int8      `json:"time_slot_id"`
-	CreatedAt     pgtype.Timestamp `json:"created_at"`
 }
 
 type Checkout struct {
-	CheckoutID    int64            `json:"checkout_id"`
+	Checkoutid    int64            `json:"checkoutid"`
 	Petid         pgtype.Int8      `json:"petid"`
-	DoctorID      pgtype.Int8      `json:"doctor_id"`
+	Doctorid      pgtype.Int8      `json:"doctorid"`
 	Date          pgtype.Timestamp `json:"date"`
-	TotalTmount   float64          `json:"total_tmount"`
-	PaymentStatus pgtype.Text      `json:"payment_status"`
-	PaymentMethod pgtype.Text      `json:"payment_method"`
-	Notes         pgtype.Text      `json:"notes"`
+	TotalAmount   float64          `json:"total_amount"`
+	Paymentstatus pgtype.Text      `json:"paymentstatus"`
+	Paymentmethod pgtype.Text      `json:"paymentmethod"`
+	Note          pgtype.Text      `json:"note"`
 }
 
 type Checkoutservice struct {
@@ -64,16 +69,33 @@ type Doctor struct {
 }
 
 type Doctorschedule struct {
-	ID              int64            `json:"id"`
-	DoctorID        int64            `json:"doctor_id"`
-	DayOfWeek       pgtype.Int4      `json:"day_of_week"`
-	StartTime       pgtype.Timestamp `json:"start_time"`
-	EndTime         pgtype.Timestamp `json:"end_time"`
-	IsActive        pgtype.Bool      `json:"is_active"`
-	MaxAppointments pgtype.Int4      `json:"max_appointments"`
+	ID              int64       `json:"id"`
+	DoctorID        int64       `json:"doctor_id"`
+	DayOfWeek       pgtype.Int4 `json:"day_of_week"`
+	StartTime       pgtype.Time `json:"start_time"`
+	EndTime         pgtype.Time `json:"end_time"`
+	IsActive        pgtype.Bool `json:"is_active"`
+	MaxAppointments pgtype.Int4 `json:"max_appointments"`
+}
+
+type Doctortimeoff struct {
+	ID            int64            `json:"id"`
+	DoctorID      int64            `json:"doctor_id"`
+	StartDatetime pgtype.Timestamp `json:"start_datetime"`
+	EndDatetime   pgtype.Timestamp `json:"end_datetime"`
+	Reason        pgtype.Text      `json:"reason"`
 }
 
 type Feedingschedule struct {
+	Feedingscheduleid int64            `json:"feedingscheduleid"`
+	Petid             pgtype.Int8      `json:"petid"`
+	Mealtime          pgtype.Time      `json:"mealtime"`
+	Foodtype          string           `json:"foodtype"`
+	Quantity          pgtype.Numeric   `json:"quantity"`
+	Frequency         string           `json:"frequency"`
+	Lastfed           pgtype.Timestamp `json:"lastfed"`
+	Notes             pgtype.Text      `json:"notes"`
+	Isactive          pgtype.Bool      `json:"isactive"`
 	Feedingscheduleid int64            `json:"feedingscheduleid"`
 	Petid             pgtype.Int8      `json:"petid"`
 	Mealtime          pgtype.Time      `json:"mealtime"`
@@ -115,6 +137,14 @@ type Petservicelocation struct {
 }
 
 type Reminder struct {
+	Reminderid       int64            `json:"reminderid"`
+	Petid            pgtype.Int8      `json:"petid"`
+	Title            string           `json:"title"`
+	Description      pgtype.Text      `json:"description"`
+	Duedate          pgtype.Timestamp `json:"duedate"`
+	Repeatinterval   pgtype.Text      `json:"repeatinterval"`
+	Iscompleted      pgtype.Bool      `json:"iscompleted"`
+	Notificationsent pgtype.Bool      `json:"notificationsent"`
 	Reminderid       int64            `json:"reminderid"`
 	Petid            pgtype.Int8      `json:"petid"`
 	Title            string           `json:"title"`

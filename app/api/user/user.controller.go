@@ -3,7 +3,6 @@ package user
 import (
 	"errors"
 	"net/http"
-	"strconv"
 
 	"github.com/gin-gonic/gin"
 	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
@@ -21,11 +20,6 @@ type UserControllerInterface interface {
 	createDoctor(ctx *gin.Context)
 	addSchedule(ctx *gin.Context)
 	getDoctor(ctx *gin.Context)
-	insertTimeSlots(ctx *gin.Context)
-	getTimeSlots(ctx *gin.Context)
-	getAllTimeSlots(ctx *gin.Context)
-	updateDoctorAvailableTime(ctx *gin.Context)
-	insertTokenInfo(ctx *gin.Context)
 }
 
 func (controller *UserController) createUser(ctx *gin.Context) {
@@ -183,108 +177,4 @@ func (controller *UserController) getDoctor(ctx *gin.Context) {
 		return
 	}
 	ctx.JSON(http.StatusOK, util.SuccessResponse("Success", res))
-}
-
-func (controller *UserController) insertTimeSlots(ctx *gin.Context) {
-	var req db.InsertTimeslotParams
-	if err := ctx.ShouldBindJSON(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, util.ErrorValidator(err))
-		return
-	}
-	authPayload, err := middleware.GetAuthorizationPayload(ctx)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
-		return
-	}
-
-	res, err := controller.service.insertTimeSlots(ctx, authPayload.Username, req)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
-		return
-	}
-	ctx.JSON(http.StatusCreated, util.SuccessResponse("Inserted timeslot successfull", res))
-
-}
-
-func (controller *UserController) getTimeSlots(ctx *gin.Context) {
-	doctorID := ctx.Param("doctor_id")
-	if doctorID == "" {
-		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(errors.New("doctor_id is required")))
-		return
-	}
-	// day
-	day := ctx.Query("day")
-	// convert sitrng to int
-	doctorIDInt, err := strconv.Atoi(doctorID)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
-		return
-	}
-	res, err := controller.service.GetTimeslotsAvailable(ctx, int64(doctorIDInt), day)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
-		return
-	}
-	ctx.JSON(http.StatusOK, util.SuccessResponse("All list of time slots are available", res))
-}
-
-func (controller *UserController) getAllTimeSlots(ctx *gin.Context) {
-	doctorID := ctx.Param("doctor_id")
-	if doctorID == "" {
-		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(errors.New("doctor_id is required")))
-		return
-	}
-	// day
-	day := ctx.Query("day")
-	// convert sitrng to int
-	doctorIDInt, err := strconv.Atoi(doctorID)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
-		return
-	}
-	res, err := controller.service.GetTimeslotsAvailable(ctx, int64(doctorIDInt), day)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
-		return
-	}
-	ctx.JSON(http.StatusOK, util.SuccessResponse("All list of time slots are available", res))
-}
-
-func (controller *UserController) updateDoctorAvailableTime(ctx *gin.Context) {
-	timeID := ctx.Param("id")
-	if timeID == "" {
-		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(errors.New("Time slot is required")))
-		return
-	}
-	// convert sitrng to int64
-	timeSlotId, err := strconv.ParseInt(timeID, 10, 64)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
-		return
-	}
-	err = controller.service.UpdateDoctorAvailable(ctx, timeSlotId)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
-		return
-	}
-	ctx.JSON(http.StatusOK, util.SuccessResponse("Updated timeslot successfull", nil))
-}
-
-func (controller *UserController) insertTokenInfo(ctx *gin.Context) {
-	var req InsertTokenInfoRequest
-	if err := ctx.ShouldBindJSON(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, util.ErrorValidator(err))
-		return
-	}
-	authPayload, err := middleware.GetAuthorizationPayload(ctx)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
-		return
-	}
-	res, err := controller.service.InsertTokenInfoService(ctx, req, authPayload.Username)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
-		return
-	}
-	ctx.JSON(http.StatusCreated, util.SuccessResponse("Inserted token info successfull", res))
 }
