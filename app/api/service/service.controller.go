@@ -7,6 +7,7 @@ import (
 	"github.com/quanganh247-qa/go-blog-be/app/util"
 )
 
+// controller
 type ServiceControllerInterface interface {
 	CreateService(ctx *gin.Context)
 }
