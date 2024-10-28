@@ -29,6 +29,7 @@ func Routes(routerGroup middleware.RouterGroup) {
 		authRoute.GET("/refresh_token", userApi.controller.getAccessToken)
 
 		// Doctor
+<<<<<<< HEAD
 
 		// Doctor
 		authRoute.POST("/create-doctor", userApi.controller.createDoctor)
@@ -42,6 +43,11 @@ func Routes(routerGroup middleware.RouterGroup) {
 
 		// Token info for google calendar
 		authRoute.POST("/token-info", userApi.controller.insertTokenInfo)
+=======
+		authRoute.POST("/create-doctor", userApi.controller.createDoctor)
+		authRoute.POST("/add-schedule", userApi.controller.addSchedule)
+		authRoute.GET("/doctor/:id", userApi.controller.getDoctor)
+>>>>>>> 1ada478 (get doctor api)
 
 	}
 

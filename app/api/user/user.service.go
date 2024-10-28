@@ -24,11 +24,14 @@ type UserServiceInterface interface {
 	createDoctorService(ctx *gin.Context, arg InsertDoctorRequest, username string) (*DoctorResponse, error)
 	createDoctorScheduleService(ctx *gin.Context, arg InsertDoctorScheduleRequest, username string) (*DoctorScheduleResponse, error)
 	getDoctorByID(ctx *gin.Context, userID int64) (*DoctorResponse, error)
+<<<<<<< HEAD
 	insertTimeSlots(ctx *gin.Context, username string, arg db.InsertTimeslotParams) (*db.Timeslot, error)
 	GetTimeslotsAvailable(ctx *gin.Context, doctorID int64, date string) ([]db.GetTimeslotsAvailableRow, error)
 	GetAllTimeslots(ctx *gin.Context, doctorID int64, date string) ([]db.GetTimeslotsAvailableRow, error)
 	UpdateDoctorAvailable(ctx *gin.Context, time_slot_id int64) error
 	InsertTokenInfoService(ctx *gin.Context, arg InsertTokenInfoRequest, username string) (*db.TokenInfo, error)
+=======
+>>>>>>> 1ada478 (get doctor api)
 }
 
 func (server *UserService) createUserService(ctx *gin.Context, req createUserRequest) (*db.User, error) {
@@ -212,13 +215,29 @@ func (s *UserService) createDoctorScheduleService(ctx *gin.Context, arg InsertDo
 		ctx.JSON(http.StatusBadRequest, "invalid end time")
 		return nil, fmt.Errorf("invalid end time: %w", err)
 	} // time.Time to pgtype.Time
+<<<<<<< HEAD
+=======
+	pgStartTime := pgtype.Time{
+		Microseconds: int64(startTime.Hour()*3600+startTime.Minute()*60+startTime.Second()) * 1e6,
+		Valid:        true,
+	}
+	pgEndTime := pgtype.Time{
+		Microseconds: int64(endTime.Hour()*3600+endTime.Minute()*60+endTime.Second()) * 1e6,
+		Valid:        true,
+	}
+>>>>>>> 1ada478 (get doctor api)
 
 	doctorSchedule, err := s.storeDB.InsertDoctorSchedule(ctx, db.InsertDoctorScheduleParams{
 		DoctorID:        doctor.ID,
 		DayOfWeek:       pgtype.Int4{Int32: arg.Day, Valid: true},
 		MaxAppointments: pgtype.Int4{Int32: arg.MaxAppoin, Valid: true},
+<<<<<<< HEAD
 		StartTime:       pgtype.Timestamp{Time: startTime, Valid: true},
 		EndTime:         pgtype.Timestamp{Time: endTime, Valid: true},
+=======
+		StartTime:       pgStartTime,
+		EndTime:         pgEndTime,
+>>>>>>> 1ada478 (get doctor api)
 	})
 	if err != nil {
 		return nil, fmt.Errorf("failed to create doctor schedule: %w", err)
@@ -230,8 +249,11 @@ func (s *UserService) createDoctorScheduleService(ctx *gin.Context, arg InsertDo
 		Day:             doctorSchedule.DayOfWeek.Int32,
 		StartTime:       arg.StartTime,
 		EndTime:         arg.EndTime,
+<<<<<<< HEAD
 		StartTime:       arg.StartTime,
 		EndTime:         arg.EndTime,
+=======
+>>>>>>> 1ada478 (get doctor api)
 		MaxAppointments: doctorSchedule.MaxAppointments.Int32,
 	}, nil
 }
@@ -257,6 +279,7 @@ func (s *UserService) getDoctorByID(ctx *gin.Context, userID int64) (*DoctorResp
 		Certificate:    doctor.CertificateNumber.String,
 		Bio:            doctor.Bio.String,
 	}, nil
+<<<<<<< HEAD
 }
 
 // Time off
@@ -393,4 +416,6 @@ func (s *UserService) InsertTokenInfoService(ctx *gin.Context, arg InsertTokenIn
 		RefreshToken: tokenInfo.RefreshToken,
 		Expiry:       tokenInfo.Expiry,
 	}, nil
+=======
+>>>>>>> 1ada478 (get doctor api)
 }

@@ -20,6 +20,7 @@ type Activitylog struct {
 }
 
 type Appointment struct {
+<<<<<<< HEAD
 	AppointmentID int64            `json:"appointment_id"`
 	Petid         pgtype.Int8      `json:"petid"`
 	DoctorID      pgtype.Int8      `json:"doctor_id"`
@@ -41,6 +42,28 @@ type Checkout struct {
 	PaymentStatus pgtype.Text      `json:"payment_status"`
 	PaymentMethod pgtype.Text      `json:"payment_method"`
 	Notes         pgtype.Text      `json:"notes"`
+=======
+	Appointmentid int64            `json:"appointmentid"`
+	Petid         pgtype.Int8      `json:"petid"`
+	Doctorid      pgtype.Int8      `json:"doctorid"`
+	Serviceid     pgtype.Int8      `json:"serviceid"`
+	Date          pgtype.Timestamp `json:"date"`
+	Status        pgtype.Text      `json:"status"`
+	Notes         pgtype.Text      `json:"notes"`
+	Remindersent  pgtype.Bool      `json:"remindersent"`
+	TimeSlotID    pgtype.Int8      `json:"time_slot_id"`
+}
+
+type Checkout struct {
+	Checkoutid    int64            `json:"checkoutid"`
+	Petid         pgtype.Int8      `json:"petid"`
+	Doctorid      pgtype.Int8      `json:"doctorid"`
+	Date          pgtype.Timestamp `json:"date"`
+	TotalAmount   float64          `json:"total_amount"`
+	Paymentstatus pgtype.Text      `json:"paymentstatus"`
+	Paymentmethod pgtype.Text      `json:"paymentmethod"`
+	Note          pgtype.Text      `json:"note"`
+>>>>>>> 1ada478 (get doctor api)
 }
 
 type Checkoutservice struct {
@@ -64,6 +87,7 @@ type Doctor struct {
 }
 
 type Doctorschedule struct {
+<<<<<<< HEAD
 	ID              int64            `json:"id"`
 	DoctorID        int64            `json:"doctor_id"`
 	DayOfWeek       pgtype.Int4      `json:"day_of_week"`
@@ -71,6 +95,23 @@ type Doctorschedule struct {
 	EndTime         pgtype.Timestamp `json:"end_time"`
 	IsActive        pgtype.Bool      `json:"is_active"`
 	MaxAppointments pgtype.Int4      `json:"max_appointments"`
+=======
+	ID              int64       `json:"id"`
+	DoctorID        int64       `json:"doctor_id"`
+	DayOfWeek       pgtype.Int4 `json:"day_of_week"`
+	StartTime       pgtype.Time `json:"start_time"`
+	EndTime         pgtype.Time `json:"end_time"`
+	IsActive        pgtype.Bool `json:"is_active"`
+	MaxAppointments pgtype.Int4 `json:"max_appointments"`
+}
+
+type Doctortimeoff struct {
+	ID            int64            `json:"id"`
+	DoctorID      int64            `json:"doctor_id"`
+	StartDatetime pgtype.Timestamp `json:"start_datetime"`
+	EndDatetime   pgtype.Timestamp `json:"end_datetime"`
+	Reason        pgtype.Text      `json:"reason"`
+>>>>>>> 1ada478 (get doctor api)
 }
 
 type Feedingschedule struct {
