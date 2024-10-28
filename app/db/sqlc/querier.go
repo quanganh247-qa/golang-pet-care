@@ -38,7 +38,7 @@ type Querier interface {
 	GetDoctor(ctx context.Context, id int64) (GetDoctorRow, error)
 	GetFeedingScheduleByPetID(ctx context.Context, petid pgtype.Int8) ([]Feedingschedule, error)
 	GetPetByID(ctx context.Context, petid int64) (Pet, error)
-	GetServiceByID(ctx context.Context, serviceid int64) (Service, error)
+	GetService(ctx context.Context, serviceid int64) (Service, error)
 	GetServiceType(ctx context.Context, typeid int64) (Servicetype, error)
 	GetTimeSlotByID(ctx context.Context, id int64) (GetTimeSlotByIDRow, error)
 	GetTimeslotsAvailable(ctx context.Context, arg GetTimeslotsAvailableParams) ([]GetTimeslotsAvailableRow, error)
