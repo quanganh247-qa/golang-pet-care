@@ -64,12 +64,44 @@ func (q *Queries) DeleteService(ctx context.Context, serviceid int64) error {
 	return err
 }
 
-const getService = `-- name: GetService :one
+const getAllServices = `-- name: GetAllServices :many
+SELECT serviceid, typeid, name, price, duration, description, isavailable FROM Service
+`
+
+func (q *Queries) GetAllServices(ctx context.Context) ([]Service, error) {
+	rows, err := q.db.Query(ctx, getAllServices)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []Service{}
+	for rows.Next() {
+		var i Service
+		if err := rows.Scan(
+			&i.Serviceid,
+			&i.Typeid,
+			&i.Name,
+			&i.Price,
+			&i.Duration,
+			&i.Description,
+			&i.Isavailable,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getServiceByID = `-- name: GetServiceByID :one
 SELECT serviceid, typeid, name, price, duration, description, isavailable FROM Service WHERE ServiceID = $1 LIMIT 1
 `
 
-func (q *Queries) GetService(ctx context.Context, serviceid int64) (Service, error) {
-	row := q.db.QueryRow(ctx, getService, serviceid)
+func (q *Queries) GetServiceByID(ctx context.Context, serviceid int64) (Service, error) {
+	row := q.db.QueryRow(ctx, getServiceByID, serviceid)
 	var i Service
 	err := row.Scan(
 		&i.Serviceid,
@@ -81,4 +113,38 @@ func (q *Queries) GetService(ctx context.Context, serviceid int64) (Service, err
 		&i.Isavailable,
 	)
 	return i, err
+}
+
+const updateService = `-- name: UpdateService :exec
+UPDATE Service SET
+  TypeID = $2,
+  Name = $3,
+  Price = $4,
+  Duration = $5,
+  Description = $6,
+  IsAvailable = $7
+WHERE ServiceID = $1
+`
+
+type UpdateServiceParams struct {
+	Serviceid   int64           `json:"serviceid"`
+	Typeid      pgtype.Int8     `json:"typeid"`
+	Name        string          `json:"name"`
+	Price       pgtype.Float8   `json:"price"`
+	Duration    pgtype.Interval `json:"duration"`
+	Description pgtype.Text     `json:"description"`
+	Isavailable pgtype.Bool     `json:"isavailable"`
+}
+
+func (q *Queries) UpdateService(ctx context.Context, arg UpdateServiceParams) error {
+	_, err := q.db.Exec(ctx, updateService,
+		arg.Serviceid,
+		arg.Typeid,
+		arg.Name,
+		arg.Price,
+		arg.Duration,
+		arg.Description,
+		arg.Isavailable,
+	)
+	return err
 }
