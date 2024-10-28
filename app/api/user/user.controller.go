@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
 	"github.com/quanganh247-qa/go-blog-be/app/middleware"
 	"github.com/quanganh247-qa/go-blog-be/app/service/token"
 	"github.com/quanganh247-qa/go-blog-be/app/util"
@@ -17,6 +18,8 @@ type UserControllerInterface interface {
 	verifyEmail(ctx *gin.Context)
 	getAccessToken(ctx *gin.Context)
 	createDoctor(ctx *gin.Context)
+	addSchedule(ctx *gin.Context)
+	getDoctor(ctx *gin.Context)
 }
 
 func (controller *UserController) createUser(ctx *gin.Context) {
@@ -136,4 +139,42 @@ func (controller *UserController) createDoctor(ctx *gin.Context) {
 		return
 	}
 	ctx.JSON(http.StatusCreated, util.SuccessResponse("Success", res))
+}
+
+func (controller *UserController) addSchedule(ctx *gin.Context) {
+	var req InsertDoctorScheduleRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, util.ErrorValidator(err))
+		return
+	}
+	authPayload, err := middleware.GetAuthorizationPayload(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
+		return
+	}
+	res, err := controller.service.createDoctorScheduleService(ctx, req, authPayload.Username)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
+		return
+	}
+	ctx.JSON(http.StatusCreated, util.SuccessResponse("Inserted schedulke successfull", res))
+}
+
+func (controller *UserController) getDoctor(ctx *gin.Context) {
+	authPayload, err := middleware.GetAuthorizationPayload(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
+		return
+	}
+	user, err := db.StoreDB.GetUser(ctx, authPayload.Username)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
+		return
+	}
+	res, err := controller.service.getDoctorByID(ctx, user.ID)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
+		return
+	}
+	ctx.JSON(http.StatusOK, util.SuccessResponse("Success", res))
 }

@@ -22,6 +22,7 @@ type Querier interface {
 	GetAvailableTimeSlots(ctx context.Context, arg GetAvailableTimeSlotsParams) ([]Timeslot, error)
 	GetDoctor(ctx context.Context, id int64) (GetDoctorRow, error)
 	GetPetByID(ctx context.Context, petid int64) (Pet, error)
+	GetService(ctx context.Context, serviceid int64) (Service, error)
 	GetServiceType(ctx context.Context, typeid int64) (Servicetype, error)
 	GetUser(ctx context.Context, username string) (User, error)
 	InsertDoctor(ctx context.Context, arg InsertDoctorParams) (Doctor, error)

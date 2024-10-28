@@ -63,3 +63,22 @@ func (q *Queries) DeleteService(ctx context.Context, serviceid int64) error {
 	_, err := q.db.Exec(ctx, deleteService, serviceid)
 	return err
 }
+
+const getService = `-- name: GetService :one
+SELECT serviceid, typeid, name, price, duration, description, isavailable FROM Service WHERE ServiceID = $1 LIMIT 1
+`
+
+func (q *Queries) GetService(ctx context.Context, serviceid int64) (Service, error) {
+	row := q.db.QueryRow(ctx, getService, serviceid)
+	var i Service
+	err := row.Scan(
+		&i.Serviceid,
+		&i.Typeid,
+		&i.Name,
+		&i.Price,
+		&i.Duration,
+		&i.Description,
+		&i.Isavailable,
+	)
+	return i, err
+}
