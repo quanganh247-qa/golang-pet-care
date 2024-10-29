@@ -22,13 +22,19 @@ type UserControllerInterface interface {
 	addSchedule(ctx *gin.Context)
 	getDoctor(ctx *gin.Context)
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 24ea3ee (time slot of doctor api)
 	insertTimeSlots(ctx *gin.Context)
 	getTimeSlots(ctx *gin.Context)
 	getAllTimeSlots(ctx *gin.Context)
 	updateDoctorAvailableTime(ctx *gin.Context)
+<<<<<<< HEAD
 	insertTokenInfo(ctx *gin.Context)
 =======
 >>>>>>> 1ada478 (get doctor api)
+=======
+>>>>>>> 24ea3ee (time slot of doctor api)
 }
 
 func (controller *UserController) createUser(ctx *gin.Context) {
@@ -188,6 +194,9 @@ func (controller *UserController) getDoctor(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, util.SuccessResponse("Success", res))
 }
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 24ea3ee (time slot of doctor api)
 
 func (controller *UserController) insertTimeSlots(ctx *gin.Context) {
 	var req db.InsertTimeslotParams
@@ -273,6 +282,7 @@ func (controller *UserController) updateDoctorAvailableTime(ctx *gin.Context) {
 	}
 	ctx.JSON(http.StatusOK, util.SuccessResponse("Updated timeslot successfull", nil))
 }
+<<<<<<< HEAD
 
 func (controller *UserController) insertTokenInfo(ctx *gin.Context) {
 	var req InsertTokenInfoRequest
@@ -294,3 +304,5 @@ func (controller *UserController) insertTokenInfo(ctx *gin.Context) {
 }
 =======
 >>>>>>> 1ada478 (get doctor api)
+=======
+>>>>>>> 24ea3ee (time slot of doctor api)

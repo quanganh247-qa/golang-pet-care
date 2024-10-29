@@ -56,6 +56,7 @@ func (q *Queries) GetAllTimeSlots(ctx context.Context, arg GetAllTimeSlotsParams
 	return items, nil
 }
 
+<<<<<<< HEAD
 const getTimeSlotByID = `-- name: GetTimeSlotByID :one
 SELECT 
     ts.doctor_id ,
@@ -80,6 +81,8 @@ func (q *Queries) GetTimeSlotByID(ctx context.Context, id int64) (GetTimeSlotByI
 	return i, err
 }
 
+=======
+>>>>>>> 24ea3ee (time slot of doctor api)
 const getTimeslotsAvailable = `-- name: GetTimeslotsAvailable :many
 SELECT 
     ts.doctor_id ,

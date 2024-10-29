@@ -38,6 +38,7 @@ WHERE
 -- name: UpdateDoctorAvailable :exec
 UPDATE TimeSlots
 SET is_active = $1
+<<<<<<< HEAD
 WHERE id = $2;
 
 -- name: GetTimeSlotByID :one
@@ -49,3 +50,6 @@ FROM
     TimeSlots ts
 WHERE
     ts.id = $1;  -- Replace $1 with the specific time slot ID you are querying for
+=======
+WHERE id = $2;
+>>>>>>> 24ea3ee (time slot of doctor api)

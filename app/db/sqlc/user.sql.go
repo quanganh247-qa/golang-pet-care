@@ -285,12 +285,16 @@ INSERT INTO DoctorSchedules (
 
 type InsertDoctorScheduleParams struct {
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 24ea3ee (time slot of doctor api)
 	DoctorID        int64            `json:"doctor_id"`
 	DayOfWeek       pgtype.Int4      `json:"day_of_week"`
 	StartTime       pgtype.Timestamp `json:"start_time"`
 	EndTime         pgtype.Timestamp `json:"end_time"`
 	IsActive        pgtype.Bool      `json:"is_active"`
 	MaxAppointments pgtype.Int4      `json:"max_appointments"`
+<<<<<<< HEAD
 =======
 	DoctorID        int64       `json:"doctor_id"`
 	DayOfWeek       pgtype.Int4 `json:"day_of_week"`
@@ -299,6 +303,8 @@ type InsertDoctorScheduleParams struct {
 	IsActive        pgtype.Bool `json:"is_active"`
 	MaxAppointments pgtype.Int4 `json:"max_appointments"`
 >>>>>>> 1ada478 (get doctor api)
+=======
+>>>>>>> 24ea3ee (time slot of doctor api)
 }
 
 func (q *Queries) InsertDoctorSchedule(ctx context.Context, arg InsertDoctorScheduleParams) (Doctorschedule, error) {

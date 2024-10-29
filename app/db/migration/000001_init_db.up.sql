@@ -43,6 +43,7 @@ CREATE TABLE Pet (
 );
 
 CREATE TABLE Vaccination (
+<<<<<<< HEAD
   vaccinationID BIGSERIAL PRIMARY KEY,
   petID BIGINT,
   vaccineName VARCHAR(100) NOT NULL,
@@ -83,6 +84,48 @@ CREATE TABLE Reminders (
   repeatInterval VARCHAR(50),
   isCompleted BOOLEAN DEFAULT false,
   notificationSent BOOLEAN DEFAULT false
+=======
+  VaccinationID BIGSERIAL PRIMARY KEY,
+  PetID BIGINT,
+  VaccineName VARCHAR(100) NOT NULL,
+  DateAdministered timestamptz NOT NULL,
+  NextDueDate timestamptz,
+  VaccineProvider VARCHAR(100),
+  BatchNumber VARCHAR(50),
+  Notes TEXT
+);
+
+CREATE TABLE FeedingSchedule (
+  FeedingScheduleID BIGSERIAL PRIMARY KEY,
+  PetID BIGINT,
+  MealTime TIME NOT NULL,
+  FoodType VARCHAR(100) NOT NULL,
+  Quantity DECIMAL(5,2) NOT NULL,
+  Frequency VARCHAR(50) NOT NULL,
+  LastFed timestamptz,
+  Notes TEXT,
+  IsActive BOOLEAN DEFAULT true
+);
+
+CREATE TABLE ActivityLog (
+  LogID BIGSERIAL PRIMARY KEY,
+  PetID BIGINT,
+  ActivityType VARCHAR(50) NOT NULL,
+  StartTime timestamptz NOT NULL,
+  Duration INTERVAL,
+  Notes TEXT
+);
+
+CREATE TABLE Reminders (
+  ReminderID BIGSERIAL PRIMARY KEY,
+  PetID BIGINT,
+  Title VARCHAR(100) NOT NULL,
+  Description TEXT,
+  DueDate timestamptz NOT NULL,
+  RepeatInterval VARCHAR(50),
+  IsCompleted BOOLEAN DEFAULT false,
+  NotificationSent BOOLEAN DEFAULT false
+>>>>>>> 24ea3ee (time slot of doctor api)
 );
 
 CREATE TABLE ServiceType (
@@ -104,6 +147,7 @@ CREATE TABLE Service (
 );
 
 CREATE TABLE Appointment (
+<<<<<<< HEAD
   appointment_id BIGSERIAL PRIMARY KEY,
   petid BIGINT,
   doctor_id BIGINT,
@@ -125,6 +169,28 @@ CREATE TABLE Checkout (
   payment_status VARCHAR(20),
   payment_method VARCHAR(50),
   notes TEXT
+=======
+  AppointmentID BIGSERIAL PRIMARY KEY,
+  PetID BIGINT,
+  DoctorID BIGINT,
+  ServiceID BIGINT,
+  Date timestamptz DEFAULT (now()),
+  Status VARCHAR(20),
+  Notes TEXT,
+  ReminderSent BOOLEAN DEFAULT false,
+  time_slot_id BIGINT
+);
+
+CREATE TABLE Checkout (
+  CheckoutID BIGSERIAL PRIMARY KEY,
+  PetID BIGINT,
+  DoctorID BIGINT,
+  Date timestamptz DEFAULT (now()),
+  Total_Amount float8 NOT NULL,
+  PaymentStatus VARCHAR(20),
+  PaymentMethod VARCHAR(50),
+  Note TEXT
+>>>>>>> 24ea3ee (time slot of doctor api)
 );
 
 CREATE TABLE CheckoutService (
@@ -160,6 +226,12 @@ CREATE TABLE Doctors (
   consultation_fee DECIMAL(10,2)
 );
 
+<<<<<<< HEAD
+=======
+
+
+
+>>>>>>> 24ea3ee (time slot of doctor api)
 CREATE TABLE TimeSlots (
   id BIGSERIAL PRIMARY KEY,
   doctor_id BIGINT NOT NULL,
@@ -176,8 +248,11 @@ CREATE TABLE DoctorSchedules (
   day_of_week INT,
   start_time timestamp NOT NULL,
   end_time timestamp NOT NULL,
+<<<<<<< HEAD
   start_time timestamp NOT NULL,
   end_time timestamp NOT NULL,
+=======
+>>>>>>> 24ea3ee (time slot of doctor api)
   is_active BOOLEAN DEFAULT true,
   max_appointments INT DEFAULT 1
 );
@@ -209,6 +284,7 @@ ALTER TABLE Doctors ADD CONSTRAINT fk_doctor_user FOREIGN KEY (user_id) REFERENC
 ALTER TABLE DoctorSchedules ADD CONSTRAINT fk_schedule_doctor FOREIGN KEY (doctor_id) REFERENCES Doctors (id);
 
 -- ALTER TABLE DoctorTimeOff ADD CONSTRAINT fk_timeoff_doctor FOREIGN KEY (doctor_id) REFERENCES Doctors (id);
+<<<<<<< HEAD
 -- ALTER TABLE DoctorTimeOff ADD CONSTRAINT fk_timeoff_doctor FOREIGN KEY (doctor_id) REFERENCES Doctors (id);
 
 -- ALTER TABLE Appointment ADD CONSTRAINT fk_appointment_timeslot FOREIGN KEY (time_slot_id) REFERENCES TimeSlots (id);
@@ -232,3 +308,7 @@ CREATE TABLE token_info (
 	CONSTRAINT token_info_pk PRIMARY KEY (id),
 	CONSTRAINT token_info_unique UNIQUE (user_name)
 );
+=======
+
+-- ALTER TABLE Appointment ADD CONSTRAINT fk_appointment_timeslot FOREIGN KEY (time_slot_id) REFERENCES TimeSlots (id);
+>>>>>>> 24ea3ee (time slot of doctor api)
