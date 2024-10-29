@@ -202,12 +202,16 @@ CREATE TABLE Service (
 CREATE TABLE Appointment (
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> c7f463c (update dtb)
 =======
 >>>>>>> c7f463c (update dtb)
   appointment_id BIGSERIAL PRIMARY KEY,
   petid BIGINT,
   doctor_id BIGINT,
   service_id BIGINT,
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
   date timestamp DEFAULT (now()),
@@ -237,10 +241,15 @@ CREATE TABLE Checkout (
   Notes TEXT,
   ReminderSent BOOLEAN DEFAULT false,
 =======
+=======
+>>>>>>> c7f463c (update dtb)
   date timestamptz DEFAULT (now()),
   status VARCHAR(20),
   notes TEXT,
   reminder_send BOOLEAN DEFAULT false,
+<<<<<<< HEAD
+>>>>>>> c7f463c (update dtb)
+=======
 >>>>>>> c7f463c (update dtb)
   time_slot_id BIGINT
 =======
@@ -254,6 +263,7 @@ CREATE TABLE Checkout (
 );
 
 CREATE TABLE Checkout (
+<<<<<<< HEAD
 <<<<<<< HEAD
   CheckoutID BIGSERIAL PRIMARY KEY,
   PetID BIGINT,
@@ -269,10 +279,19 @@ CREATE TABLE Checkout (
   petid BIGINT,
   doctor_id BIGINT,
   date timestamp DEFAULT (now()),
+=======
+  checkout_id BIGSERIAL PRIMARY KEY,
+  petid BIGINT,
+  doctor_id BIGINT,
+  date timestamptz DEFAULT (now()),
+>>>>>>> c7f463c (update dtb)
   total_tmount float8 NOT NULL,
   payment_status VARCHAR(20),
   payment_method VARCHAR(50),
   notes TEXT
+<<<<<<< HEAD
+>>>>>>> c7f463c (update dtb)
+=======
 >>>>>>> c7f463c (update dtb)
 );
 
@@ -368,7 +387,11 @@ ALTER TABLE Appointment ADD CONSTRAINT appointment_pet_fk FOREIGN KEY (petid) RE
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 ALTER TABLE Appointment ADD CONSTRAINT appointment_service_fk FOREIGN KEY (service_id) REFERENCES Service (serviceID);
+=======
+ALTER TABLE Appointment ADD CONSTRAINT appointment_service_fk FOREIGN KEY (service_id) REFERENCES Service (ServiceID);
+>>>>>>> c7f463c (update dtb)
 =======
 ALTER TABLE Appointment ADD CONSTRAINT appointment_service_fk FOREIGN KEY (service_id) REFERENCES Service (ServiceID);
 >>>>>>> c7f463c (update dtb)
@@ -376,12 +399,16 @@ ALTER TABLE Appointment ADD CONSTRAINT appointment_service_fk FOREIGN KEY (servi
 -- ALTER TABLE Checkout ADD CONSTRAINT checkout_pet_fk FOREIGN KEY (PetID) REFERENCES Pet (petid);
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 ALTER TABLE CheckoutService ADD CONSTRAINT cs_checkout_fk FOREIGN KEY (checkoutID) REFERENCES Checkout (checkout_id);
 =======
 ALTER TABLE CheckoutService ADD CONSTRAINT cs_checkout_fk FOREIGN KEY (CheckoutID) REFERENCES Checkout (checkout_id);
 >>>>>>> c7f463c (update dtb)
 =======
 ALTER TABLE Appointment ADD CONSTRAINT appointment_service_fk FOREIGN KEY (service_id) REFERENCES Service (serviceID);
+=======
+ALTER TABLE CheckoutService ADD CONSTRAINT cs_checkout_fk FOREIGN KEY (CheckoutID) REFERENCES Checkout (checkout_id);
+>>>>>>> c7f463c (update dtb)
 
 -- ALTER TABLE Checkout ADD CONSTRAINT checkout_pet_fk FOREIGN KEY (PetID) REFERENCES Pet (petid);
 

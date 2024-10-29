@@ -26,8 +26,12 @@ type AppointmentServiceInterface interface {
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 // creating an appointment by time slot available of doctor
 func (s *AppointmentService) CreateAppointment(ctx *gin.Context, req createAppointmentRequest) (*createAppointmentResponse, error) {
+=======
+// func (s *AppointmentService) CreateAppointment(ctx *gin.Context, req createAppointmentRequest) (createAppointmentResponse, error) {
+>>>>>>> c7f463c (update dtb)
 =======
 // func (s *AppointmentService) CreateAppointment(ctx *gin.Context, req createAppointmentRequest) (createAppointmentResponse, error) {
 >>>>>>> c7f463c (update dtb)
