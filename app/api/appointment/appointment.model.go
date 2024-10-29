@@ -15,6 +15,7 @@ type AppointmentApi struct {
 }
 
 type createAppointmentRequest struct {
+<<<<<<< HEAD
 	PetID      int64  `json:"pet_id"`
 	DoctorID   int64  `json:"doctor_id"`
 	Date       string `json:"date"`
@@ -48,4 +49,21 @@ type AppointmentWithDetails struct {
 
 type updateAppointmentStatusRequest struct {
 	Status string `json:"status"`
+=======
+	petID      int64  `json:"petid"`
+	doctorID   int64  `json:"doctorid"`
+	date       string `json:"date"`
+	timeSlotID int64  `json:"timeSlotID"`
+	serviceID  int64  `json:"serviceID"`
+	note       string `json:"note"`
+}
+
+type createAppointmentResponse struct {
+	id          int64  `json:"id"`
+	serviceName string `json:"serviceName"`
+	date        string `json:"date"`
+	timeSlot    string `json:"timeSlot"`
+	doctorName  string `json:"doctorName"`
+	note        string `json:"note"`
+>>>>>>> c7f463c (update dtb)
 }

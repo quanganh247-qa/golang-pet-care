@@ -14,8 +14,12 @@ type AppointmentServiceInterface interface {
 	GetAppointmentsOfDoctorService(ctx *gin.Context, doctorID int64) ([]AppointmentWithDetails, error)
 }
 
+<<<<<<< HEAD
 // creating an appointment by time slot available of doctor
 func (s *AppointmentService) CreateAppointment(ctx *gin.Context, req createAppointmentRequest) (*createAppointmentResponse, error) {
+=======
+// func (s *AppointmentService) CreateAppointment(ctx *gin.Context, req createAppointmentRequest) (createAppointmentResponse, error) {
+>>>>>>> c7f463c (update dtb)
 
 <<<<<<< HEAD
 <<<<<<< HEAD

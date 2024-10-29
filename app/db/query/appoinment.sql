@@ -1,4 +1,5 @@
 -- name: CreateAppointment :one
+<<<<<<< HEAD
 INSERT INTO Appointment (
     doctor_id,
     petid,
@@ -34,3 +35,14 @@ FROM Appointment a
 WHERE d.id = $1
 AND LOWER(a.status) <> 'completed'
 ORDER BY ts.start_time ASC;
+=======
+INSERT INTO Appointments (
+    doctor_id,
+    patient_id,
+    ServiceID,
+    time_slot_id
+    status
+) VALUES (
+    $1, $2, $3, $4, 'pending'
+) RETURNING *;
+>>>>>>> c7f463c (update dtb)
