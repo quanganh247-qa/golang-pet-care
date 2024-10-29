@@ -45,6 +45,7 @@ CREATE TABLE Pet (
 CREATE TABLE Vaccination (
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> 6e40c8e (update service api)
   vaccinationID BIGSERIAL PRIMARY KEY,
@@ -77,6 +78,37 @@ CREATE TABLE ActivityLog (
   startTime timestamp NOT NULL,
   duration INTERVAL,
   notes TEXT
+=======
+  VaccinationID BIGSERIAL PRIMARY KEY,
+  PetID BIGINT,
+  VaccineName VARCHAR(100) NOT NULL,
+  DateAdministered timestamptz NOT NULL,
+  NextDueDate timestamptz,
+  VaccineProvider VARCHAR(100),
+  BatchNumber VARCHAR(50),
+  Notes TEXT
+);
+
+CREATE TABLE FeedingSchedule (
+  FeedingScheduleID BIGSERIAL PRIMARY KEY,
+  PetID BIGINT,
+  MealTime TIME NOT NULL,
+  FoodType VARCHAR(100) NOT NULL,
+  Quantity DECIMAL(5,2) NOT NULL,
+  Frequency VARCHAR(50) NOT NULL,
+  LastFed timestamptz,
+  Notes TEXT,
+  IsActive BOOLEAN DEFAULT true
+);
+
+CREATE TABLE ActivityLog (
+  LogID BIGSERIAL PRIMARY KEY,
+  PetID BIGINT,
+  ActivityType VARCHAR(50) NOT NULL,
+  StartTime timestamptz NOT NULL,
+  Duration INTERVAL,
+  Notes TEXT
+>>>>>>> 24ea3ee (time slot of doctor api)
 );
 
 CREATE TABLE Reminders (
@@ -128,7 +160,11 @@ CREATE TABLE Reminders (
   PetID BIGINT,
   Title VARCHAR(100) NOT NULL,
   Description TEXT,
+<<<<<<< HEAD
   DueDate timestamp NOT NULL,
+=======
+  DueDate timestamptz NOT NULL,
+>>>>>>> 24ea3ee (time slot of doctor api)
   RepeatInterval VARCHAR(50),
   IsCompleted BOOLEAN DEFAULT false,
   NotificationSent BOOLEAN DEFAULT false
@@ -275,6 +311,7 @@ CREATE TABLE Doctors (
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 
 
@@ -282,6 +319,11 @@ CREATE TABLE Doctors (
 >>>>>>> 24ea3ee (time slot of doctor api)
 =======
 >>>>>>> 4b8e9b6 (update appointment api)
+=======
+
+
+
+>>>>>>> 24ea3ee (time slot of doctor api)
 CREATE TABLE TimeSlots (
   id BIGSERIAL PRIMARY KEY,
   doctor_id BIGINT NOT NULL,
@@ -299,8 +341,11 @@ CREATE TABLE DoctorSchedules (
   start_time timestamp NOT NULL,
   end_time timestamp NOT NULL,
 <<<<<<< HEAD
+<<<<<<< HEAD
   start_time timestamp NOT NULL,
   end_time timestamp NOT NULL,
+=======
+>>>>>>> 24ea3ee (time slot of doctor api)
 =======
 >>>>>>> 24ea3ee (time slot of doctor api)
   is_active BOOLEAN DEFAULT true,
@@ -351,6 +396,7 @@ ALTER TABLE DoctorSchedules ADD CONSTRAINT fk_schedule_doctor FOREIGN KEY (docto
 
 -- ALTER TABLE DoctorTimeOff ADD CONSTRAINT fk_timeoff_doctor FOREIGN KEY (doctor_id) REFERENCES Doctors (id);
 <<<<<<< HEAD
+<<<<<<< HEAD
 -- ALTER TABLE DoctorTimeOff ADD CONSTRAINT fk_timeoff_doctor FOREIGN KEY (doctor_id) REFERENCES Doctors (id);
 
 -- ALTER TABLE Appointment ADD CONSTRAINT fk_appointment_timeslot FOREIGN KEY (time_slot_id) REFERENCES TimeSlots (id);
@@ -382,3 +428,7 @@ CREATE TABLE token_info (
 =======
 );
 >>>>>>> e52a297 (google calendar api)
+=======
+
+-- ALTER TABLE Appointment ADD CONSTRAINT fk_appointment_timeslot FOREIGN KEY (time_slot_id) REFERENCES TimeSlots (id);
+>>>>>>> 24ea3ee (time slot of doctor api)

@@ -286,6 +286,9 @@ INSERT INTO DoctorSchedules (
 type InsertDoctorScheduleParams struct {
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 24ea3ee (time slot of doctor api)
 =======
 >>>>>>> 24ea3ee (time slot of doctor api)
 	DoctorID        int64            `json:"doctor_id"`
@@ -295,6 +298,7 @@ type InsertDoctorScheduleParams struct {
 	IsActive        pgtype.Bool      `json:"is_active"`
 	MaxAppointments pgtype.Int4      `json:"max_appointments"`
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 	DoctorID        int64       `json:"doctor_id"`
 	DayOfWeek       pgtype.Int4 `json:"day_of_week"`
@@ -303,6 +307,8 @@ type InsertDoctorScheduleParams struct {
 	IsActive        pgtype.Bool `json:"is_active"`
 	MaxAppointments pgtype.Int4 `json:"max_appointments"`
 >>>>>>> 1ada478 (get doctor api)
+=======
+>>>>>>> 24ea3ee (time slot of doctor api)
 =======
 >>>>>>> 24ea3ee (time slot of doctor api)
 }

@@ -40,6 +40,7 @@ UPDATE TimeSlots
 SET is_active = $1
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> 59d4ef2 (modify type of filed in dtb)
 WHERE id = $2;
@@ -60,3 +61,6 @@ WHERE id = $2;
 =======
     ts.id = $1;  -- Replace $1 with the specific time slot ID you are querying for
 >>>>>>> 59d4ef2 (modify type of filed in dtb)
+=======
+WHERE id = $2;
+>>>>>>> 24ea3ee (time slot of doctor api)

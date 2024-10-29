@@ -24,12 +24,16 @@ type UserControllerInterface interface {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 24ea3ee (time slot of doctor api)
 =======
 >>>>>>> 24ea3ee (time slot of doctor api)
 	insertTimeSlots(ctx *gin.Context)
 	getTimeSlots(ctx *gin.Context)
 	getAllTimeSlots(ctx *gin.Context)
 	updateDoctorAvailableTime(ctx *gin.Context)
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 	insertTokenInfo(ctx *gin.Context)
@@ -42,6 +46,8 @@ type UserControllerInterface interface {
 >>>>>>> e52a297 (google calendar api)
 =======
 >>>>>>> 1ada478 (get doctor api)
+=======
+>>>>>>> 24ea3ee (time slot of doctor api)
 }
 
 func (controller *UserController) createUser(ctx *gin.Context) {
@@ -203,6 +209,9 @@ func (controller *UserController) getDoctor(ctx *gin.Context) {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 24ea3ee (time slot of doctor api)
 =======
 >>>>>>> 24ea3ee (time slot of doctor api)
 
@@ -292,6 +301,7 @@ func (controller *UserController) updateDoctorAvailableTime(ctx *gin.Context) {
 }
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> e52a297 (google calendar api)
 
@@ -322,3 +332,5 @@ func (controller *UserController) insertTokenInfo(ctx *gin.Context) {
 >>>>>>> e52a297 (google calendar api)
 =======
 >>>>>>> 1ada478 (get doctor api)
+=======
+>>>>>>> 24ea3ee (time slot of doctor api)
