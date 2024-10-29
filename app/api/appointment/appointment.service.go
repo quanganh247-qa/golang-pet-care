@@ -1,11 +1,7 @@
 package appointment
 
 import (
-	"fmt"
-
 	"github.com/gin-gonic/gin"
-	"github.com/jackc/pgx/v5/pgtype"
-	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
 )
 
 type AppointmentServiceInterface interface {
@@ -14,9 +10,9 @@ type AppointmentServiceInterface interface {
 	GetAppointmentsOfDoctorService(ctx *gin.Context, doctorID int64) ([]AppointmentWithDetails, error)
 }
 
-// creating an appointment by time slot available of doctor
-func (s *AppointmentService) CreateAppointment(ctx *gin.Context, req createAppointmentRequest) (*createAppointmentResponse, error) {
+// func (s *AppointmentService) CreateAppointment(ctx *gin.Context, req createAppointmentRequest) (createAppointmentResponse, error) {
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -186,6 +182,8 @@ func (s *AppointmentService) GetAppointmentsOfDoctorService(ctx *gin.Context, do
 >>>>>>> 9472ea3 (update dtb)
 =======
 >>>>>>> bb4b692 (update dtb)
+=======
+>>>>>>> 836bb95 (update dtb)
 // }
 =======
 =======
