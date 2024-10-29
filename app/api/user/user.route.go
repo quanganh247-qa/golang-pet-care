@@ -32,11 +32,13 @@ func Routes(routerGroup middleware.RouterGroup) {
 
 		// Doctor
 		authRoute.POST("/create-doctor", userApi.controller.createDoctor)
-		authRoute.POST("/add-schedule", userApi.controller.addSchedule)
+		authRoute.POST("/timeslots", userApi.controller.insertTimeSlots)
 		authRoute.GET("/doctor/:id", userApi.controller.getDoctor)
 
-		// Token info for google calendar
-		authRoute.POST("/token-info", userApi.controller.insertTokenInfo)
+		// Schedule
+		authRoute.GET("/time-slots/:doctor_id", userApi.controller.getTimeSlots)
+		authRoute.GET("/all-time-slots/:doctor_id", userApi.controller.getAllTimeSlots)
+		authRoute.PUT("/update-available/:id", userApi.controller.updateDoctorAvailableTime)
 
 	}
 
