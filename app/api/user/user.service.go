@@ -24,6 +24,10 @@ type UserServiceInterface interface {
 	createDoctorService(ctx *gin.Context, arg InsertDoctorRequest, username string) (*DoctorResponse, error)
 	createDoctorScheduleService(ctx *gin.Context, arg InsertDoctorScheduleRequest, username string) (*DoctorScheduleResponse, error)
 	getDoctorByID(ctx *gin.Context, userID int64) (*DoctorResponse, error)
+	insertTimeSlots(ctx *gin.Context, username string, arg db.InsertTimeslotParams) (*db.Timeslot, error)
+	GetTimeslotsAvailable(ctx *gin.Context, doctorID int64, date string) ([]db.GetTimeslotsAvailableRow, error)
+	GetAllTimeslots(ctx *gin.Context, doctorID int64, date string) ([]db.GetTimeslotsAvailableRow, error)
+	UpdateDoctorAvailable(ctx *gin.Context, time_slot_id int64) error
 }
 
 func (server *UserService) createUserService(ctx *gin.Context, req createUserRequest) (*db.User, error) {
@@ -207,21 +211,13 @@ func (s *UserService) createDoctorScheduleService(ctx *gin.Context, arg InsertDo
 		ctx.JSON(http.StatusBadRequest, "invalid end time")
 		return nil, fmt.Errorf("invalid end time: %w", err)
 	} // time.Time to pgtype.Time
-	pgStartTime := pgtype.Time{
-		Microseconds: int64(startTime.Hour()*3600+startTime.Minute()*60+startTime.Second()) * 1e6,
-		Valid:        true,
-	}
-	pgEndTime := pgtype.Time{
-		Microseconds: int64(endTime.Hour()*3600+endTime.Minute()*60+endTime.Second()) * 1e6,
-		Valid:        true,
-	}
 
 	doctorSchedule, err := s.storeDB.InsertDoctorSchedule(ctx, db.InsertDoctorScheduleParams{
 		DoctorID:        doctor.ID,
 		DayOfWeek:       pgtype.Int4{Int32: arg.Day, Valid: true},
 		MaxAppointments: pgtype.Int4{Int32: arg.MaxAppoin, Valid: true},
-		StartTime:       pgStartTime,
-		EndTime:         pgEndTime,
+		StartTime:       pgtype.Timestamp{Time: startTime, Valid: true},
+		EndTime:         pgtype.Timestamp{Time: endTime, Valid: true},
 	})
 	if err != nil {
 		return nil, fmt.Errorf("failed to create doctor schedule: %w", err)
@@ -260,4 +256,121 @@ func (s *UserService) getDoctorByID(ctx *gin.Context, userID int64) (*DoctorResp
 		Certificate:    doctor.CertificateNumber.String,
 		Bio:            doctor.Bio.String,
 	}, nil
+}
+
+// Time off
+func (s *UserService) insertTimeSlots(ctx *gin.Context, username string, arg db.InsertTimeslotParams) (*db.Timeslot, error) {
+	user, err := s.storeDB.GetUser(ctx, username)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			ctx.JSON(http.StatusNotFound, "user not found")
+			return nil, fmt.Errorf("user not found")
+		}
+		ctx.JSON(http.StatusInternalServerError, "internal server error")
+		return nil, fmt.Errorf("internal server error: %v", err)
+	}
+
+	doctor, err := s.storeDB.GetDoctor(ctx, user.ID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get doctor: %w", err)
+	}
+	arg.DoctorID = doctor.ID
+	timeslot, err := s.storeDB.InsertTimeslot(ctx, arg)
+	if err != nil {
+		return nil, fmt.Errorf("failed to insert timeslot: %w", err)
+	}
+	return &db.Timeslot{
+		ID:        timeslot.ID,
+		DoctorID:  timeslot.DoctorID,
+		StartTime: timeslot.StartTime,
+		EndTime:   timeslot.EndTime,
+		IsActive:  timeslot.IsActive,
+		Day:       timeslot.Day,
+	}, nil
+}
+
+func ConvertStringToPgtypeDate(dateStr string) (pgtype.Date, error) {
+	// Define the date format
+	const dateFormat = "2006-01-02"
+
+	// Parse the string to time.Time
+	parsedTime, err := time.Parse(dateFormat, dateStr)
+	if err != nil {
+		return pgtype.Date{}, fmt.Errorf("failed to parse date: %w", err)
+	}
+	return pgtype.Date{
+		Time:  parsedTime,
+		Valid: true,
+	}, nil
+}
+
+func (s *UserService) GetTimeslotsAvailable(ctx *gin.Context, doctorID int64, date string) ([]db.GetTimeslotsAvailableRow, error) {
+
+	//convert string to pgtype.Date
+	pgDate, err := ConvertStringToPgtypeDate(date)
+	if err != nil {
+		return nil, fmt.Errorf("failed to convert string to pgtype.Date: %w", err)
+	}
+	var listTimeSlot []db.GetTimeslotsAvailableRow
+	timeslots, err := s.storeDB.GetTimeslotsAvailable(ctx, db.GetTimeslotsAvailableParams{
+		ID:  doctorID,
+		Day: pgDate,
+	})
+	if err != nil {
+		return nil, fmt.Errorf("failed to get timeslots available: %w", err)
+	}
+
+	for _, ts := range timeslots {
+		listTimeSlot = append(listTimeSlot, db.GetTimeslotsAvailableRow{
+			StartTime: ts.StartTime,
+			EndTime:   ts.EndTime,
+		})
+	}
+	return listTimeSlot, nil
+}
+
+func (s *UserService) GetAllTimeslots(ctx *gin.Context, doctorID int64, date string) ([]db.GetTimeslotsAvailableRow, error) {
+
+	//convert string to pgtype.Date
+	pgDate, err := ConvertStringToPgtypeDate(date)
+	if err != nil {
+		return nil, fmt.Errorf("failed to convert string to pgtype.Date: %w", err)
+	}
+	var listTimeSlot []db.GetTimeslotsAvailableRow
+	timeslots, err := s.storeDB.GetAllTimeSlots(ctx, db.GetAllTimeSlotsParams{
+		ID:  doctorID,
+		Day: pgDate,
+	})
+	if err != nil {
+		return nil, fmt.Errorf("failed to get timeslots : %w", err)
+	}
+
+	for _, ts := range timeslots {
+		listTimeSlot = append(listTimeSlot, db.GetTimeslotsAvailableRow{
+			StartTime: ts.StartTime,
+			EndTime:   ts.EndTime,
+		})
+	}
+	return listTimeSlot, nil
+}
+
+func (s *UserService) UpdateDoctorAvailable(ctx *gin.Context, timeSlotID int64) error {
+	// Use a transaction to ensure that the update is atomic
+	err := s.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
+		err := q.UpdateDoctorAvailable(ctx, db.UpdateDoctorAvailableParams{
+			IsActive: pgtype.Bool{Bool: false, Valid: true}, // Setting is_active to false
+			ID:       timeSlotID,
+		})
+
+		if err != nil {
+			return fmt.Errorf("failed to update doctor availability: %w", err)
+		}
+		return nil
+	})
+
+	if err != nil {
+		return fmt.Errorf("failed to execute transaction for updating doctor availability: %w", err)
+	}
+
+	return nil // Successfully updated
 }
