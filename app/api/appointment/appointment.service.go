@@ -1,11 +1,7 @@
 package appointment
 
 import (
-	"fmt"
-
 	"github.com/gin-gonic/gin"
-	"github.com/jackc/pgx/v5/pgtype"
-	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
 )
 
 type AppointmentServiceInterface interface {
@@ -14,9 +10,9 @@ type AppointmentServiceInterface interface {
 	GetAppointmentsOfDoctorService(ctx *gin.Context, doctorID int64) ([]AppointmentWithDetails, error)
 }
 
-// creating an appointment by time slot available of doctor
-func (s *AppointmentService) CreateAppointment(ctx *gin.Context, req createAppointmentRequest) (*createAppointmentResponse, error) {
+// func (s *AppointmentService) CreateAppointment(ctx *gin.Context, req createAppointmentRequest) (createAppointmentResponse, error) {
 
+<<<<<<< HEAD
 	println("CreateAppointment", req.TimeSlotID)
 	timeSlot, err := s.storeDB.GetTimeSlotByID(ctx, req.TimeSlotID)
 	if err != nil {
@@ -116,4 +112,6 @@ func (s *AppointmentService) GetAppointmentsOfDoctorService(ctx *gin.Context, do
 // 		return fmt.Errorf("error while updating appointment notification: %w", err)
 // 	}
 // 	return nil
+=======
+>>>>>>> 9472ea3 (update dtb)
 // }
