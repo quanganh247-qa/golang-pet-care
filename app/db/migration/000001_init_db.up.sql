@@ -46,8 +46,8 @@ CREATE TABLE Vaccination (
   VaccinationID BIGSERIAL PRIMARY KEY,
   PetID BIGINT,
   VaccineName VARCHAR(100) NOT NULL,
-  DateAdministered DATE NOT NULL,
-  NextDueDate DATE,
+  DateAdministered timestamptz NOT NULL,
+  NextDueDate timestamptz,
   VaccineProvider VARCHAR(100),
   BatchNumber VARCHAR(50),
   Notes TEXT
@@ -60,7 +60,7 @@ CREATE TABLE FeedingSchedule (
   FoodType VARCHAR(100) NOT NULL,
   Quantity DECIMAL(5,2) NOT NULL,
   Frequency VARCHAR(50) NOT NULL,
-  LastFed TIMESTAMP,
+  LastFed timestamptz,
   Notes TEXT,
   IsActive BOOLEAN DEFAULT true
 );
@@ -69,7 +69,7 @@ CREATE TABLE ActivityLog (
   LogID BIGSERIAL PRIMARY KEY,
   PetID BIGINT,
   ActivityType VARCHAR(50) NOT NULL,
-  StartTime TIMESTAMP NOT NULL,
+  StartTime timestamptz NOT NULL,
   Duration INTERVAL,
   Notes TEXT
 );
@@ -79,7 +79,7 @@ CREATE TABLE Reminders (
   PetID BIGINT,
   Title VARCHAR(100) NOT NULL,
   Description TEXT,
-  DueDate TIMESTAMP NOT NULL,
+  DueDate timestamptz NOT NULL,
   RepeatInterval VARCHAR(50),
   IsCompleted BOOLEAN DEFAULT false,
   NotificationSent BOOLEAN DEFAULT false
@@ -107,7 +107,7 @@ CREATE TABLE Appointment (
   PetID BIGINT,
   DoctorID BIGINT,
   ServiceID BIGINT,
-  Date timestamp NOT NULL,
+  Date timestamptz DEFAULT (now()),
   Status VARCHAR(20),
   Notes TEXT,
   ReminderSent BOOLEAN DEFAULT false,
@@ -118,7 +118,7 @@ CREATE TABLE Checkout (
   CheckoutID BIGSERIAL PRIMARY KEY,
   PetID BIGINT,
   DoctorID BIGINT,
-  Date timestamp NOT NULL,
+  Date timestamptz DEFAULT (now()),
   Total_Amount float8 NOT NULL,
   PaymentStatus VARCHAR(20),
   PaymentMethod VARCHAR(50),
@@ -158,29 +158,27 @@ CREATE TABLE Doctors (
   consultation_fee DECIMAL(10,2)
 );
 
+
+
+
+CREATE TABLE TimeSlots (
+  id BIGSERIAL PRIMARY KEY,
+  doctor_id BIGINT NOT NULL,
+  start_time timestamp NOT NULL,
+  end_time timestamp NOT NULL,
+  is_active BOOLEAN DEFAULT true,
+  day date NOT NULL,
+  FOREIGN KEY (doctor_id) REFERENCES Doctors (id)
+);
+
 CREATE TABLE DoctorSchedules (
   id BIGSERIAL PRIMARY KEY,
   doctor_id BIGINT NOT NULL,
   day_of_week INT,
-  start_time TIME NOT NULL,
-  end_time TIME NOT NULL,
+  start_time timestamp NOT NULL,
+  end_time timestamp NOT NULL,
   is_active BOOLEAN DEFAULT true,
   max_appointments INT DEFAULT 1
-);
-
-CREATE TABLE DoctorTimeOff (
-  id BIGSERIAL PRIMARY KEY,
-  doctor_id BIGINT NOT NULL,
-  start_datetime TIMESTAMP NOT NULL,
-  end_datetime TIMESTAMP NOT NULL,
-  reason TEXT
-);
-
-CREATE TABLE TimeSlots (
-  id BIGSERIAL PRIMARY KEY,
-  start_time TIME NOT NULL,
-  end_time TIME NOT NULL,
-  duration_minutes INT NOT NULL
 );
 
 ALTER TABLE Pet ADD CONSTRAINT pet_users_fk FOREIGN KEY (username) REFERENCES users (username);
@@ -209,6 +207,6 @@ ALTER TABLE Doctors ADD CONSTRAINT fk_doctor_user FOREIGN KEY (user_id) REFERENC
 
 ALTER TABLE DoctorSchedules ADD CONSTRAINT fk_schedule_doctor FOREIGN KEY (doctor_id) REFERENCES Doctors (id);
 
-ALTER TABLE DoctorTimeOff ADD CONSTRAINT fk_timeoff_doctor FOREIGN KEY (doctor_id) REFERENCES Doctors (id);
+-- ALTER TABLE DoctorTimeOff ADD CONSTRAINT fk_timeoff_doctor FOREIGN KEY (doctor_id) REFERENCES Doctors (id);
 
-ALTER TABLE Appointment ADD CONSTRAINT fk_appointment_timeslot FOREIGN KEY (time_slot_id) REFERENCES TimeSlots (id);
+-- ALTER TABLE Appointment ADD CONSTRAINT fk_appointment_timeslot FOREIGN KEY (time_slot_id) REFERENCES TimeSlots (id);

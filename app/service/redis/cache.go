@@ -21,7 +21,8 @@ func (c *ClientType) LoadCacheByKey(key string, result interface{}, duration tim
 }
 
 type userInfo struct {
-	Username int64  `json:"username"`
+	UserID   int64  `json:"userID"`
+	Username string `json:"username"`
 	Email    string `json:"email"`
 	FullName string `json:"fullName"`
 	PlanType string `json:"planType"`
@@ -48,7 +49,8 @@ func (c *ClientType) UserInfoLoadCache(username string) (*userInfo, error) {
 		// err = json.Unmarshal([]byte(userData.))
 
 		userRes := userInfo{
-			Username: userData.ID,
+			UserID:   userData.ID,
+			Username: userData.Username,
 			Email:    userData.Email,
 			FullName: userData.FullName,
 		}
@@ -59,4 +61,19 @@ func (c *ClientType) UserInfoLoadCache(username string) (*userInfo, error) {
 		return &userRes, nil
 	}
 	return &userInformation, nil
+}
+
+func (client *ClientType) RemoveUserInfoCache(username string) {
+	userInfoKey := fmt.Sprintf("%s:%s", USER_INFO_KEY, username)
+	client.RemoveCacheByKey(userInfoKey)
+}
+
+func (client *ClientType) ClearUserInfoCache() {
+	iter := client.RedisClient.Scan(ctxRedis, 0, fmt.Sprintf("%s*", USER_INFO_KEY), 0).Iterator()
+	for iter.Next(ctxRedis) {
+		er := client.RemoveCacheByKey(iter.Val())
+		if er != nil {
+			log.Printf("Error when remove cache for key %s: %v", iter.Val(), er)
+		}
+	}
 }

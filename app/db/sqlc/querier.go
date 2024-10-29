@@ -18,16 +18,20 @@ type Querier interface {
 	DeleteService(ctx context.Context, serviceid int64) error
 	DeleteServiceType(ctx context.Context, typeid int64) error
 	GetActiveDoctors(ctx context.Context, arg GetActiveDoctorsParams) ([]GetActiveDoctorsRow, error)
+	GetAllTimeSlots(ctx context.Context, arg GetAllTimeSlotsParams) ([]GetAllTimeSlotsRow, error)
 	GetAllUsers(ctx context.Context) ([]User, error)
-	GetAvailableTimeSlots(ctx context.Context, arg GetAvailableTimeSlotsParams) ([]Timeslot, error)
 	GetDoctor(ctx context.Context, id int64) (GetDoctorRow, error)
 	GetPetByID(ctx context.Context, petid int64) (Pet, error)
 	GetService(ctx context.Context, serviceid int64) (Service, error)
 	GetServiceType(ctx context.Context, typeid int64) (Servicetype, error)
+	GetTimeslotsAvailable(ctx context.Context, arg GetTimeslotsAvailableParams) ([]GetTimeslotsAvailableRow, error)
 	GetUser(ctx context.Context, username string) (User, error)
 	InsertDoctor(ctx context.Context, arg InsertDoctorParams) (Doctor, error)
 	InsertDoctorSchedule(ctx context.Context, arg InsertDoctorScheduleParams) (Doctorschedule, error)
+	InsertTimeslot(ctx context.Context, arg InsertTimeslotParams) (Timeslot, error)
 	ListPets(ctx context.Context, arg ListPetsParams) ([]Pet, error)
+	// Replace $2 with the specific date (YYYY-MM-DD)
+	UpdateDoctorAvailable(ctx context.Context, arg UpdateDoctorAvailableParams) error
 	UpdatePet(ctx context.Context, arg UpdatePetParams) error
 	UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error)
 	UpdateVerifyEmail(ctx context.Context, arg UpdateVerifyEmailParams) (VerifyEmail, error)

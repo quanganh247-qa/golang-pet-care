@@ -90,20 +90,3 @@ WHERE
 ORDER BY 
   u.full_name;
 
--- name: GetAvailableTimeSlots :many
-SELECT 
-  ts.id,
-  ts.start_time,
-  ts.end_time,
-  ts.duration_minutes
-FROM 
-  TimeSlots ts
-LEFT JOIN 
-  DoctorTimeOff dto ON ts.id = dto.time_slot_id AND dto.doctor_id = $1 AND dto.start_datetime::date = $2::date
-LEFT JOIN 
-  Appointment a ON ts.id = a.time_slot_id AND a.doctor_id = $1 AND a.date::date = $2::date
-WHERE 
-  dto.id IS NULL
-  AND (SELECT COUNT(*) FROM Appointment a2 WHERE a2.time_slot_id = ts.id AND a2.doctor_id = $1 AND a2.date::date = $2::date) < (SELECT max_appointments FROM DoctorSchedules ds WHERE ds.doctor_id = $1 AND ds.day_of_week = EXTRACT(DOW FROM $2::date))
-ORDER BY 
-  ts.start_time;

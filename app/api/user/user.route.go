@@ -3,7 +3,6 @@ package user
 import (
 	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
 	"github.com/quanganh247-qa/go-blog-be/app/middleware"
-	"github.com/quanganh247-qa/go-blog-be/app/service/rabbitmq"
 )
 
 func Routes(routerGroup middleware.RouterGroup) {
@@ -15,8 +14,8 @@ func Routes(routerGroup middleware.RouterGroup) {
 	userApi := &UserApi{
 		&UserController{
 			service: &UserService{
-				storeDB:    db.StoreDB, // This should refer to the actual instance
-				emailQueue: rabbitmq.Client.Email,
+				storeDB: db.StoreDB, // This should refer to the actual instance
+				// emailQueue: rabbitmq.Client.Email,
 			},
 		},
 	}
@@ -31,8 +30,13 @@ func Routes(routerGroup middleware.RouterGroup) {
 
 		// Doctor
 		authRoute.POST("/create-doctor", userApi.controller.createDoctor)
-		authRoute.POST("/add-schedule", userApi.controller.addSchedule)
+		authRoute.POST("/timeslots", userApi.controller.insertTimeSlots)
 		authRoute.GET("/doctor/:id", userApi.controller.getDoctor)
+
+		// Schedule
+		authRoute.GET("/time-slots/:doctor_id", userApi.controller.getTimeSlots)
+		authRoute.GET("/all-time-slots/:doctor_id", userApi.controller.getAllTimeSlots)
+		authRoute.PUT("/update-available/:id", userApi.controller.updateDoctorAvailableTime)
 
 	}
 

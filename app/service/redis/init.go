@@ -38,7 +38,7 @@ func (client *ClientType) Set(ctx context.Context, key string, value interface{}
 	return nil
 }
 
-func (client *ClientType) get(ctx context.Context, key string, result interface{}) error {
+func (client *ClientType) Get(ctx context.Context, key string, result interface{}) error {
 	valueRe := client.RedisClient.Get(ctx, key)
 	if valueRe.Err() != nil {
 		return valueRe.Err()

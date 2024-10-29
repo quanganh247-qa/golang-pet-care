@@ -152,55 +152,6 @@ func (q *Queries) GetAllUsers(ctx context.Context) ([]User, error) {
 	return items, nil
 }
 
-const getAvailableTimeSlots = `-- name: GetAvailableTimeSlots :many
-SELECT 
-  ts.id,
-  ts.start_time,
-  ts.end_time,
-  ts.duration_minutes
-FROM 
-  TimeSlots ts
-LEFT JOIN 
-  DoctorTimeOff dto ON ts.id = dto.time_slot_id AND dto.doctor_id = $1 AND dto.start_datetime::date = $2::date
-LEFT JOIN 
-  Appointment a ON ts.id = a.time_slot_id AND a.doctor_id = $1 AND a.date::date = $2::date
-WHERE 
-  dto.id IS NULL
-  AND (SELECT COUNT(*) FROM Appointment a2 WHERE a2.time_slot_id = ts.id AND a2.doctor_id = $1 AND a2.date::date = $2::date) < (SELECT max_appointments FROM DoctorSchedules ds WHERE ds.doctor_id = $1 AND ds.day_of_week = EXTRACT(DOW FROM $2::date))
-ORDER BY 
-  ts.start_time
-`
-
-type GetAvailableTimeSlotsParams struct {
-	DoctorID int64       `json:"doctor_id"`
-	Column2  pgtype.Date `json:"column_2"`
-}
-
-func (q *Queries) GetAvailableTimeSlots(ctx context.Context, arg GetAvailableTimeSlotsParams) ([]Timeslot, error) {
-	rows, err := q.db.Query(ctx, getAvailableTimeSlots, arg.DoctorID, arg.Column2)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	items := []Timeslot{}
-	for rows.Next() {
-		var i Timeslot
-		if err := rows.Scan(
-			&i.ID,
-			&i.StartTime,
-			&i.EndTime,
-			&i.DurationMinutes,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
-}
-
 const getDoctor = `-- name: GetDoctor :one
 SELECT 
   d.id,
@@ -333,12 +284,12 @@ INSERT INTO DoctorSchedules (
 `
 
 type InsertDoctorScheduleParams struct {
-	DoctorID        int64       `json:"doctor_id"`
-	DayOfWeek       pgtype.Int4 `json:"day_of_week"`
-	StartTime       pgtype.Time `json:"start_time"`
-	EndTime         pgtype.Time `json:"end_time"`
-	IsActive        pgtype.Bool `json:"is_active"`
-	MaxAppointments pgtype.Int4 `json:"max_appointments"`
+	DoctorID        int64            `json:"doctor_id"`
+	DayOfWeek       pgtype.Int4      `json:"day_of_week"`
+	StartTime       pgtype.Timestamp `json:"start_time"`
+	EndTime         pgtype.Timestamp `json:"end_time"`
+	IsActive        pgtype.Bool      `json:"is_active"`
+	MaxAppointments pgtype.Int4      `json:"max_appointments"`
 }
 
 func (q *Queries) InsertDoctorSchedule(ctx context.Context, arg InsertDoctorScheduleParams) (Doctorschedule, error) {
