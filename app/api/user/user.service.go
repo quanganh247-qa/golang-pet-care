@@ -94,7 +94,7 @@ func (server *UserService) getAllUsersService(ctx *gin.Context) ([]UserResponse,
 			Username:  u.Username,
 			FullName:  u.FullName,
 			Email:     u.Email,
-			CreatedAt: u.CreatedAt,
+			CreatedAt: u.CreatedAt.Time,
 		})
 	}
 	return listUser, nil

@@ -198,7 +198,7 @@ ALTER TABLE Appointment ADD CONSTRAINT appointment_pet_fk FOREIGN KEY (petid) RE
 
 ALTER TABLE Appointment ADD CONSTRAINT appointment_service_fk FOREIGN KEY (service_id) REFERENCES Service (ServiceID);
 
-ALTER TABLE Checkout ADD CONSTRAINT checkout_pet_fk FOREIGN KEY (PetID) REFERENCES Pet (petid);
+-- ALTER TABLE Checkout ADD CONSTRAINT checkout_pet_fk FOREIGN KEY (PetID) REFERENCES Pet (petid);
 
 ALTER TABLE CheckoutService ADD CONSTRAINT cs_checkout_fk FOREIGN KEY (CheckoutID) REFERENCES Checkout (checkout_id);
 
