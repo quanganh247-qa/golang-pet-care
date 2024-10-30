@@ -37,6 +37,7 @@ type Querier interface {
 >>>>>>> d722812 (time slot of doctor api)
 	GetAllTimeSlots(ctx context.Context, arg GetAllTimeSlotsParams) ([]GetAllTimeSlotsRow, error)
 	GetAllUsers(ctx context.Context) ([]User, error)
+	GetAppointmentsOfDoctor(ctx context.Context, id int64) ([]GetAppointmentsOfDoctorRow, error)
 	GetDoctor(ctx context.Context, id int64) (GetDoctorRow, error)
 	GetFeedingScheduleByPetID(ctx context.Context, petid pgtype.Int8) ([]Feedingschedule, error)
 	GetPetByID(ctx context.Context, petid int64) (Pet, error)
@@ -50,8 +51,10 @@ type Querier interface {
 	InsertDoctorSchedule(ctx context.Context, arg InsertDoctorScheduleParams) (Doctorschedule, error)
 	InsertTimeslot(ctx context.Context, arg InsertTimeslotParams) (Timeslot, error)
 	ListPets(ctx context.Context, arg ListPetsParams) ([]Pet, error)
+	UpdateAppointmentStatus(ctx context.Context, arg UpdateAppointmentStatusParams) error
 	// Replace $2 with the specific date (YYYY-MM-DD)
 	UpdateDoctorAvailable(ctx context.Context, arg UpdateDoctorAvailableParams) error
+	UpdateNotification(ctx context.Context, appointmentID int64) error
 	UpdatePet(ctx context.Context, arg UpdatePetParams) error
 	UpdateService(ctx context.Context, arg UpdateServiceParams) error
 	UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error)

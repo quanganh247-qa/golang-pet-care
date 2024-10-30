@@ -20,7 +20,7 @@ INSERT INTO Appointment (
     status
 ) VALUES (
     $1, $2, $3, $4, 'pending'
-) RETURNING appointment_id, petid, doctor_id, service_id, date, status, notes, reminder_send, time_slot_id
+) RETURNING appointment_id, petid, doctor_id, service_id, date, status, notes, reminder_send, time_slot_id, created_at
 `
 
 type CreateAppointmentParams struct {
@@ -48,6 +48,100 @@ func (q *Queries) CreateAppointment(ctx context.Context, arg CreateAppointmentPa
 		&i.Notes,
 		&i.ReminderSend,
 		&i.TimeSlotID,
+		&i.CreatedAt,
 	)
 	return i, err
+}
+
+const getAppointmentsOfDoctor = `-- name: GetAppointmentsOfDoctor :many
+SELECT appointment_id, petid, doctor_id, service_id, date, status, notes, reminder_send, time_slot_id, created_at, id, user_id, specialization, years_of_experience, education, certificate_number, bio, consultation_fee FROM Appointment as a
+left join Doctors as d on a.doctor_id = d.id
+WHERE d.id = $1 and a.status <> 'completed'
+`
+
+type GetAppointmentsOfDoctorRow struct {
+	AppointmentID     int64            `json:"appointment_id"`
+	Petid             pgtype.Int8      `json:"petid"`
+	DoctorID          pgtype.Int8      `json:"doctor_id"`
+	ServiceID         pgtype.Int8      `json:"service_id"`
+	Date              pgtype.Timestamp `json:"date"`
+	Status            pgtype.Text      `json:"status"`
+	Notes             pgtype.Text      `json:"notes"`
+	ReminderSend      pgtype.Bool      `json:"reminder_send"`
+	TimeSlotID        pgtype.Int8      `json:"time_slot_id"`
+	CreatedAt         pgtype.Timestamp `json:"created_at"`
+	ID                pgtype.Int8      `json:"id"`
+	UserID            pgtype.Int8      `json:"user_id"`
+	Specialization    pgtype.Text      `json:"specialization"`
+	YearsOfExperience pgtype.Int4      `json:"years_of_experience"`
+	Education         pgtype.Text      `json:"education"`
+	CertificateNumber pgtype.Text      `json:"certificate_number"`
+	Bio               pgtype.Text      `json:"bio"`
+	ConsultationFee   pgtype.Numeric   `json:"consultation_fee"`
+}
+
+func (q *Queries) GetAppointmentsOfDoctor(ctx context.Context, id int64) ([]GetAppointmentsOfDoctorRow, error) {
+	rows, err := q.db.Query(ctx, getAppointmentsOfDoctor, id)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetAppointmentsOfDoctorRow{}
+	for rows.Next() {
+		var i GetAppointmentsOfDoctorRow
+		if err := rows.Scan(
+			&i.AppointmentID,
+			&i.Petid,
+			&i.DoctorID,
+			&i.ServiceID,
+			&i.Date,
+			&i.Status,
+			&i.Notes,
+			&i.ReminderSend,
+			&i.TimeSlotID,
+			&i.CreatedAt,
+			&i.ID,
+			&i.UserID,
+			&i.Specialization,
+			&i.YearsOfExperience,
+			&i.Education,
+			&i.CertificateNumber,
+			&i.Bio,
+			&i.ConsultationFee,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const updateAppointmentStatus = `-- name: UpdateAppointmentStatus :exec
+UPDATE Appointment
+SET status = $2
+WHERE appointment_id = $1
+`
+
+type UpdateAppointmentStatusParams struct {
+	AppointmentID int64       `json:"appointment_id"`
+	Status        pgtype.Text `json:"status"`
+}
+
+func (q *Queries) UpdateAppointmentStatus(ctx context.Context, arg UpdateAppointmentStatusParams) error {
+	_, err := q.db.Exec(ctx, updateAppointmentStatus, arg.AppointmentID, arg.Status)
+	return err
+}
+
+const updateNotification = `-- name: UpdateNotification :exec
+UPDATE Appointment
+SET reminder_send = true
+WHERE appointment_id = $1
+`
+
+func (q *Queries) UpdateNotification(ctx context.Context, appointmentID int64) error {
+	_, err := q.db.Exec(ctx, updateNotification, appointmentID)
+	return err
 }
