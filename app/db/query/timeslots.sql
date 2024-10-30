@@ -39,3 +39,13 @@ WHERE
 UPDATE TimeSlots
 SET is_active = $1
 WHERE id = $2;
+
+-- name: GetTimeSlotByID :one
+SELECT 
+    ts.doctor_id ,
+    ts.start_time,
+    ts.end_time
+FROM
+    TimeSlots ts
+WHERE
+    ts.id = $1;  -- Replace $1 with the specific time slot ID you are querying for

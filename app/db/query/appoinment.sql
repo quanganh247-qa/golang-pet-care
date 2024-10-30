@@ -1,9 +1,9 @@
 -- name: CreateAppointment :one
-INSERT INTO Appointments (
+INSERT INTO Appointment (
     doctor_id,
-    patient_id,
-    ServiceID,
-    time_slot_id
+    petid,
+    service_id,
+    time_slot_id,
     status
 ) VALUES (
     $1, $2, $3, $4, 'pending'

@@ -20,26 +20,26 @@ type Activitylog struct {
 }
 
 type Appointment struct {
-	Appointmentid int64              `json:"appointmentid"`
+	AppointmentID int64              `json:"appointment_id"`
 	Petid         pgtype.Int8        `json:"petid"`
-	Doctorid      pgtype.Int8        `json:"doctorid"`
-	Serviceid     pgtype.Int8        `json:"serviceid"`
+	DoctorID      pgtype.Int8        `json:"doctor_id"`
+	ServiceID     pgtype.Int8        `json:"service_id"`
 	Date          pgtype.Timestamptz `json:"date"`
 	Status        pgtype.Text        `json:"status"`
 	Notes         pgtype.Text        `json:"notes"`
-	Remindersent  pgtype.Bool        `json:"remindersent"`
+	ReminderSend  pgtype.Bool        `json:"reminder_send"`
 	TimeSlotID    pgtype.Int8        `json:"time_slot_id"`
 }
 
 type Checkout struct {
-	Checkoutid    int64              `json:"checkoutid"`
+	CheckoutID    int64              `json:"checkout_id"`
 	Petid         pgtype.Int8        `json:"petid"`
-	Doctorid      pgtype.Int8        `json:"doctorid"`
+	DoctorID      pgtype.Int8        `json:"doctor_id"`
 	Date          pgtype.Timestamptz `json:"date"`
-	TotalAmount   float64            `json:"total_amount"`
-	Paymentstatus pgtype.Text        `json:"paymentstatus"`
-	Paymentmethod pgtype.Text        `json:"paymentmethod"`
-	Note          pgtype.Text        `json:"note"`
+	TotalTmount   float64            `json:"total_tmount"`
+	PaymentStatus pgtype.Text        `json:"payment_status"`
+	PaymentMethod pgtype.Text        `json:"payment_method"`
+	Notes         pgtype.Text        `json:"notes"`
 }
 
 type Checkoutservice struct {
