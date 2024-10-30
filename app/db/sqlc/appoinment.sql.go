@@ -21,10 +21,14 @@ INSERT INTO Appointment (
 ) VALUES (
     $1, $2, $3, $4, 'pending'
 <<<<<<< HEAD
+<<<<<<< HEAD
 ) RETURNING appointment_id, petid, doctor_id, service_id, date, status, notes, reminder_send, time_slot_id, created_at
 =======
 ) RETURNING appointment_id, petid, doctor_id, service_id, date, status, notes, reminder_send, time_slot_id
 >>>>>>> 59d4ef2 (modify type of filed in dtb)
+=======
+) RETURNING appointment_id, petid, doctor_id, service_id, date, status, notes, reminder_send, time_slot_id, created_at
+>>>>>>> 7cfffa9 (update dtb and appointment)
 `
 
 type CreateAppointmentParams struct {
@@ -53,11 +57,15 @@ func (q *Queries) CreateAppointment(ctx context.Context, arg CreateAppointmentPa
 		&i.ReminderSend,
 		&i.TimeSlotID,
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 7cfffa9 (update dtb and appointment)
 		&i.CreatedAt,
 	)
 	return i, err
 }
 
+<<<<<<< HEAD
 const getAppointmentsOfDoctorWithDetails = `-- name: GetAppointmentsOfDoctorWithDetails :many
 SELECT 
     a.appointment_id as appointment_id,
@@ -85,10 +93,42 @@ type GetAppointmentsOfDoctorWithDetailsRow struct {
 
 func (q *Queries) GetAppointmentsOfDoctorWithDetails(ctx context.Context, id int64) ([]GetAppointmentsOfDoctorWithDetailsRow, error) {
 	rows, err := q.db.Query(ctx, getAppointmentsOfDoctorWithDetails, id)
+=======
+const getAppointmentsOfDoctor = `-- name: GetAppointmentsOfDoctor :many
+SELECT appointment_id, petid, doctor_id, service_id, date, status, notes, reminder_send, time_slot_id, created_at, id, user_id, specialization, years_of_experience, education, certificate_number, bio, consultation_fee FROM Appointment as a
+left join Doctors as d on a.doctor_id = d.id
+WHERE d.id = $1 and a.status <> 'completed'
+`
+
+type GetAppointmentsOfDoctorRow struct {
+	AppointmentID     int64            `json:"appointment_id"`
+	Petid             pgtype.Int8      `json:"petid"`
+	DoctorID          pgtype.Int8      `json:"doctor_id"`
+	ServiceID         pgtype.Int8      `json:"service_id"`
+	Date              pgtype.Timestamp `json:"date"`
+	Status            pgtype.Text      `json:"status"`
+	Notes             pgtype.Text      `json:"notes"`
+	ReminderSend      pgtype.Bool      `json:"reminder_send"`
+	TimeSlotID        pgtype.Int8      `json:"time_slot_id"`
+	CreatedAt         pgtype.Timestamp `json:"created_at"`
+	ID                pgtype.Int8      `json:"id"`
+	UserID            pgtype.Int8      `json:"user_id"`
+	Specialization    pgtype.Text      `json:"specialization"`
+	YearsOfExperience pgtype.Int4      `json:"years_of_experience"`
+	Education         pgtype.Text      `json:"education"`
+	CertificateNumber pgtype.Text      `json:"certificate_number"`
+	Bio               pgtype.Text      `json:"bio"`
+	ConsultationFee   pgtype.Numeric   `json:"consultation_fee"`
+}
+
+func (q *Queries) GetAppointmentsOfDoctor(ctx context.Context, id int64) ([]GetAppointmentsOfDoctorRow, error) {
+	rows, err := q.db.Query(ctx, getAppointmentsOfDoctor, id)
+>>>>>>> 7cfffa9 (update dtb and appointment)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
+<<<<<<< HEAD
 	items := []GetAppointmentsOfDoctorWithDetailsRow{}
 	for rows.Next() {
 		var i GetAppointmentsOfDoctorWithDetailsRow
@@ -98,6 +138,30 @@ func (q *Queries) GetAppointmentsOfDoctorWithDetails(ctx context.Context, id int
 			&i.ServiceName,
 			&i.StartTime,
 			&i.EndTime,
+=======
+	items := []GetAppointmentsOfDoctorRow{}
+	for rows.Next() {
+		var i GetAppointmentsOfDoctorRow
+		if err := rows.Scan(
+			&i.AppointmentID,
+			&i.Petid,
+			&i.DoctorID,
+			&i.ServiceID,
+			&i.Date,
+			&i.Status,
+			&i.Notes,
+			&i.ReminderSend,
+			&i.TimeSlotID,
+			&i.CreatedAt,
+			&i.ID,
+			&i.UserID,
+			&i.Specialization,
+			&i.YearsOfExperience,
+			&i.Education,
+			&i.CertificateNumber,
+			&i.Bio,
+			&i.ConsultationFee,
+>>>>>>> 7cfffa9 (update dtb and appointment)
 		); err != nil {
 			return nil, err
 		}
@@ -135,8 +199,11 @@ func (q *Queries) UpdateNotification(ctx context.Context, appointmentID int64) e
 	_, err := q.db.Exec(ctx, updateNotification, appointmentID)
 	return err
 }
+<<<<<<< HEAD
 =======
 	)
 	return i, err
 }
 >>>>>>> 59d4ef2 (modify type of filed in dtb)
+=======
+>>>>>>> 7cfffa9 (update dtb and appointment)

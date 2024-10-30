@@ -11,10 +11,14 @@ import (
 type AppointmentServiceInterface interface {
 	CreateAppointment(ctx *gin.Context, req createAppointmentRequest) (*createAppointmentResponse, error)
 <<<<<<< HEAD
+<<<<<<< HEAD
 	UpdateAppointmentStatus(ctx *gin.Context, req updateAppointmentStatusRequest, id int64) error
 	GetAppointmentsOfDoctorService(ctx *gin.Context, doctorID int64) ([]AppointmentWithDetails, error)
 =======
 >>>>>>> 323513c (appointment api)
+=======
+	UpdateAppointmentStatus(ctx *gin.Context, req updateAppointmentStatusRequest, id int64) error
+>>>>>>> 7cfffa9 (update dtb and appointment)
 }
 
 <<<<<<< HEAD
@@ -62,9 +66,17 @@ func (s *AppointmentService) CreateAppointment(ctx *gin.Context, req createAppoi
 // creating an appointment by time slot available of doctor
 func (s *AppointmentService) CreateAppointment(ctx *gin.Context, req createAppointmentRequest) (*createAppointmentResponse, error) {
 
+<<<<<<< HEAD
 	timeSlot, err := s.storeDB.GetTimeSlotByID(ctx, req.timeSlotID)
 >>>>>>> 59d4ef2 (modify type of filed in dtb)
+<<<<<<< HEAD
 >>>>>>> a1c3177 (modify type of filed in dtb)
+=======
+=======
+	println("CreateAppointment", req.TimeSlotID)
+	timeSlot, err := s.storeDB.GetTimeSlotByID(ctx, req.TimeSlotID)
+>>>>>>> 7cfffa9 (update dtb and appointment)
+>>>>>>> 940e5bf (update dtb and appointment)
 	if err != nil {
 		return nil, fmt.Errorf("error while getting time slot: %w", err)
 	}
@@ -83,8 +95,11 @@ func (s *AppointmentService) CreateAppointment(ctx *gin.Context, req createAppoi
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> a1c3177 (modify type of filed in dtb)
+=======
+>>>>>>> 940e5bf (update dtb and appointment)
 		Petid:      pgtype.Int8{Int64: req.PetID, Valid: true},
 		ServiceID:  pgtype.Int8{Int64: req.ServiceID, Valid: true},
 		TimeSlotID: pgtype.Int8{Int64: req.TimeSlotID, Valid: true},
@@ -121,7 +136,15 @@ func (s *AppointmentService) CreateAppointment(ctx *gin.Context, req createAppoi
 >>>>>>> 430a2a2 (update dtb and appointment)
 =======
 >>>>>>> 59d4ef2 (modify type of filed in dtb)
+<<<<<<< HEAD
 >>>>>>> a1c3177 (modify type of filed in dtb)
+=======
+=======
+		Petid:      pgtype.Int8{Int64: req.PetID, Valid: true},
+		ServiceID:  pgtype.Int8{Int64: req.ServiceID, Valid: true},
+		TimeSlotID: pgtype.Int8{Int64: req.TimeSlotID, Valid: true},
+>>>>>>> 7cfffa9 (update dtb and appointment)
+>>>>>>> 940e5bf (update dtb and appointment)
 	})
 	if err != nil {
 		return nil, fmt.Errorf("error while creating appointment: %w", err)
@@ -175,8 +198,11 @@ func (s *AppointmentService) CreateAppointment(ctx *gin.Context, req createAppoi
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> a1c3177 (modify type of filed in dtb)
+=======
+>>>>>>> 940e5bf (update dtb and appointment)
 	resTimeSlot := timeslot{
 		StartTime: timeSlot.StartTime.Time.Format("2006-01-02 15:04:05"),
 		EndTime:   timeSlot.EndTime.Time.Format("2006-01-02 15:04:05"),
@@ -270,10 +296,14 @@ func (s *AppointmentService) GetAppointmentsOfDoctorService(ctx *gin.Context, do
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 940e5bf (update dtb and appointment)
 =======
 	resTimeSlot := timeslot{
 		StartTime: timeSlot.StartTime.Time.Format("2006-01-02 15:04:05"),
 		EndTime:   timeSlot.EndTime.Time.Format("2006-01-02 15:04:05"),
+<<<<<<< HEAD
 >>>>>>> 9c7c7b8 (update dtb and appointment)
 	}
 
@@ -516,17 +546,41 @@ func (s *AppointmentService) GetAppointmentsOfDoctorService(ctx *gin.Context, do
 // }
 >>>>>>> 7697b39 (update appointment api)
 =======
+=======
+>>>>>>> 7cfffa9 (update dtb and appointment)
+>>>>>>> 940e5bf (update dtb and appointment)
 	}
 
 	return &createAppointmentResponse{
-		id:          appointment.AppointmentID,
-		doctorName:  doctor.Name,
-		petName:     pet.Name,
-		serviceName: service.Name,
-		timeSlot:    resTimeSlot,
-		note:        req.note,
+		ID:          appointment.AppointmentID,
+		DoctorName:  doctor.Name,
+		PetName:     pet.Name,
+		ServiceName: service.Name,
+		TimeSlot:    resTimeSlot,
+		Note:        req.Note,
 	}, nil
 
 }
+<<<<<<< HEAD
 >>>>>>> 59d4ef2 (modify type of filed in dtb)
+<<<<<<< HEAD
 >>>>>>> a1c3177 (modify type of filed in dtb)
+=======
+=======
+
+func (s *AppointmentService) UpdateAppointmentStatus(ctx *gin.Context, req updateAppointmentStatusRequest, id int64) error {
+	fmt.Println("UpdateAppointmentStatus", req.Status, id)
+
+	err := s.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
+		return q.UpdateAppointmentStatus(ctx, db.UpdateAppointmentStatusParams{
+			Status:        pgtype.Text{String: req.Status, Valid: true},
+			AppointmentID: id,
+		})
+	})
+	if err != nil {
+		return fmt.Errorf("error while updating appointment status: %w", err)
+	}
+	return nil
+}
+>>>>>>> 7cfffa9 (update dtb and appointment)
+>>>>>>> 940e5bf (update dtb and appointment)

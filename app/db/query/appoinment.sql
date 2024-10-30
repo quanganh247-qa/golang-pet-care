@@ -21,6 +21,7 @@ UPDATE Appointment
 SET status = $2
 WHERE appointment_id = $1;
 
+<<<<<<< HEAD
 -- name: GetAppointmentsOfDoctorWithDetails :many
 SELECT 
     a.appointment_id as appointment_id,
@@ -50,3 +51,9 @@ INSERT INTO Appointment (
     $1, $2, $3, $4, 'pending'
 ) RETURNING *;
 >>>>>>> c7f463c (update dtb)
+=======
+-- name: GetAppointmentsOfDoctor :many
+SELECT * FROM Appointment as a
+left join Doctors as d on a.doctor_id = d.id
+WHERE d.id = $1 and a.status <> 'completed';
+>>>>>>> 7cfffa9 (update dtb and appointment)

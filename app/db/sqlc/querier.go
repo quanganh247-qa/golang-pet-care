@@ -51,11 +51,15 @@ type Querier interface {
 >>>>>>> c9d6049 (update service api)
 	GetAllTimeSlots(ctx context.Context, arg GetAllTimeSlotsParams) ([]GetAllTimeSlotsRow, error)
 	GetAllUsers(ctx context.Context) ([]User, error)
+<<<<<<< HEAD
 	GetAppointmentsOfDoctorWithDetails(ctx context.Context, id int64) ([]GetAppointmentsOfDoctorWithDetailsRow, error)
 =======
 	GetAllTimeSlots(ctx context.Context, arg GetAllTimeSlotsParams) ([]GetAllTimeSlotsRow, error)
 	GetAllUsers(ctx context.Context) ([]User, error)
 >>>>>>> 24ea3ee (time slot of doctor api)
+=======
+	GetAppointmentsOfDoctor(ctx context.Context, id int64) ([]GetAppointmentsOfDoctorRow, error)
+>>>>>>> 7cfffa9 (update dtb and appointment)
 	GetDoctor(ctx context.Context, id int64) (GetDoctorRow, error)
 	GetFeedingScheduleByPetID(ctx context.Context, petid pgtype.Int8) ([]Feedingschedule, error)
 	GetPetByID(ctx context.Context, petid int64) (Pet, error)
@@ -88,9 +92,14 @@ type Querier interface {
 	UpdateNotification(ctx context.Context, appointmentID int64) error
 =======
 	ListPets(ctx context.Context, arg ListPetsParams) ([]Pet, error)
+	UpdateAppointmentStatus(ctx context.Context, arg UpdateAppointmentStatusParams) error
 	// Replace $2 with the specific date (YYYY-MM-DD)
 	UpdateDoctorAvailable(ctx context.Context, arg UpdateDoctorAvailableParams) error
+<<<<<<< HEAD
 >>>>>>> 24ea3ee (time slot of doctor api)
+=======
+	UpdateNotification(ctx context.Context, appointmentID int64) error
+>>>>>>> 7cfffa9 (update dtb and appointment)
 	UpdatePet(ctx context.Context, arg UpdatePetParams) error
 	UpdateService(ctx context.Context, arg UpdateServiceParams) error
 	UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error)
