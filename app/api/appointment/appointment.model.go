@@ -24,11 +24,10 @@ type createAppointmentRequest struct {
 }
 
 type createAppointmentResponse struct {
-	id          int64       `json:"id"`
-	serviceName string      `json:"serviceName"`
-	petName     string      `json:"petName"`
-	date        string      `json:"date"`
-	timeSlot    db.Timeslot `json:"timeSlot"`
-	doctorName  string      `json:"doctorName"`
-	note        string      `json:"note"`
+	id          int64
+	serviceName string
+	petName     string
+	timeSlot    db.Timeslot
+	doctorName  string
+	note        string
 }
