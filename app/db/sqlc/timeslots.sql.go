@@ -56,6 +56,30 @@ func (q *Queries) GetAllTimeSlots(ctx context.Context, arg GetAllTimeSlotsParams
 	return items, nil
 }
 
+const getTimeSlotByID = `-- name: GetTimeSlotByID :one
+SELECT 
+    ts.doctor_id ,
+    ts.start_time,
+    ts.end_time
+FROM
+    TimeSlots ts
+WHERE
+    ts.id = $1
+`
+
+type GetTimeSlotByIDRow struct {
+	DoctorID  int64            `json:"doctor_id"`
+	StartTime pgtype.Timestamp `json:"start_time"`
+	EndTime   pgtype.Timestamp `json:"end_time"`
+}
+
+func (q *Queries) GetTimeSlotByID(ctx context.Context, id int64) (GetTimeSlotByIDRow, error) {
+	row := q.db.QueryRow(ctx, getTimeSlotByID, id)
+	var i GetTimeSlotByIDRow
+	err := row.Scan(&i.DoctorID, &i.StartTime, &i.EndTime)
+	return i, err
+}
+
 const getTimeslotsAvailable = `-- name: GetTimeslotsAvailable :many
 SELECT 
     ts.doctor_id ,
