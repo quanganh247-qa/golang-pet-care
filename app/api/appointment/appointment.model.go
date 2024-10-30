@@ -60,6 +60,7 @@ type updateAppointmentStatusRequest struct {
 
 type createAppointmentResponse struct {
 <<<<<<< HEAD
+<<<<<<< HEAD
 	id          int64  `json:"id"`
 	serviceName string `json:"serviceName"`
 	date        string `json:"date"`
@@ -76,4 +77,12 @@ type createAppointmentResponse struct {
 	doctorName  string      `json:"doctorName"`
 	note        string      `json:"note"`
 >>>>>>> 59d4ef2 (modify type of filed in dtb)
+=======
+	id          int64
+	serviceName string
+	petName     string
+	timeSlot    db.Timeslot
+	doctorName  string
+	note        string
+>>>>>>> 323513c (appointment api)
 }

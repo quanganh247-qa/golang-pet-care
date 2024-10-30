@@ -10,8 +10,11 @@ import (
 
 type AppointmentServiceInterface interface {
 	CreateAppointment(ctx *gin.Context, req createAppointmentRequest) (*createAppointmentResponse, error)
+<<<<<<< HEAD
 	UpdateAppointmentStatus(ctx *gin.Context, req updateAppointmentStatusRequest, id int64) error
 	GetAppointmentsOfDoctorService(ctx *gin.Context, doctorID int64) ([]AppointmentWithDetails, error)
+=======
+>>>>>>> 323513c (appointment api)
 }
 
 <<<<<<< HEAD

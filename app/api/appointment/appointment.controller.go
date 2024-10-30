@@ -2,7 +2,10 @@ package appointment
 
 import (
 	"net/http"
+<<<<<<< HEAD
 	"strconv"
+=======
+>>>>>>> 323513c (appointment api)
 
 	"github.com/gin-gonic/gin"
 	"github.com/quanganh247-qa/go-blog-be/app/util"
@@ -10,8 +13,11 @@ import (
 
 type AppointmentControllerInterface interface {
 	createAppointment(ctx *gin.Context)
+<<<<<<< HEAD
 	updateAppointmentStatus(ctx *gin.Context)
 	getAppointmentsOfDoctor(ctx *gin.Context)
+=======
+>>>>>>> 323513c (appointment api)
 }
 
 func (c *AppointmentController) createAppointment(ctx *gin.Context) {
@@ -20,12 +26,17 @@ func (c *AppointmentController) createAppointment(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, util.ErrorValidator(err))
 		return
 	}
+<<<<<<< HEAD
+=======
+
+>>>>>>> 323513c (appointment api)
 	res, err := c.service.CreateAppointment(ctx, req)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
 		return
 	}
 	ctx.JSON(http.StatusCreated, util.SuccessResponse("create appointment successful", res))
+<<<<<<< HEAD
 }
 
 func (c *AppointmentController) updateAppointmentStatus(ctx *gin.Context) {
@@ -72,4 +83,6 @@ func (c *AppointmentController) getAppointmentsOfDoctor(ctx *gin.Context) {
 		return
 	}
 	ctx.JSON(http.StatusOK, util.SuccessResponse("get appointments of doctor successful", res))
+=======
+>>>>>>> 323513c (appointment api)
 }
