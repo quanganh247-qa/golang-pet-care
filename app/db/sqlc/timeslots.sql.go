@@ -57,6 +57,9 @@ func (q *Queries) GetAllTimeSlots(ctx context.Context, arg GetAllTimeSlotsParams
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 59d4ef2 (modify type of filed in dtb)
 const getTimeSlotByID = `-- name: GetTimeSlotByID :one
 SELECT 
     ts.doctor_id ,
@@ -81,8 +84,11 @@ func (q *Queries) GetTimeSlotByID(ctx context.Context, id int64) (GetTimeSlotByI
 	return i, err
 }
 
+<<<<<<< HEAD
 =======
 >>>>>>> 24ea3ee (time slot of doctor api)
+=======
+>>>>>>> 59d4ef2 (modify type of filed in dtb)
 const getTimeslotsAvailable = `-- name: GetTimeslotsAvailable :many
 SELECT 
     ts.doctor_id ,

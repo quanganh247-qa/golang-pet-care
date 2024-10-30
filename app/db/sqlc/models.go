@@ -22,6 +22,7 @@ type Activitylog struct {
 type Appointment struct {
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	AppointmentID int64            `json:"appointment_id"`
 	Petid         pgtype.Int8      `json:"petid"`
 	DoctorID      pgtype.Int8      `json:"doctor_id"`
@@ -67,26 +68,36 @@ type Checkout struct {
 >>>>>>> 1ada478 (get doctor api)
 =======
 	Appointmentid int64              `json:"appointmentid"`
+=======
+	AppointmentID int64              `json:"appointment_id"`
+>>>>>>> 59d4ef2 (modify type of filed in dtb)
 	Petid         pgtype.Int8        `json:"petid"`
-	Doctorid      pgtype.Int8        `json:"doctorid"`
-	Serviceid     pgtype.Int8        `json:"serviceid"`
+	DoctorID      pgtype.Int8        `json:"doctor_id"`
+	ServiceID     pgtype.Int8        `json:"service_id"`
 	Date          pgtype.Timestamptz `json:"date"`
 	Status        pgtype.Text        `json:"status"`
 	Notes         pgtype.Text        `json:"notes"`
-	Remindersent  pgtype.Bool        `json:"remindersent"`
+	ReminderSend  pgtype.Bool        `json:"reminder_send"`
 	TimeSlotID    pgtype.Int8        `json:"time_slot_id"`
 }
 
 type Checkout struct {
-	Checkoutid    int64              `json:"checkoutid"`
+	CheckoutID    int64              `json:"checkout_id"`
 	Petid         pgtype.Int8        `json:"petid"`
-	Doctorid      pgtype.Int8        `json:"doctorid"`
+	DoctorID      pgtype.Int8        `json:"doctor_id"`
 	Date          pgtype.Timestamptz `json:"date"`
+<<<<<<< HEAD
 	TotalAmount   float64            `json:"total_amount"`
 	Paymentstatus pgtype.Text        `json:"paymentstatus"`
 	Paymentmethod pgtype.Text        `json:"paymentmethod"`
 	Note          pgtype.Text        `json:"note"`
 >>>>>>> 24ea3ee (time slot of doctor api)
+=======
+	TotalTmount   float64            `json:"total_tmount"`
+	PaymentStatus pgtype.Text        `json:"payment_status"`
+	PaymentMethod pgtype.Text        `json:"payment_method"`
+	Notes         pgtype.Text        `json:"notes"`
+>>>>>>> 59d4ef2 (modify type of filed in dtb)
 }
 
 type Checkoutservice struct {
