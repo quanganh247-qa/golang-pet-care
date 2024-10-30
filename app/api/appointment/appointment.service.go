@@ -9,6 +9,7 @@ import (
 )
 
 type AppointmentServiceInterface interface {
+	CreateAppointment(ctx *gin.Context, req createAppointmentRequest) (*createAppointmentResponse, error)
 }
 
 // creating an appointment by time slot available of doctor
