@@ -8,9 +8,9 @@ CREATE TABLE users (
   address varchar,
   avatar varchar(255),
   role VARCHAR(20),
-  created_at timestamptz NOT NULL DEFAULT (now()),
+  created_at timestamp NOT NULL DEFAULT (now()),
   is_verified_email bool DEFAULT false,
-  removed_at timestamptz,
+  removed_at timestamp,
   PRIMARY KEY (id)
 );
 
@@ -20,8 +20,8 @@ CREATE TABLE verify_emails (
   email varchar NOT NULL,
   secret_code varchar NOT NULL,
   is_used bool NOT NULL DEFAULT false,
-  created_at timestamptz DEFAULT (now()),
-  expired_at timestamptz DEFAULT (now()+'00:15:00'::interval),
+  created_at timestamp DEFAULT (now()),
+  expired_at timestamp DEFAULT (now()+'00:15:00'::interval),
   PRIMARY KEY (id)
 );
 
@@ -46,8 +46,8 @@ CREATE TABLE Vaccination (
   VaccinationID BIGSERIAL PRIMARY KEY,
   PetID BIGINT,
   VaccineName VARCHAR(100) NOT NULL,
-  DateAdministered timestamptz NOT NULL,
-  NextDueDate timestamptz,
+  DateAdministered timestamp NOT NULL,
+  NextDueDate timestamp,
   VaccineProvider VARCHAR(100),
   BatchNumber VARCHAR(50),
   Notes TEXT
@@ -60,7 +60,7 @@ CREATE TABLE FeedingSchedule (
   FoodType VARCHAR(100) NOT NULL,
   Quantity DECIMAL(5,2) NOT NULL,
   Frequency VARCHAR(50) NOT NULL,
-  LastFed timestamptz,
+  LastFed timestamp,
   Notes TEXT,
   IsActive BOOLEAN DEFAULT true
 );
@@ -69,7 +69,7 @@ CREATE TABLE ActivityLog (
   LogID BIGSERIAL PRIMARY KEY,
   PetID BIGINT,
   ActivityType VARCHAR(50) NOT NULL,
-  StartTime timestamptz NOT NULL,
+  StartTime timestamp NOT NULL,
   Duration INTERVAL,
   Notes TEXT
 );
@@ -79,7 +79,7 @@ CREATE TABLE Reminders (
   PetID BIGINT,
   Title VARCHAR(100) NOT NULL,
   Description TEXT,
-  DueDate timestamptz NOT NULL,
+  DueDate timestamp NOT NULL,
   RepeatInterval VARCHAR(50),
   IsCompleted BOOLEAN DEFAULT false,
   NotificationSent BOOLEAN DEFAULT false
@@ -107,18 +107,19 @@ CREATE TABLE Appointment (
   petid BIGINT,
   doctor_id BIGINT,
   service_id BIGINT,
-  date timestamptz DEFAULT (now()),
+  date timestamp DEFAULT (now()),
   status VARCHAR(20),
   notes TEXT,
   reminder_send BOOLEAN DEFAULT false,
-  time_slot_id BIGINT
+  time_slot_id BIGINT,
+  created_at timestamp DEFAULT (now())
 );
 
 CREATE TABLE Checkout (
   checkout_id BIGSERIAL PRIMARY KEY,
   petid BIGINT,
   doctor_id BIGINT,
-  date timestamptz DEFAULT (now()),
+  date timestamp DEFAULT (now()),
   total_tmount float8 NOT NULL,
   payment_status VARCHAR(20),
   payment_method VARCHAR(50),
