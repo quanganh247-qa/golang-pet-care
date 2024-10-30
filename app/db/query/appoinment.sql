@@ -25,6 +25,7 @@ WHERE appointment_id = $1;
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> 4b8e9b6 (update appointment api)
 -- name: GetAppointmentsOfDoctorWithDetails :many
@@ -80,3 +81,9 @@ INSERT INTO Appointment (
     $1, $2, $3, $4, 'pending'
 ) RETURNING *;
 >>>>>>> c7f463c (update dtb)
+=======
+-- name: GetAppointmentsOfDoctor :many
+SELECT * FROM Appointment as a
+left join Doctors as d on a.doctor_id = d.id
+WHERE d.id = $1 and a.status <> 'completed';
+>>>>>>> 7cfffa9 (update dtb and appointment)

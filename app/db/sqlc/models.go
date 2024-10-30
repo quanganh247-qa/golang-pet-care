@@ -5,18 +5,16 @@
 package db
 
 import (
-	"time"
-
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
 type Activitylog struct {
-	Logid        int64           `json:"logid"`
-	Petid        pgtype.Int8     `json:"petid"`
-	Activitytype string          `json:"activitytype"`
-	Starttime    time.Time       `json:"starttime"`
-	Duration     pgtype.Interval `json:"duration"`
-	Notes        pgtype.Text     `json:"notes"`
+	Logid        int64            `json:"logid"`
+	Petid        pgtype.Int8      `json:"petid"`
+	Activitytype string           `json:"activitytype"`
+	Starttime    pgtype.Timestamp `json:"starttime"`
+	Duration     pgtype.Interval  `json:"duration"`
+	Notes        pgtype.Text      `json:"notes"`
 }
 
 type Appointment struct {
@@ -27,6 +25,9 @@ type Appointment struct {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 7cfffa9 (update dtb and appointment)
 =======
 >>>>>>> 7cfffa9 (update dtb and appointment)
 	AppointmentID int64            `json:"appointment_id"`
@@ -39,6 +40,7 @@ type Appointment struct {
 	ReminderSend  pgtype.Bool      `json:"reminder_send"`
 	TimeSlotID    pgtype.Int8      `json:"time_slot_id"`
 	CreatedAt     pgtype.Timestamp `json:"created_at"`
+<<<<<<< HEAD
 <<<<<<< HEAD
 }
 
@@ -150,6 +152,11 @@ type Checkout struct {
 }
 
 type Checkout struct {
+=======
+}
+
+type Checkout struct {
+>>>>>>> 7cfffa9 (update dtb and appointment)
 	CheckoutID    int64            `json:"checkout_id"`
 	Petid         pgtype.Int8      `json:"petid"`
 	DoctorID      pgtype.Int8      `json:"doctor_id"`
@@ -158,6 +165,7 @@ type Checkout struct {
 	PaymentStatus pgtype.Text      `json:"payment_status"`
 	PaymentMethod pgtype.Text      `json:"payment_method"`
 	Notes         pgtype.Text      `json:"notes"`
+<<<<<<< HEAD
 >>>>>>> 7cfffa9 (update dtb and appointment)
 =======
 >>>>>>> 1ada478 (get doctor api)
@@ -165,6 +173,8 @@ type Checkout struct {
 >>>>>>> 24ea3ee (time slot of doctor api)
 =======
 >>>>>>> 59d4ef2 (modify type of filed in dtb)
+=======
+>>>>>>> 7cfffa9 (update dtb and appointment)
 }
 
 type Checkoutservice struct {
@@ -231,15 +241,15 @@ type Doctortimeoff struct {
 }
 
 type Feedingschedule struct {
-	Feedingscheduleid int64              `json:"feedingscheduleid"`
-	Petid             pgtype.Int8        `json:"petid"`
-	Mealtime          pgtype.Time        `json:"mealtime"`
-	Foodtype          string             `json:"foodtype"`
-	Quantity          pgtype.Numeric     `json:"quantity"`
-	Frequency         string             `json:"frequency"`
-	Lastfed           pgtype.Timestamptz `json:"lastfed"`
-	Notes             pgtype.Text        `json:"notes"`
-	Isactive          pgtype.Bool        `json:"isactive"`
+	Feedingscheduleid int64            `json:"feedingscheduleid"`
+	Petid             pgtype.Int8      `json:"petid"`
+	Mealtime          pgtype.Time      `json:"mealtime"`
+	Foodtype          string           `json:"foodtype"`
+	Quantity          pgtype.Numeric   `json:"quantity"`
+	Frequency         string           `json:"frequency"`
+	Lastfed           pgtype.Timestamp `json:"lastfed"`
+	Notes             pgtype.Text      `json:"notes"`
+	Isactive          pgtype.Bool      `json:"isactive"`
 }
 
 type Pet struct {
@@ -272,14 +282,14 @@ type Petservicelocation struct {
 }
 
 type Reminder struct {
-	Reminderid       int64       `json:"reminderid"`
-	Petid            pgtype.Int8 `json:"petid"`
-	Title            string      `json:"title"`
-	Description      pgtype.Text `json:"description"`
-	Duedate          time.Time   `json:"duedate"`
-	Repeatinterval   pgtype.Text `json:"repeatinterval"`
-	Iscompleted      pgtype.Bool `json:"iscompleted"`
-	Notificationsent pgtype.Bool `json:"notificationsent"`
+	Reminderid       int64            `json:"reminderid"`
+	Petid            pgtype.Int8      `json:"petid"`
+	Title            string           `json:"title"`
+	Description      pgtype.Text      `json:"description"`
+	Duedate          pgtype.Timestamp `json:"duedate"`
+	Repeatinterval   pgtype.Text      `json:"repeatinterval"`
+	Iscompleted      pgtype.Bool      `json:"iscompleted"`
+	Notificationsent pgtype.Bool      `json:"notificationsent"`
 }
 
 type Service struct {
@@ -356,6 +366,9 @@ type Vaccination struct {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 7cfffa9 (update dtb and appointment)
 =======
 >>>>>>> 7cfffa9 (update dtb and appointment)
 	Vaccinationid    int64            `json:"vaccinationid"`
@@ -366,6 +379,7 @@ type Vaccination struct {
 	Vaccineprovider  pgtype.Text      `json:"vaccineprovider"`
 	Batchnumber      pgtype.Text      `json:"batchnumber"`
 	Notes            pgtype.Text      `json:"notes"`
+<<<<<<< HEAD
 <<<<<<< HEAD
 =======
 =======
@@ -384,6 +398,8 @@ type Vaccination struct {
 >>>>>>> 7cfffa9 (update dtb and appointment)
 =======
 >>>>>>> 24ea3ee (time slot of doctor api)
+=======
+>>>>>>> 7cfffa9 (update dtb and appointment)
 }
 
 type VerifyEmail struct {

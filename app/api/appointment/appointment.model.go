@@ -18,6 +18,9 @@ type createAppointmentRequest struct {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 7cfffa9 (update dtb and appointment)
 =======
 >>>>>>> 7cfffa9 (update dtb and appointment)
 	PetID      int64  `json:"pet_id"`
@@ -32,6 +35,7 @@ type timeslot struct {
 	StartTime string `json:"start_time"`
 	EndTime   string `json:"end_time"`
 	// Date      string `json:"date"`
+<<<<<<< HEAD
 <<<<<<< HEAD
 }
 
@@ -108,6 +112,11 @@ type createAppointmentResponse struct {
 }
 
 type createAppointmentResponse struct {
+=======
+}
+
+type createAppointmentResponse struct {
+>>>>>>> 7cfffa9 (update dtb and appointment)
 	ID          int64    `json:"id"`
 	ServiceName string   `json:"service_name"`
 	PetName     string   `json:"pet_name"`
@@ -116,6 +125,7 @@ type createAppointmentResponse struct {
 	Note        string   `json:"note"`
 }
 
+<<<<<<< HEAD
 type AppointmentWithDetails struct {
 	AppointmentID int64  `json:"appointment_id"`
 	PetName       string `json:"pet_name"`
@@ -133,4 +143,8 @@ type updateAppointmentStatusRequest struct {
 >>>>>>> 59d4ef2 (modify type of filed in dtb)
 =======
 >>>>>>> 323513c (appointment api)
+=======
+type updateAppointmentStatusRequest struct {
+	Status string `json:"status"`
+>>>>>>> 7cfffa9 (update dtb and appointment)
 }
