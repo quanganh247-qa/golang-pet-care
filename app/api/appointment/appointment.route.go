@@ -22,6 +22,7 @@ func Routes(routerGroup middleware.RouterGroup) {
 
 	{
 		authRoute.POST("/create", appointmentApi.controller.createAppointment)
+		authRoute.PUT("/:appointment_id", appointmentApi.controller.updateAppointmentStatus)
 
 	}
 
