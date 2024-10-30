@@ -82,8 +82,8 @@ CREATE TABLE ActivityLog (
   VaccinationID BIGSERIAL PRIMARY KEY,
   PetID BIGINT,
   VaccineName VARCHAR(100) NOT NULL,
-  DateAdministered timestamptz NOT NULL,
-  NextDueDate timestamptz,
+  DateAdministered timestamp NOT NULL,
+  NextDueDate timestamp,
   VaccineProvider VARCHAR(100),
   BatchNumber VARCHAR(50),
   Notes TEXT
@@ -96,7 +96,7 @@ CREATE TABLE FeedingSchedule (
   FoodType VARCHAR(100) NOT NULL,
   Quantity DECIMAL(5,2) NOT NULL,
   Frequency VARCHAR(50) NOT NULL,
-  LastFed timestamptz,
+  LastFed timestamp,
   Notes TEXT,
   IsActive BOOLEAN DEFAULT true
 );
@@ -105,7 +105,7 @@ CREATE TABLE ActivityLog (
   LogID BIGSERIAL PRIMARY KEY,
   PetID BIGINT,
   ActivityType VARCHAR(50) NOT NULL,
-  StartTime timestamptz NOT NULL,
+  StartTime timestamp NOT NULL,
   Duration INTERVAL,
   Notes TEXT
 >>>>>>> 24ea3ee (time slot of doctor api)
@@ -161,10 +161,14 @@ CREATE TABLE Reminders (
   Title VARCHAR(100) NOT NULL,
   Description TEXT,
 <<<<<<< HEAD
+<<<<<<< HEAD
   DueDate timestamp NOT NULL,
 =======
   DueDate timestamptz NOT NULL,
 >>>>>>> 24ea3ee (time slot of doctor api)
+=======
+  DueDate timestamp NOT NULL,
+>>>>>>> 59d4ef2 (modify type of filed in dtb)
   RepeatInterval VARCHAR(50),
   IsCompleted BOOLEAN DEFAULT false,
   NotificationSent BOOLEAN DEFAULT false
@@ -214,6 +218,9 @@ CREATE TABLE Appointment (
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 59d4ef2 (modify type of filed in dtb)
   date timestamp DEFAULT (now()),
   status VARCHAR(20),
   notes TEXT,

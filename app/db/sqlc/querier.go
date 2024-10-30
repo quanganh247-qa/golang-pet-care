@@ -96,6 +96,7 @@ type Querier interface {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	GetTimeSlotByID(ctx context.Context, id int64) (GetTimeSlotByIDRow, error)
 =======
 >>>>>>> 24ea3ee (time slot of doctor api)
@@ -104,6 +105,9 @@ type Querier interface {
 >>>>>>> 59d4ef2 (modify type of filed in dtb)
 =======
 >>>>>>> 24ea3ee (time slot of doctor api)
+=======
+	GetTimeSlotByID(ctx context.Context, id int64) (GetTimeSlotByIDRow, error)
+>>>>>>> 59d4ef2 (modify type of filed in dtb)
 	GetTimeslotsAvailable(ctx context.Context, arg GetTimeslotsAvailableParams) ([]GetTimeslotsAvailableRow, error)
 	GetUser(ctx context.Context, username string) (User, error)
 	GetVaccinationByID(ctx context.Context, vaccinationid int64) (Vaccination, error)

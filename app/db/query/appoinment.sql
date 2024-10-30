@@ -2,6 +2,7 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 INSERT INTO Appointment (
     doctor_id,
     petid,
@@ -67,10 +68,13 @@ ORDER BY ts.start_time ASC;
 >>>>>>> 4b8e9b6 (update appointment api)
 =======
 INSERT INTO Appointments (
+=======
+INSERT INTO Appointment (
+>>>>>>> 59d4ef2 (modify type of filed in dtb)
     doctor_id,
-    patient_id,
-    ServiceID,
-    time_slot_id
+    petid,
+    service_id,
+    time_slot_id,
     status
 ) VALUES (
     $1, $2, $3, $4, 'pending'

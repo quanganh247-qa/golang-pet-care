@@ -22,6 +22,7 @@ INSERT INTO Appointment (
     $1, $2, $3, $4, 'pending'
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 ) RETURNING appointment_id, petid, doctor_id, service_id, date, status, notes, reminder_send, time_slot_id, created_at
 =======
 ) RETURNING appointment_id, petid, doctor_id, service_id, date, status, notes, reminder_send, time_slot_id
@@ -29,6 +30,9 @@ INSERT INTO Appointment (
 =======
 ) RETURNING appointment_id, petid, doctor_id, service_id, date, status, notes, reminder_send, time_slot_id, created_at
 >>>>>>> 7cfffa9 (update dtb and appointment)
+=======
+) RETURNING appointment_id, petid, doctor_id, service_id, date, status, notes, reminder_send, time_slot_id
+>>>>>>> 59d4ef2 (modify type of filed in dtb)
 `
 
 type CreateAppointmentParams struct {
@@ -56,6 +60,7 @@ func (q *Queries) CreateAppointment(ctx context.Context, arg CreateAppointmentPa
 		&i.Notes,
 		&i.ReminderSend,
 		&i.TimeSlotID,
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 =======
@@ -216,3 +221,8 @@ func (q *Queries) UpdateNotification(ctx context.Context, appointmentID int64) e
 >>>>>>> 59d4ef2 (modify type of filed in dtb)
 =======
 >>>>>>> 7cfffa9 (update dtb and appointment)
+=======
+	)
+	return i, err
+}
+>>>>>>> 59d4ef2 (modify type of filed in dtb)
