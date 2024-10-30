@@ -12,6 +12,7 @@ type AppointmentServiceInterface interface {
 	CreateAppointment(ctx *gin.Context, req createAppointmentRequest) (*createAppointmentResponse, error)
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	UpdateAppointmentStatus(ctx *gin.Context, req updateAppointmentStatusRequest, id int64) error
 	GetAppointmentsOfDoctorService(ctx *gin.Context, doctorID int64) ([]AppointmentWithDetails, error)
 <<<<<<< HEAD
@@ -22,6 +23,8 @@ type AppointmentServiceInterface interface {
 >>>>>>> 7cfffa9 (update dtb and appointment)
 =======
 >>>>>>> 4b8e9b6 (update appointment api)
+=======
+>>>>>>> 323513c (appointment api)
 }
 
 <<<<<<< HEAD

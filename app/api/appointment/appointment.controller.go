@@ -4,12 +4,15 @@ import (
 	"net/http"
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	"strconv"
 =======
 >>>>>>> 323513c (appointment api)
 =======
 	"strconv"
 >>>>>>> 7cfffa9 (update dtb and appointment)
+=======
+>>>>>>> 323513c (appointment api)
 
 	"github.com/gin-gonic/gin"
 	"github.com/quanganh247-qa/go-blog-be/app/util"
@@ -17,6 +20,7 @@ import (
 
 type AppointmentControllerInterface interface {
 	createAppointment(ctx *gin.Context)
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 	updateAppointmentStatus(ctx *gin.Context)
@@ -29,6 +33,8 @@ type AppointmentControllerInterface interface {
 >>>>>>> 7cfffa9 (update dtb and appointment)
 =======
 >>>>>>> 4b8e9b6 (update appointment api)
+=======
+>>>>>>> 323513c (appointment api)
 }
 
 func (c *AppointmentController) createAppointment(ctx *gin.Context) {
@@ -40,6 +46,7 @@ func (c *AppointmentController) createAppointment(ctx *gin.Context) {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 
 >>>>>>> 323513c (appointment api)
@@ -48,12 +55,16 @@ func (c *AppointmentController) createAppointment(ctx *gin.Context) {
 >>>>>>> 7cfffa9 (update dtb and appointment)
 =======
 >>>>>>> 4b8e9b6 (update appointment api)
+=======
+
+>>>>>>> 323513c (appointment api)
 	res, err := c.service.CreateAppointment(ctx, req)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
 		return
 	}
 	ctx.JSON(http.StatusCreated, util.SuccessResponse("create appointment successful", res))
+<<<<<<< HEAD
 <<<<<<< HEAD
 }
 
@@ -149,4 +160,6 @@ func (c *AppointmentController) getAppointmentsOfDoctor(ctx *gin.Context) {
 		return
 	}
 	ctx.JSON(http.StatusOK, util.SuccessResponse("get appointments of doctor successful", res))
+=======
+>>>>>>> 323513c (appointment api)
 }
