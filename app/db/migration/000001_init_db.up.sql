@@ -160,9 +160,6 @@ CREATE TABLE Doctors (
   consultation_fee DECIMAL(10,2)
 );
 
-
-
-
 CREATE TABLE TimeSlots (
   id BIGSERIAL PRIMARY KEY,
   doctor_id BIGINT NOT NULL,
