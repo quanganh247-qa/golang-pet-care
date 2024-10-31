@@ -22,6 +22,10 @@ func Routes(routerGroup middleware.RouterGroup) {
 
 	{
 		authRoute.POST("/create", SVApi.controller.CreateService)
+		authRoute.POST("/delete", SVApi.controller.DeleteService)
+		authRoute.GET("/getall", SVApi.controller.GetAllServices)
+		authRoute.PUT("/update/:serviceid", SVApi.controller.UpdateService)
+		authRoute.GET("/getbyid/:serviceid", SVApi.controller.GetServiceByID)
 		// authRoute.POST("/create", userApi.controller.createUser)
 
 	}

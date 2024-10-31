@@ -124,13 +124,14 @@ type Reminder struct {
 }
 
 type Service struct {
-	Serviceid   int64           `json:"serviceid"`
-	Typeid      pgtype.Int8     `json:"typeid"`
-	Name        string          `json:"name"`
-	Price       pgtype.Float8   `json:"price"`
-	Duration    pgtype.Interval `json:"duration"`
-	Description pgtype.Text     `json:"description"`
-	Isavailable pgtype.Bool     `json:"isavailable"`
+	Serviceid   int64            `json:"serviceid"`
+	Typeid      pgtype.Int8      `json:"typeid"`
+	Name        string           `json:"name"`
+	Price       pgtype.Float8    `json:"price"`
+	Duration    pgtype.Interval  `json:"duration"`
+	Description pgtype.Text      `json:"description"`
+	Isavailable pgtype.Bool      `json:"isavailable"`
+	RemovedAt   pgtype.Timestamp `json:"removed_at"`
 }
 
 type Servicetype struct {

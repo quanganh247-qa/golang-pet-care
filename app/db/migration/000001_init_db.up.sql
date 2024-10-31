@@ -43,63 +43,64 @@ CREATE TABLE Pet (
 );
 
 CREATE TABLE Vaccination (
-  VaccinationID BIGSERIAL PRIMARY KEY,
-  PetID BIGINT,
-  VaccineName VARCHAR(100) NOT NULL,
-  DateAdministered timestamp NOT NULL,
-  NextDueDate timestamp,
-  VaccineProvider VARCHAR(100),
-  BatchNumber VARCHAR(50),
-  Notes TEXT
+  vaccinationID BIGSERIAL PRIMARY KEY,
+  petID BIGINT,
+  vaccineName VARCHAR(100) NOT NULL,
+  dateAdministered timestamp NOT NULL,
+  nextDueDate timestamp,
+  vaccineProvider VARCHAR(100),
+  batchNumber VARCHAR(50),
+  notes TEXT
 );
 
 CREATE TABLE FeedingSchedule (
-  FeedingScheduleID BIGSERIAL PRIMARY KEY,
-  PetID BIGINT,
-  MealTime TIME NOT NULL,
-  FoodType VARCHAR(100) NOT NULL,
-  Quantity DECIMAL(5,2) NOT NULL,
-  Frequency VARCHAR(50) NOT NULL,
-  LastFed timestamp,
-  Notes TEXT,
-  IsActive BOOLEAN DEFAULT true
+  feedingScheduleID BIGSERIAL PRIMARY KEY,
+  petID BIGINT,
+  mealTime TIME NOT NULL,
+  foodType VARCHAR(100) NOT NULL,
+  quantity DECIMAL(5,2) NOT NULL,
+  frequency VARCHAR(50) NOT NULL,
+  lastFed timestamp,
+  notes TEXT,
+  isActive BOOLEAN DEFAULT true
 );
 
 CREATE TABLE ActivityLog (
-  LogID BIGSERIAL PRIMARY KEY,
-  PetID BIGINT,
-  ActivityType VARCHAR(50) NOT NULL,
-  StartTime timestamp NOT NULL,
-  Duration INTERVAL,
-  Notes TEXT
+  logID BIGSERIAL PRIMARY KEY,
+  petID BIGINT,
+  activityType VARCHAR(50) NOT NULL,
+  startTime timestamp NOT NULL,
+  duration INTERVAL,
+  notes TEXT
 );
 
 CREATE TABLE Reminders (
-  ReminderID BIGSERIAL PRIMARY KEY,
-  PetID BIGINT,
-  Title VARCHAR(100) NOT NULL,
-  Description TEXT,
-  DueDate timestamp NOT NULL,
-  RepeatInterval VARCHAR(50),
-  IsCompleted BOOLEAN DEFAULT false,
-  NotificationSent BOOLEAN DEFAULT false
+  reminderID BIGSERIAL PRIMARY KEY,
+  petID BIGINT,
+  title VARCHAR(100) NOT NULL,
+  description TEXT,
+  dueDate timestamp NOT NULL,
+  repeatInterval VARCHAR(50),
+  isCompleted BOOLEAN DEFAULT false,
+  notificationSent BOOLEAN DEFAULT false
 );
 
 CREATE TABLE ServiceType (
-  TypeID BIGSERIAL PRIMARY KEY,
-  ServiceTypeName varchar NOT NULL,
-  Description TEXT,
-  IconURL VARCHAR(255)
+  typeID BIGSERIAL PRIMARY KEY,
+  serviceTypeName varchar NOT NULL,
+  description TEXT,
+  iconURL VARCHAR(255)
 );
 
 CREATE TABLE Service (
-  ServiceID BIGSERIAL PRIMARY KEY,
-  TypeID BIGINT,
-  Name varchar NOT NULL,
-  Price float8,
-  Duration INTERVAL,
-  Description TEXT,
-  IsAvailable BOOLEAN DEFAULT true
+  serviceID BIGSERIAL PRIMARY KEY,
+  typeID BIGINT,
+  name varchar NOT NULL,
+  price float8,
+  duration INTERVAL,
+  description TEXT,
+  isAvailable BOOLEAN DEFAULT true,
+  removed_at timestamp
 );
 
 CREATE TABLE Appointment (
@@ -127,25 +128,25 @@ CREATE TABLE Checkout (
 );
 
 CREATE TABLE CheckoutService (
-  CheckoutService_ID BIGSERIAL PRIMARY KEY,
-  CheckoutID BIGINT,
-  ServiceID BIGINT,
-  Quantity INT DEFAULT 1,
-  UnitPrice float8,
-  Subtotal float8
+  checkoutService_ID BIGSERIAL PRIMARY KEY,
+  checkoutID BIGINT,
+  serviceID BIGINT,
+  quantity INT DEFAULT 1,
+  unitPrice float8,
+  subtotal float8
 );
 
 CREATE TABLE PetServiceLocation (
-  LocationID BIGSERIAL PRIMARY KEY,
-  Name VARCHAR(100) NOT NULL,
-  Address VARCHAR(255) NOT NULL,
-  Latitude DECIMAL(10,8),
-  Longitude DECIMAL(11,8),
-  ContactNumber VARCHAR(20),
-  BusinessHours VARCHAR(100),
-  ServiceTypes TEXT[],
-  Rating DECIMAL(3,2),
-  IsVerified BOOLEAN DEFAULT false
+  locationID BIGSERIAL PRIMARY KEY,
+  name VARCHAR(100) NOT NULL,
+  address VARCHAR(255) NOT NULL,
+  latitude DECIMAL(10,8),
+  longitude DECIMAL(11,8),
+  contactNumber VARCHAR(20),
+  businessHours VARCHAR(100),
+  serviceTypes TEXT[],
+  rating DECIMAL(3,2),
+  isVerified BOOLEAN DEFAULT false
 );
 
 CREATE TABLE Doctors (
@@ -184,25 +185,25 @@ CREATE TABLE DoctorSchedules (
 
 ALTER TABLE Pet ADD CONSTRAINT pet_users_fk FOREIGN KEY (username) REFERENCES users (username);
 
-ALTER TABLE Vaccination ADD CONSTRAINT vaccination_pet_fk FOREIGN KEY (PetID) REFERENCES Pet (petid);
+ALTER TABLE Vaccination ADD CONSTRAINT vaccination_pet_fk FOREIGN KEY (petID) REFERENCES Pet (petid);
 
-ALTER TABLE FeedingSchedule ADD CONSTRAINT feeding_pet_fk FOREIGN KEY (PetID) REFERENCES Pet (petid);
+ALTER TABLE FeedingSchedule ADD CONSTRAINT feeding_pet_fk FOREIGN KEY (petID) REFERENCES Pet (petid);
 
-ALTER TABLE ActivityLog ADD CONSTRAINT activity_pet_fk FOREIGN KEY (PetID) REFERENCES Pet (petid);
+ALTER TABLE ActivityLog ADD CONSTRAINT activity_pet_fk FOREIGN KEY (petID) REFERENCES Pet (petid);
 
-ALTER TABLE Reminders ADD CONSTRAINT reminder_pet_fk FOREIGN KEY (PetID) REFERENCES Pet (petid);
+ALTER TABLE Reminders ADD CONSTRAINT reminder_pet_fk FOREIGN KEY (petID) REFERENCES Pet (petid);
 
-ALTER TABLE Service ADD CONSTRAINT service_type_fk FOREIGN KEY (TypeID) REFERENCES ServiceType (TypeID);
+ALTER TABLE Service ADD CONSTRAINT service_type_fk FOREIGN KEY (typeID) REFERENCES ServiceType (typeID);
 
 ALTER TABLE Appointment ADD CONSTRAINT appointment_pet_fk FOREIGN KEY (petid) REFERENCES Pet (petid);
 
-ALTER TABLE Appointment ADD CONSTRAINT appointment_service_fk FOREIGN KEY (service_id) REFERENCES Service (ServiceID);
+ALTER TABLE Appointment ADD CONSTRAINT appointment_service_fk FOREIGN KEY (service_id) REFERENCES Service (serviceID);
 
 -- ALTER TABLE Checkout ADD CONSTRAINT checkout_pet_fk FOREIGN KEY (PetID) REFERENCES Pet (petid);
 
-ALTER TABLE CheckoutService ADD CONSTRAINT cs_checkout_fk FOREIGN KEY (CheckoutID) REFERENCES Checkout (checkout_id);
+ALTER TABLE CheckoutService ADD CONSTRAINT cs_checkout_fk FOREIGN KEY (checkoutID) REFERENCES Checkout (checkout_id);
 
-ALTER TABLE CheckoutService ADD CONSTRAINT cs_service_fk FOREIGN KEY (ServiceID) REFERENCES Service (ServiceID);
+ALTER TABLE CheckoutService ADD CONSTRAINT cs_service_fk FOREIGN KEY (serviceID) REFERENCES Service (serviceID);
 
 ALTER TABLE Doctors ADD CONSTRAINT fk_doctor_user FOREIGN KEY (user_id) REFERENCES users (id);
 
