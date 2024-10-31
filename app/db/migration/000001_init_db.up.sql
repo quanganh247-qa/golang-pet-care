@@ -43,26 +43,26 @@ CREATE TABLE Pet (
 );
 
 CREATE TABLE Vaccination (
-  vaccinationID BIGSERIAL PRIMARY KEY,
-  petID BIGINT,
-  vaccineName VARCHAR(100) NOT NULL,
-  dateAdministered timestamp NOT NULL,
-  nextDueDate timestamp,
-  vaccineProvider VARCHAR(100),
-  batchNumber VARCHAR(50),
+  vaccinationid BIGSERIAL PRIMARY KEY,
+  petid BIGINT,
+  vaccine_name VARCHAR(100) NOT NULL,
+  date_administered timestamp NOT NULL,
+  next_due_date timestamp,
+  vaccine_provider VARCHAR(100),
+  batch_number VARCHAR(50),
   notes TEXT
 );
 
 CREATE TABLE FeedingSchedule (
-  feedingScheduleID BIGSERIAL PRIMARY KEY,
-  petID BIGINT,
-  mealTime TIME NOT NULL,
-  foodType VARCHAR(100) NOT NULL,
-  quantity DECIMAL(5,2) NOT NULL,
+  feeding_schedule_id BIGSERIAL PRIMARY KEY,
+  petid BIGINT,
+  meal_time TIME NOT NULL,
+  food_type VARCHAR(100) NOT NULL,
+  quantity float8 NOT NULL,
   frequency VARCHAR(50) NOT NULL,
-  lastFed timestamp,
+  lastfed timestamp,
   notes TEXT,
-  isActive BOOLEAN DEFAULT true
+  is_active BOOLEAN DEFAULT true
 );
 
 CREATE TABLE ActivityLog (
@@ -75,14 +75,14 @@ CREATE TABLE ActivityLog (
 );
 
 CREATE TABLE Reminders (
-  reminderID BIGSERIAL PRIMARY KEY,
-  petID BIGINT,
+  reminder_id BIGSERIAL PRIMARY KEY,
+  petid BIGINT,
   title VARCHAR(100) NOT NULL,
   description TEXT,
-  dueDate timestamp NOT NULL,
-  repeatInterval VARCHAR(50),
-  isCompleted BOOLEAN DEFAULT false,
-  notificationSent BOOLEAN DEFAULT false
+  due_date timestamp NOT NULL,
+  repeat_interval VARCHAR(50),
+  is_completed BOOLEAN DEFAULT false,
+  notification_sent BOOLEAN DEFAULT false
 );
 
 CREATE TABLE ServiceType (

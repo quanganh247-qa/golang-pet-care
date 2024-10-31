@@ -74,15 +74,15 @@ type Doctorschedule struct {
 }
 
 type Feedingschedule struct {
-	Feedingscheduleid int64            `json:"feedingscheduleid"`
+	FeedingScheduleID int64            `json:"feeding_schedule_id"`
 	Petid             pgtype.Int8      `json:"petid"`
-	Mealtime          pgtype.Time      `json:"mealtime"`
-	Foodtype          string           `json:"foodtype"`
-	Quantity          pgtype.Numeric   `json:"quantity"`
+	MealTime          pgtype.Time      `json:"meal_time"`
+	FoodType          string           `json:"food_type"`
+	Quantity          float64          `json:"quantity"`
 	Frequency         string           `json:"frequency"`
 	Lastfed           pgtype.Timestamp `json:"lastfed"`
 	Notes             pgtype.Text      `json:"notes"`
-	Isactive          pgtype.Bool      `json:"isactive"`
+	IsActive          pgtype.Bool      `json:"is_active"`
 }
 
 type Pet struct {
@@ -115,14 +115,14 @@ type Petservicelocation struct {
 }
 
 type Reminder struct {
-	Reminderid       int64            `json:"reminderid"`
+	ReminderID       int64            `json:"reminder_id"`
 	Petid            pgtype.Int8      `json:"petid"`
 	Title            string           `json:"title"`
 	Description      pgtype.Text      `json:"description"`
-	Duedate          pgtype.Timestamp `json:"duedate"`
-	Repeatinterval   pgtype.Text      `json:"repeatinterval"`
-	Iscompleted      pgtype.Bool      `json:"iscompleted"`
-	Notificationsent pgtype.Bool      `json:"notificationsent"`
+	DueDate          pgtype.Timestamp `json:"due_date"`
+	RepeatInterval   pgtype.Text      `json:"repeat_interval"`
+	IsCompleted      pgtype.Bool      `json:"is_completed"`
+	NotificationSent pgtype.Bool      `json:"notification_sent"`
 }
 
 type Service struct {
@@ -181,11 +181,11 @@ type User struct {
 type Vaccination struct {
 	Vaccinationid    int64            `json:"vaccinationid"`
 	Petid            pgtype.Int8      `json:"petid"`
-	Vaccinename      string           `json:"vaccinename"`
-	Dateadministered pgtype.Timestamp `json:"dateadministered"`
-	Nextduedate      pgtype.Timestamp `json:"nextduedate"`
-	Vaccineprovider  pgtype.Text      `json:"vaccineprovider"`
-	Batchnumber      pgtype.Text      `json:"batchnumber"`
+	VaccineName      string           `json:"vaccine_name"`
+	DateAdministered pgtype.Timestamp `json:"date_administered"`
+	NextDueDate      pgtype.Timestamp `json:"next_due_date"`
+	VaccineProvider  pgtype.Text      `json:"vaccine_provider"`
+	BatchNumber      pgtype.Text      `json:"batch_number"`
 	Notes            pgtype.Text      `json:"notes"`
 }
 
