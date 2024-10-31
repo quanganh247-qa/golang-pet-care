@@ -28,14 +28,17 @@ type Querier interface {
 	DeleteVaccination(ctx context.Context, vaccinationid int64) error
 	GetActiveDoctors(ctx context.Context, arg GetActiveDoctorsParams) ([]GetActiveDoctorsRow, error)
 	GetAllServices(ctx context.Context, arg GetAllServicesParams) ([]Service, error)
+<<<<<<< HEAD
 	GetAllTimeSlots(ctx context.Context, arg GetAllTimeSlotsParams) ([]GetAllTimeSlotsRow, error)
+=======
+>>>>>>> 1c933f4 (update service api)
 	GetAllTimeSlots(ctx context.Context, arg GetAllTimeSlotsParams) ([]GetAllTimeSlotsRow, error)
 	GetAllUsers(ctx context.Context) ([]User, error)
 	GetAppointmentsOfDoctor(ctx context.Context, id int64) ([]GetAppointmentsOfDoctorRow, error)
 	GetDoctor(ctx context.Context, id int64) (GetDoctorRow, error)
 	GetFeedingScheduleByPetID(ctx context.Context, petid pgtype.Int8) ([]Feedingschedule, error)
 	GetPetByID(ctx context.Context, petid int64) (Pet, error)
-	GetService(ctx context.Context, serviceid int64) (Service, error)
+	GetServiceByID(ctx context.Context, serviceid int64) (Service, error)
 	GetServiceType(ctx context.Context, typeid int64) (Servicetype, error)
 	GetTimeSlotByID(ctx context.Context, id int64) (GetTimeSlotByIDRow, error)
 	GetTimeslotsAvailable(ctx context.Context, arg GetTimeslotsAvailableParams) ([]GetTimeslotsAvailableRow, error)
@@ -50,7 +53,7 @@ type Querier interface {
 	UpdateDoctorAvailable(ctx context.Context, arg UpdateDoctorAvailableParams) error
 	UpdateNotification(ctx context.Context, appointmentID int64) error
 	UpdatePet(ctx context.Context, arg UpdatePetParams) error
-	UpdateReminder(ctx context.Context, arg UpdateReminderParams) error
+	UpdateService(ctx context.Context, arg UpdateServiceParams) error
 	UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error)
 	UpdateVaccination(ctx context.Context, arg UpdateVaccinationParams) error
 	UpdateVerifyEmail(ctx context.Context, arg UpdateVerifyEmailParams) (VerifyEmail, error)
