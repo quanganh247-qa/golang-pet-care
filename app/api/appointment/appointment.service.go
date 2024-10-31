@@ -213,6 +213,7 @@ func (s *AppointmentService) CreateAppointment(ctx *gin.Context, req createAppoi
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	service, err := s.storeDB.GetServiceByID(ctx, appointment.ServiceID.Int64)
 =======
 	service, err := s.storeDB.GetService(ctx, appointment.ServiceID.Int64)
@@ -237,6 +238,8 @@ func (s *AppointmentService) CreateAppointment(ctx *gin.Context, req createAppoi
 >>>>>>> 860385e (update service api)
 =======
 >>>>>>> 6ce51e4 (modify type of filed in dtb)
+=======
+>>>>>>> 906a44f (update service api)
 	service, err := s.storeDB.GetServiceByID(ctx, appointment.ServiceID.Int64)
 =======
 	service, err := s.storeDB.GetService(ctx, appointment.ServiceID.Int64)
@@ -253,7 +256,13 @@ func (s *AppointmentService) CreateAppointment(ctx *gin.Context, req createAppoi
 =======
 	service, err := s.storeDB.GetService(ctx, appointment.ServiceID.Int64)
 >>>>>>> 59d4ef2 (modify type of filed in dtb)
+<<<<<<< HEAD
 >>>>>>> 6ce51e4 (modify type of filed in dtb)
+=======
+=======
+	service, err := s.storeDB.GetServiceByID(ctx, appointment.ServiceID.Int64)
+>>>>>>> 6e40c8e (update service api)
+>>>>>>> 906a44f (update service api)
 	if err != nil {
 		return nil, fmt.Errorf("error while getting service: %w", err)
 	}

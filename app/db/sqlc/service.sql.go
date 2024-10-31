@@ -68,6 +68,7 @@ func (q *Queries) DeleteService(ctx context.Context, serviceid int64) error {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 const getAllServices = `-- name: GetAllServices :many
 SELECT serviceid, typeid, name, price, duration, description, isavailable, removed_at FROM Service ORDER BY serviceID LIMIT $1 OFFSET $2
 `
@@ -128,6 +129,12 @@ const getAllServices = `-- name: GetAllServices :many
 SELECT serviceid, typeid, name, price, duration, description, isavailable, removed_at FROM Service ORDER BY serviceID LIMIT $1 OFFSET $2
 `
 
+=======
+const getAllServices = `-- name: GetAllServices :many
+SELECT serviceid, typeid, name, price, duration, description, isavailable, removed_at FROM Service ORDER BY serviceID LIMIT $1 OFFSET $2
+`
+
+>>>>>>> 6e40c8e (update service api)
 type GetAllServicesParams struct {
 	Limit  int32 `json:"limit"`
 	Offset int32 `json:"offset"`
@@ -168,9 +175,12 @@ SELECT serviceid, typeid, name, price, duration, description, isavailable, remov
 
 func (q *Queries) GetServiceByID(ctx context.Context, serviceid int64) (Service, error) {
 	row := q.db.QueryRow(ctx, getServiceByID, serviceid)
+<<<<<<< HEAD
 >>>>>>> 6e40c8e (update service api)
 =======
 >>>>>>> 1ada478 (get doctor api)
+=======
+>>>>>>> 6e40c8e (update service api)
 	var i Service
 	err := row.Scan(
 		&i.Serviceid,
@@ -183,6 +193,9 @@ func (q *Queries) GetServiceByID(ctx context.Context, serviceid int64) (Service,
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 6e40c8e (update service api)
 =======
 >>>>>>> 6e40c8e (update service api)
 		&i.RemovedAt,
@@ -224,6 +237,7 @@ func (q *Queries) UpdateService(ctx context.Context, arg UpdateServiceParams) er
 	return err
 }
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 	)
 	return i, err
@@ -236,3 +250,5 @@ func (q *Queries) UpdateService(ctx context.Context, arg UpdateServiceParams) er
 	return i, err
 }
 >>>>>>> 1ada478 (get doctor api)
+=======
+>>>>>>> 6e40c8e (update service api)

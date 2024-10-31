@@ -34,11 +34,16 @@ type Querier interface {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> af3890f (time slot of doctor api)
 =======
 =======
 >>>>>>> 976d926 (time slot of doctor api)
+=======
+=======
+>>>>>>> 6e40c8e (update service api)
+>>>>>>> 906a44f (update service api)
 =======
 >>>>>>> 6e40c8e (update service api)
 >>>>>>> 860385e (update service api)
@@ -86,6 +91,7 @@ type Querier interface {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	GetServiceByID(ctx context.Context, serviceid int64) (Service, error)
 =======
 	GetService(ctx context.Context, serviceid int64) (Service, error)
@@ -96,6 +102,9 @@ type Querier interface {
 =======
 	GetService(ctx context.Context, serviceid int64) (Service, error)
 >>>>>>> 1ada478 (get doctor api)
+=======
+	GetServiceByID(ctx context.Context, serviceid int64) (Service, error)
+>>>>>>> 6e40c8e (update service api)
 	GetServiceType(ctx context.Context, typeid int64) (Servicetype, error)
 <<<<<<< HEAD
 <<<<<<< HEAD

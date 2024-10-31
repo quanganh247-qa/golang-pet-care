@@ -46,6 +46,9 @@ CREATE TABLE Vaccination (
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 6e40c8e (update service api)
 =======
 >>>>>>> 6e40c8e (update service api)
   vaccinationID BIGSERIAL PRIMARY KEY,
@@ -56,6 +59,7 @@ CREATE TABLE Vaccination (
   vaccineProvider VARCHAR(100),
   batchNumber VARCHAR(50),
   notes TEXT
+<<<<<<< HEAD
 <<<<<<< HEAD
 );
 
@@ -87,21 +91,24 @@ CREATE TABLE ActivityLog (
   VaccineProvider VARCHAR(100),
   BatchNumber VARCHAR(50),
   Notes TEXT
+=======
+>>>>>>> 6e40c8e (update service api)
 );
 
 CREATE TABLE FeedingSchedule (
-  FeedingScheduleID BIGSERIAL PRIMARY KEY,
-  PetID BIGINT,
-  MealTime TIME NOT NULL,
-  FoodType VARCHAR(100) NOT NULL,
-  Quantity DECIMAL(5,2) NOT NULL,
-  Frequency VARCHAR(50) NOT NULL,
-  LastFed timestamp,
-  Notes TEXT,
-  IsActive BOOLEAN DEFAULT true
+  feedingScheduleID BIGSERIAL PRIMARY KEY,
+  petID BIGINT,
+  mealTime TIME NOT NULL,
+  foodType VARCHAR(100) NOT NULL,
+  quantity DECIMAL(5,2) NOT NULL,
+  frequency VARCHAR(50) NOT NULL,
+  lastFed timestamp,
+  notes TEXT,
+  isActive BOOLEAN DEFAULT true
 );
 
 CREATE TABLE ActivityLog (
+<<<<<<< HEAD
   LogID BIGSERIAL PRIMARY KEY,
   PetID BIGINT,
   ActivityType VARCHAR(50) NOT NULL,
@@ -109,6 +116,14 @@ CREATE TABLE ActivityLog (
   Duration INTERVAL,
   Notes TEXT
 >>>>>>> 24ea3ee (time slot of doctor api)
+=======
+  logID BIGSERIAL PRIMARY KEY,
+  petID BIGINT,
+  activityType VARCHAR(50) NOT NULL,
+  startTime timestamp NOT NULL,
+  duration INTERVAL,
+  notes TEXT
+>>>>>>> 6e40c8e (update service api)
 );
 
 CREATE TABLE Reminders (
@@ -120,6 +135,7 @@ CREATE TABLE Reminders (
   repeatInterval VARCHAR(50),
   isCompleted BOOLEAN DEFAULT false,
   notificationSent BOOLEAN DEFAULT false
+<<<<<<< HEAD
 =======
   VaccinationID BIGSERIAL PRIMARY KEY,
   PetID BIGINT,
@@ -182,6 +198,8 @@ CREATE TABLE Reminders (
   repeatInterval VARCHAR(50),
   isCompleted BOOLEAN DEFAULT false,
   notificationSent BOOLEAN DEFAULT false
+>>>>>>> 6e40c8e (update service api)
+=======
 >>>>>>> 6e40c8e (update service api)
 );
 
@@ -395,6 +413,7 @@ ALTER TABLE Appointment ADD CONSTRAINT appointment_pet_fk FOREIGN KEY (petid) RE
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 ALTER TABLE Appointment ADD CONSTRAINT appointment_service_fk FOREIGN KEY (service_id) REFERENCES Service (serviceID);
 =======
 ALTER TABLE Appointment ADD CONSTRAINT appointment_service_fk FOREIGN KEY (service_id) REFERENCES Service (ServiceID);
@@ -422,6 +441,14 @@ ALTER TABLE CheckoutService ADD CONSTRAINT cs_checkout_fk FOREIGN KEY (CheckoutI
 ALTER TABLE CheckoutService ADD CONSTRAINT cs_checkout_fk FOREIGN KEY (checkoutID) REFERENCES Checkout (checkout_id);
 >>>>>>> 6e40c8e (update service api)
 
+=======
+ALTER TABLE Appointment ADD CONSTRAINT appointment_service_fk FOREIGN KEY (service_id) REFERENCES Service (serviceID);
+
+-- ALTER TABLE Checkout ADD CONSTRAINT checkout_pet_fk FOREIGN KEY (PetID) REFERENCES Pet (petid);
+
+ALTER TABLE CheckoutService ADD CONSTRAINT cs_checkout_fk FOREIGN KEY (checkoutID) REFERENCES Checkout (checkout_id);
+
+>>>>>>> 6e40c8e (update service api)
 ALTER TABLE CheckoutService ADD CONSTRAINT cs_service_fk FOREIGN KEY (serviceID) REFERENCES Service (serviceID);
 
 ALTER TABLE Doctors ADD CONSTRAINT fk_doctor_user FOREIGN KEY (user_id) REFERENCES users (id);
