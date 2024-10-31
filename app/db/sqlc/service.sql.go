@@ -66,6 +66,7 @@ func (q *Queries) DeleteService(ctx context.Context, serviceid int64) error {
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 const getAllServices = `-- name: GetAllServices :many
 SELECT serviceid, typeid, name, price, duration, description, isavailable, removed_at FROM Service ORDER BY serviceID LIMIT $1 OFFSET $2
 `
@@ -118,6 +119,52 @@ SELECT serviceid, typeid, name, price, duration, description, isavailable FROM S
 func (q *Queries) GetService(ctx context.Context, serviceid int64) (Service, error) {
 	row := q.db.QueryRow(ctx, getService, serviceid)
 >>>>>>> 1ada478 (get doctor api)
+=======
+const getAllServices = `-- name: GetAllServices :many
+SELECT serviceid, typeid, name, price, duration, description, isavailable, removed_at FROM Service ORDER BY serviceID LIMIT $1 OFFSET $2
+`
+
+type GetAllServicesParams struct {
+	Limit  int32 `json:"limit"`
+	Offset int32 `json:"offset"`
+}
+
+func (q *Queries) GetAllServices(ctx context.Context, arg GetAllServicesParams) ([]Service, error) {
+	rows, err := q.db.Query(ctx, getAllServices, arg.Limit, arg.Offset)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []Service{}
+	for rows.Next() {
+		var i Service
+		if err := rows.Scan(
+			&i.Serviceid,
+			&i.Typeid,
+			&i.Name,
+			&i.Price,
+			&i.Duration,
+			&i.Description,
+			&i.Isavailable,
+			&i.RemovedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getServiceByID = `-- name: GetServiceByID :one
+SELECT serviceid, typeid, name, price, duration, description, isavailable, removed_at FROM Service WHERE serviceID = $1 LIMIT 1
+`
+
+func (q *Queries) GetServiceByID(ctx context.Context, serviceid int64) (Service, error) {
+	row := q.db.QueryRow(ctx, getServiceByID, serviceid)
+>>>>>>> 6e40c8e (update service api)
 	var i Service
 	err := row.Scan(
 		&i.Serviceid,
@@ -128,6 +175,9 @@ func (q *Queries) GetService(ctx context.Context, serviceid int64) (Service, err
 		&i.Description,
 		&i.Isavailable,
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 6e40c8e (update service api)
 		&i.RemovedAt,
 	)
 	return i, err
@@ -166,8 +216,11 @@ func (q *Queries) UpdateService(ctx context.Context, arg UpdateServiceParams) er
 	)
 	return err
 }
+<<<<<<< HEAD
 =======
 	)
 	return i, err
 }
 >>>>>>> 1ada478 (get doctor api)
+=======
+>>>>>>> 6e40c8e (update service api)

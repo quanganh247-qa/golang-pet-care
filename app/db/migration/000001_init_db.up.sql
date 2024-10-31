@@ -44,6 +44,9 @@ CREATE TABLE Pet (
 
 CREATE TABLE Vaccination (
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 6e40c8e (update service api)
   vaccinationID BIGSERIAL PRIMARY KEY,
   petID BIGINT,
   vaccineName VARCHAR(100) NOT NULL,
@@ -52,6 +55,7 @@ CREATE TABLE Vaccination (
   vaccineProvider VARCHAR(100),
   batchNumber VARCHAR(50),
   notes TEXT
+<<<<<<< HEAD
 );
 
 CREATE TABLE FeedingSchedule (
@@ -93,30 +97,33 @@ CREATE TABLE Reminders (
   VaccineProvider VARCHAR(100),
   BatchNumber VARCHAR(50),
   Notes TEXT
+=======
+>>>>>>> 6e40c8e (update service api)
 );
 
 CREATE TABLE FeedingSchedule (
-  FeedingScheduleID BIGSERIAL PRIMARY KEY,
-  PetID BIGINT,
-  MealTime TIME NOT NULL,
-  FoodType VARCHAR(100) NOT NULL,
-  Quantity DECIMAL(5,2) NOT NULL,
-  Frequency VARCHAR(50) NOT NULL,
-  LastFed timestamp,
-  Notes TEXT,
-  IsActive BOOLEAN DEFAULT true
+  feedingScheduleID BIGSERIAL PRIMARY KEY,
+  petID BIGINT,
+  mealTime TIME NOT NULL,
+  foodType VARCHAR(100) NOT NULL,
+  quantity DECIMAL(5,2) NOT NULL,
+  frequency VARCHAR(50) NOT NULL,
+  lastFed timestamp,
+  notes TEXT,
+  isActive BOOLEAN DEFAULT true
 );
 
 CREATE TABLE ActivityLog (
-  LogID BIGSERIAL PRIMARY KEY,
-  PetID BIGINT,
-  ActivityType VARCHAR(50) NOT NULL,
-  StartTime timestamp NOT NULL,
-  Duration INTERVAL,
-  Notes TEXT
+  logID BIGSERIAL PRIMARY KEY,
+  petID BIGINT,
+  activityType VARCHAR(50) NOT NULL,
+  startTime timestamp NOT NULL,
+  duration INTERVAL,
+  notes TEXT
 );
 
 CREATE TABLE Reminders (
+<<<<<<< HEAD
   ReminderID BIGSERIAL PRIMARY KEY,
   PetID BIGINT,
   Title VARCHAR(100) NOT NULL,
@@ -126,6 +133,16 @@ CREATE TABLE Reminders (
   IsCompleted BOOLEAN DEFAULT false,
   NotificationSent BOOLEAN DEFAULT false
 >>>>>>> 24ea3ee (time slot of doctor api)
+=======
+  reminderID BIGSERIAL PRIMARY KEY,
+  petID BIGINT,
+  title VARCHAR(100) NOT NULL,
+  description TEXT,
+  dueDate timestamp NOT NULL,
+  repeatInterval VARCHAR(50),
+  isCompleted BOOLEAN DEFAULT false,
+  notificationSent BOOLEAN DEFAULT false
+>>>>>>> 6e40c8e (update service api)
 );
 
 CREATE TABLE ServiceType (
@@ -302,6 +319,7 @@ ALTER TABLE Service ADD CONSTRAINT service_type_fk FOREIGN KEY (typeID) REFERENC
 ALTER TABLE Appointment ADD CONSTRAINT appointment_pet_fk FOREIGN KEY (petid) REFERENCES Pet (petid);
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 ALTER TABLE Appointment ADD CONSTRAINT appointment_service_fk FOREIGN KEY (service_id) REFERENCES Service (serviceID);
 =======
 ALTER TABLE Appointment ADD CONSTRAINT appointment_service_fk FOREIGN KEY (service_id) REFERENCES Service (ServiceID);
@@ -314,6 +332,13 @@ ALTER TABLE CheckoutService ADD CONSTRAINT cs_checkout_fk FOREIGN KEY (checkoutI
 =======
 ALTER TABLE CheckoutService ADD CONSTRAINT cs_checkout_fk FOREIGN KEY (CheckoutID) REFERENCES Checkout (checkout_id);
 >>>>>>> c7f463c (update dtb)
+=======
+ALTER TABLE Appointment ADD CONSTRAINT appointment_service_fk FOREIGN KEY (service_id) REFERENCES Service (serviceID);
+
+-- ALTER TABLE Checkout ADD CONSTRAINT checkout_pet_fk FOREIGN KEY (PetID) REFERENCES Pet (petid);
+
+ALTER TABLE CheckoutService ADD CONSTRAINT cs_checkout_fk FOREIGN KEY (checkoutID) REFERENCES Checkout (checkout_id);
+>>>>>>> 6e40c8e (update service api)
 
 ALTER TABLE CheckoutService ADD CONSTRAINT cs_service_fk FOREIGN KEY (serviceID) REFERENCES Service (serviceID);
 
