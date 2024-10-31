@@ -13,9 +13,9 @@ import (
 
 const createServiceType = `-- name: CreateServiceType :one
 INSERT INTO ServiceType (
- ServiceTypeName,
- Description,
- IconURL
+ serviceTypeName,
+ description,
+ iconURL
 ) VALUES (
   $1, $2, $3
 ) RETURNING typeid, servicetypename, description, iconurl
@@ -40,7 +40,7 @@ func (q *Queries) CreateServiceType(ctx context.Context, arg CreateServiceTypePa
 }
 
 const deleteServiceType = `-- name: DeleteServiceType :exec
-DELETE FROM ServiceType WHERE TypeID = $1
+DELETE FROM ServiceType WHERE typeID = $1
 `
 
 func (q *Queries) DeleteServiceType(ctx context.Context, typeid int64) error {
@@ -49,7 +49,7 @@ func (q *Queries) DeleteServiceType(ctx context.Context, typeid int64) error {
 }
 
 const getServiceType = `-- name: GetServiceType :one
-SELECT typeid, servicetypename, description, iconurl FROM ServiceType WHERE TypeID = $1 LIMIT 1
+SELECT typeid, servicetypename, description, iconurl FROM ServiceType WHERE typeID = $1 LIMIT 1
 `
 
 func (q *Queries) GetServiceType(ctx context.Context, typeid int64) (Servicetype, error) {

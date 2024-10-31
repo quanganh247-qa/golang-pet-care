@@ -37,7 +37,7 @@ func (s *AppointmentService) CreateAppointment(ctx *gin.Context, req createAppoi
 		return nil, fmt.Errorf("error while creating appointment: %w", err)
 	}
 
-	service, err := s.storeDB.GetService(ctx, appointment.ServiceID.Int64)
+	service, err := s.storeDB.GetServiceByID(ctx, appointment.ServiceID.Int64)
 	if err != nil {
 		return nil, fmt.Errorf("error while getting service: %w", err)
 	}
