@@ -66,6 +66,9 @@ func (q *Queries) CreateAppointment(ctx context.Context, arg CreateAppointmentPa
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 4b8e9b6 (update appointment api)
 const getAppointmentsOfDoctorWithDetails = `-- name: GetAppointmentsOfDoctorWithDetails :many
 SELECT 
     a.appointment_id as appointment_id,
@@ -81,6 +84,7 @@ FROM Appointment a
 WHERE d.id = $1
 AND LOWER(a.status) <> 'completed'
 ORDER BY ts.start_time ASC
+<<<<<<< HEAD
 `
 
 type GetAppointmentsOfDoctorWithDetailsRow struct {
@@ -98,36 +102,31 @@ const getAppointmentsOfDoctor = `-- name: GetAppointmentsOfDoctor :many
 SELECT appointment_id, petid, doctor_id, service_id, date, status, notes, reminder_send, time_slot_id, created_at, id, user_id, specialization, years_of_experience, education, certificate_number, bio, consultation_fee FROM Appointment as a
 left join Doctors as d on a.doctor_id = d.id
 WHERE d.id = $1 and a.status <> 'completed'
+=======
+>>>>>>> 4b8e9b6 (update appointment api)
 `
 
-type GetAppointmentsOfDoctorRow struct {
-	AppointmentID     int64            `json:"appointment_id"`
-	Petid             pgtype.Int8      `json:"petid"`
-	DoctorID          pgtype.Int8      `json:"doctor_id"`
-	ServiceID         pgtype.Int8      `json:"service_id"`
-	Date              pgtype.Timestamp `json:"date"`
-	Status            pgtype.Text      `json:"status"`
-	Notes             pgtype.Text      `json:"notes"`
-	ReminderSend      pgtype.Bool      `json:"reminder_send"`
-	TimeSlotID        pgtype.Int8      `json:"time_slot_id"`
-	CreatedAt         pgtype.Timestamp `json:"created_at"`
-	ID                pgtype.Int8      `json:"id"`
-	UserID            pgtype.Int8      `json:"user_id"`
-	Specialization    pgtype.Text      `json:"specialization"`
-	YearsOfExperience pgtype.Int4      `json:"years_of_experience"`
-	Education         pgtype.Text      `json:"education"`
-	CertificateNumber pgtype.Text      `json:"certificate_number"`
-	Bio               pgtype.Text      `json:"bio"`
-	ConsultationFee   pgtype.Numeric   `json:"consultation_fee"`
+type GetAppointmentsOfDoctorWithDetailsRow struct {
+	AppointmentID int64            `json:"appointment_id"`
+	PetName       pgtype.Text      `json:"pet_name"`
+	ServiceName   pgtype.Text      `json:"service_name"`
+	StartTime     pgtype.Timestamp `json:"start_time"`
+	EndTime       pgtype.Timestamp `json:"end_time"`
 }
 
+<<<<<<< HEAD
 func (q *Queries) GetAppointmentsOfDoctor(ctx context.Context, id int64) ([]GetAppointmentsOfDoctorRow, error) {
 	rows, err := q.db.Query(ctx, getAppointmentsOfDoctor, id)
 >>>>>>> 7cfffa9 (update dtb and appointment)
+=======
+func (q *Queries) GetAppointmentsOfDoctorWithDetails(ctx context.Context, id int64) ([]GetAppointmentsOfDoctorWithDetailsRow, error) {
+	rows, err := q.db.Query(ctx, getAppointmentsOfDoctorWithDetails, id)
+>>>>>>> 4b8e9b6 (update appointment api)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
+<<<<<<< HEAD
 <<<<<<< HEAD
 	items := []GetAppointmentsOfDoctorWithDetailsRow{}
 	for rows.Next() {
@@ -140,10 +139,14 @@ func (q *Queries) GetAppointmentsOfDoctor(ctx context.Context, id int64) ([]GetA
 			&i.EndTime,
 =======
 	items := []GetAppointmentsOfDoctorRow{}
+=======
+	items := []GetAppointmentsOfDoctorWithDetailsRow{}
+>>>>>>> 4b8e9b6 (update appointment api)
 	for rows.Next() {
-		var i GetAppointmentsOfDoctorRow
+		var i GetAppointmentsOfDoctorWithDetailsRow
 		if err := rows.Scan(
 			&i.AppointmentID,
+<<<<<<< HEAD
 			&i.Petid,
 			&i.DoctorID,
 			&i.ServiceID,
@@ -162,6 +165,12 @@ func (q *Queries) GetAppointmentsOfDoctor(ctx context.Context, id int64) ([]GetA
 			&i.Bio,
 			&i.ConsultationFee,
 >>>>>>> 7cfffa9 (update dtb and appointment)
+=======
+			&i.PetName,
+			&i.ServiceName,
+			&i.StartTime,
+			&i.EndTime,
+>>>>>>> 4b8e9b6 (update appointment api)
 		); err != nil {
 			return nil, err
 		}

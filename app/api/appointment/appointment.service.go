@@ -14,11 +14,14 @@ type AppointmentServiceInterface interface {
 <<<<<<< HEAD
 	UpdateAppointmentStatus(ctx *gin.Context, req updateAppointmentStatusRequest, id int64) error
 	GetAppointmentsOfDoctorService(ctx *gin.Context, doctorID int64) ([]AppointmentWithDetails, error)
+<<<<<<< HEAD
 =======
 >>>>>>> 323513c (appointment api)
 =======
 	UpdateAppointmentStatus(ctx *gin.Context, req updateAppointmentStatusRequest, id int64) error
 >>>>>>> 7cfffa9 (update dtb and appointment)
+=======
+>>>>>>> 4b8e9b6 (update appointment api)
 }
 
 <<<<<<< HEAD
@@ -232,6 +235,9 @@ func (s *AppointmentService) UpdateAppointmentStatus(ctx *gin.Context, req updat
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> a26c42a (update appointment api)
 
 	err := s.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
 		return q.UpdateAppointmentStatus(ctx, db.UpdateAppointmentStatusParams{
@@ -579,6 +585,8 @@ func (s *AppointmentService) GetAppointmentsOfDoctorService(ctx *gin.Context, do
 
 func (s *AppointmentService) UpdateAppointmentStatus(ctx *gin.Context, req updateAppointmentStatusRequest, id int64) error {
 	fmt.Println("UpdateAppointmentStatus", req.Status, id)
+=======
+>>>>>>> 4b8e9b6 (update appointment api)
 
 	err := s.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
 		return q.UpdateAppointmentStatus(ctx, db.UpdateAppointmentStatusParams{
@@ -591,5 +599,51 @@ func (s *AppointmentService) UpdateAppointmentStatus(ctx *gin.Context, req updat
 	}
 	return nil
 }
+<<<<<<< HEAD
 >>>>>>> 7cfffa9 (update dtb and appointment)
+<<<<<<< HEAD
 >>>>>>> 940e5bf (update dtb and appointment)
+=======
+=======
+
+func (s *AppointmentService) GetAppointmentsOfDoctorService(ctx *gin.Context, doctorID int64) ([]AppointmentWithDetails, error) {
+
+	// Get all appointments with related data in a single query
+	appointments, err := s.storeDB.GetAppointmentsOfDoctorWithDetails(ctx, doctorID)
+	if err != nil {
+		return nil, fmt.Errorf("fetching appointments: %w", err)
+	}
+
+	// Pre-allocate slice with known capacity
+	result := make([]AppointmentWithDetails, 0, len(appointments))
+
+	for _, appt := range appointments {
+		ts := timeslot{
+			StartTime: appt.StartTime.Time.Format("2006-01-02 15:04:05"),
+			EndTime:   appt.EndTime.Time.Format("2006-01-02 15:04:05"),
+		}
+
+		result = append(result, AppointmentWithDetails{
+			AppointmentID: appt.AppointmentID,
+			PetName:       appt.PetName.String,
+			ServiceName:   appt.ServiceName.String,
+			StartTime:     ts.StartTime,
+			EndTime:       ts.EndTime,
+		})
+	}
+
+	return result, nil
+
+}
+
+// func (s *AppointmentService) UpdateAppointmentNotificationService(ctx *gin.Context, id int64) error {
+// 	err := s.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
+// 		return q.UpdateAppointmentNotification(ctx, id)
+// 	})
+// 	if err != nil {
+// 		return fmt.Errorf("error while updating appointment notification: %w", err)
+// 	}
+// 	return nil
+// }
+>>>>>>> 4b8e9b6 (update appointment api)
+>>>>>>> a26c42a (update appointment api)

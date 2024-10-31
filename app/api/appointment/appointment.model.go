@@ -101,6 +101,14 @@ type createAppointmentResponse struct {
 	Note        string   `json:"note"`
 }
 
+type AppointmentWithDetails struct {
+	AppointmentID int64  `json:"appointment_id"`
+	PetName       string `json:"pet_name"`
+	ServiceName   string `json:"service_name"`
+	StartTime     string `json:"start_time"`
+	EndTime       string `json:"end_time"`
+}
+
 type updateAppointmentStatusRequest struct {
 	Status string `json:"status"`
 >>>>>>> 7cfffa9 (update dtb and appointment)

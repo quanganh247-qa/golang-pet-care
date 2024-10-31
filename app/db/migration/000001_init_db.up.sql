@@ -274,11 +274,14 @@ CREATE TABLE Doctors (
 );
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 
 
 
 >>>>>>> 24ea3ee (time slot of doctor api)
+=======
+>>>>>>> 4b8e9b6 (update appointment api)
 CREATE TABLE TimeSlots (
   id BIGSERIAL PRIMARY KEY,
   doctor_id BIGINT NOT NULL,

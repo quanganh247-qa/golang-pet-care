@@ -22,6 +22,9 @@ SET status = $2
 WHERE appointment_id = $1;
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 4b8e9b6 (update appointment api)
 -- name: GetAppointmentsOfDoctorWithDetails :many
 SELECT 
     a.appointment_id as appointment_id,
@@ -36,6 +39,7 @@ FROM Appointment a
     LEFT JOIN TimeSlots ts ON a.time_slot_id = ts.id
 WHERE d.id = $1
 AND LOWER(a.status) <> 'completed'
+<<<<<<< HEAD
 ORDER BY ts.start_time ASC;
 =======
 INSERT INTO Appointments (
@@ -57,3 +61,6 @@ SELECT * FROM Appointment as a
 left join Doctors as d on a.doctor_id = d.id
 WHERE d.id = $1 and a.status <> 'completed';
 >>>>>>> 7cfffa9 (update dtb and appointment)
+=======
+ORDER BY ts.start_time ASC;
+>>>>>>> 4b8e9b6 (update appointment api)
