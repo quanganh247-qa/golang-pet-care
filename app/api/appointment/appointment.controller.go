@@ -11,6 +11,7 @@ import (
 type AppointmentControllerInterface interface {
 	createAppointment(ctx *gin.Context)
 	updateAppointmentStatus(ctx *gin.Context)
+	getAppointmentsOfDoctor(ctx *gin.Context)
 }
 
 func (c *AppointmentController) createAppointment(ctx *gin.Context) {
@@ -19,7 +20,6 @@ func (c *AppointmentController) createAppointment(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, util.ErrorValidator(err))
 		return
 	}
-	println("CreateAppointment reqqqqqqqq", req.TimeSlotID)
 	res, err := c.service.CreateAppointment(ctx, req)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
@@ -51,4 +51,25 @@ func (c *AppointmentController) updateAppointmentStatus(ctx *gin.Context) {
 		return
 	}
 	ctx.JSON(http.StatusOK, util.SuccessResponse("update appointment status successful", nil))
+}
+
+func (c *AppointmentController) getAppointmentsOfDoctor(ctx *gin.Context) {
+
+	doctorID := ctx.Param("doctor_id")
+	if doctorID == "" {
+		ctx.JSON(http.StatusBadRequest, nil)
+		return
+	}
+	// convert string to int64
+	id, err := strconv.ParseInt(doctorID, 10, 64)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
+		return
+	}
+	res, err := c.service.GetAppointmentsOfDoctorService(ctx, id)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
+		return
+	}
+	ctx.JSON(http.StatusOK, util.SuccessResponse("get appointments of doctor successful", res))
 }
