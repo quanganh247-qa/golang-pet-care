@@ -17,6 +17,12 @@ type Activitylog struct {
 	Starttime    pgtype.Timestamp `json:"starttime"`
 	Duration     pgtype.Interval  `json:"duration"`
 	Notes        pgtype.Text      `json:"notes"`
+	Logid        int64            `json:"logid"`
+	Petid        pgtype.Int8      `json:"petid"`
+	Activitytype string           `json:"activitytype"`
+	Starttime    pgtype.Timestamp `json:"starttime"`
+	Duration     pgtype.Interval  `json:"duration"`
+	Notes        pgtype.Text      `json:"notes"`
 }
 
 type Appointment struct {
@@ -30,9 +36,27 @@ type Appointment struct {
 	ReminderSend  pgtype.Bool      `json:"reminder_send"`
 	TimeSlotID    pgtype.Int8      `json:"time_slot_id"`
 	CreatedAt     pgtype.Timestamp `json:"created_at"`
+	AppointmentID int64            `json:"appointment_id"`
+	Petid         pgtype.Int8      `json:"petid"`
+	DoctorID      pgtype.Int8      `json:"doctor_id"`
+	ServiceID     pgtype.Int8      `json:"service_id"`
+	Date          pgtype.Timestamp `json:"date"`
+	Status        pgtype.Text      `json:"status"`
+	Notes         pgtype.Text      `json:"notes"`
+	ReminderSend  pgtype.Bool      `json:"reminder_send"`
+	TimeSlotID    pgtype.Int8      `json:"time_slot_id"`
+	CreatedAt     pgtype.Timestamp `json:"created_at"`
 }
 
 type Checkout struct {
+	CheckoutID    int64            `json:"checkout_id"`
+	Petid         pgtype.Int8      `json:"petid"`
+	DoctorID      pgtype.Int8      `json:"doctor_id"`
+	Date          pgtype.Timestamp `json:"date"`
+	TotalTmount   float64          `json:"total_tmount"`
+	PaymentStatus pgtype.Text      `json:"payment_status"`
+	PaymentMethod pgtype.Text      `json:"payment_method"`
+	Notes         pgtype.Text      `json:"notes"`
 	CheckoutID    int64            `json:"checkout_id"`
 	Petid         pgtype.Int8      `json:"petid"`
 	DoctorID      pgtype.Int8      `json:"doctor_id"`
@@ -64,6 +88,13 @@ type Doctor struct {
 }
 
 type Doctorschedule struct {
+	ID              int64            `json:"id"`
+	DoctorID        int64            `json:"doctor_id"`
+	DayOfWeek       pgtype.Int4      `json:"day_of_week"`
+	StartTime       pgtype.Timestamp `json:"start_time"`
+	EndTime         pgtype.Timestamp `json:"end_time"`
+	IsActive        pgtype.Bool      `json:"is_active"`
+	MaxAppointments pgtype.Int4      `json:"max_appointments"`
 	ID              int64            `json:"id"`
 	DoctorID        int64            `json:"doctor_id"`
 	DayOfWeek       pgtype.Int4      `json:"day_of_week"`
@@ -150,6 +181,12 @@ type Timeslot struct {
 	EndTime   pgtype.Timestamp `json:"end_time"`
 	IsActive  pgtype.Bool      `json:"is_active"`
 	Day       pgtype.Date      `json:"day"`
+	ID        int64            `json:"id"`
+	DoctorID  int64            `json:"doctor_id"`
+	StartTime pgtype.Timestamp `json:"start_time"`
+	EndTime   pgtype.Timestamp `json:"end_time"`
+	IsActive  pgtype.Bool      `json:"is_active"`
+	Day       pgtype.Date      `json:"day"`
 }
 
 type TokenInfo struct {
@@ -176,6 +213,18 @@ type User struct {
 	CreatedAt       pgtype.Timestamp `json:"created_at"`
 	IsVerifiedEmail pgtype.Bool      `json:"is_verified_email"`
 	RemovedAt       pgtype.Timestamp `json:"removed_at"`
+	ID              int64            `json:"id"`
+	Username        string           `json:"username"`
+	HashedPassword  string           `json:"hashed_password"`
+	FullName        string           `json:"full_name"`
+	Email           string           `json:"email"`
+	PhoneNumber     pgtype.Text      `json:"phone_number"`
+	Address         pgtype.Text      `json:"address"`
+	Avatar          pgtype.Text      `json:"avatar"`
+	Role            pgtype.Text      `json:"role"`
+	CreatedAt       pgtype.Timestamp `json:"created_at"`
+	IsVerifiedEmail pgtype.Bool      `json:"is_verified_email"`
+	RemovedAt       pgtype.Timestamp `json:"removed_at"`
 }
 
 type Vaccination struct {
@@ -190,6 +239,13 @@ type Vaccination struct {
 }
 
 type VerifyEmail struct {
+	ID         int64            `json:"id"`
+	Username   string           `json:"username"`
+	Email      string           `json:"email"`
+	SecretCode string           `json:"secret_code"`
+	IsUsed     bool             `json:"is_used"`
+	CreatedAt  pgtype.Timestamp `json:"created_at"`
+	ExpiredAt  pgtype.Timestamp `json:"expired_at"`
 	ID         int64            `json:"id"`
 	Username   string           `json:"username"`
 	Email      string           `json:"email"`
