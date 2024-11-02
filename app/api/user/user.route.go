@@ -40,6 +40,9 @@ func Routes(routerGroup middleware.RouterGroup) {
 		authRoute.GET("/all-time-slots/:doctor_id", userApi.controller.getAllTimeSlots)
 		authRoute.PUT("/update-available/:id", userApi.controller.updateDoctorAvailableTime)
 
+		// Token info for google calendar
+		authRoute.POST("/token-info", userApi.controller.insertTokenInfo)
+
 	}
 
 }
