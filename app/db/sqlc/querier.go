@@ -97,6 +97,9 @@ type Querier interface {
 	InsertDoctorSchedule(ctx context.Context, arg InsertDoctorScheduleParams) (Doctorschedule, error)
 	InsertTimeslot(ctx context.Context, arg InsertTimeslotParams) (Timeslot, error)
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> e52a297 (google calendar api)
 	InsertTokenInfo(ctx context.Context, arg InsertTokenInfoParams) (TokenInfo, error)
 	ListPets(ctx context.Context, arg ListPetsParams) ([]Pet, error)
 	UpdateAppointmentStatus(ctx context.Context, arg UpdateAppointmentStatusParams) error

@@ -373,8 +373,12 @@ CREATE TABLE token_info (
 	updated_at timestamptz DEFAULT now() NULL,
 	CONSTRAINT token_info_pk PRIMARY KEY (id),
 	CONSTRAINT token_info_unique UNIQUE (user_name)
+<<<<<<< HEAD
 );
 =======
 
 -- ALTER TABLE Appointment ADD CONSTRAINT fk_appointment_timeslot FOREIGN KEY (time_slot_id) REFERENCES TimeSlots (id);
 >>>>>>> 24ea3ee (time slot of doctor api)
+=======
+);
+>>>>>>> e52a297 (google calendar api)

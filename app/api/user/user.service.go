@@ -33,11 +33,15 @@ type UserServiceInterface interface {
 	GetAllTimeslots(ctx *gin.Context, doctorID int64, date string) ([]db.GetTimeslotsAvailableRow, error)
 	UpdateDoctorAvailable(ctx *gin.Context, time_slot_id int64) error
 <<<<<<< HEAD
+<<<<<<< HEAD
 	InsertTokenInfoService(ctx *gin.Context, arg InsertTokenInfoRequest, username string) (*db.TokenInfo, error)
 =======
 >>>>>>> 1ada478 (get doctor api)
 =======
 >>>>>>> 24ea3ee (time slot of doctor api)
+=======
+	InsertTokenInfoService(ctx *gin.Context, arg InsertTokenInfoRequest, username string) (*db.TokenInfo, error)
+>>>>>>> e52a297 (google calendar api)
 }
 
 func (server *UserService) createUserService(ctx *gin.Context, req createUserRequest) (*db.User, error) {
@@ -549,4 +553,23 @@ func (s *UserService) UpdateDoctorAvailable(ctx *gin.Context, timeSlotID int64) 
 	}
 
 	return nil // Successfully updated
+}
+
+func (s *UserService) InsertTokenInfoService(ctx *gin.Context, arg InsertTokenInfoRequest, username string) (*db.TokenInfo, error) {
+	tokenInfo, err := s.storeDB.InsertTokenInfo(ctx, db.InsertTokenInfoParams{
+		AccessToken:  arg.AccessToken,
+		TokenType:    arg.TokenType,
+		UserName:     username,
+		RefreshToken: pgtype.Text{String: arg.RefreshToken.String, Valid: true},
+		Expiry:       arg.Expiry,
+	})
+	if err != nil {
+		return nil, fmt.Errorf("failed to insert token info: %w", err)
+	}
+	return &db.TokenInfo{
+		AccessToken:  tokenInfo.AccessToken,
+		TokenType:    tokenInfo.TokenType,
+		RefreshToken: tokenInfo.RefreshToken,
+		Expiry:       tokenInfo.Expiry,
+	}, nil
 }

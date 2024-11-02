@@ -5,6 +5,8 @@
 package db
 
 import (
+	"time"
+
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
@@ -260,6 +262,17 @@ type TokenInfo struct {
 	UpdatedAt    pgtype.Timestamptz `json:"updated_at"`
 =======
 >>>>>>> 24ea3ee (time slot of doctor api)
+}
+
+type TokenInfo struct {
+	ID           int64              `json:"id"`
+	UserName     string             `json:"user_name"`
+	AccessToken  string             `json:"access_token"`
+	TokenType    string             `json:"token_type"`
+	RefreshToken pgtype.Text        `json:"refresh_token"`
+	Expiry       time.Time          `json:"expiry"`
+	CreatedAt    pgtype.Timestamptz `json:"created_at"`
+	UpdatedAt    pgtype.Timestamptz `json:"updated_at"`
 }
 
 type User struct {
