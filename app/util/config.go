@@ -36,6 +36,10 @@ type Config struct {
 	EmailSenderName     string `mapstructure:"EMAIL_SENDER_NAME"`
 	EmailSenderAddress  string `mapstructure:"EMAIL_SENDER_ADDRESS"`
 	EmailSenderPassword string `mapstructure:"EMAIL_SENDER_PASSWORD"`
+
+	GoogleClientID     string `mapstructure:"GOOGLE_CLIENT_ID"`
+	GoogleClientSecret string `mapstructure:"GOOGLE_CLIENT_SECRET"`
+	GoogleRedirectURL  string `mapstructure:"GOOGLE_REDIRECT_URL"`
 }
 
 var Configs = Config{}

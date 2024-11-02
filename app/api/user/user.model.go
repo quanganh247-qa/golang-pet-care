@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/gofrs/uuid"
+	"github.com/jackc/pgx/v5/pgtype"
 	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
 	"github.com/quanganh247-qa/go-blog-be/app/service/rabbitmq"
 )
@@ -95,4 +96,11 @@ type VerrifyEmailTxParams struct {
 type VerrifyEmailTxResult struct {
 	User        db.User
 	VerifyEmail db.VerifyEmail
+}
+
+type InsertTokenInfoRequest struct {
+	AccessToken  string      `json:"access_token"`
+	RefreshToken pgtype.Text `json:"refresh_token"`
+	TokenType    string      `json:"token_type"`
+	Expiry       time.Time   `json:"expiry"`
 }

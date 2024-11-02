@@ -209,3 +209,23 @@ ALTER TABLE DoctorSchedules ADD CONSTRAINT fk_schedule_doctor FOREIGN KEY (docto
 -- ALTER TABLE DoctorTimeOff ADD CONSTRAINT fk_timeoff_doctor FOREIGN KEY (doctor_id) REFERENCES Doctors (id);
 
 -- ALTER TABLE Appointment ADD CONSTRAINT fk_appointment_timeslot FOREIGN KEY (time_slot_id) REFERENCES TimeSlots (id);
+
+
+-- public.token_info definition
+
+-- Drop table
+
+-- DROP TABLE public.token_info;
+
+CREATE TABLE token_info (
+	id bigserial NOT NULL,
+	user_name varchar NOT NULL,
+	access_token text NOT NULL,
+	token_type varchar NOT NULL,
+	refresh_token text NULL,
+	expiry timestamptz NOT NULL,
+	created_at timestamptz DEFAULT now() NULL,
+	updated_at timestamptz DEFAULT now() NULL,
+	CONSTRAINT token_info_pk PRIMARY KEY (id),
+	CONSTRAINT token_info_unique UNIQUE (user_name)
+);

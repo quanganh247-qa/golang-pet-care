@@ -5,6 +5,8 @@
 package db
 
 import (
+	"time"
+
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
@@ -148,6 +150,17 @@ type Timeslot struct {
 	EndTime   pgtype.Timestamp `json:"end_time"`
 	IsActive  pgtype.Bool      `json:"is_active"`
 	Day       pgtype.Date      `json:"day"`
+}
+
+type TokenInfo struct {
+	ID           int64              `json:"id"`
+	UserName     string             `json:"user_name"`
+	AccessToken  string             `json:"access_token"`
+	TokenType    string             `json:"token_type"`
+	RefreshToken pgtype.Text        `json:"refresh_token"`
+	Expiry       time.Time          `json:"expiry"`
+	CreatedAt    pgtype.Timestamptz `json:"created_at"`
+	UpdatedAt    pgtype.Timestamptz `json:"updated_at"`
 }
 
 type User struct {

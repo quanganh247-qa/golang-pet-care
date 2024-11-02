@@ -11,6 +11,7 @@ import (
 type Querier interface {
 	CreateAppointment(ctx context.Context, arg CreateAppointmentParams) (Appointment, error)
 	CreatePet(ctx context.Context, arg CreatePetParams) (Pet, error)
+	CreateReminder(ctx context.Context, arg CreateReminderParams) (Reminder, error)
 	CreateService(ctx context.Context, arg CreateServiceParams) (Service, error)
 	CreateServiceType(ctx context.Context, arg CreateServiceTypeParams) (Servicetype, error)
 	CreateUser(ctx context.Context, arg CreateUserParams) (User, error)
@@ -33,6 +34,7 @@ type Querier interface {
 	InsertDoctor(ctx context.Context, arg InsertDoctorParams) (Doctor, error)
 	InsertDoctorSchedule(ctx context.Context, arg InsertDoctorScheduleParams) (Doctorschedule, error)
 	InsertTimeslot(ctx context.Context, arg InsertTimeslotParams) (Timeslot, error)
+	InsertTokenInfo(ctx context.Context, arg InsertTokenInfoParams) (TokenInfo, error)
 	ListPets(ctx context.Context, arg ListPetsParams) ([]Pet, error)
 	UpdateAppointmentStatus(ctx context.Context, arg UpdateAppointmentStatusParams) error
 	// Replace $2 with the specific date (YYYY-MM-DD)

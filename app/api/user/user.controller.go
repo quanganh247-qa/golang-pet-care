@@ -25,6 +25,7 @@ type UserControllerInterface interface {
 	getTimeSlots(ctx *gin.Context)
 	getAllTimeSlots(ctx *gin.Context)
 	updateDoctorAvailableTime(ctx *gin.Context)
+	insertTokenInfo(ctx *gin.Context)
 }
 
 func (controller *UserController) createUser(ctx *gin.Context) {
@@ -267,4 +268,23 @@ func (controller *UserController) updateDoctorAvailableTime(ctx *gin.Context) {
 		return
 	}
 	ctx.JSON(http.StatusOK, util.SuccessResponse("Updated timeslot successfull", nil))
+}
+
+func (controller *UserController) insertTokenInfo(ctx *gin.Context) {
+	var req InsertTokenInfoRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, util.ErrorValidator(err))
+		return
+	}
+	authPayload, err := middleware.GetAuthorizationPayload(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
+		return
+	}
+	res, err := controller.service.InsertTokenInfoService(ctx, req, authPayload.Username)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
+		return
+	}
+	ctx.JSON(http.StatusCreated, util.SuccessResponse("Inserted token info successfull", res))
 }
