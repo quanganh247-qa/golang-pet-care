@@ -16,8 +16,6 @@ type Config struct {
 	RedisAddress      string `mapstructure:"REDIS_ADDRESS"`
 	RabbitMQAddress   string `mapstructure:"RABBITMQ_ADDRESS"`
 	HTTPServerAddress string `mapstructure:"HTTP_SERVER_ADDRESS"`
-	GRPCServerAddress string `mapstructure:"GRPC_SERVER_ADDRESS"`
-	GRPCSocketAddress string `mapstructure:"GRPC_SOCKET_ADDRESS"`
 
 	SymmetricKey  string `mapstructure:"SYMMETRIC_KEY"`
 	AdminUsername string `mapstructure:"ADMIN_USERNAME"`
@@ -25,11 +23,7 @@ type Config struct {
 	AccessTokenDuration  time.Duration `mapstructure:"ACCESS_TOKEN_DURATION"`
 	RefreshTokenDuration time.Duration `mapstructure:"REFRESH_TOKEN_DURATION"`
 
-	ApiPrefix          string `mapstructure:"API_PREFIX"`
-	RegexIgnoreLogging string `mapstructure:"REGEX_IGNORE_LOGGING"`
-
-	SocketUrl     string        `mapstructure:"SOCKET_ENDPOINT"`
-	SocketTimeout time.Duration `mapstructure:"SOCKET__TIMEOUT"`
+	ApiPrefix string `mapstructure:"API_PREFIX"`
 
 	CookieSameSite string `mapstructure:"COOKIE_SAME_SITE"`
 	CookieSecure   bool   `mapstructure:"COOKIE_SECURE"`
