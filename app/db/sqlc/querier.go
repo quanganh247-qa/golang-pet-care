@@ -54,6 +54,7 @@ type Querier interface {
 	InsertDoctor(ctx context.Context, arg InsertDoctorParams) (Doctor, error)
 	InsertDoctorSchedule(ctx context.Context, arg InsertDoctorScheduleParams) (Doctorschedule, error)
 	InsertTimeslot(ctx context.Context, arg InsertTimeslotParams) (Timeslot, error)
+	InsertTokenInfo(ctx context.Context, arg InsertTokenInfoParams) (TokenInfo, error)
 	ListPets(ctx context.Context, arg ListPetsParams) ([]Pet, error)
 	UpdateAppointmentStatus(ctx context.Context, arg UpdateAppointmentStatusParams) error
 	// Replace $2 with the specific date (YYYY-MM-DD)
