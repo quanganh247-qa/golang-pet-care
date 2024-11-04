@@ -66,7 +66,7 @@ func (s *VaccinationService) GetVaccinationByID(ctx *gin.Context, vaccinationID 
 }
 
 func (s *VaccinationService) ListVaccinationsByPetID(ctx *gin.Context, petID int64) ([]VaccinationResponse, error) {
-	res, err := s.storeDB.ListVaccinationsByPetID(ctx, petID)
+	res, err := s.storeDB.ListVaccinationsByPetID(ctx, pgtype.Int8{Int64: petID, Valid: true})
 	if err != nil {
 		return nil, fmt.Errorf("failed to list vaccinations for pet: %w", err)
 	}

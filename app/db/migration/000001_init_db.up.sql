@@ -39,6 +39,7 @@ CREATE TABLE Pet (
   username varchar NOT NULL,
   microchip_number varchar(50),
   last_checkup_date date,
+  is_active BOOLEAN DEFAULT true,
   PRIMARY KEY (petid)
 );
 

@@ -12,9 +12,9 @@ import (
 )
 
 const createPet = `-- name: CreatePet :one
-INSERT INTO Pet (username, Name, Type, Breed, Age, Weight, Gender, HealthNotes, ProfileImage)
-VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
-RETURNING petid, name, type, breed, age, gender, healthnotes, profileimage, weight, birth_date, username, microchip_number, last_checkup_date
+INSERT INTO Pet (username, Name, Type, Breed, Age, Weight, Gender, HealthNotes, ProfileImage, is_active)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+RETURNING petid, name, type, breed, age, gender, healthnotes, profileimage, weight, birth_date, username, microchip_number, last_checkup_date, is_active
 `
 
 type CreatePetParams struct {
@@ -27,6 +27,7 @@ type CreatePetParams struct {
 	Gender       pgtype.Text   `json:"gender"`
 	Healthnotes  pgtype.Text   `json:"healthnotes"`
 	Profileimage pgtype.Text   `json:"profileimage"`
+	IsActive     pgtype.Bool   `json:"is_active"`
 }
 
 func (q *Queries) CreatePet(ctx context.Context, arg CreatePetParams) (Pet, error) {
@@ -40,6 +41,7 @@ func (q *Queries) CreatePet(ctx context.Context, arg CreatePetParams) (Pet, erro
 		arg.Gender,
 		arg.Healthnotes,
 		arg.Profileimage,
+		arg.IsActive,
 	)
 	var i Pet
 	err := row.Scan(
@@ -56,6 +58,7 @@ func (q *Queries) CreatePet(ctx context.Context, arg CreatePetParams) (Pet, erro
 		&i.Username,
 		&i.MicrochipNumber,
 		&i.LastCheckupDate,
+		&i.IsActive,
 	)
 	return i, err
 }
@@ -70,7 +73,7 @@ func (q *Queries) DeletePet(ctx context.Context, petid int64) error {
 }
 
 const getPetByID = `-- name: GetPetByID :one
-SELECT petid, name, type, breed, age, gender, healthnotes, profileimage, weight, birth_date, username, microchip_number, last_checkup_date FROM Pet WHERE PetID = $1
+SELECT petid, name, type, breed, age, gender, healthnotes, profileimage, weight, birth_date, username, microchip_number, last_checkup_date, is_active FROM Pet WHERE PetID = $1
 `
 
 func (q *Queries) GetPetByID(ctx context.Context, petid int64) (Pet, error) {
@@ -90,12 +93,13 @@ func (q *Queries) GetPetByID(ctx context.Context, petid int64) (Pet, error) {
 		&i.Username,
 		&i.MicrochipNumber,
 		&i.LastCheckupDate,
+		&i.IsActive,
 	)
 	return i, err
 }
 
 const listPets = `-- name: ListPets :many
-SELECT petid, name, type, breed, age, gender, healthnotes, profileimage, weight, birth_date, username, microchip_number, last_checkup_date FROM Pet ORDER BY PetID LIMIT $1 OFFSET $2
+SELECT petid, name, type, breed, age, gender, healthnotes, profileimage, weight, birth_date, username, microchip_number, last_checkup_date, is_active FROM Pet ORDER BY PetID LIMIT $1 OFFSET $2
 `
 
 type ListPetsParams struct {
@@ -126,6 +130,7 @@ func (q *Queries) ListPets(ctx context.Context, arg ListPetsParams) ([]Pet, erro
 			&i.Username,
 			&i.MicrochipNumber,
 			&i.LastCheckupDate,
+			&i.IsActive,
 		); err != nil {
 			return nil, err
 		}
@@ -137,9 +142,68 @@ func (q *Queries) ListPets(ctx context.Context, arg ListPetsParams) ([]Pet, erro
 	return items, nil
 }
 
+const listPetsByUsername = `-- name: ListPetsByUsername :many
+SELECT petid, name, type, breed, age, gender, healthnotes, profileimage, weight, birth_date, username, microchip_number, last_checkup_date, is_active FROM Pet WHERE username = $1 ORDER BY PetID LIMIT $2 OFFSET $3
+`
+
+type ListPetsByUsernameParams struct {
+	Username string `json:"username"`
+	Limit    int32  `json:"limit"`
+	Offset   int32  `json:"offset"`
+}
+
+func (q *Queries) ListPetsByUsername(ctx context.Context, arg ListPetsByUsernameParams) ([]Pet, error) {
+	rows, err := q.db.Query(ctx, listPetsByUsername, arg.Username, arg.Limit, arg.Offset)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []Pet{}
+	for rows.Next() {
+		var i Pet
+		if err := rows.Scan(
+			&i.Petid,
+			&i.Name,
+			&i.Type,
+			&i.Breed,
+			&i.Age,
+			&i.Gender,
+			&i.Healthnotes,
+			&i.Profileimage,
+			&i.Weight,
+			&i.BirthDate,
+			&i.Username,
+			&i.MicrochipNumber,
+			&i.LastCheckupDate,
+			&i.IsActive,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const setPetInactive = `-- name: SetPetInactive :exec
+UPDATE Pet SET is_active = $2 WHERE PetID = $1
+`
+
+type SetPetInactiveParams struct {
+	Petid    int64       `json:"petid"`
+	IsActive pgtype.Bool `json:"is_active"`
+}
+
+func (q *Queries) SetPetInactive(ctx context.Context, arg SetPetInactiveParams) error {
+	_, err := q.db.Exec(ctx, setPetInactive, arg.Petid, arg.IsActive)
+	return err
+}
+
 const updatePet = `-- name: UpdatePet :exec
 UPDATE Pet
-SET Name = $2, Type = $3, Breed = $4, Age = $5, Weight = $6, Gender = $7, HealthNotes = $8, ProfileImage = $9
+SET Name = $2, Type = $3, Breed = $4, Age = $5, Weight = $6, Gender = $7, HealthNotes = $8, ProfileImage = $9, is_active = $10
 WHERE PetID = $1
 `
 
@@ -153,6 +217,7 @@ type UpdatePetParams struct {
 	Gender       pgtype.Text   `json:"gender"`
 	Healthnotes  pgtype.Text   `json:"healthnotes"`
 	Profileimage pgtype.Text   `json:"profileimage"`
+	IsActive     pgtype.Bool   `json:"is_active"`
 }
 
 func (q *Queries) UpdatePet(ctx context.Context, arg UpdatePetParams) error {
@@ -166,6 +231,7 @@ func (q *Queries) UpdatePet(ctx context.Context, arg UpdatePetParams) error {
 		arg.Gender,
 		arg.Healthnotes,
 		arg.Profileimage,
+		arg.IsActive,
 	)
 	return err
 }

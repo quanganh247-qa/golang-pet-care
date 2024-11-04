@@ -99,6 +99,7 @@ type Pet struct {
 	Username        string        `json:"username"`
 	MicrochipNumber pgtype.Text   `json:"microchip_number"`
 	LastCheckupDate pgtype.Date   `json:"last_checkup_date"`
+	IsActive        pgtype.Bool   `json:"is_active"`
 }
 
 type Petservicelocation struct {
