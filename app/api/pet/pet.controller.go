@@ -12,6 +12,7 @@ type PetControllerInterface interface {
 	CreatePet(ctx *gin.Context)
 	GetPetByID(ctx *gin.Context)
 	ListPets(ctx *gin.Context)
+	ListPetsByUsername(ctx *gin.Context)
 	UpdatePet(ctx *gin.Context)
 	DeletePet(ctx *gin.Context)
 }
@@ -112,11 +113,37 @@ func (c *PetController) DeletePet(ctx *gin.Context) {
 		return
 	}
 
-	err = c.service.DeletePet(ctx, petid)
+	err = c.service.SetPetInactive(ctx, petid)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"message": "Pet deleted successfully"})
+	ctx.JSON(http.StatusOK, gin.H{"message": "Pet set to inactive successfully"})
+}
+
+func (c *PetController) ListPetsByUsername(ctx *gin.Context) {
+	username := ctx.Param("username")
+	limitStr := ctx.DefaultQuery("limit", "10")
+	offsetStr := ctx.DefaultQuery("offset", "0")
+
+	limit, err := strconv.ParseInt(limitStr, 10, 32)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid limit"})
+		return
+	}
+
+	offset, err := strconv.ParseInt(offsetStr, 10, 32)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid offset"})
+		return
+	}
+
+	pets, err := c.service.ListPetsByUsername(ctx, username, int32(limit), int32(offset))
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, pets)
 }

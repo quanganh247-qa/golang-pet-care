@@ -15,6 +15,8 @@ type PetServiceInterface interface {
 	ListPets(ctx *gin.Context, req listPetsRequest) ([]createPetResponse, error)
 	UpdatePet(ctx *gin.Context, petid int64, req createPetRequest) error
 	DeletePet(ctx context.Context, petid int64) error
+	ListPetsByUsername(ctx *gin.Context, username string, limit, offset int32) ([]createPetResponse, error)
+	SetPetInactive(ctx context.Context, petid int64) error
 }
 
 func (s *PetService) CreatePet(ctx *gin.Context, username string, req createPetRequest) (*createPetResponse, error) {
@@ -129,4 +131,48 @@ func (s *PetService) UpdatePet(ctx *gin.Context, petid int64, req createPetReque
 
 func (s *PetService) DeletePet(ctx context.Context, petid int64) error {
 	return s.storeDB.DeletePet(ctx, petid)
+}
+
+func (s *PetService) ListPetsByUsername(ctx *gin.Context, username string, limit, offset int32) ([]createPetResponse, error) {
+	var pets []createPetResponse
+
+	err := s.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
+		listParams := db.ListPetsByUsernameParams{
+			Username: username,
+			Limit:    limit,
+			Offset:   offset,
+		}
+
+		res, err := q.ListPetsByUsername(ctx, listParams)
+		if err != nil {
+			return fmt.Errorf("failed to list pets for user %s: %w", username, err)
+		}
+
+		for _, r := range res {
+			pets = append(pets, createPetResponse{
+				Petid:    r.Petid,
+				Username: r.Username,
+				Name:     r.Name,
+				Type:     r.Type,
+				Breed:    r.Breed.String,
+				Age:      int16(r.Age.Int32),
+				Weight:   r.Weight.Float64,
+			})
+		}
+		return nil
+	})
+
+	if err != nil {
+		return nil, fmt.Errorf("transaction failed: %w", err)
+	}
+
+	return pets, nil
+}
+
+func (s *PetService) SetPetInactive(ctx context.Context, petid int64) error {
+	params := db.SetPetInactiveParams{
+		Petid:    petid,
+		IsActive: pgtype.Bool{Bool: false, Valid: true},
+	}
+	return s.storeDB.SetPetInactive(ctx, params)
 }

@@ -46,7 +46,9 @@ type Querier interface {
 	InsertTokenInfo(ctx context.Context, arg InsertTokenInfoParams) (TokenInfo, error)
 	ListActiveFeedingSchedules(ctx context.Context) ([]Feedingschedule, error)
 	ListPets(ctx context.Context, arg ListPetsParams) ([]Pet, error)
+	ListPetsByUsername(ctx context.Context, arg ListPetsByUsernameParams) ([]Pet, error)
 	ListVaccinationsByPetID(ctx context.Context, petid pgtype.Int8) ([]Vaccination, error)
+	SetPetInactive(ctx context.Context, arg SetPetInactiveParams) error
 	UpdateAppointmentStatus(ctx context.Context, arg UpdateAppointmentStatusParams) error
 	// Replace $2 with the specific date (YYYY-MM-DD)
 	UpdateDoctorAvailable(ctx context.Context, arg UpdateDoctorAvailableParams) error
