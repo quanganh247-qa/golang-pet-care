@@ -78,7 +78,7 @@ type Feedingschedule struct {
 	Petid             pgtype.Int8      `json:"petid"`
 	Mealtime          pgtype.Time      `json:"mealtime"`
 	Foodtype          string           `json:"foodtype"`
-	Quantity          pgtype.Numeric   `json:"quantity"`
+	Quantity          float64          `json:"quantity"`
 	Frequency         string           `json:"frequency"`
 	Lastfed           pgtype.Timestamp `json:"lastfed"`
 	Notes             pgtype.Text      `json:"notes"`

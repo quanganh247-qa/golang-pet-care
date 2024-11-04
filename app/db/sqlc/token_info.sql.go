@@ -12,6 +12,26 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+const getTokenInfo = `-- name: GetTokenInfo :one
+SELECT id, user_name, access_token, token_type, refresh_token, expiry, created_at, updated_at FROM token_info WHERE user_name = $1
+`
+
+func (q *Queries) GetTokenInfo(ctx context.Context, userName string) (TokenInfo, error) {
+	row := q.db.QueryRow(ctx, getTokenInfo, userName)
+	var i TokenInfo
+	err := row.Scan(
+		&i.ID,
+		&i.UserName,
+		&i.AccessToken,
+		&i.TokenType,
+		&i.RefreshToken,
+		&i.Expiry,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
 const insertTokenInfo = `-- name: InsertTokenInfo :one
 INSERT INTO token_info (access_token, refresh_token, token_type ,user_name, expiry)
 VALUES ($1, $2, $3, $4, $5)

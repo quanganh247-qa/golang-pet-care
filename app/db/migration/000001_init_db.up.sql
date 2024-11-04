@@ -58,7 +58,7 @@ CREATE TABLE FeedingSchedule (
   petID BIGINT,
   mealTime TIME NOT NULL,
   foodType VARCHAR(100) NOT NULL,
-  quantity DECIMAL(5,2) NOT NULL,
+  quantity float8 NOT NULL,
   frequency VARCHAR(50) NOT NULL,
   lastFed timestamp,
   notes TEXT,
