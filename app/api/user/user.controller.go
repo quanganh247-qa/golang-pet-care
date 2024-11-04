@@ -206,14 +206,6 @@ func (controller *UserController) getDoctor(ctx *gin.Context) {
 	}
 	ctx.JSON(http.StatusOK, util.SuccessResponse("Success", res))
 }
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> 24ea3ee (time slot of doctor api)
-=======
->>>>>>> 24ea3ee (time slot of doctor api)
 
 func (controller *UserController) insertTimeSlots(ctx *gin.Context) {
 	var req db.InsertTimeslotParams

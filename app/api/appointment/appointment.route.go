@@ -22,25 +22,8 @@ func Routes(routerGroup middleware.RouterGroup) {
 
 	{
 		authRoute.POST("/create", appointmentApi.controller.createAppointment)
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
 		authRoute.PUT("/:appointment_id", appointmentApi.controller.updateAppointmentStatus)
 		authRoute.GET("/doctor/:doctor_id", appointmentApi.controller.getAppointmentsOfDoctor)
-<<<<<<< HEAD
-=======
->>>>>>> 323513c (appointment api)
-=======
-		authRoute.PUT("/:appointment_id", appointmentApi.controller.updateAppointmentStatus)
->>>>>>> 7cfffa9 (update dtb and appointment)
-=======
->>>>>>> 4b8e9b6 (update appointment api)
-=======
->>>>>>> 323513c (appointment api)
-=======
-		authRoute.PUT("/:appointment_id", appointmentApi.controller.updateAppointmentStatus)
->>>>>>> 7cfffa9 (update dtb and appointment)
 
 	}
 
