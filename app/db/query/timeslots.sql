@@ -38,14 +38,6 @@ WHERE
 -- name: UpdateDoctorAvailable :exec
 UPDATE TimeSlots
 SET is_active = $1
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> 59d4ef2 (modify type of filed in dtb)
-=======
->>>>>>> 59d4ef2 (modify type of filed in dtb)
 WHERE id = $2;
 
 -- name: GetTimeSlotByID :one
@@ -56,18 +48,4 @@ SELECT
 FROM
     TimeSlots ts
 WHERE
-<<<<<<< HEAD
-<<<<<<< HEAD
     ts.id = $1;  -- Replace $1 with the specific time slot ID you are querying for
-=======
-WHERE id = $2;
->>>>>>> 24ea3ee (time slot of doctor api)
-=======
-    ts.id = $1;  -- Replace $1 with the specific time slot ID you are querying for
->>>>>>> 59d4ef2 (modify type of filed in dtb)
-=======
-WHERE id = $2;
->>>>>>> 24ea3ee (time slot of doctor api)
-=======
-    ts.id = $1;  -- Replace $1 with the specific time slot ID you are querying for
->>>>>>> 59d4ef2 (modify type of filed in dtb)

@@ -43,13 +43,13 @@ CREATE TABLE Pet (
 );
 
 CREATE TABLE Vaccination (
-  vaccinationid BIGSERIAL PRIMARY KEY,
-  petid BIGINT,
-  vaccine_name VARCHAR(100) NOT NULL,
-  date_administered timestamp NOT NULL,
-  next_due_date timestamp,
-  vaccine_provider VARCHAR(100),
-  batch_number VARCHAR(50),
+  vaccinationID BIGSERIAL PRIMARY KEY,
+  petID BIGINT,
+  vaccineName VARCHAR(100) NOT NULL,
+  dateAdministered timestamp NOT NULL,
+  nextDueDate timestamp,
+  vaccineProvider VARCHAR(100),
+  batchNumber VARCHAR(50),
   notes TEXT
 );
 
@@ -58,7 +58,7 @@ CREATE TABLE FeedingSchedule (
   petID BIGINT,
   mealTime TIME NOT NULL,
   foodType VARCHAR(100) NOT NULL,
-  quantity DECIMAL(5,2) NOT NULL,
+  quantity float8 NOT NULL,
   frequency VARCHAR(50) NOT NULL,
   lastFed timestamp,
   notes TEXT,

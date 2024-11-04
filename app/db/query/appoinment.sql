@@ -1,8 +1,4 @@
 -- name: CreateAppointment :one
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
 INSERT INTO Appointment (
     doctor_id,
     petid,
@@ -23,11 +19,6 @@ UPDATE Appointment
 SET status = $2
 WHERE appointment_id = $1;
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> 4b8e9b6 (update appointment api)
 -- name: GetAppointmentsOfDoctorWithDetails :many
 SELECT 
     a.appointment_id as appointment_id,
@@ -42,48 +33,4 @@ FROM Appointment a
     LEFT JOIN TimeSlots ts ON a.time_slot_id = ts.id
 WHERE d.id = $1
 AND LOWER(a.status) <> 'completed'
-<<<<<<< HEAD
 ORDER BY ts.start_time ASC;
-=======
-INSERT INTO Appointments (
-=======
-INSERT INTO Appointment (
->>>>>>> 59d4ef2 (modify type of filed in dtb)
-    doctor_id,
-    petid,
-    service_id,
-    time_slot_id,
-    status
-) VALUES (
-    $1, $2, $3, $4, 'pending'
-) RETURNING *;
->>>>>>> c7f463c (update dtb)
-=======
--- name: GetAppointmentsOfDoctor :many
-SELECT * FROM Appointment as a
-left join Doctors as d on a.doctor_id = d.id
-WHERE d.id = $1 and a.status <> 'completed';
->>>>>>> 7cfffa9 (update dtb and appointment)
-=======
-ORDER BY ts.start_time ASC;
->>>>>>> 4b8e9b6 (update appointment api)
-=======
-INSERT INTO Appointments (
-=======
-INSERT INTO Appointment (
->>>>>>> 59d4ef2 (modify type of filed in dtb)
-    doctor_id,
-    petid,
-    service_id,
-    time_slot_id,
-    status
-) VALUES (
-    $1, $2, $3, $4, 'pending'
-) RETURNING *;
->>>>>>> c7f463c (update dtb)
-=======
--- name: GetAppointmentsOfDoctor :many
-SELECT * FROM Appointment as a
-left join Doctors as d on a.doctor_id = d.id
-WHERE d.id = $1 and a.status <> 'completed';
->>>>>>> 7cfffa9 (update dtb and appointment)
