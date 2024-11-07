@@ -19,7 +19,8 @@ import (
 type UserServiceInterface interface {
 	createUserService(ctx *gin.Context, req createUserRequest) (*db.User, error)
 	getAllUsersService(ctx *gin.Context) ([]UserResponse, error)
-	loginUserService(ctx *gin.Context, req loginUserRequest) error
+	loginUserService(ctx *gin.Context, req loginUserRequest) (*loginUSerResponse, error)
+	logoutUsersService(ctx *gin.Context, username string) error
 	verifyEmailService(ctx *gin.Context, req VerrifyEmailTxParams) (VerrifyEmailTxResult, error)
 	createDoctorService(ctx *gin.Context, arg InsertDoctorRequest, username string) (*DoctorResponse, error)
 	createDoctorScheduleService(ctx *gin.Context, arg InsertDoctorScheduleRequest, username string) (*DoctorScheduleResponse, error)
@@ -92,25 +93,40 @@ func (server *UserService) getAllUsersService(ctx *gin.Context) ([]UserResponse,
 	listUser := make([]UserResponse, 0)
 	for _, u := range users {
 		listUser = append(listUser, UserResponse{
-			Username:  u.Username,
-			FullName:  u.FullName,
-			Email:     u.Email,
-			CreatedAt: u.CreatedAt.Time,
+			Username: u.Username,
+			FullName: u.FullName,
+			Email:    u.Email,
 		})
 	}
 	return listUser, nil
 }
 
-func (service *UserService) loginUserService(ctx *gin.Context, req loginUserRequest) error {
-	_, err := service.storeDB.GetUser(ctx, req.Username)
+func (service *UserService) loginUserService(ctx *gin.Context, req loginUserRequest) (*loginUSerResponse, error) {
+	user, err := service.storeDB.GetUser(ctx, req.Username)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			ctx.JSON(http.StatusNotFound, "user not found")
-			return fmt.Errorf("user not found")
+			return nil, fmt.Errorf("user not found")
 		}
 		ctx.JSON(http.StatusInternalServerError, "internal server error")
-		return fmt.Errorf("internal server error: %v", err)
+		return nil, fmt.Errorf("internal server error: %v", err)
 	}
+	return &loginUSerResponse{
+		AccessTokenExpiresAt:  time.Now().Add(time.Hour),
+		RefreshTokenExpiresAt: time.Now().Add(time.Hour * 24),
+		User: UserResponse{
+			Username: user.Username,
+			FullName: user.FullName,
+			Email:    user.Email,
+		},
+	}, nil
+}
+
+func (service *UserService) logoutUsersService(ctx *gin.Context, username string) error {
+	host, secure := util.SetCookieSameSite(ctx)
+	ctx.SetCookie("refresh_token", "", -1, "/", host, secure, true)
+
+	// service.redis.RemoveUserInfoCache(username)
 	return nil
 }
 

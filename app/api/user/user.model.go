@@ -3,7 +3,6 @@ package user
 import (
 	"time"
 
-	"github.com/gofrs/uuid"
 	"github.com/jackc/pgx/v5/pgtype"
 	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
 	"github.com/quanganh247-qa/go-blog-be/app/service/rabbitmq"
@@ -31,11 +30,9 @@ type createUserRequest struct {
 }
 
 type UserResponse struct {
-	Username          string    `json:"username"`
-	FullName          string    `json:"full_name"`
-	Email             string    `json:"email"`
-	PasswordChangedAt time.Time `json:"password_changed_at"`
-	CreatedAt         time.Time `json:"created_at"`
+	Username string `json:"username"`
+	FullName string `json:"full_name"`
+	Email    string `json:"email"`
 }
 
 type loginUserRequest struct {
@@ -43,7 +40,6 @@ type loginUserRequest struct {
 	Password string `json:"password" binding:"required,min=6,max=25"`
 }
 type loginUSerResponse struct {
-	SessionID             uuid.UUID    `json:"session_id"`
 	AccessToken           string       `json:"access_token"`
 	AccessTokenExpiresAt  time.Time    `json:"access_token_expires_at"`
 	RefreshToken          string       `json:"refresh_token"`

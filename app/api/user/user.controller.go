@@ -16,6 +16,7 @@ type UserControllerInterface interface {
 	createUser(ctx *gin.Context)
 	getAllUsers(ctx *gin.Context)
 	loginUser(ctx *gin.Context)
+	logoutUser(ctx *gin.Context)
 	verifyEmail(ctx *gin.Context)
 	getAccessToken(ctx *gin.Context)
 	createDoctor(ctx *gin.Context)
@@ -58,7 +59,7 @@ func (controller *UserController) loginUser(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, util.ErrorValidator(err))
 		return
 	}
-	err := controller.service.loginUserService(ctx, req)
+	user, err := controller.service.loginUserService(ctx, req)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
 		return
@@ -73,12 +74,27 @@ func (controller *UserController) loginUser(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
 		return
 	}
+	user.AccessToken = accessToken
+	user.RefreshToken = refreshToken
 
 	host, secure := util.SetCookieSameSite(ctx)
 
 	ctx.SetCookie("refresh_token", refreshToken, int(util.Configs.RefreshTokenDuration), "/", host, secure, true)
-	ctx.JSON(http.StatusOK, util.SuccessResponse("Success", loginUSerResponse{AccessToken: accessToken}))
+	ctx.JSON(http.StatusOK, util.SuccessResponse("Login succesfully", user))
+}
 
+func (controller *UserController) logoutUser(ctx *gin.Context) {
+	authPayload, err := middleware.GetAuthorizationPayload(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
+		return
+	}
+	err = controller.service.logoutUsersService(ctx, authPayload.Username)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
+		return
+	}
+	ctx.JSON(http.StatusOK, util.SuccessResponse("Success", nil))
 }
 
 func (controller *UserController) getAccessToken(ctx *gin.Context) {
