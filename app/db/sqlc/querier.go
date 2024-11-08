@@ -11,6 +11,7 @@ import (
 )
 
 type Querier interface {
+	CreateActivityLog(ctx context.Context, arg CreateActivityLogParams) (Activitylog, error)
 	CreateAppointment(ctx context.Context, arg CreateAppointmentParams) (Appointment, error)
 	CreateFeedingSchedule(ctx context.Context, arg CreateFeedingScheduleParams) (Feedingschedule, error)
 	CreatePet(ctx context.Context, arg CreatePetParams) (Pet, error)
@@ -20,12 +21,14 @@ type Querier interface {
 	CreateUser(ctx context.Context, arg CreateUserParams) (User, error)
 	CreateVaccination(ctx context.Context, arg CreateVaccinationParams) (Vaccination, error)
 	CreateVerifyEmail(ctx context.Context, arg CreateVerifyEmailParams) (VerifyEmail, error)
+	DeleteActivityLog(ctx context.Context, logid int64) error
 	DeleteFeedingSchedule(ctx context.Context, feedingscheduleid int64) error
 	DeletePet(ctx context.Context, petid int64) error
 	DeleteService(ctx context.Context, serviceid int64) error
 	DeleteServiceType(ctx context.Context, typeid int64) error
 	DeleteVaccination(ctx context.Context, vaccinationid int64) error
 	GetActiveDoctors(ctx context.Context, arg GetActiveDoctorsParams) ([]GetActiveDoctorsRow, error)
+	GetActivityLogByID(ctx context.Context, logid int64) (Activitylog, error)
 	GetAllServices(ctx context.Context, arg GetAllServicesParams) ([]Service, error)
 	GetAllTimeSlots(ctx context.Context, arg GetAllTimeSlotsParams) ([]GetAllTimeSlotsRow, error)
 	GetAllUsers(ctx context.Context) ([]User, error)
@@ -45,10 +48,12 @@ type Querier interface {
 	InsertTimeslot(ctx context.Context, arg InsertTimeslotParams) (Timeslot, error)
 	InsertTokenInfo(ctx context.Context, arg InsertTokenInfoParams) (TokenInfo, error)
 	ListActiveFeedingSchedules(ctx context.Context) ([]Feedingschedule, error)
+	ListActivityLogs(ctx context.Context, arg ListActivityLogsParams) ([]Activitylog, error)
 	ListPets(ctx context.Context, arg ListPetsParams) ([]Pet, error)
 	ListPetsByUsername(ctx context.Context, arg ListPetsByUsernameParams) ([]Pet, error)
 	ListVaccinationsByPetID(ctx context.Context, petid pgtype.Int8) ([]Vaccination, error)
 	SetPetInactive(ctx context.Context, arg SetPetInactiveParams) error
+	UpdateActivityLog(ctx context.Context, arg UpdateActivityLogParams) error
 	UpdateAppointmentStatus(ctx context.Context, arg UpdateAppointmentStatusParams) error
 	// Replace $2 with the specific date (YYYY-MM-DD)
 	UpdateDoctorAvailable(ctx context.Context, arg UpdateDoctorAvailableParams) error
