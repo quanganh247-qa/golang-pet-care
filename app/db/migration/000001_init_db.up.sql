@@ -28,6 +28,7 @@ CREATE TABLE public.checkouts (
 
 CREATE TABLE public.diseases (
 	id bigserial NOT NULL,
+<<<<<<< HEAD
 	"name" varchar(255) NOT NULL,
 	description text NULL,
 	symptoms jsonb NULL,
@@ -760,3 +761,16 @@ CREATE INDEX idx_clinics_name ON public.clinics (name);
 CREATE INDEX idx_shifts_doctor_id ON public.shifts (doctor_id);
 CREATE INDEX idx_shifts_start_time ON public.shifts (start_time);
 CREATE INDEX idx_shifts_end_time ON public.shifts (end_time);
+=======
+	user_name varchar NOT NULL,
+	access_token text NOT NULL,
+	token_type varchar NOT NULL,
+	refresh_token text NULL,
+	expiry timestamptz NOT NULL,
+	created_at timestamptz DEFAULT now() NULL,
+	updated_at timestamptz DEFAULT now() NULL,
+	CONSTRAINT token_info_pk PRIMARY KEY (id),
+	CONSTRAINT token_info_unique UNIQUE (user_name)
+);
+
+>>>>>>> dff4498 (calendar api)

@@ -7,6 +7,7 @@ package db
 
 import (
 	"context"
+<<<<<<< HEAD
 )
 
 const getState = `-- name: GetState :one
@@ -22,5 +23,56 @@ func (q *Queries) GetState(ctx context.Context, id int64) (State, error) {
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
+=======
+
+	"github.com/jackc/pgx/v5/pgtype"
+)
+
+const cleanExpiredStates = `-- name: CleanExpiredStates :exec
+DELETE FROM oauth_states WHERE created_at < $1
+`
+
+func (q *Queries) CleanExpiredStates(ctx context.Context, createdAt pgtype.Timestamp) error {
+	_, err := q.db.Exec(ctx, cleanExpiredStates, createdAt)
+	return err
+}
+
+const deleteState = `-- name: DeleteState :exec
+DELETE FROM oauth_states WHERE state = $1
+`
+
+func (q *Queries) DeleteState(ctx context.Context, state string) error {
+	_, err := q.db.Exec(ctx, deleteState, state)
+	return err
+}
+
+const getState = `-- name: GetState :one
+SELECT state, username, created_at
+    FROM oauth_states
+    WHERE state = $1 LIMIT 1
+`
+
+func (q *Queries) GetState(ctx context.Context, state string) (OauthState, error) {
+	row := q.db.QueryRow(ctx, getState, state)
+	var i OauthState
+	err := row.Scan(&i.State, &i.Username, &i.CreatedAt)
+	return i, err
+}
+
+const saveState = `-- name: SaveState :one
+INSERT INTO oauth_states (state, username, created_at) VALUES ($1, $2, $3) RETURNING state, username, created_at
+`
+
+type SaveStateParams struct {
+	State     string           `json:"state"`
+	Username  string           `json:"username"`
+	CreatedAt pgtype.Timestamp `json:"created_at"`
+}
+
+func (q *Queries) SaveState(ctx context.Context, arg SaveStateParams) (OauthState, error) {
+	row := q.db.QueryRow(ctx, saveState, arg.State, arg.Username, arg.CreatedAt)
+	var i OauthState
+	err := row.Scan(&i.State, &i.Username, &i.CreatedAt)
+>>>>>>> dff4498 (calendar api)
 	return i, err
 }

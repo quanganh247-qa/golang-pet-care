@@ -8,7 +8,12 @@ mdown:
 
 new_migration:
 	migrate create -ext sql -dir app/db/migration -seq change_table
+<<<<<<< HEAD
 
+=======
+mforce:
+	migrate -path app/db/migration -database "$(DB_URL)" -verbose force 1
+>>>>>>> dff4498 (calendar api)
 migrateup-github:
 	migrate -path app/db/migration -database "$(DB_URL)" -verbose up
 

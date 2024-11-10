@@ -7,6 +7,7 @@ import (
 
 	"github.com/jackc/pgx"
 	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
+	calendar "github.com/quanganh247-qa/go-blog-be/app/service/calendar"
 )
 
 func (c *ClientType) LoadCacheByKey(key string, result interface{}, duration time.Duration) (cacheData func(interface{})) {
@@ -71,9 +72,43 @@ func (c *ClientType) UserInfoLoadCache(username string) (*UserInfo, error) {
 	return &userInformation, nil
 }
 
+func (c *ClientType) TokenUserInfoLoadCache(username string) (*calendar.TokenInfo, error) {
+	userKey := fmt.Sprintf("%s:%s", TOKEN_USER_INFO_KEY, username)
+	userInformation := calendar.TokenInfo{}
+	err := c.GetWithBackground(userKey, userInformation)
+	if err != nil {
+		log.Printf("Error when get cache for key %s: %v", userKey, err)
+		tokenInfo, err := db.StoreDB.GetTokenInfo(ctxRedis, username)
+
+		if err != nil {
+			if err == pgx.ErrNoRows {
+				return nil, fmt.Errorf("Không tìm thấy user với username = %s", username)
+			}
+			return nil, err
+		}
+
+		userRes := calendar.TokenInfo{
+			AccessToken:  tokenInfo.AccessToken,
+			TokenType:    tokenInfo.TokenType,
+			RefreshToken: tokenInfo.RefreshToken.String,
+			Expiry:       tokenInfo.Expiry,
+		}
+		err = c.SetWithBackground(userKey, &userRes, time.Hour*12)
+		if err != nil {
+			log.Printf("Error when set cache for key %s: %v", userKey, err)
+		}
+		return &userRes, nil
+	}
+	return &userInformation, nil
+}
+
 func (client *ClientType) RemoveUserInfoCache(username string) {
 	userInfoKey := fmt.Sprintf("%s:%s", USER_INFO_KEY, username)
 	client.RemoveCacheByKey(userInfoKey)
+}
+func (client *ClientType) RemoveTokenUserInfoCache(username string) {
+	tokenUserInfoKey := fmt.Sprintf("%s:%s", TOKEN_USER_INFO_KEY, username)
+	client.RemoveCacheByKey(tokenUserInfoKey)
 }
 
 func (client *ClientType) ClearUserInfoCache() {
@@ -85,6 +120,7 @@ func (client *ClientType) ClearUserInfoCache() {
 		}
 	}
 }
+<<<<<<< HEAD
 
 type PetInfo struct {
 	Petid           int64   `json:"petid"`
@@ -142,6 +178,10 @@ func (client *ClientType) RemovePetInfoCache(petid int64) {
 
 func (client *ClientType) ClearPetInfoCache() {
 	iter := client.RedisClient.Scan(ctxRedis, 0, fmt.Sprintf("%s*", PET_INFO_KEY), 0).Iterator()
+=======
+func (client *ClientType) ClearTokenUserInfoCache() {
+	iter := client.RedisClient.Scan(ctxRedis, 0, fmt.Sprintf("%s*", TOKEN_USER_INFO_KEY), 0).Iterator()
+>>>>>>> dff4498 (calendar api)
 	for iter.Next(ctxRedis) {
 		er := client.RemoveCacheByKey(iter.Val())
 		if er != nil {
