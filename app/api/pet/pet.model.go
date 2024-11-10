@@ -42,6 +42,4 @@ type listPetsRequest struct {
 	Breed  string  `json:"breed"`
 	Age    int     `json:"age"`
 	Weight float64 `json:"weight"`
-	Limit  int32   `json:"limit"`
-	Offset int32   `json:"offset"`
 }
