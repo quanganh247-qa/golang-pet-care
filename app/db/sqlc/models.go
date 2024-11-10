@@ -85,6 +85,12 @@ type Feedingschedule struct {
 	Isactive          pgtype.Bool      `json:"isactive"`
 }
 
+type OauthState struct {
+	State     string           `json:"state"`
+	Username  string           `json:"username"`
+	CreatedAt pgtype.Timestamp `json:"created_at"`
+}
+
 type Pet struct {
 	Petid           int64         `json:"petid"`
 	Name            string        `json:"name"`
