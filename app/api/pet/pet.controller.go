@@ -1,11 +1,13 @@
 package pet
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/quanganh247-qa/go-blog-be/app/middleware"
+	"github.com/quanganh247-qa/go-blog-be/app/util"
 )
 
 type PetControllerInterface interface {
@@ -24,6 +26,10 @@ func (c *PetController) CreatePet(ctx *gin.Context) {
 		return
 	}
 	authPayload, err := middleware.GetAuthorizationPayload(ctx)
+	if err != nil {
+		ctx.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
 
 	res, err := c.service.CreatePet(ctx, authPayload.Username, req)
 	if err != nil {
@@ -52,30 +58,20 @@ func (c *PetController) GetPetByID(ctx *gin.Context) {
 }
 
 func (c *PetController) ListPets(ctx *gin.Context) {
-	// Lấy các tham số từ query, ví dụ như limit và offset
-	limitStr := ctx.DefaultQuery("limit", "10")  // Giá trị mặc định là 10
-	offsetStr := ctx.DefaultQuery("offset", "0") // Giá trị mặc định là 0
 
-	limit, err := strconv.ParseInt(limitStr, 10, 32)
+	pagination, err := util.GetPageInQuery(ctx.Request.URL.Query())
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid limit"})
+		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
 		return
 	}
-
-	offset, err := strconv.ParseInt(offsetStr, 10, 32)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid offset"})
-		return
-	}
-
 	req := listPetsRequest{
-		Type:   ctx.Query("type"),
-		Breed:  ctx.Query("breed"),
-		Age:    int(limit),
-		Weight: float64(offset),
+		Type:  ctx.Query("type"),
+		Breed: ctx.Query("breed"),
+		// Age:    int(limit),
+		// Weight: float64(offset),
 	}
 
-	pets, err := c.service.ListPets(ctx, req)
+	pets, err := c.service.ListPets(ctx, req, pagination)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -123,23 +119,19 @@ func (c *PetController) DeletePet(ctx *gin.Context) {
 }
 
 func (c *PetController) ListPetsByUsername(ctx *gin.Context) {
-	username := ctx.Param("username")
-	limitStr := ctx.DefaultQuery("limit", "10")
-	offsetStr := ctx.DefaultQuery("offset", "0")
-
-	limit, err := strconv.ParseInt(limitStr, 10, 32)
+	// username := ctx.Param("username")
+	pagination, err := util.GetPageInQuery(ctx.Request.URL.Query())
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid limit"})
+		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
 		return
 	}
-
-	offset, err := strconv.ParseInt(offsetStr, 10, 32)
+	authPayload, err := middleware.GetAuthorizationPayload(ctx)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid offset"})
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-
-	pets, err := c.service.ListPetsByUsername(ctx, username, int32(limit), int32(offset))
+	fmt.Println(authPayload.Username)
+	pets, err := c.service.ListPetsByUsername(ctx, authPayload.Username, pagination)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

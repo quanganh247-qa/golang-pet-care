@@ -7,15 +7,16 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5/pgtype"
 	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
+	"github.com/quanganh247-qa/go-blog-be/app/util"
 )
 
 type PetServiceInterface interface {
 	CreatePet(ctx *gin.Context, username string, req createPetRequest) (*createPetResponse, error)
 	GetPetByID(ctx *gin.Context, petid int64) (*createPetResponse, error)
-	ListPets(ctx *gin.Context, req listPetsRequest) ([]createPetResponse, error)
+	ListPets(ctx *gin.Context, req listPetsRequest, pagination *util.Pagination) ([]createPetResponse, error)
 	UpdatePet(ctx *gin.Context, petid int64, req createPetRequest) error
 	DeletePet(ctx context.Context, petid int64) error
-	ListPetsByUsername(ctx *gin.Context, username string, limit, offset int32) ([]createPetResponse, error)
+	ListPetsByUsername(ctx *gin.Context, username string, pagination *util.Pagination) ([]createPetResponse, error)
 	SetPetInactive(ctx context.Context, petid int64) error
 }
 
@@ -78,13 +79,14 @@ func (s *PetService) GetPetByID(ctx *gin.Context, petid int64) (*createPetRespon
 	return &pet, nil
 }
 
-func (s *PetService) ListPets(ctx *gin.Context, req listPetsRequest) ([]createPetResponse, error) {
+func (s *PetService) ListPets(ctx *gin.Context, req listPetsRequest, pagination *util.Pagination) ([]createPetResponse, error) {
 	var pets []createPetResponse
+	offset := (pagination.Page - 1) * pagination.PageSize
 
 	err := s.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
 		listParams := db.ListPetsParams{
-			Limit:  req.Limit,
-			Offset: req.Offset,
+			Limit:  int32(pagination.PageSize),
+			Offset: int32(offset),
 		}
 
 		res, err := q.ListPets(ctx, listParams)
@@ -133,14 +135,15 @@ func (s *PetService) DeletePet(ctx context.Context, petid int64) error {
 	return s.storeDB.DeletePet(ctx, petid)
 }
 
-func (s *PetService) ListPetsByUsername(ctx *gin.Context, username string, limit, offset int32) ([]createPetResponse, error) {
+func (s *PetService) ListPetsByUsername(ctx *gin.Context, username string, pagination *util.Pagination) ([]createPetResponse, error) {
 	var pets []createPetResponse
+	offset := (pagination.Page - 1) * pagination.PageSize
 
 	err := s.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
 		listParams := db.ListPetsByUsernameParams{
 			Username: username,
-			Limit:    limit,
-			Offset:   offset,
+			Limit:    int32(pagination.PageSize),
+			Offset:   int32(offset),
 		}
 
 		res, err := q.ListPetsByUsername(ctx, listParams)

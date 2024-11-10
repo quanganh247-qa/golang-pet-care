@@ -46,19 +46,13 @@ func (controller *ServiceController) DeleteService(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, util.SuccessResponse("Success", nil))
 }
 func (controller *ServiceController) GetAllServices(ctx *gin.Context) {
-	limit, err := strconv.Atoi(ctx.DefaultQuery("limit", "10"))
+
+	pagination, err := util.GetPageInQuery(ctx.Request.URL.Query())
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid limit"})
+		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
 		return
 	}
-
-	offset, err := strconv.Atoi(ctx.DefaultQuery("offset", "0"))
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid offset"})
-		return
-	}
-
-	services, err := controller.service.getAllServicesService(ctx, int32(limit), int32(offset))
+	services, err := controller.service.getAllServicesService(ctx, pagination)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
