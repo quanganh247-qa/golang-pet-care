@@ -52,7 +52,11 @@ func (controller *ServiceController) GetAllServices(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
 		return
 	}
+<<<<<<< HEAD
 	services, err := controller.service.GetAllServices(ctx, pagination)
+=======
+	services, err := controller.service.getAllServicesService(ctx, pagination)
+>>>>>>> c73e2dc (pagination function)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
