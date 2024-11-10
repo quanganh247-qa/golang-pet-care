@@ -8,7 +8,6 @@ mdown:
 
 new_migration:
 	migrate create -ext sql -dir app/db/migration -seq change_table
-
 migrateup-github:
 	migrate -path app/db/migration -database "$(DB_URL)" -verbose up
 
