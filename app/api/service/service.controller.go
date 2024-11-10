@@ -54,6 +54,7 @@ func (controller *ServiceController) GetAllServices(ctx *gin.Context) {
 	}
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	services, err := controller.service.GetAllServices(ctx, pagination)
 =======
 	services, err := controller.service.getAllServicesService(ctx, pagination)
@@ -61,6 +62,9 @@ func (controller *ServiceController) GetAllServices(ctx *gin.Context) {
 =======
 	services, err := controller.service.GetAllServices(ctx, pagination)
 >>>>>>> b393bb9 (add service and add permission)
+=======
+	services, err := controller.service.getAllServicesService(ctx, pagination)
+>>>>>>> c73e2dc (pagination function)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

@@ -3,6 +3,7 @@ package pet
 import (
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	"encoding/json"
 <<<<<<< HEAD
 =======
@@ -17,6 +18,9 @@ import (
 >>>>>>> 9d28896 (image pet)
 =======
 >>>>>>> 473cd1d (uplaod image method)
+=======
+	"fmt"
+>>>>>>> c73e2dc (pagination function)
 	"net/http"
 	"strconv"
 
@@ -135,6 +139,7 @@ func (c *PetController) CreatePet(ctx *gin.Context) {
 		ctx.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
+<<<<<<< HEAD
 >>>>>>> c73e2dc (pagination function)
 
 	req.Name = name
@@ -151,6 +156,8 @@ func (c *PetController) CreatePet(ctx *gin.Context) {
 
 	req.OriginalImage = originalImageName
 	req.DataImage = dataImage
+=======
+>>>>>>> c73e2dc (pagination function)
 
 	res, err := c.service.CreatePet(ctx, authPayload.Username, req)
 	if err != nil {
@@ -253,11 +260,15 @@ func (c *PetController) ListPetsByUsername(ctx *gin.Context) {
 	}
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 	fmt.Println(authPayload.Username)
 >>>>>>> c73e2dc (pagination function)
 =======
 >>>>>>> 0637caf (upadted get lít)
+=======
+	fmt.Println(authPayload.Username)
+>>>>>>> c73e2dc (pagination function)
 	pets, err := c.service.ListPetsByUsername(ctx, authPayload.Username, pagination)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})

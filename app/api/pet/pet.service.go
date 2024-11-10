@@ -32,6 +32,7 @@ type PetServiceInterface interface {
 	CreatePet(ctx *gin.Context, username string, req createPetRequest) (*createPetResponse, error)
 	GetPetByID(ctx *gin.Context, petid int64) (*createPetResponse, error)
 	ListPets(ctx *gin.Context, req listPetsRequest, pagination *util.Pagination) ([]createPetResponse, error)
+<<<<<<< HEAD
 	UpdatePet(ctx *gin.Context, petid int64, req updatePetRequest) error
 	DeletePet(ctx context.Context, petid int64) error
 	ListPetsByUsername(ctx *gin.Context, username string, pagination *util.Pagination) ([]createPetResponse, error)
@@ -44,6 +45,11 @@ type PetServiceInterface interface {
 	DeletePet(ctx context.Context, petid int64) error
 	ListPetsByUsername(ctx *gin.Context, username string, pagination *util.Pagination) ([]CreatePetResponse, error)
 >>>>>>> 98e9e45 (ratelimit and recovery function)
+=======
+	UpdatePet(ctx *gin.Context, petid int64, req createPetRequest) error
+	DeletePet(ctx context.Context, petid int64) error
+	ListPetsByUsername(ctx *gin.Context, username string, pagination *util.Pagination) ([]createPetResponse, error)
+>>>>>>> c73e2dc (pagination function)
 	SetPetInactive(ctx context.Context, petid int64) error
 	GetPetLogsByPetIDService(ctx *gin.Context, pet_id int64, pagination *util.Pagination) ([]PetLog, error)
 	InsertPetLogService(ctx context.Context, req PetLog) error
@@ -249,6 +255,7 @@ func (s *PetService) GetPetByID(ctx *gin.Context, petid int64) (*CreatePetRespon
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 func (s *PetService) ListPets(ctx *gin.Context, req listPetsRequest, pagination *util.Pagination) ([]CreatePetResponse, error) {
 	var pets []CreatePetResponse
 =======
@@ -259,6 +266,10 @@ func (s *PetService) ListPets(ctx *gin.Context, req listPetsRequest, pagination 
 func (s *PetService) ListPets(ctx *gin.Context, req listPetsRequest, pagination *util.Pagination) ([]CreatePetResponse, error) {
 	var pets []CreatePetResponse
 >>>>>>> 98e9e45 (ratelimit and recovery function)
+=======
+func (s *PetService) ListPets(ctx *gin.Context, req listPetsRequest, pagination *util.Pagination) ([]createPetResponse, error) {
+	var pets []createPetResponse
+>>>>>>> c73e2dc (pagination function)
 	offset := (pagination.Page - 1) * pagination.PageSize
 
 	err := s.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
@@ -445,6 +456,7 @@ func (s *PetService) DeletePet(ctx context.Context, petid int64) error {
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 func (s *PetService) ListPetsByUsername(ctx *gin.Context, username string, pagination *util.Pagination) ([]CreatePetResponse, error) {
 	var pets []CreatePetResponse
 =======
@@ -455,6 +467,10 @@ func (s *PetService) ListPetsByUsername(ctx *gin.Context, username string, pagin
 func (s *PetService) ListPetsByUsername(ctx *gin.Context, username string, pagination *util.Pagination) ([]CreatePetResponse, error) {
 	var pets []CreatePetResponse
 >>>>>>> 98e9e45 (ratelimit and recovery function)
+=======
+func (s *PetService) ListPetsByUsername(ctx *gin.Context, username string, pagination *util.Pagination) ([]createPetResponse, error) {
+	var pets []createPetResponse
+>>>>>>> c73e2dc (pagination function)
 	offset := (pagination.Page - 1) * pagination.PageSize
 
 	err := s.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
