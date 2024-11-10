@@ -1,8 +1,11 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 -- name: GetState :one
 SELECT * FROM states WHERE id = $1;
 =======
+=======
+>>>>>>> dff4498 (calendar api)
 -- -- name: SaveState :one
 -- INSERT INTO oauth_states (state, username, created_at) VALUES ($1, $2, $3) RETURNING *;
 
@@ -15,9 +18,13 @@ SELECT * FROM states WHERE id = $1;
 -- DELETE FROM oauth_states WHERE state = $1 ;
 
 -- -- name: CleanExpiredStates :exec
+<<<<<<< HEAD
 -- DELETE FROM oauth_states WHERE created_at < $1;
 >>>>>>> dff4498 (calendar api)
 =======
 -- name: GetState :one
 SELECT * FROM states WHERE id = $1;
 >>>>>>> e859654 (Elastic search)
+=======
+-- DELETE FROM oauth_states WHERE created_at < $1;
+>>>>>>> dff4498 (calendar api)

@@ -781,6 +781,7 @@ CREATE INDEX idx_shifts_end_time ON public.shifts (end_time);
 	CONSTRAINT token_info_unique UNIQUE (user_name)
 );
 
+<<<<<<< HEAD
 >>>>>>> dff4498 (calendar api)
 =======
 -- Create users table with proper constraints
@@ -1957,3 +1958,5 @@ CREATE INDEX idx_shifts_doctor_id ON public.shifts (doctor_id);
 CREATE INDEX idx_shifts_start_time ON public.shifts (start_time);
 CREATE INDEX idx_shifts_end_time ON public.shifts (end_time);
 >>>>>>> 4ccd381 (Update appointment flow)
+=======
+>>>>>>> dff4498 (calendar api)

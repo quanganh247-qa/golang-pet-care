@@ -9,6 +9,7 @@ import (
 	"context"
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> e859654 (Elastic search)
 )
@@ -28,6 +29,8 @@ func (q *Queries) GetState(ctx context.Context, id int64) (State, error) {
 	)
 <<<<<<< HEAD
 =======
+=======
+>>>>>>> dff4498 (calendar api)
 
 	"github.com/jackc/pgx/v5/pgtype"
 )
@@ -77,8 +80,11 @@ func (q *Queries) SaveState(ctx context.Context, arg SaveStateParams) (OauthStat
 	row := q.db.QueryRow(ctx, saveState, arg.State, arg.Username, arg.CreatedAt)
 	var i OauthState
 	err := row.Scan(&i.State, &i.Username, &i.CreatedAt)
+<<<<<<< HEAD
 >>>>>>> dff4498 (calendar api)
 =======
 >>>>>>> e859654 (Elastic search)
+=======
+>>>>>>> dff4498 (calendar api)
 	return i, err
 }
