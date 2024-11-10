@@ -4,7 +4,7 @@ mup:
 mdown:
 	migrate -path app/db/migration -database "$(DB_URL)" -verbose down
 new_migration:
-	migrate create -ext sql -dir app/db/migration -seq $(name)
+	migrate create -ext sql -dir app/db/migration -seq change_table
 mforce:
 	migrate -path app/db/migration -database "$(DB_URL)" -verbose force 1
 migrateup-github:

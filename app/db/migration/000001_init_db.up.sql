@@ -230,3 +230,4 @@ CREATE TABLE token_info (
 	CONSTRAINT token_info_pk PRIMARY KEY (id),
 	CONSTRAINT token_info_unique UNIQUE (user_name)
 );
+
