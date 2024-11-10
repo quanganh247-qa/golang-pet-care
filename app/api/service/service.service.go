@@ -10,6 +10,7 @@ import (
 )
 
 type ServiceServiceInterface interface {
+<<<<<<< HEAD
 	CreateService(ctx *gin.Context, req CreateServiceRequest) (*ServiceRepsonse, error)
 	GetAllServices(ctx *gin.Context, pagination *util.Pagination) ([]*ServiceRepsonse, error)
 	GetServiceByID(ctx *gin.Context, id int64) (*ServiceRepsonse, error)
@@ -18,6 +19,21 @@ type ServiceServiceInterface interface {
 }
 
 func (s *ServiceService) CreateService(ctx *gin.Context, req CreateServiceRequest) (*ServiceRepsonse, error) {
+=======
+	createServiceService(ctx *gin.Context, req createServiceRequest) (*db.Service, error)
+	deleteServiceService(ctx *gin.Context, serviceID int64) error
+	getAllServicesService(ctx *gin.Context, pagination *util.Pagination) ([]db.Service, error)
+	updateServiceService(ctx *gin.Context, serviceid int64, req updateServiceRequest) error
+	getServiceByIDService(ctx *gin.Context, serviceid int64) (*createServiceResponse, error)
+}
+
+func (server *ServiceService) createServiceService(ctx *gin.Context, req createServiceRequest) (*db.Service, error) {
+	var result db.Service
+
+	if req.Name == "" || req.Price == 0 {
+		return nil, fmt.Errorf("input name is empty")
+	}
+>>>>>>> c73e2dc (pagination function)
 
 	var service db.Service
 	var err error
@@ -49,6 +65,7 @@ func (s *ServiceService) CreateService(ctx *gin.Context, req CreateServiceReques
 	}, nil
 }
 
+<<<<<<< HEAD
 // Get all services
 func (s *ServiceService) GetAllServices(ctx *gin.Context, pagination *util.Pagination) ([]*ServiceRepsonse, error) {
 	offset := (pagination.Page - 1) * pagination.PageSize
@@ -57,6 +74,16 @@ func (s *ServiceService) GetAllServices(ctx *gin.Context, pagination *util.Pagin
 		Limit:  int32(pagination.PageSize),
 		Offset: int32(offset),
 	})
+=======
+func (server *ServiceService) getAllServicesService(ctx *gin.Context, pagination *util.Pagination) ([]db.Service, error) {
+
+	offset := (pagination.Page - 1) * pagination.PageSize
+
+	params := db.GetAllServicesParams{
+		Limit:  int32(pagination.PageSize),
+		Offset: int32(offset),
+	}
+>>>>>>> c73e2dc (pagination function)
 
 	if err != nil {
 		return nil, fmt.Errorf("failed to get all services: %w", err)

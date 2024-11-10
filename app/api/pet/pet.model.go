@@ -52,6 +52,7 @@ type listPetsRequest struct {
 	Breed  string  `json:"breed"`
 	Age    int     `json:"age"`
 	Weight float64 `json:"weight"`
+<<<<<<< HEAD
 }
 
 type PetLog struct {
@@ -81,4 +82,6 @@ type updatePetAvatarRequest struct {
 
 type PetProfileSummary struct {
 	Summary string `json:"summary"`
+=======
+>>>>>>> c73e2dc (pagination function)
 }

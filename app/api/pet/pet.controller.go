@@ -1,7 +1,11 @@
 package pet
 
 import (
+<<<<<<< HEAD
 	"encoding/json"
+=======
+	"fmt"
+>>>>>>> c73e2dc (pagination function)
 	"net/http"
 	"strconv"
 
@@ -45,9 +49,17 @@ func (c *PetController) CreatePet(ctx *gin.Context) {
 		ctx.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
+<<<<<<< HEAD
 
 	req.OriginalImage = originalImageName
 	req.DataImage = dataImage
+=======
+	authPayload, err := middleware.GetAuthorizationPayload(ctx)
+	if err != nil {
+		ctx.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+>>>>>>> c73e2dc (pagination function)
 
 	res, err := c.service.CreatePet(ctx, authPayload.Username, req)
 	if err != nil {
@@ -148,6 +160,10 @@ func (c *PetController) ListPetsByUsername(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+<<<<<<< HEAD
+=======
+	fmt.Println(authPayload.Username)
+>>>>>>> c73e2dc (pagination function)
 	pets, err := c.service.ListPetsByUsername(ctx, authPayload.Username, pagination)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
