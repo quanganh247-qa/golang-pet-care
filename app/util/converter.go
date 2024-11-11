@@ -7,6 +7,7 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -107,4 +108,20 @@ func ParseMapInterfaceToString(data map[string]interface{}) string {
 		return ""
 	}
 	return string(contenJson)
+}
+
+func ParseStringToTime(startDate string, endDate string) (time.Time, time.Time, error) {
+	// string to time.Time
+	parsedStartDate, err := time.Parse("2006-01-02 15:04:05", startDate)
+	if err != nil {
+		return time.Time{}, time.Time{}, fmt.Errorf("invalid start date format: %w", err)
+	}
+
+	// Parse the EndDate string to time.Time (if provided)
+	parsedEndDate, err := time.Parse("2006-01-02 15:04:05", endDate)
+	if err != nil {
+		return time.Time{}, time.Time{}, fmt.Errorf("invalid end date format: %w", err)
+	}
+
+	return parsedStartDate, parsedEndDate, nil
 }
