@@ -15,6 +15,7 @@ type MedicineServiceInterface interface {
 	GetMedicineByID(ctx *gin.Context, medicineid int64) (*createMedicineResponse, error)
 	ListMedicines(ctx *gin.Context, pagination *util.Pagination, petID int64) ([]createMedicineResponse, error)
 	UpdateMedicine(ctx *gin.Context, medicineid int64, req createMedicineRequest) error
+<<<<<<< HEAD
 }
 
 <<<<<<< HEAD
@@ -119,6 +120,8 @@ func (s *MedicineService) UpdateMedicine(ctx *gin.Context, medicineid int64, req
 	return nil
 }
 =======
+=======
+>>>>>>> 79a3bcc (medicine api)
 	// DeleteMedicine(ctx context.Context, Medicineid int64) error
 	// ListMedicinesByUsername(ctx *gin.Context, username string, pagination *util.Pagination) ([]createMedicineResponse, error)
 	// SetMedicineInactive(ctx context.Context, Medicineid int64) error
@@ -266,6 +269,7 @@ func (s *MedicineService) UpdateMedicine(ctx *gin.Context, medicineid int64, req
 // 		}
 
 // 		res, err := q.ListMedicinesByUsername(ctx, listParams)
+<<<<<<< HEAD
 =======
 // 	startDate, endDate, err := util.ParseStringToTime(req.StartDate, req.EndDate)
 // 	if err != nil {
@@ -381,3 +385,37 @@ func (s *MedicineService) UpdateMedicine(ctx *gin.Context, medicineid int64, req
 	return nil
 }
 >>>>>>> a415f25 (new data)
+=======
+// 		if err != nil {
+// 			return fmt.Errorf("failed to list Medicines for user %s: %w", username, err)
+// 		}
+
+// 		for _, r := range res {
+// 			Medicines = append(Medicines, createMedicineResponse{
+// 				Medicineid: r.Medicineid,
+// 				Username:   r.Username,
+// 				Name:       r.Name,
+// 				Type:       r.Type,
+// 				Breed:      r.Breed.String,
+// 				Age:        int16(r.Age.Int32),
+// 				Weight:     r.Weight.Float64,
+// 			})
+// 		}
+// 		return nil
+// 	})
+
+// 	if err != nil {
+// 		return nil, fmt.Errorf("transaction failed: %w", err)
+// 	}
+
+// 	return Medicines, nil
+// }
+
+// func (s *MedicineService) SetMedicineInactive(ctx context.Context, Medicineid int64) error {
+// 	params := db.SetMedicineInactiveParams{
+// 		Medicineid: Medicineid,
+// 		IsActive:   pgtype.Bool{Bool: false, Valid: true},
+// 	}
+// 	return s.storeDB.SetMedicineInactive(ctx, params)
+// }
+>>>>>>> 79a3bcc (medicine api)

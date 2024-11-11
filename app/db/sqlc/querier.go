@@ -250,6 +250,7 @@ type Querier interface {
 <<<<<<< HEAD
 =======
 	GetActiveDoctors(ctx context.Context, arg GetActiveDoctorsParams) ([]GetActiveDoctorsRow, error)
+<<<<<<< HEAD
 =======
 >>>>>>> 6f3ea8a (update sqlc)
 =======
@@ -267,6 +268,10 @@ type Querier interface {
 	GetAllProducts(ctx context.Context, arg GetAllProductsParams) ([]Product, error)
 	GetAllSchedulesByPet(ctx context.Context, arg GetAllSchedulesByPetParams) ([]PetSchedule, error)
 <<<<<<< HEAD
+=======
+	GetActivityLogByID(ctx context.Context, logid int64) (Activitylog, error)
+	GetAllMedicinesByPet(ctx context.Context, arg GetAllMedicinesByPetParams) ([]Medication, error)
+>>>>>>> 79a3bcc (medicine api)
 	GetAllServices(ctx context.Context, arg GetAllServicesParams) ([]Service, error)
 <<<<<<< HEAD
 	GetAllTimeSlots(ctx context.Context, arg GetAllTimeSlotsParams) ([]GetAllTimeSlotsRow, error)
@@ -412,6 +417,7 @@ type Querier interface {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	GetDoctorByUserId(ctx context.Context, userID int64) (Doctor, error)
 <<<<<<< HEAD
 	GetDoctorByUsername(ctx context.Context, username string) (GetDoctorByUsernameRow, error)
@@ -483,6 +489,10 @@ type Querier interface {
 	// Returning fields you may want to use
 	GetOrdersByUserId(ctx context.Context, userID int64) ([]Order, error)
 	GetPetAllergy(ctx context.Context, id int64) (PetAllergy, error)
+=======
+	GetFeedingScheduleByPetID(ctx context.Context, petid pgtype.Int8) ([]Feedingschedule, error)
+	GetMedicinesByID(ctx context.Context, medicationID int64) (Medication, error)
+>>>>>>> 79a3bcc (medicine api)
 	GetPetByID(ctx context.Context, petid int64) (Pet, error)
 	GetPetDetailByUserID(ctx context.Context, arg GetPetDetailByUserIDParams) (GetPetDetailByUserIDRow, error)
 	GetPetLogByID(ctx context.Context, arg GetPetLogByIDParams) (GetPetLogByIDRow, error)
@@ -570,6 +580,9 @@ type Querier interface {
 	GetTimeslotsAvailable(ctx context.Context, arg GetTimeslotsAvailableParams) ([]GetTimeslotsAvailableRow, error)
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 79a3bcc (medicine api)
 	GetUser(ctx context.Context, username string) (User, error)
 >>>>>>> 79a3bcc (medicine api)
 	GetVaccinationByID(ctx context.Context, vaccinationid int64) (Vaccination, error)
@@ -657,6 +670,7 @@ type Querier interface {
 	ListPetSchedulesByUsername(ctx context.Context, username string) ([]ListPetSchedulesByUsernameRow, error)
 =======
 	InsertDoctorSchedule(ctx context.Context, arg InsertDoctorScheduleParams) (Doctorschedule, error)
+<<<<<<< HEAD
 =======
 >>>>>>> 6f3ea8a (update sqlc)
 =======
@@ -669,6 +683,10 @@ type Querier interface {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+=======
+	InsertMedicine(ctx context.Context, arg InsertMedicineParams) (Medication, error)
+	InsertTimeslot(ctx context.Context, arg InsertTimeslotParams) (Timeslot, error)
+>>>>>>> 79a3bcc (medicine api)
 	ListActiveFeedingSchedules(ctx context.Context) ([]Feedingschedule, error)
 	ListActivityLogs(ctx context.Context, arg ListActivityLogsParams) ([]Activitylog, error)
 >>>>>>> 79a3bcc (medicine api)
@@ -758,11 +776,15 @@ type Querier interface {
 <<<<<<< HEAD
 	UpdateFeedingSchedule(ctx context.Context, arg UpdateFeedingScheduleParams) error
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 79a3bcc (medicine api)
 	// -- name: UpdateMedicine :exec
 	// UPDATE Medications
 	// SET medication_name = $2, dosage = $3, frequency = $4, start_date = $5, end_date = $6, notes = $7
 	// WHERE medication_id = $1;
 	UpdateMedicine(ctx context.Context, arg UpdateMedicineParams) (Medication, error)
+<<<<<<< HEAD
 >>>>>>> 79a3bcc (medicine api)
 =======
 >>>>>>> 6c35562 (dicease and treatment plan)
@@ -777,6 +799,8 @@ type Querier interface {
 	UpdateMedicalHistory(ctx context.Context, arg UpdateMedicalHistoryParams) error
 	UpdateMedicalRecord(ctx context.Context, id int64) error
 >>>>>>> 3bf345d (happy new year)
+=======
+>>>>>>> 79a3bcc (medicine api)
 	UpdateNotification(ctx context.Context, appointmentID int64) error
 	UpdateOrderPaymentStatus(ctx context.Context, id int64) (Order, error)
 	UpdatePet(ctx context.Context, arg UpdatePetParams) error

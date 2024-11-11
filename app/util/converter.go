@@ -112,6 +112,7 @@ func ParseStringToTime(startDate string, endDate string) (time.Time, time.Time, 
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> e01abc5 (pet schedule api)
 	// If endDate is provided, parse it; otherwise, return a zero time for parsedEndDate
@@ -239,6 +240,8 @@ func MapStructs(source interface{}, destination interface{}) error {
 }
 <<<<<<< HEAD
 =======
+=======
+>>>>>>> 79a3bcc (medicine api)
 	// Parse the EndDate string to time.Time (if provided)
 	parsedEndDate, err := time.Parse("2006-01-02 15:04:05", endDate)
 	if err != nil {
@@ -247,6 +250,7 @@ func MapStructs(source interface{}, destination interface{}) error {
 
 	return parsedStartDate, parsedEndDate, nil
 }
+<<<<<<< HEAD
 <<<<<<< HEAD
 >>>>>>> 79a3bcc (medicine api)
 =======
@@ -323,3 +327,5 @@ func IntervalToString(interval pgtype.Interval) string {
 >>>>>>> 272832d (redis cache)
 =======
 >>>>>>> 883d5b3 (update treatment)
+=======
+>>>>>>> 79a3bcc (medicine api)

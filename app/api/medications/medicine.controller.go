@@ -12,12 +12,16 @@ import (
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> a415f25 (new data)
+=======
+>>>>>>> 79a3bcc (medicine api)
 type MedicineControllerInterface interface {
 	CreateMedicine(ctx *gin.Context)
 	GetMedicineByID(ctx *gin.Context)
 	ListMedicines(ctx *gin.Context)
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -42,6 +46,12 @@ type MedicineControllerInterface interface {
 	// DeleteMedicine(ctx *gin.Context)
 }
 >>>>>>> a415f25 (new data)
+=======
+	// ListMedicinesByUsername(ctx *gin.Context)
+	UpdateMedicine(ctx *gin.Context)
+	// DeleteMedicine(ctx *gin.Context)
+}
+>>>>>>> 79a3bcc (medicine api)
 
 func (c *MedicineController) CreateMedicine(ctx *gin.Context) {
 	var req createMedicineRequest
@@ -121,13 +131,26 @@ func (c *MedicineController) UpdateMedicine(ctx *gin.Context) {
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+	err = c.service.UpdateMedicine(ctx, medicineid, req)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"message": "Medicine updated successfully"})
+}
+
+>>>>>>> 79a3bcc (medicine api)
 // func (c *MedicineController) DeleteMedicine(ctx *gin.Context) {
 // 	Medicineid, err := strconv.ParseInt(ctx.Param("Medicineid"), 10, 64)
 // 	if err != nil {
 // 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid Medicine ID"})
 // 		return
 // 	}
+<<<<<<< HEAD
 =======
 	err = c.service.UpdateMedicine(ctx, medicineid, req)
 	if err != nil {
@@ -138,6 +161,18 @@ func (c *MedicineController) UpdateMedicine(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, gin.H{"message": "Medicine updated successfully"})
 }
+
+>>>>>>> 79a3bcc (medicine api)
+=======
+
+// 	err = c.service.SetMedicineInactive(ctx, Medicineid)
+// 	if err != nil {
+// 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+// 		return
+// 	}
+
+// 	ctx.JSON(http.StatusOK, gin.H{"message": "Medicine set to inactive successfully"})
+// }
 
 >>>>>>> 79a3bcc (medicine api)
 // func (c *MedicineController) ListMedicinesByUsername(ctx *gin.Context) {

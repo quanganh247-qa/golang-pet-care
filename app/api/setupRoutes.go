@@ -16,6 +16,7 @@ import (
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	"github.com/quanganh247-qa/go-blog-be/app/api/cart"
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -73,6 +74,9 @@ import (
 =======
 	"github.com/quanganh247-qa/go-blog-be/app/api/payment"
 >>>>>>> c449ffc (feat: cart api)
+=======
+	"github.com/quanganh247-qa/go-blog-be/app/api/medications"
+>>>>>>> 79a3bcc (medicine api)
 	"github.com/quanganh247-qa/go-blog-be/app/api/pet"
 	petschedule "github.com/quanganh247-qa/go-blog-be/app/api/pet_schedule"
 <<<<<<< HEAD
@@ -254,6 +258,7 @@ func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor, config
 	rooms.Routes(routerGroup)
 =======
 	appointment.Routes(routerGroup)
+<<<<<<< HEAD
 =======
 	appointment.Routes(routerGroup, taskDistributor)
 >>>>>>> e859654 (Elastic search)
@@ -274,6 +279,9 @@ func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor, config
 	doctor.Routes(routerGroup)
 <<<<<<< HEAD
 	queue.Routes(routerGroup)
+=======
+	medications.Routes(routerGroup)
+>>>>>>> 79a3bcc (medicine api)
 	server.Router = routerDefault
 >>>>>>> 79a3bcc (medicine api)
 =======

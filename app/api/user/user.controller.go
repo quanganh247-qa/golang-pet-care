@@ -44,6 +44,7 @@ type UserControllerInterface interface {
 	getAllTimeSlots(ctx *gin.Context)
 	updateDoctorAvailableTime(ctx *gin.Context)
 <<<<<<< HEAD
+<<<<<<< HEAD
 	// insertTokenInfo(ctx *gin.Context)
 >>>>>>> 79a3bcc (medicine api)
 =======
@@ -76,6 +77,9 @@ type UserControllerInterface interface {
 =======
 	GetAllRole(ctx *gin.Context)
 >>>>>>> 4ccd381 (Update appointment flow)
+=======
+	// insertTokenInfo(ctx *gin.Context)
+>>>>>>> 79a3bcc (medicine api)
 }
 
 func (controller *UserController) createUser(ctx *gin.Context) {
@@ -607,6 +611,7 @@ func (controller *UserController) updateDoctorAvailableTime(ctx *gin.Context) {
 // 	}
 // 	ctx.JSON(http.StatusCreated, util.SuccessResponse("Inserted token info successfull", res))
 // }
+<<<<<<< HEAD
 >>>>>>> 79a3bcc (medicine api)
 =======
 >>>>>>> eb8d761 (updated pet schedule)
@@ -723,3 +728,5 @@ func (controller *UserController) UpdatePassword(ctx *gin.Context) {
 >>>>>>> ada3717 (Docker file)
 =======
 >>>>>>> 4ccd381 (Update appointment flow)
+=======
+>>>>>>> 79a3bcc (medicine api)

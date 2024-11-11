@@ -3,6 +3,7 @@ package medications
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 import (
 	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
 <<<<<<< HEAD
@@ -24,6 +25,11 @@ import (
 	"github.com/quanganh247-qa/go-blog-be/app/service/elasticsearch"
 )
 >>>>>>> e859654 (Elastic search)
+=======
+import (
+	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
+)
+>>>>>>> 79a3bcc (medicine api)
 
 type MedicineApi struct {
 	controller MedicineControllerInterface
@@ -33,6 +39,7 @@ type MedicineController struct {
 	service MedicineServiceInterface
 }
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 type MedicineService struct {
@@ -64,6 +71,10 @@ type createMedicineResponse struct {
 	ExpirationDate string `json:"expiration_date"`
 	Quantity       int64  `json:"quantity"`
 =======
+=======
+type MedicineService struct {
+	storeDB db.Store
+>>>>>>> 79a3bcc (medicine api)
 }
 
 type createMedicineRequest struct {
@@ -83,6 +94,7 @@ type createMedicineResponse struct {
 	StartDate    string `json:"start_date"`
 	EndDate      string `json:"end_date"`
 	Notes        string `json:"notes"`
+<<<<<<< HEAD
 >>>>>>> 79a3bcc (medicine api)
 }
 =======
@@ -135,3 +147,6 @@ type createMedicineResponse struct {
 	Quantity       int64  `json:"quantity"`
 }
 >>>>>>> a415f25 (new data)
+=======
+}
+>>>>>>> 79a3bcc (medicine api)

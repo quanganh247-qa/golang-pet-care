@@ -98,6 +98,10 @@ type UserServiceInterface interface {
 	GetAllTimeslots(ctx *gin.Context, doctorID int64, date string) ([]db.GetTimeslotsAvailableRow, error)
 	UpdateDoctorAvailable(ctx *gin.Context, time_slot_id int64) error
 <<<<<<< HEAD
+<<<<<<< HEAD
+	// InsertTokenInfoService(ctx *gin.Context, arg InsertTokenInfoRequest, username string) (*db.TokenInfo, error)
+>>>>>>> 79a3bcc (medicine api)
+=======
 	// InsertTokenInfoService(ctx *gin.Context, arg InsertTokenInfoRequest, username string) (*db.TokenInfo, error)
 >>>>>>> 79a3bcc (medicine api)
 }
@@ -856,6 +860,7 @@ func (service *UserService) updateUserService(ctx *gin.Context, username string,
 	go service.redis.RemoveUserInfoCache(username)
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 	return &UserResponse{
 		Username:      res.Username,
 		FullName:      res.FullName,
@@ -1027,6 +1032,11 @@ func (s *UserService) GetAllRoleService(ctx *gin.Context) ([]string, error) {
 <<<<<<< HEAD
 
 <<<<<<< HEAD
+=======
+	return nil // Successfully updated
+}
+
+>>>>>>> 79a3bcc (medicine api)
 // func (s *UserService) InsertTokenInfoService(ctx *gin.Context, arg InsertTokenInfoRequest, username string) (*db.TokenInfo, error) {
 // 	tokenInfo, err := s.storeDB.InsertTokenInfo(ctx, db.InsertTokenInfoParams{
 // 		AccessToken:  arg.AccessToken,
@@ -1045,6 +1055,7 @@ func (s *UserService) GetAllRoleService(ctx *gin.Context) ([]string, error) {
 // 		Expiry:       tokenInfo.Expiry,
 // 	}, nil
 // }
+<<<<<<< HEAD
 >>>>>>> 79a3bcc (medicine api)
 =======
 func (s *UserService) ProccessTaskSendVerifyEmail(ctx context.Context, payload rabbitmq.PayloadVerifyEmail) error {
@@ -1198,3 +1209,5 @@ func (s *UserService) ForgotPasswordService(ctx *gin.Context, email string) erro
 >>>>>>> a2c21c8 (update pass)
 =======
 >>>>>>> 4ccd381 (Update appointment flow)
+=======
+>>>>>>> 79a3bcc (medicine api)

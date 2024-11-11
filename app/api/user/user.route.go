@@ -115,6 +115,9 @@ func Routes(routerGroup middleware.RouterGroup, taskDistributor worker.TaskDistr
 <<<<<<< HEAD
 		// Token info for google calendar
 		// authRoute.POST("/token-info", userApi.controller.insertTokenInfo)
+<<<<<<< HEAD
+>>>>>>> 79a3bcc (medicine api)
+=======
 >>>>>>> 79a3bcc (medicine api)
 
 =======
