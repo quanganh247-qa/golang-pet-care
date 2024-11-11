@@ -3,6 +3,7 @@ package api
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/quanganh247-qa/go-blog-be/app/api/appointment"
+<<<<<<< HEAD
 	"github.com/quanganh247-qa/go-blog-be/app/api/cart"
 	"github.com/quanganh247-qa/go-blog-be/app/api/chatbot"
 	"github.com/quanganh247-qa/go-blog-be/app/api/chatbot/handlers"
@@ -13,6 +14,9 @@ import (
 	"github.com/quanganh247-qa/go-blog-be/app/api/medical_records"
 	"github.com/quanganh247-qa/go-blog-be/app/api/medications"
 	"github.com/quanganh247-qa/go-blog-be/app/api/payment"
+=======
+	"github.com/quanganh247-qa/go-blog-be/app/api/medications"
+>>>>>>> 79a3bcc (medicine api)
 	"github.com/quanganh247-qa/go-blog-be/app/api/pet"
 	petschedule "github.com/quanganh247-qa/go-blog-be/app/api/pet_schedule"
 	"github.com/quanganh247-qa/go-blog-be/app/api/products"
@@ -52,6 +56,7 @@ func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor, config
 	user.Routes(routerGroup, taskDistributor, config)
 	pet.Routes(routerGroup)
 	service.Routes(routerGroup)
+<<<<<<< HEAD
 	appointment.Routes(routerGroup, taskDistributor)
 	device_token.Routes(routerGroup)
 	disease.Routes(routerGroup, es)
@@ -66,6 +71,11 @@ func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor, config
 	medications.Routes(routerGroup, es)
 	doctor.Routes(routerGroup)
 	rooms.Routes(routerGroup)
+=======
+	appointment.Routes(routerGroup)
+	medications.Routes(routerGroup)
+	server.Router = routerDefault
+>>>>>>> 79a3bcc (medicine api)
 
 	server.Router = routerDefault
 }

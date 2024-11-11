@@ -110,6 +110,7 @@ func ParseStringToTime(startDate string, endDate string) (time.Time, time.Time, 
 		return time.Time{}, time.Time{}, fmt.Errorf("invalid start date format: %w", err)
 	}
 
+<<<<<<< HEAD
 	// If endDate is provided, parse it; otherwise, return a zero time for parsedEndDate
 	var parsedEndDate time.Time
 	if endDate != "" {
@@ -233,3 +234,13 @@ func MapStructs(source interface{}, destination interface{}) error {
 
 	return nil
 }
+=======
+	// Parse the EndDate string to time.Time (if provided)
+	parsedEndDate, err := time.Parse("2006-01-02 15:04:05", endDate)
+	if err != nil {
+		return time.Time{}, time.Time{}, fmt.Errorf("invalid end date format: %w", err)
+	}
+
+	return parsedStartDate, parsedEndDate, nil
+}
+>>>>>>> 79a3bcc (medicine api)

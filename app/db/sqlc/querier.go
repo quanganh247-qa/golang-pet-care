@@ -62,6 +62,7 @@ type Querier interface {
 	DeleteTreatmentPhase(ctx context.Context, id int64) error
 	DeleteUser(ctx context.Context, id int64) error
 	DeleteVaccination(ctx context.Context, vaccinationid int64) error
+<<<<<<< HEAD
 	GetActiveTreatments(ctx context.Context, arg GetActiveTreatmentsParams) ([]GetActiveTreatmentsRow, error)
 	GetAllAppointments(ctx context.Context, arg GetAllAppointmentsParams) ([]GetAllAppointmentsRow, error)
 	GetAllAppointmentsByDate(ctx context.Context, arg GetAllAppointmentsByDateParams) ([]GetAllAppointmentsByDateRow, error)
@@ -71,6 +72,13 @@ type Querier interface {
 	GetAllRole(ctx context.Context) ([]pgtype.Text, error)
 	GetAllSchedulesByPet(ctx context.Context, arg GetAllSchedulesByPetParams) ([]PetSchedule, error)
 	GetAllTreatmentPhasesByTreatmentID(ctx context.Context, treatmentID pgtype.Int8) ([]TreatmentPhase, error)
+=======
+	GetActiveDoctors(ctx context.Context, arg GetActiveDoctorsParams) ([]GetActiveDoctorsRow, error)
+	GetActivityLogByID(ctx context.Context, logid int64) (Activitylog, error)
+	GetAllMedicinesByPet(ctx context.Context, arg GetAllMedicinesByPetParams) ([]Medication, error)
+	GetAllServices(ctx context.Context, arg GetAllServicesParams) ([]Service, error)
+	GetAllTimeSlots(ctx context.Context, arg GetAllTimeSlotsParams) ([]GetAllTimeSlotsRow, error)
+>>>>>>> 79a3bcc (medicine api)
 	GetAllUsers(ctx context.Context) ([]User, error)
 	GetAppointmentByStateId(ctx context.Context, stateID pgtype.Int4) ([]Appointment, error)
 	GetAppointmentDetail(ctx context.Context, arg GetAppointmentDetailParams) (GetAppointmentDetailRow, error)
@@ -95,6 +103,7 @@ type Querier interface {
 	GetDiseaseByID(ctx context.Context, id int64) (Disease, error)
 	GetDiseaseTreatmentPlanWithPhases(ctx context.Context, lower string) ([]GetDiseaseTreatmentPlanWithPhasesRow, error)
 	GetDoctor(ctx context.Context, id int64) (GetDoctorRow, error)
+<<<<<<< HEAD
 	GetDoctorByUserId(ctx context.Context, userID int64) (Doctor, error)
 	GetDoctorByUsername(ctx context.Context, username string) (GetDoctorByUsernameRow, error)
 	GetDoctors(ctx context.Context) ([]GetDoctorsRow, error)
@@ -140,9 +149,20 @@ type Querier interface {
 	GetTreatmentsByPet(ctx context.Context, arg GetTreatmentsByPetParams) ([]GetTreatmentsByPetRow, error)
 	GetUser(ctx context.Context, username string) (GetUserRow, error)
 	GetUserByEmail(ctx context.Context, email string) (User, error)
+=======
+	GetFeedingScheduleByPetID(ctx context.Context, petid pgtype.Int8) ([]Feedingschedule, error)
+	GetMedicinesByID(ctx context.Context, medicationID int64) (Medication, error)
+	GetPetByID(ctx context.Context, petid int64) (Pet, error)
+	GetServiceByID(ctx context.Context, serviceid int64) (Service, error)
+	GetServiceType(ctx context.Context, typeid int64) (Servicetype, error)
+	GetTimeSlotByID(ctx context.Context, id int64) (GetTimeSlotByIDRow, error)
+	GetTimeslotsAvailable(ctx context.Context, arg GetTimeslotsAvailableParams) ([]GetTimeslotsAvailableRow, error)
+	GetUser(ctx context.Context, username string) (User, error)
+>>>>>>> 79a3bcc (medicine api)
 	GetVaccinationByID(ctx context.Context, vaccinationid int64) (Vaccination, error)
 	InsertDeviceToken(ctx context.Context, arg InsertDeviceTokenParams) (DeviceToken, error)
 	InsertDoctor(ctx context.Context, arg InsertDoctorParams) (Doctor, error)
+<<<<<<< HEAD
 	InsertProduct(ctx context.Context, arg InsertProductParams) (Product, error)
 	ListAllAppointments(ctx context.Context) ([]Appointment, error)
 	ListDoctors(ctx context.Context) ([]ListDoctorsRow, error)
@@ -150,6 +170,13 @@ type Querier interface {
 	ListNotificationsByUsername(ctx context.Context, arg ListNotificationsByUsernameParams) ([]Notification, error)
 	ListPetAllergies(ctx context.Context, arg ListPetAllergiesParams) ([]PetAllergy, error)
 	ListPetSchedulesByUsername(ctx context.Context, username string) ([]ListPetSchedulesByUsernameRow, error)
+=======
+	InsertDoctorSchedule(ctx context.Context, arg InsertDoctorScheduleParams) (Doctorschedule, error)
+	InsertMedicine(ctx context.Context, arg InsertMedicineParams) (Medication, error)
+	InsertTimeslot(ctx context.Context, arg InsertTimeslotParams) (Timeslot, error)
+	ListActiveFeedingSchedules(ctx context.Context) ([]Feedingschedule, error)
+	ListActivityLogs(ctx context.Context, arg ListActivityLogsParams) ([]Activitylog, error)
+>>>>>>> 79a3bcc (medicine api)
 	ListPets(ctx context.Context, arg ListPetsParams) ([]Pet, error)
 	ListPetsByUsername(ctx context.Context, arg ListPetsByUsernameParams) ([]Pet, error)
 	ListTreatmentsByPet(ctx context.Context, arg ListTreatmentsByPetParams) ([]PetTreatment, error)
@@ -160,12 +187,23 @@ type Querier interface {
 	SetPetInactive(ctx context.Context, petid int64) error
 	UpdateAppointmentByID(ctx context.Context, arg UpdateAppointmentByIDParams) error
 	UpdateAppointmentStatus(ctx context.Context, arg UpdateAppointmentStatusParams) error
+<<<<<<< HEAD
 	UpdateAvatarUser(ctx context.Context, arg UpdateAvatarUserParams) (User, error)
 	UpdateCartItemQuantity(ctx context.Context, arg UpdateCartItemQuantityParams) error
 	UpdateDoctor(ctx context.Context, arg UpdateDoctorParams) (Doctor, error)
 	UpdateFile(ctx context.Context, arg UpdateFileParams) (File, error)
 	UpdateMedicalHistory(ctx context.Context, arg UpdateMedicalHistoryParams) error
 	UpdateMedicalRecord(ctx context.Context, id int64) error
+=======
+	// Replace $2 with the specific date (YYYY-MM-DD)
+	UpdateDoctorAvailable(ctx context.Context, arg UpdateDoctorAvailableParams) error
+	UpdateFeedingSchedule(ctx context.Context, arg UpdateFeedingScheduleParams) error
+	// -- name: UpdateMedicine :exec
+	// UPDATE Medications
+	// SET medication_name = $2, dosage = $3, frequency = $4, start_date = $5, end_date = $6, notes = $7
+	// WHERE medication_id = $1;
+	UpdateMedicine(ctx context.Context, arg UpdateMedicineParams) (Medication, error)
+>>>>>>> 79a3bcc (medicine api)
 	UpdateNotification(ctx context.Context, appointmentID int64) error
 	UpdateOrderPaymentStatus(ctx context.Context, id int64) (Order, error)
 	UpdatePet(ctx context.Context, arg UpdatePetParams) error
