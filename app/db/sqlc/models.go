@@ -131,6 +131,7 @@ type MedicalHistory struct {
 	UpdatedAt       pgtype.Timestamp `json:"updated_at"`
 }
 
+<<<<<<< HEAD
 type MedicalRecord struct {
 	ID        int64            `json:"id"`
 	PetID     pgtype.Int8      `json:"pet_id"`
@@ -176,6 +177,29 @@ type Order struct {
 	CartItems       []byte           `json:"cart_items"`
 	ShippingAddress pgtype.Text      `json:"shipping_address"`
 	Notes           pgtype.Text      `json:"notes"`
+=======
+type Feedingschedule struct {
+	Feedingscheduleid int64            `json:"feedingscheduleid"`
+	Petid             pgtype.Int8      `json:"petid"`
+	Mealtime          pgtype.Time      `json:"mealtime"`
+	Foodtype          string           `json:"foodtype"`
+	Quantity          float64          `json:"quantity"`
+	Frequency         string           `json:"frequency"`
+	Lastfed           pgtype.Timestamp `json:"lastfed"`
+	Notes             pgtype.Text      `json:"notes"`
+	Isactive          pgtype.Bool      `json:"isactive"`
+}
+
+type Medication struct {
+	MedicationID   int64            `json:"medication_id"`
+	PetID          int64            `json:"pet_id"`
+	MedicationName string           `json:"medication_name"`
+	Dosage         string           `json:"dosage"`
+	Frequency      string           `json:"frequency"`
+	StartDate      pgtype.Timestamp `json:"start_date"`
+	EndDate        pgtype.Timestamp `json:"end_date"`
+	Notes          pgtype.Text      `json:"notes"`
+>>>>>>> 79a3bcc (medicine api)
 }
 
 type Pet struct {

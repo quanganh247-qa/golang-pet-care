@@ -14,6 +14,10 @@ type MedicineControllerInterface interface {
 	CreateMedicine(ctx *gin.Context)
 	GetMedicineByID(ctx *gin.Context)
 	ListMedicines(ctx *gin.Context)
+<<<<<<< HEAD
+=======
+	// ListMedicinesByUsername(ctx *gin.Context)
+>>>>>>> 79a3bcc (medicine api)
 	UpdateMedicine(ctx *gin.Context)
 	// DeleteMedicine(ctx *gin.Context)
 }
@@ -103,6 +107,25 @@ func (c *MedicineController) UpdateMedicine(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{"message": "Medicine updated successfully"})
 }
 
+<<<<<<< HEAD
+=======
+// func (c *MedicineController) DeleteMedicine(ctx *gin.Context) {
+// 	Medicineid, err := strconv.ParseInt(ctx.Param("Medicineid"), 10, 64)
+// 	if err != nil {
+// 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid Medicine ID"})
+// 		return
+// 	}
+
+// 	err = c.service.SetMedicineInactive(ctx, Medicineid)
+// 	if err != nil {
+// 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+// 		return
+// 	}
+
+// 	ctx.JSON(http.StatusOK, gin.H{"message": "Medicine set to inactive successfully"})
+// }
+
+>>>>>>> 79a3bcc (medicine api)
 // func (c *MedicineController) ListMedicinesByUsername(ctx *gin.Context) {
 // 	// username := ctx.Param("username")
 // 	pagination, err := util.GetPageInQuery(ctx.Request.URL.Query())

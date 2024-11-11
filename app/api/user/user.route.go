@@ -39,9 +39,24 @@ func Routes(routerGroup middleware.RouterGroup, taskDistributor worker.TaskDistr
 		user.PUT("/reset-password", userApi.controller.ForgotPassword)
 		authRoute.PUT("/change-password", userApi.controller.UpdatePassword)
 
+<<<<<<< HEAD
 		user.GET("/sessioninfo", userApi.controller.sessioninfo)
 		user.GET("/userinfo", userApi.controller.userinfo)
 		authRoute.GET("/roles", userApi.controller.GetAllRole)
+=======
+		// Doctor
+		authRoute.POST("/create-doctor", userApi.controller.createDoctor)
+		authRoute.POST("/timeslots", userApi.controller.insertTimeSlots)
+		authRoute.GET("/doctor/:id", userApi.controller.getDoctor)
+
+		// Schedule
+		authRoute.GET("/time-slots/:doctor_id", userApi.controller.getTimeSlots)
+		authRoute.GET("/all-time-slots/:doctor_id", userApi.controller.getAllTimeSlots)
+		authRoute.PUT("/update-available/:id", userApi.controller.updateDoctorAvailableTime)
+
+		// Token info for google calendar
+		// authRoute.POST("/token-info", userApi.controller.insertTokenInfo)
+>>>>>>> 79a3bcc (medicine api)
 
 	}
 

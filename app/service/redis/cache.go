@@ -49,6 +49,7 @@ func (c *ClientType) UserInfoLoadCache(username string) (*UserInfo, error) {
 			return nil, err
 		}
 
+<<<<<<< HEAD
 		userRes := UserInfo{
 			UserID:          userData.ID,
 			Username:        userData.Username,
@@ -61,6 +62,13 @@ func (c *ClientType) UserInfoLoadCache(username string) (*UserInfo, error) {
 			PhoneNumber:     userData.PhoneNumber.String,
 			Address:         userData.Address.String,
 			Role:            userData.Role.String,
+=======
+		userRes := userInfo{
+			UserID:   userData.ID,
+			Username: userData.Username,
+			Email:    userData.Email,
+			FullName: userData.FullName,
+>>>>>>> 79a3bcc (medicine api)
 		}
 		err = c.SetWithBackground(userKey, &userRes, time.Hour*12)
 		if err != nil {
@@ -70,6 +78,39 @@ func (c *ClientType) UserInfoLoadCache(username string) (*UserInfo, error) {
 	}
 	return &userInformation, nil
 }
+<<<<<<< HEAD
+=======
+
+// func (c *ClientType) TokenUserInfoLoadCache(username string) (*calendar.TokenInfo, error) {
+// 	userKey := fmt.Sprintf("%s:%s", TOKEN_USER_INFO_KEY, username)
+// 	userInformation := calendar.TokenInfo{}
+// 	err := c.GetWithBackground(userKey, userInformation)
+// 	if err != nil {
+// 		log.Printf("Error when get cache for key %s: %v", userKey, err)
+// 		tokenInfo, err := db.StoreDB.GetTokenInfo(ctxRedis, username)
+
+// 		if err != nil {
+// 			if err == pgx.ErrNoRows {
+// 				return nil, fmt.Errorf("Không tìm thấy user với username = %s", username)
+// 			}
+// 			return nil, err
+// 		}
+
+// 		userRes := calendar.TokenInfo{
+// 			AccessToken:  tokenInfo.AccessToken,
+// 			TokenType:    tokenInfo.TokenType,
+// 			RefreshToken: tokenInfo.RefreshToken.String,
+// 			Expiry:       tokenInfo.Expiry,
+// 		}
+// 		err = c.SetWithBackground(userKey, &userRes, time.Hour*12)
+// 		if err != nil {
+// 			log.Printf("Error when set cache for key %s: %v", userKey, err)
+// 		}
+// 		return &userRes, nil
+// 	}
+// 	return &userInformation, nil
+// }
+>>>>>>> 79a3bcc (medicine api)
 
 func (client *ClientType) RemoveUserInfoCache(username string) {
 	userInfoKey := fmt.Sprintf("%s:%s", USER_INFO_KEY, username)

@@ -23,6 +23,7 @@ type UserServiceInterface interface {
 	getUserDetailsService(ctx *gin.Context, username string) (*UserResponse, error)
 	getAllUsersService(ctx *gin.Context) ([]UserResponse, error)
 	loginUserService(ctx *gin.Context, req loginUserRequest) (*loginUSerResponse, error)
+<<<<<<< HEAD
 	logoutUsersService(ctx *gin.Context, username string, token string) error
 	verifyEmailService(ctx *gin.Context, arg VerrifyEmailTxParams) error
 
@@ -33,6 +34,18 @@ type UserServiceInterface interface {
 	ForgotPasswordService(ctx *gin.Context, email string) error
 	UpdatePasswordService(ctx *gin.Context, username string, arg UpdatePasswordParams) error
 	GetAllRoleService(ctx *gin.Context) ([]string, error)
+=======
+	logoutUsersService(ctx *gin.Context, username string) error
+	verifyEmailService(ctx *gin.Context, req VerrifyEmailTxParams) (VerrifyEmailTxResult, error)
+	createDoctorService(ctx *gin.Context, arg InsertDoctorRequest, username string) (*DoctorResponse, error)
+	createDoctorScheduleService(ctx *gin.Context, arg InsertDoctorScheduleRequest, username string) (*DoctorScheduleResponse, error)
+	getDoctorByID(ctx *gin.Context, userID int64) (*DoctorResponse, error)
+	insertTimeSlots(ctx *gin.Context, username string, arg db.InsertTimeslotParams) (*db.Timeslot, error)
+	GetTimeslotsAvailable(ctx *gin.Context, doctorID int64, date string) ([]db.GetTimeslotsAvailableRow, error)
+	GetAllTimeslots(ctx *gin.Context, doctorID int64, date string) ([]db.GetTimeslotsAvailableRow, error)
+	UpdateDoctorAvailable(ctx *gin.Context, time_slot_id int64) error
+	// InsertTokenInfoService(ctx *gin.Context, arg InsertTokenInfoRequest, username string) (*db.TokenInfo, error)
+>>>>>>> 79a3bcc (medicine api)
 }
 
 func (server *UserService) createUserService(ctx *gin.Context, req createUserRequest) (*VerrifyEmailTxParams, error) {
@@ -332,6 +345,7 @@ func (service *UserService) updateUserService(ctx *gin.Context, username string,
 
 	go service.redis.RemoveUserInfoCache(username)
 
+<<<<<<< HEAD
 	return &UserResponse{
 		Username:      res.Username,
 		FullName:      res.FullName,
@@ -482,3 +496,26 @@ func (s *UserService) GetAllRoleService(ctx *gin.Context) ([]string, error) {
 	}
 	return roleList, nil
 }
+=======
+	return nil // Successfully updated
+}
+
+// func (s *UserService) InsertTokenInfoService(ctx *gin.Context, arg InsertTokenInfoRequest, username string) (*db.TokenInfo, error) {
+// 	tokenInfo, err := s.storeDB.InsertTokenInfo(ctx, db.InsertTokenInfoParams{
+// 		AccessToken:  arg.AccessToken,
+// 		TokenType:    arg.TokenType,
+// 		UserName:     username,
+// 		RefreshToken: pgtype.Text{String: arg.RefreshToken.String, Valid: true},
+// 		Expiry:       arg.Expiry,
+// 	})
+// 	if err != nil {
+// 		return nil, fmt.Errorf("failed to insert token info: %w", err)
+// 	}
+// 	return &db.TokenInfo{
+// 		AccessToken:  tokenInfo.AccessToken,
+// 		TokenType:    tokenInfo.TokenType,
+// 		RefreshToken: tokenInfo.RefreshToken,
+// 		Expiry:       tokenInfo.Expiry,
+// 	}, nil
+// }
+>>>>>>> 79a3bcc (medicine api)
