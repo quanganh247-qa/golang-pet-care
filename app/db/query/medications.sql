@@ -13,7 +13,7 @@ SELECT * FROM Medications WHERE medication_id = $1;
 -- name: UpdateMedicine :one
 UPDATE Medications 
 SET 
-  medication_name = COALESCE(sqlc.narg(medication_name), medication_name),
+  medication_name = COALESCE(sqlc.narg(medication_name), medication_name),       
   dosage =  COALESCE(sqlc.narg(dosage),dosage),
   frequency = COALESCE(sqlc.narg(frequency),frequency),
   start_date = COALESCE(sqlc.narg(start_date),start_date),
