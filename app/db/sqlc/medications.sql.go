@@ -113,7 +113,7 @@ const updateMedicine = `-- name: UpdateMedicine :one
 
 UPDATE Medications 
 SET 
-  medication_name = COALESCE($1, medication_name),
+  medication_name = COALESCE($1, medication_name),       
   dosage =  COALESCE($2,dosage),
   frequency = COALESCE($3,frequency),
   start_date = COALESCE($4,start_date),

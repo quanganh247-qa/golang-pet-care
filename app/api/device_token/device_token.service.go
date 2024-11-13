@@ -12,7 +12,10 @@ import (
 
 type DeviceTokenServiceInterface interface {
 	InsertToken(ctx context.Context, req DVTRequest, username string) (*DVTResponse, error)
+<<<<<<< HEAD
 	DeleteDevicetToken(ctx context.Context, username string, token string) error
+=======
+>>>>>>> 0fb3f30 (user images)
 }
 
 func (s *DeviceTokenService) InsertToken(ctx context.Context, req DVTRequest, username string) (*DVTResponse, error) {
@@ -42,6 +45,7 @@ func (s *DeviceTokenService) InsertToken(ctx context.Context, req DVTRequest, us
 		ExpiredAt:  token.ExpiredAt.Time.Format(time.RFC3339),
 	}, nil
 }
+<<<<<<< HEAD
 
 func (s *DeviceTokenService) DeleteDevicetToken(ctx context.Context, username string, token string) error {
 
@@ -63,3 +67,5 @@ func (s *DeviceTokenService) DeleteDevicetToken(ctx context.Context, username st
 	return err
 
 }
+=======
+>>>>>>> 0fb3f30 (user images)

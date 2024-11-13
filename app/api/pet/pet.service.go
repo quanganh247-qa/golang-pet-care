@@ -45,6 +45,7 @@ func (s *PetService) CreatePet(ctx *gin.Context, username string, req createPetR
 	}
 	err = s.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
 		res, err := q.CreatePet(ctx, db.CreatePetParams{
+<<<<<<< HEAD
 			Username:        username,
 			Name:            req.Name,
 			Type:            req.Type,
@@ -57,6 +58,16 @@ func (s *PetService) CreatePet(ctx *gin.Context, username string, req createPetR
 			OriginalImage:   pgtype.Text{String: req.OriginalImage, Valid: true},
 			BirthDate:       pgtype.Date{Time: bod, Valid: true},
 			MicrochipNumber: pgtype.Text{String: req.MicrochipNumber, Valid: true},
+=======
+			Username:    username,
+			Name:        req.Name,
+			Type:        req.Type,
+			Breed:       pgtype.Text{String: req.Breed, Valid: true},
+			Age:         pgtype.Int4{Int32: int32(req.Age), Valid: true},
+			Weight:      pgtype.Float8{Float64: req.Weight, Valid: true},
+			Gender:      pgtype.Text{String: req.Gender, Valid: true},
+			Healthnotes: pgtype.Text{String: req.Healthnotes, Valid: true},
+>>>>>>> 0fb3f30 (user images)
 		})
 		if err != nil {
 			return fmt.Errorf("failed to create pet: %w", err)
@@ -149,6 +160,7 @@ func (s *PetService) ListPets(ctx *gin.Context, req listPetsRequest, pagination 
 	return pets, nil
 }
 
+<<<<<<< HEAD
 func (s *PetService) UpdatePet(ctx *gin.Context, petid int64, req updatePetRequest) error {
 
 	var params db.UpdatePetParams
@@ -156,6 +168,18 @@ func (s *PetService) UpdatePet(ctx *gin.Context, petid int64, req updatePetReque
 	pet, err := s.storeDB.GetPetByID(ctx, petid)
 	if err != nil {
 		return fmt.Errorf("failed to get pet: %w", err)
+=======
+func (s *PetService) UpdatePet(ctx *gin.Context, petid int64, req createPetRequest) error {
+	params := db.UpdatePetParams{
+		Petid:       petid,
+		Name:        req.Name,
+		Type:        req.Type,
+		Breed:       pgtype.Text{String: req.Breed, Valid: true},
+		Age:         pgtype.Int4{Int32: int32(req.Age), Valid: true},
+		Weight:      pgtype.Float8{Float64: req.Weight, Valid: true},
+		Gender:      pgtype.Text{String: req.Gender, Valid: true},
+		Healthnotes: pgtype.Text{String: req.Healthnotes, Valid: true},
+>>>>>>> 0fb3f30 (user images)
 	}
 
 	if req.BOD != "" {

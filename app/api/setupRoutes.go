@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/quanganh247-qa/go-blog-be/app/api/appointment"
 <<<<<<< HEAD
+<<<<<<< HEAD
 	"github.com/quanganh247-qa/go-blog-be/app/api/cart"
 	"github.com/quanganh247-qa/go-blog-be/app/api/chatbot"
 	"github.com/quanganh247-qa/go-blog-be/app/api/chatbot/handlers"
@@ -12,6 +13,9 @@ import (
 	"github.com/quanganh247-qa/go-blog-be/app/api/doctor"
 	"github.com/quanganh247-qa/go-blog-be/app/api/location"
 	"github.com/quanganh247-qa/go-blog-be/app/api/medical_records"
+=======
+	"github.com/quanganh247-qa/go-blog-be/app/api/device_token"
+>>>>>>> 0fb3f30 (user images)
 	"github.com/quanganh247-qa/go-blog-be/app/api/medications"
 	"github.com/quanganh247-qa/go-blog-be/app/api/payment"
 =======
@@ -74,6 +78,7 @@ func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor, config
 =======
 	appointment.Routes(routerGroup)
 	medications.Routes(routerGroup)
+	device_token.Routes(routerGroup)
 	server.Router = routerDefault
 >>>>>>> 79a3bcc (medicine api)
 
