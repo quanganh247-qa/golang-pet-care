@@ -12,46 +12,40 @@ import (
 )
 
 const createUser = `-- name: CreateUser :one
-INSERT INTO users (
-  username,
-  hashed_password,
-  full_name,
-  email
-) VALUES (
-  $1, $2, $3, $4
-) RETURNING id, username, hashed_password, full_name, email, phone_number, address, avatar, role, created_at, is_verified_email, removed_at
+INSERT INTO users (username, hashed_password, full_name, email, phone_number, address, data_image, original_image, role, created_at, is_verified_email)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, NOW(), $10)
+RETURNING id
 `
 
 type CreateUserParams struct {
-	Username       string `json:"username"`
-	HashedPassword string `json:"hashed_password"`
-	FullName       string `json:"full_name"`
-	Email          string `json:"email"`
+	Username        string      `json:"username"`
+	HashedPassword  string      `json:"hashed_password"`
+	FullName        string      `json:"full_name"`
+	Email           string      `json:"email"`
+	PhoneNumber     pgtype.Text `json:"phone_number"`
+	Address         pgtype.Text `json:"address"`
+	DataImage       []byte      `json:"data_image"`
+	OriginalImage   string      `json:"original_image"`
+	Role            pgtype.Text `json:"role"`
+	IsVerifiedEmail pgtype.Bool `json:"is_verified_email"`
 }
 
-func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, error) {
+func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (int64, error) {
 	row := q.db.QueryRow(ctx, createUser,
 		arg.Username,
 		arg.HashedPassword,
 		arg.FullName,
 		arg.Email,
+		arg.PhoneNumber,
+		arg.Address,
+		arg.DataImage,
+		arg.OriginalImage,
+		arg.Role,
+		arg.IsVerifiedEmail,
 	)
-	var i User
-	err := row.Scan(
-		&i.ID,
-		&i.Username,
-		&i.HashedPassword,
-		&i.FullName,
-		&i.Email,
-		&i.PhoneNumber,
-		&i.Address,
-		&i.Avatar,
-		&i.Role,
-		&i.CreatedAt,
-		&i.IsVerifiedEmail,
-		&i.RemovedAt,
-	)
-	return i, err
+	var id int64
+	err := row.Scan(&id)
+	return id, err
 }
 
 const getActiveDoctors = `-- name: GetActiveDoctors :many
@@ -116,7 +110,7 @@ func (q *Queries) GetActiveDoctors(ctx context.Context, arg GetActiveDoctorsPara
 }
 
 const getAllUsers = `-- name: GetAllUsers :many
-SELECT id, username, hashed_password, full_name, email, phone_number, address, avatar, role, created_at, is_verified_email, removed_at FROM users
+SELECT id, username, hashed_password, full_name, email, phone_number, address, data_image, original_image, role, created_at, is_verified_email, removed_at FROM users
 `
 
 func (q *Queries) GetAllUsers(ctx context.Context) ([]User, error) {
@@ -136,7 +130,8 @@ func (q *Queries) GetAllUsers(ctx context.Context) ([]User, error) {
 			&i.Email,
 			&i.PhoneNumber,
 			&i.Address,
-			&i.Avatar,
+			&i.DataImage,
+			&i.OriginalImage,
 			&i.Role,
 			&i.CreatedAt,
 			&i.IsVerifiedEmail,
@@ -198,13 +193,29 @@ func (q *Queries) GetDoctor(ctx context.Context, id int64) (GetDoctorRow, error)
 }
 
 const getUser = `-- name: GetUser :one
-SELECT id, username, hashed_password, full_name, email, phone_number, address, avatar, role, created_at, is_verified_email, removed_at FROM users
-WHERE username = $1 LIMIT 1
+SELECT id, username, hashed_password, full_name, email, phone_number, address, data_image, original_image, role, created_at, is_verified_email
+FROM users
+WHERE username = $1
 `
 
-func (q *Queries) GetUser(ctx context.Context, username string) (User, error) {
+type GetUserRow struct {
+	ID              int64            `json:"id"`
+	Username        string           `json:"username"`
+	HashedPassword  string           `json:"hashed_password"`
+	FullName        string           `json:"full_name"`
+	Email           string           `json:"email"`
+	PhoneNumber     pgtype.Text      `json:"phone_number"`
+	Address         pgtype.Text      `json:"address"`
+	DataImage       []byte           `json:"data_image"`
+	OriginalImage   string           `json:"original_image"`
+	Role            pgtype.Text      `json:"role"`
+	CreatedAt       pgtype.Timestamp `json:"created_at"`
+	IsVerifiedEmail pgtype.Bool      `json:"is_verified_email"`
+}
+
+func (q *Queries) GetUser(ctx context.Context, username string) (GetUserRow, error) {
 	row := q.db.QueryRow(ctx, getUser, username)
-	var i User
+	var i GetUserRow
 	err := row.Scan(
 		&i.ID,
 		&i.Username,
@@ -213,11 +224,11 @@ func (q *Queries) GetUser(ctx context.Context, username string) (User, error) {
 		&i.Email,
 		&i.PhoneNumber,
 		&i.Address,
-		&i.Avatar,
+		&i.DataImage,
+		&i.OriginalImage,
 		&i.Role,
 		&i.CreatedAt,
 		&i.IsVerifiedEmail,
-		&i.RemovedAt,
 	)
 	return i, err
 }
@@ -323,7 +334,7 @@ SET
   is_verified_email = COALESCE($4,is_verified_email)
 WHERE
   username = $5
-RETURNING id, username, hashed_password, full_name, email, phone_number, address, avatar, role, created_at, is_verified_email, removed_at
+RETURNING id, username, hashed_password, full_name, email, phone_number, address, data_image, original_image, role, created_at, is_verified_email, removed_at
 `
 
 type UpdateUserParams struct {
@@ -351,7 +362,8 @@ func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, e
 		&i.Email,
 		&i.PhoneNumber,
 		&i.Address,
-		&i.Avatar,
+		&i.DataImage,
+		&i.OriginalImage,
 		&i.Role,
 		&i.CreatedAt,
 		&i.IsVerifiedEmail,

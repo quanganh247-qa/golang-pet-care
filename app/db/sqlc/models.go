@@ -5,8 +5,6 @@
 package db
 
 import (
-	"time"
-
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
@@ -50,6 +48,16 @@ type Checkoutservice struct {
 	Quantity          pgtype.Int4   `json:"quantity"`
 	Unitprice         pgtype.Float8 `json:"unitprice"`
 	Subtotal          pgtype.Float8 `json:"subtotal"`
+}
+
+type Devicetoken struct {
+	ID         int64            `json:"id"`
+	Username   string           `json:"username"`
+	Token      string           `json:"token"`
+	DeviceType pgtype.Text      `json:"device_type"`
+	CreatedAt  pgtype.Timestamp `json:"created_at"`
+	LastUsedAt pgtype.Timestamp `json:"last_used_at"`
+	ExpiredAt  pgtype.Timestamp `json:"expired_at"`
 }
 
 type Doctor struct {
@@ -96,6 +104,32 @@ type Medication struct {
 	Notes          pgtype.Text      `json:"notes"`
 }
 
+type Notification struct {
+	Notificationid   int64            `json:"notificationid"`
+	Petid            pgtype.Int8      `json:"petid"`
+	Title            string           `json:"title"`
+	Body             pgtype.Text      `json:"body"`
+	Duedate          pgtype.Timestamp `json:"duedate"`
+	Repeatinterval   pgtype.Text      `json:"repeatinterval"`
+	Iscompleted      pgtype.Bool      `json:"iscompleted"`
+	Notificationsent pgtype.Bool      `json:"notificationsent"`
+}
+
+type Notificationhistory struct {
+	ID             int64              `json:"id"`
+	NotificationID int64              `json:"notification_id"`
+	UserID         int64              `json:"user_id"`
+	DeviceTokenID  pgtype.Int8        `json:"device_token_id"`
+	Title          string             `json:"title"`
+	Body           pgtype.Text        `json:"body"`
+	Data           []byte             `json:"data"`
+	SentAt         pgtype.Timestamptz `json:"sent_at"`
+	DeliveredAt    pgtype.Timestamptz `json:"delivered_at"`
+	OpenedAt       pgtype.Timestamptz `json:"opened_at"`
+	ErrorMessage   pgtype.Text        `json:"error_message"`
+	CreatedAt      pgtype.Timestamptz `json:"created_at"`
+}
+
 type Pet struct {
 	Petid           int64         `json:"petid"`
 	Name            string        `json:"name"`
@@ -104,13 +138,14 @@ type Pet struct {
 	Age             pgtype.Int4   `json:"age"`
 	Gender          pgtype.Text   `json:"gender"`
 	Healthnotes     pgtype.Text   `json:"healthnotes"`
-	Profileimage    pgtype.Text   `json:"profileimage"`
 	Weight          pgtype.Float8 `json:"weight"`
 	BirthDate       pgtype.Date   `json:"birth_date"`
 	Username        string        `json:"username"`
 	MicrochipNumber pgtype.Text   `json:"microchip_number"`
 	LastCheckupDate pgtype.Date   `json:"last_checkup_date"`
 	IsActive        pgtype.Bool   `json:"is_active"`
+	DataImage       []byte        `json:"data_image"`
+	OriginalImage   string        `json:"original_image"`
 }
 
 type Petservicelocation struct {
@@ -124,17 +159,6 @@ type Petservicelocation struct {
 	Servicetypes  []string       `json:"servicetypes"`
 	Rating        pgtype.Numeric `json:"rating"`
 	Isverified    pgtype.Bool    `json:"isverified"`
-}
-
-type Reminder struct {
-	Reminderid       int64            `json:"reminderid"`
-	Petid            pgtype.Int8      `json:"petid"`
-	Title            string           `json:"title"`
-	Description      pgtype.Text      `json:"description"`
-	Duedate          pgtype.Timestamp `json:"duedate"`
-	Repeatinterval   pgtype.Text      `json:"repeatinterval"`
-	Iscompleted      pgtype.Bool      `json:"iscompleted"`
-	Notificationsent pgtype.Bool      `json:"notificationsent"`
 }
 
 type Service struct {
@@ -164,17 +188,6 @@ type Timeslot struct {
 	Day       pgtype.Date      `json:"day"`
 }
 
-type TokenInfo struct {
-	ID           int64              `json:"id"`
-	UserName     string             `json:"user_name"`
-	AccessToken  string             `json:"access_token"`
-	TokenType    string             `json:"token_type"`
-	RefreshToken pgtype.Text        `json:"refresh_token"`
-	Expiry       time.Time          `json:"expiry"`
-	CreatedAt    pgtype.Timestamptz `json:"created_at"`
-	UpdatedAt    pgtype.Timestamptz `json:"updated_at"`
-}
-
 type User struct {
 	ID              int64            `json:"id"`
 	Username        string           `json:"username"`
@@ -183,7 +196,8 @@ type User struct {
 	Email           string           `json:"email"`
 	PhoneNumber     pgtype.Text      `json:"phone_number"`
 	Address         pgtype.Text      `json:"address"`
-	Avatar          pgtype.Text      `json:"avatar"`
+	DataImage       []byte           `json:"data_image"`
+	OriginalImage   string           `json:"original_image"`
 	Role            pgtype.Text      `json:"role"`
 	CreatedAt       pgtype.Timestamp `json:"created_at"`
 	IsVerifiedEmail pgtype.Bool      `json:"is_verified_email"`

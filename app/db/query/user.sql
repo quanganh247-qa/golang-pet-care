@@ -1,19 +1,15 @@
 -- name: CreateUser :one
-INSERT INTO users (
-  username,
-  hashed_password,
-  full_name,
-  email
-) VALUES (
-  $1, $2, $3, $4
-) RETURNING *;
+INSERT INTO users (username, hashed_password, full_name, email, phone_number, address, data_image, original_image, role, created_at, is_verified_email)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, NOW(), $10)
+RETURNING id;
 
 -- name: GetUser :one
-SELECT * FROM users
-WHERE username = $1 LIMIT 1;
+SELECT id, username, hashed_password, full_name, email, phone_number, address, data_image, original_image, role, created_at, is_verified_email
+FROM users
+WHERE username = $1;
 
 -- name: GetAllUsers :many
-SELECT * FROM users;
+SELECT * FROM users ;
 
 -- name: UpdateUser :one
 UPDATE users 

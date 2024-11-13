@@ -6,6 +6,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/quanganh247-qa/go-blog-be/app/api/appointment"
+	"github.com/quanganh247-qa/go-blog-be/app/api/device_token"
 	"github.com/quanganh247-qa/go-blog-be/app/api/medications"
 	"github.com/quanganh247-qa/go-blog-be/app/api/pet"
 	"github.com/quanganh247-qa/go-blog-be/app/api/service"
@@ -39,6 +40,7 @@ func (server *Server) SetupRoutes() {
 	service.Routes(routerGroup)
 	appointment.Routes(routerGroup)
 	medications.Routes(routerGroup)
+	device_token.Routes(routerGroup)
 	server.Router = routerDefault
 
 }

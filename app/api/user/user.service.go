@@ -17,7 +17,9 @@ import (
 )
 
 type UserServiceInterface interface {
-	createUserService(ctx *gin.Context, req createUserRequest) (*db.User, error)
+	// createUserService(ctx *gin.Context, req createUserRequest) (*db.User, error)
+	createUserService(ctx *gin.Context, req createUserRequest) error
+	getUserDetailsService(ctx *gin.Context, username string) (*UserResponse, error)
 	getAllUsersService(ctx *gin.Context) ([]UserResponse, error)
 	loginUserService(ctx *gin.Context, req loginUserRequest) (*loginUSerResponse, error)
 	logoutUsersService(ctx *gin.Context, username string) error
@@ -32,33 +34,39 @@ type UserServiceInterface interface {
 	// InsertTokenInfoService(ctx *gin.Context, arg InsertTokenInfoRequest, username string) (*db.TokenInfo, error)
 }
 
-func (server *UserService) createUserService(ctx *gin.Context, req createUserRequest) (*db.User, error) {
+func (server *UserService) createUserService(ctx *gin.Context, req createUserRequest) error {
 
 	hashedPwd, err := util.HashPassword(req.Password)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, fmt.Sprintf("cannot hash password: %v", err))
-		return nil, fmt.Errorf("cannot hash password: %v", err)
+		return fmt.Errorf("cannot hash password: %v", err)
 	}
 
 	arg := db.CreateUserParams{
-		Username:       req.Username,
-		HashedPassword: hashedPwd,
-		FullName:       req.FullName,
-		Email:          req.Email,
+		Username:        req.Username,
+		HashedPassword:  hashedPwd,
+		FullName:        req.FullName,
+		Email:           req.Email,
+		PhoneNumber:     pgtype.Text{String: req.PhoneNumber, Valid: true},
+		Address:         pgtype.Text{String: req.Address, Valid: true},
+		DataImage:       req.DataImage,
+		OriginalImage:   req.OriginalImage,
+		Role:            pgtype.Text{String: "user", Valid: true}, //
+		IsVerifiedEmail: pgtype.Bool{Bool: true, Valid: true},
 	}
 
-	user, err := server.storeDB.CreateUser(ctx, arg) // Check this line carefully
+	_, err = server.storeDB.CreateUser(ctx, arg) // Check this line carefully
 
 	if err != nil {
 		if pqErr, ok := err.(*pq.Error); ok {
 			switch pqErr.Code.Name() {
 			case "unique_violation":
 				ctx.JSON(http.StatusForbidden, "username or email already exists")
-				return nil, fmt.Errorf("username or email already exists")
+				return fmt.Errorf("username or email already exists")
 			}
 		} else {
 			ctx.JSON(http.StatusInternalServerError, "internal server error")
-			return nil, fmt.Errorf("internal server error: %v", err)
+			return fmt.Errorf("internal server error: %v", err)
 		}
 	}
 
@@ -75,12 +83,29 @@ func (server *UserService) createUserService(ctx *gin.Context, req createUserReq
 	// 	return nil, fmt.Errorf("failed to send verification email: %v", err)
 	// }
 
-	return &db.User{
-		Username:  user.Username,
-		FullName:  user.FullName,
-		Email:     user.Email,
-		CreatedAt: user.CreatedAt,
+	return nil
+}
+
+func (server *UserService) getUserDetailsService(ctx *gin.Context, username string) (*UserResponse, error) {
+	user, err := server.storeDB.GetUser(ctx, username)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			ctx.JSON(http.StatusNotFound, "user not found")
+			return nil, fmt.Errorf("user not found")
+		}
+		ctx.JSON(http.StatusInternalServerError, "internal server error")
+		return nil, fmt.Errorf("internal server error: %v", err)
+	}
+	return &UserResponse{
+		Username:      user.Username,
+		FullName:      user.FullName,
+		Email:         user.Email,
+		PhoneNumber:   user.PhoneNumber.String,
+		Address:       user.Address.String,
+		DataImage:     user.DataImage,
+		OriginalImage: user.OriginalImage,
 	}, nil
+	// TODO: Implement logout logic
 }
 
 func (server *UserService) getAllUsersService(ctx *gin.Context) ([]UserResponse, error) {
@@ -111,6 +136,17 @@ func (service *UserService) loginUserService(ctx *gin.Context, req loginUserRequ
 		ctx.JSON(http.StatusInternalServerError, "internal server error")
 		return nil, fmt.Errorf("internal server error: %v", err)
 	}
+	device_tokens, err := service.storeDB.GetDeviceTokenByUsername(ctx, req.Username)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, "internal server error")
+		return nil, fmt.Errorf("internal server error: %v", err)
+	}
+
+	var device_tokens_response []string
+	for _, d := range device_tokens {
+		device_tokens_response = append(device_tokens_response, d.Token)
+	}
+
 	return &loginUSerResponse{
 		AccessTokenExpiresAt:  time.Now().Add(time.Hour),
 		RefreshTokenExpiresAt: time.Now().Add(time.Hour * 24),
@@ -119,6 +155,7 @@ func (service *UserService) loginUserService(ctx *gin.Context, req loginUserRequ
 			FullName: user.FullName,
 			Email:    user.Email,
 		},
+		DeviceToken: device_tokens_response,
 	}, nil
 }
 
