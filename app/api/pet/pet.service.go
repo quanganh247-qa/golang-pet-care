@@ -92,12 +92,16 @@ func (s *PetService) CreatePet(ctx *gin.Context, username string, req createPetR
 func (s *PetService) CreatePet(ctx *gin.Context, username string, req createPetRequest) (*createPetResponse, error) {
 	var pet createPetResponse
 <<<<<<< HEAD
+<<<<<<< HEAD
 	bod, _, err := util.ParseStringToTime(req.BOD, "")
 >>>>>>> 9d28896 (image pet)
 =======
 
 	bod, err := time.Parse("2006-01-02", req.BOD)
 >>>>>>> 67140c6 (updated create pet)
+=======
+	bod, _, err := util.ParseStringToTime(req.BOD, "")
+>>>>>>> 9d28896 (image pet)
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse BOD: %w", err)
 	}
@@ -106,6 +110,9 @@ func (s *PetService) CreatePet(ctx *gin.Context, username string, req createPetR
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 9d28896 (image pet)
 =======
 >>>>>>> 9d28896 (image pet)
 			Username:        username,
@@ -117,6 +124,7 @@ func (s *PetService) CreatePet(ctx *gin.Context, username string, req createPetR
 			Gender:          pgtype.Text{String: req.Gender, Valid: true},
 			Healthnotes:     pgtype.Text{String: req.Healthnotes, Valid: true},
 			DataImage:       req.DataImage,
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 			OriginalImage:   pgtype.Text{String: req.OriginalImage, Valid: true},
@@ -148,6 +156,11 @@ func (s *PetService) CreatePet(ctx *gin.Context, username string, req createPetR
 >>>>>>> 67140c6 (updated create pet)
 =======
 >>>>>>> 0fb3f30 (user images)
+=======
+			OriginalImage:   req.OriginalImage,
+			BirthDate:       pgtype.Date{Time: bod, Valid: true},
+			MicrochipNumber: pgtype.Text{String: req.MicrophoneNumber, Valid: true},
+>>>>>>> 9d28896 (image pet)
 		})
 		if err != nil {
 			return fmt.Errorf("failed to create pet: %w", err)
@@ -179,6 +192,9 @@ func (s *PetService) CreatePet(ctx *gin.Context, username string, req createPetR
 =======
 		pet = createPetResponse{
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 9d28896 (image pet)
 			Petid:     res.Petid,
 			Username:  res.Username,
 			Name:      res.Name,
@@ -187,6 +203,7 @@ func (s *PetService) CreatePet(ctx *gin.Context, username string, req createPetR
 			Age:       int16(res.Age.Int32),
 			Weight:    res.Weight.Float64,
 			DataImage: pet.DataImage,
+<<<<<<< HEAD
 >>>>>>> 9d28896 (image pet)
 =======
 			Petid:           res.Petid,
@@ -198,6 +215,8 @@ func (s *PetService) CreatePet(ctx *gin.Context, username string, req createPetR
 			OriginalImage:   res.OriginalImage.String,
 			MicrochipNumber: res.MicrochipNumber.String,
 >>>>>>> 67140c6 (updated create pet)
+=======
+>>>>>>> 9d28896 (image pet)
 		}
 		return nil
 
@@ -227,11 +246,18 @@ func (s *PetService) GetPetByID(ctx *gin.Context, petid int64) (*createPetRespon
 			Name:          res.Name,
 			Type:          res.Type,
 			Breed:         res.Breed.String,
+<<<<<<< HEAD
 			BOD:           res.BirthDate.Time.Format("2006-01-02"),
 			Age:           int16(res.Age.Int32),
 			Weight:        res.Weight.Float64,
 			DataImage:     res.DataImage,
 			OriginalImage: res.OriginalImage.String,
+=======
+			Age:           int16(res.Age.Int32),
+			Weight:        res.Weight.Float64,
+			DataImage:     res.DataImage,
+			OriginalImage: res.OriginalImage,
+>>>>>>> 9d28896 (image pet)
 		}
 		return nil
 	})
@@ -295,10 +321,13 @@ func (s *PetService) ListPets(ctx *gin.Context, req listPetsRequest, pagination 
 			pets = append(pets, CreatePetResponse{
 =======
 			pets = append(pets, createPetResponse{
+<<<<<<< HEAD
 >>>>>>> 9d28896 (image pet)
 =======
 			pets = append(pets, CreatePetResponse{
 >>>>>>> 98e9e45 (ratelimit and recovery function)
+=======
+>>>>>>> 9d28896 (image pet)
 				Petid:         r.Petid,
 				Username:      r.Username,
 				Name:          r.Name,
@@ -309,6 +338,7 @@ func (s *PetService) ListPets(ctx *gin.Context, req listPetsRequest, pagination 
 				DataImage:     r.DataImage,
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 				OriginalImage: r.OriginalImage.String,
 =======
 				OriginalImage: r.OriginalImage,
@@ -316,6 +346,9 @@ func (s *PetService) ListPets(ctx *gin.Context, req listPetsRequest, pagination 
 =======
 				OriginalImage: r.OriginalImage.String,
 >>>>>>> 272832d (redis cache)
+=======
+				OriginalImage: r.OriginalImage,
+>>>>>>> 9d28896 (image pet)
 			})
 		}
 		return nil
@@ -500,10 +533,13 @@ func (s *PetService) ListPetsByUsername(ctx *gin.Context, username string, pagin
 			pets = append(pets, CreatePetResponse{
 =======
 			pets = append(pets, createPetResponse{
+<<<<<<< HEAD
 >>>>>>> 9d28896 (image pet)
 =======
 			pets = append(pets, CreatePetResponse{
 >>>>>>> 98e9e45 (ratelimit and recovery function)
+=======
+>>>>>>> 9d28896 (image pet)
 				Petid:         r.Petid,
 				Username:      r.Username,
 				Name:          r.Name,
@@ -514,6 +550,7 @@ func (s *PetService) ListPetsByUsername(ctx *gin.Context, username string, pagin
 				DataImage:     r.DataImage,
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 				OriginalImage: r.OriginalImage.String,
 =======
 				OriginalImage: r.OriginalImage,
@@ -521,6 +558,9 @@ func (s *PetService) ListPetsByUsername(ctx *gin.Context, username string, pagin
 =======
 				OriginalImage: r.OriginalImage.String,
 >>>>>>> 272832d (redis cache)
+=======
+				OriginalImage: r.OriginalImage,
+>>>>>>> 9d28896 (image pet)
 			})
 		}
 		return nil

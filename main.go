@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	"log"
+	"os"
+	"syscall"
 
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -24,12 +26,25 @@ import (
 	"go.uber.org/zap"
 )
 
+// @title Pet Care Management System
+// @version 1.0
+// @description Pet care management system APIs built with Go using Gin framework
+// @host localhost:8088
+// @BasePath /api/v1
+
+var interruptSignals = []os.Signal{
+	os.Interrupt,
+	syscall.SIGTERM,
+	syscall.SIGINT,
+}
+
 func main() {
 	config, err := util.LoadConfig(".")
 	if err != nil {
 		log.Fatal("cannot load config:", err)
 	}
 
+<<<<<<< HEAD
 	logger, _ := zap.NewProduction()
 	defer logger.Sync()
 
@@ -81,6 +96,10 @@ func main() {
 =======
 
 >>>>>>> e01abc5 (pet schedule api)
+=======
+	server := runGinServer(*config)
+	log.Fatal("run gin server")
+>>>>>>> 9d28896 (image pet)
 	defer func() {
 		server.Connection.Close()
 	}()

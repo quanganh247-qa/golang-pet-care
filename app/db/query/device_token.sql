@@ -42,4 +42,9 @@ INSERT INTO DeviceTokens (
 -- name: GetDeviceTokenByUsername :many
 SELECT * FROM DeviceTokens WHERE username = $1;
 
+<<<<<<< HEAD
 >>>>>>> 0fb3f30 (user images)
+=======
+-- name: DeleteDeviceToken :exec
+DELETE FROM DeviceTokens WHERE username = $1 AND token = $2;
+>>>>>>> 9d28896 (image pet)

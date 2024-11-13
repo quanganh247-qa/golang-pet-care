@@ -5,6 +5,7 @@ import (
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 	"github.com/quanganh247-qa/go-blog-be/app/service/rabbitmq"
 >>>>>>> 0fb3f30 (user images)
@@ -13,6 +14,8 @@ import (
 =======
 	"github.com/quanganh247-qa/go-blog-be/app/service/rabbitmq"
 >>>>>>> 0fb3f30 (user images)
+=======
+>>>>>>> 9d28896 (image pet)
 )
 
 type DeviceTokenController struct {
@@ -23,6 +26,7 @@ type DeviceTokenService struct {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	storeDB db.Store
 =======
 	storeDB    db.Store
@@ -35,6 +39,9 @@ type DeviceTokenService struct {
 	storeDB    db.Store
 	emailQueue *rabbitmq.EmailQueue
 >>>>>>> 0fb3f30 (user images)
+=======
+	storeDB db.Store
+>>>>>>> 9d28896 (image pet)
 }
 
 // route

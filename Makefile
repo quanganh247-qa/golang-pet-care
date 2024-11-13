@@ -48,6 +48,9 @@ server:
 >>>>>>> 685da65 (latest update)
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+>>>>>>> 9d28896 (image pet)
+=======
 >>>>>>> 9d28896 (image pet)
 
 =======

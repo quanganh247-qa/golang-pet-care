@@ -7,12 +7,15 @@ import (
 	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	"github.com/quanganh247-qa/go-blog-be/app/service/redis"
 	"github.com/quanganh247-qa/go-blog-be/app/service/worker"
 <<<<<<< HEAD
 <<<<<<< HEAD
 	"github.com/quanganh247-qa/go-blog-be/app/util"
 =======
+=======
+>>>>>>> 9d28896 (image pet)
 	"github.com/quanganh247-qa/go-blog-be/app/service/mail"
 	"github.com/quanganh247-qa/go-blog-be/app/service/rabbitmq"
 >>>>>>> 9d28896 (image pet)
@@ -43,6 +46,7 @@ type UserService struct {
 	storeDB    db.Store
 	emailQueue *rabbitmq.EmailQueue
 	mailer     mail.EmailSender
+<<<<<<< HEAD
 >>>>>>> 9d28896 (image pet)
 =======
 	storeDB db.Store
@@ -55,6 +59,8 @@ type UserService struct {
 >>>>>>> 6610455 (feat: redis queue)
 =======
 >>>>>>> 1a9e82a (reset password api)
+=======
+>>>>>>> 9d28896 (image pet)
 }
 
 // route

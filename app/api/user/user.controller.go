@@ -237,6 +237,15 @@ func (controller *UserController) getAllUsers(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, util.SuccessResponse("Success", res))
 }
 
+// LoginUser           	godoc
+// @Summary 			Login user
+// @Description 		Login user
+// @Tags 				users
+// @Accept  			json
+// @Produce  			json
+// @Param 				user body loginUserRequest true "User info"
+// @Success 			200 {object} loginUSerResponse
+// @Router 				/user/login [post]
 func (controller *UserController) loginUser(ctx *gin.Context) {
 	var req loginUserRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -273,6 +282,7 @@ func (controller *UserController) loginUser(ctx *gin.Context) {
 func (controller *UserController) logoutUser(ctx *gin.Context) {
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	token := ctx.Query("token")
 =======
 	token := ctx.Param("token")
@@ -280,6 +290,9 @@ func (controller *UserController) logoutUser(ctx *gin.Context) {
 =======
 	token := ctx.Query("token")
 >>>>>>> 8d5618d (feat: update logout)
+=======
+	token := ctx.Param("token")
+>>>>>>> 9d28896 (image pet)
 
 	authPayload, err := middleware.GetAuthorizationPayload(ctx)
 	if err != nil {
@@ -333,6 +346,7 @@ func (controller *UserController) getAccessToken(ctx *gin.Context) {
 func (controller *UserController) verifyEmail(ctx *gin.Context) {
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	var req VerrifyInput
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, util.ErrorValidator(err))
@@ -363,12 +377,26 @@ func (controller *UserController) verifyEmail(ctx *gin.Context) {
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+=======
+	var req VerrifyEmailTxParams
+
+	emailID := ctx.Query("email_id")
+	secretCode := ctx.Query("secret_code")
+
+	// Check if both parameters are present
+	if emailID == "" || secretCode == "" {
+		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(fmt.Errorf("missing email_id or secret_code in query parameters")))
+		return
+	}
+
+>>>>>>> 9d28896 (image pet)
 	// convert strign to int 64
 	emailIDInt, err := strconv.ParseInt(emailID, 10, 64)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(fmt.Errorf("invalid email_id parameter")))
 		return
 	}
+<<<<<<< HEAD
 	secretCodeInt, err := strconv.ParseInt(secretCode, 10, 64)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(fmt.Errorf("invalid email_id parameter")))
@@ -378,6 +406,12 @@ func (controller *UserController) verifyEmail(ctx *gin.Context) {
 	req = VerrifyEmailTxParams{
 		EmailId:    emailIDInt,
 		SecretCode: secretCodeInt,
+=======
+
+	req = VerrifyEmailTxParams{
+		EmailId:    emailIDInt,
+		SecretCode: secretCode,
+>>>>>>> 9d28896 (image pet)
 	}
 
 	res, err := controller.service.verifyEmailService(ctx, req)

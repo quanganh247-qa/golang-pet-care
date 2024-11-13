@@ -1,8 +1,10 @@
 package user
 
 import (
+	"context"
 	"database/sql"
 	"fmt"
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 	"log"
@@ -14,6 +16,9 @@ import (
 =======
 	"log"
 >>>>>>> 1a9e82a (reset password api)
+=======
+	"log"
+>>>>>>> 9d28896 (image pet)
 	"math/big"
 >>>>>>> 9d28896 (image pet)
 =======
@@ -31,6 +36,7 @@ import (
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> 1a9e82a (reset password api)
 	"github.com/quanganh247-qa/go-blog-be/app/service/mail"
@@ -43,6 +49,9 @@ import (
 =======
 	"github.com/quanganh247-qa/go-blog-be/app/service/worker"
 >>>>>>> 6610455 (feat: redis queue)
+=======
+	"github.com/quanganh247-qa/go-blog-be/app/service/rabbitmq"
+>>>>>>> 9d28896 (image pet)
 	"github.com/quanganh247-qa/go-blog-be/app/util"
 )
 
@@ -70,6 +79,7 @@ type UserServiceInterface interface {
 	loginUserService(ctx *gin.Context, req loginUserRequest) (*loginUSerResponse, error)
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	logoutUsersService(ctx *gin.Context, username string, token string) error
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -85,6 +95,9 @@ type UserServiceInterface interface {
 	GetAllRoleService(ctx *gin.Context) ([]string, error)
 =======
 	logoutUsersService(ctx *gin.Context, username string) error
+=======
+	logoutUsersService(ctx *gin.Context, username string, token string) error
+>>>>>>> 9d28896 (image pet)
 =======
 	logoutUsersService(ctx *gin.Context, username string, token string) error
 >>>>>>> 9d28896 (image pet)
@@ -342,6 +355,7 @@ func (server *UserService) createUserService(ctx *gin.Context, req createUserReq
 	}
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 		return nil, fmt.Errorf("failed to create user: %w", err)
 	}
@@ -382,6 +396,8 @@ func (server *UserService) getUserDetailsService(ctx *gin.Context, username stri
 	user, err := server.redis.UserInfoLoadCache(username)
 >>>>>>> 272832d (redis cache)
 =======
+=======
+>>>>>>> 9d28896 (image pet)
 	return nil
 }
 
@@ -615,12 +631,15 @@ func (service *UserService) logoutUsersService(ctx *gin.Context, username string
 	ctx.SetCookie("refresh_token", "", -1, "/", host, secure, true)
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	fmt.Println(username, token)
 =======
 >>>>>>> 9d28896 (image pet)
 =======
 	fmt.Println(username, token)
 >>>>>>> 8d5618d (feat: update logout)
+=======
+>>>>>>> 9d28896 (image pet)
 	err := service.storeDB.DeleteDeviceToken(ctx, db.DeleteDeviceTokenParams{
 		Username: username,
 		Token:    token,
@@ -630,8 +649,11 @@ func (service *UserService) logoutUsersService(ctx *gin.Context, username string
 	}
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	service.redis.RemoveUserInfoCache(username)
 =======
+=======
+>>>>>>> 9d28896 (image pet)
 	// service.redis.RemoveUserInfoCache(username)
 >>>>>>> 9d28896 (image pet)
 =======
@@ -1099,6 +1121,7 @@ func (s *UserService) GetAllRoleService(ctx *gin.Context) ([]string, error) {
 	return nil // Successfully updated
 }
 
+<<<<<<< HEAD
 >>>>>>> 79a3bcc (medicine api)
 // func (s *UserService) InsertTokenInfoService(ctx *gin.Context, arg InsertTokenInfoRequest, username string) (*db.TokenInfo, error) {
 // 	tokenInfo, err := s.storeDB.InsertTokenInfo(ctx, db.InsertTokenInfoParams{
@@ -1121,6 +1144,8 @@ func (s *UserService) GetAllRoleService(ctx *gin.Context) ([]string, error) {
 <<<<<<< HEAD
 >>>>>>> 79a3bcc (medicine api)
 =======
+=======
+>>>>>>> 9d28896 (image pet)
 func (s *UserService) ProccessTaskSendVerifyEmail(ctx context.Context, payload rabbitmq.PayloadVerifyEmail) error {
 	// var payload PayloadVerifyEmail
 	// if err := json.Unmarshal(task.Payload(), &payload); err != nil {
@@ -1163,6 +1188,7 @@ func (s *UserService) ProccessTaskSendVerifyEmail(ctx context.Context, payload r
 
 	return nil
 }
+<<<<<<< HEAD
 >>>>>>> 9d28896 (image pet)
 =======
 >>>>>>> 272832d (redis cache)
@@ -1274,3 +1300,5 @@ func (s *UserService) ForgotPasswordService(ctx *gin.Context, email string) erro
 >>>>>>> 4ccd381 (Update appointment flow)
 =======
 >>>>>>> 79a3bcc (medicine api)
+=======
+>>>>>>> 9d28896 (image pet)

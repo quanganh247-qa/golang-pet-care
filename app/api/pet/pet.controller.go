@@ -12,6 +12,7 @@ import (
 >>>>>>> 67140c6 (updated create pet)
 	"fmt"
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> c73e2dc (pagination function)
 =======
 	"io/ioutil"
@@ -21,6 +22,9 @@ import (
 =======
 	"fmt"
 >>>>>>> c73e2dc (pagination function)
+=======
+	"io/ioutil"
+>>>>>>> 9d28896 (image pet)
 	"net/http"
 	"strconv"
 
@@ -67,6 +71,7 @@ func (c *PetController) CreatePet(ctx *gin.Context) {
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> 67140c6 (updated create pet)
 	// Parse the JSON data from the "data" form field
@@ -102,6 +107,24 @@ func (c *PetController) CreatePet(ctx *gin.Context) {
 	}
 
 <<<<<<< HEAD
+=======
+	name := ctx.PostForm("name")
+	t := ctx.PostForm("type")
+	breed := ctx.PostForm("breed")
+	age := ctx.PostForm("age")
+	weight := ctx.PostForm("weight")
+	gender := ctx.PostForm("gender")
+	healthnotes := ctx.PostForm("healthnotes")
+	microchip := ctx.PostForm("microchip_number")
+	bod := ctx.PostForm("birth_date")
+
+	err := ctx.Request.ParseMultipartForm(10 << 20) // 10 MB max
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
+		return
+	}
+
+>>>>>>> 9d28896 (image pet)
 	// Handle image file
 	file, header, err := ctx.Request.FormFile("image")
 
@@ -118,10 +141,14 @@ func (c *PetController) CreatePet(ctx *gin.Context) {
 		return
 	}
 	// get original image
+<<<<<<< HEAD
 >>>>>>> 9d28896 (image pet)
 
 =======
 >>>>>>> 473cd1d (uplaod image method)
+=======
+
+>>>>>>> 9d28896 (image pet)
 	authPayload, err := middleware.GetAuthorizationPayload(ctx)
 	if err != nil {
 		ctx.JSON(400, gin.H{"error": err.Error()})
@@ -158,6 +185,33 @@ func (c *PetController) CreatePet(ctx *gin.Context) {
 	req.DataImage = dataImage
 =======
 >>>>>>> c73e2dc (pagination function)
+
+	req.Name = name
+	req.Type = t
+	req.Breed = breed
+	req.Healthnotes = healthnotes
+	req.Gender = gender
+	req.OriginalImage = header.Filename
+	req.DataImage = dataImage
+	req.MicrophoneNumber = microchip
+	req.BOD = bod
+
+	// convert string to  int 16
+	ageInt, err := strconv.Atoi(age)
+	if err != nil {
+		ctx.JSON(400, gin.H{"error": "Invalid age"})
+		return
+	}
+	req.Age = int16(ageInt)
+	weightFl, err := strconv.ParseFloat(weight, 64)
+	if err != nil {
+		ctx.JSON(400, gin.H{"error": "Invalid weight value"})
+
+		return
+	}
+	req.Weight = float64(weightFl)
+
+	// Save the pet to the database
 
 	res, err := c.service.CreatePet(ctx, authPayload.Username, req)
 	if err != nil {

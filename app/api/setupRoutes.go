@@ -119,6 +119,8 @@ import (
 >>>>>>> e859654 (Elastic search)
 	"github.com/quanganh247-qa/go-blog-be/app/service/worker"
 	"github.com/quanganh247-qa/go-blog-be/app/util"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 <<<<<<< HEAD
@@ -201,6 +203,7 @@ func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor, config
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	router.GET("/health", server.healthCheck)
 
 	chatbot.Routes(routerGroup, chatHandler)
@@ -237,6 +240,10 @@ func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor, config
 >>>>>>> 4ccd381 (Update appointment flow)
 	user.Routes(routerGroup, taskDistributor, config)
 <<<<<<< HEAD
+=======
+	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	user.Routes(routerGroup)
+>>>>>>> 9d28896 (image pet)
 	service_type.Routes(routerGroup)
 >>>>>>> 9d28896 (image pet)
 =======
