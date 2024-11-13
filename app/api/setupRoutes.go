@@ -17,6 +17,7 @@ import (
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	"github.com/quanganh247-qa/go-blog-be/app/api/cart"
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -45,6 +46,9 @@ import (
 	"github.com/quanganh247-qa/go-blog-be/app/api/medical_records"
 <<<<<<< HEAD
 <<<<<<< HEAD
+=======
+	"github.com/quanganh247-qa/go-blog-be/app/api/device_token"
+>>>>>>> 0fb3f30 (user images)
 =======
 	"github.com/quanganh247-qa/go-blog-be/app/api/device_token"
 >>>>>>> 0fb3f30 (user images)
@@ -281,7 +285,11 @@ func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor, config
 	queue.Routes(routerGroup)
 =======
 	medications.Routes(routerGroup)
+<<<<<<< HEAD
 >>>>>>> 79a3bcc (medicine api)
+=======
+	device_token.Routes(routerGroup)
+>>>>>>> 0fb3f30 (user images)
 	server.Router = routerDefault
 >>>>>>> 79a3bcc (medicine api)
 =======

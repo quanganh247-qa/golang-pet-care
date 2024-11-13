@@ -15,6 +15,7 @@ const createPet = `-- name: CreatePet :one
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> 33fcf96 (Big update)
 INSERT INTO pets (
@@ -64,6 +65,14 @@ RETURNING petid, name, type, breed, age, gender, healthnotes, weight, birth_date
 
 type CreatePetParams struct {
 <<<<<<< HEAD
+=======
+INSERT INTO Pet (username, Name, Type, Breed, Age, Weight, Gender, HealthNotes, data_image, is_active)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+RETURNING petid, name, type, breed, age, gender, healthnotes, weight, birth_date, username, microchip_number, last_checkup_date, is_active, data_image, original_image
+`
+
+type CreatePetParams struct {
+>>>>>>> 0fb3f30 (user images)
 	Username    string        `json:"username"`
 	Name        string        `json:"name"`
 	Type        string        `json:"type"`
@@ -74,6 +83,7 @@ type CreatePetParams struct {
 	Healthnotes pgtype.Text   `json:"healthnotes"`
 	DataImage   []byte        `json:"data_image"`
 	IsActive    pgtype.Bool   `json:"is_active"`
+<<<<<<< HEAD
 >>>>>>> 0fb3f30 (user images)
 =======
 	Username        string        `json:"username"`
@@ -101,6 +111,8 @@ type CreatePetParams struct {
 >>>>>>> 9d28896 (image pet)
 =======
 >>>>>>> 33fcf96 (Big update)
+=======
+>>>>>>> 0fb3f30 (user images)
 }
 
 func (q *Queries) CreatePet(ctx context.Context, arg CreatePetParams) (Pet, error) {
@@ -111,6 +123,7 @@ func (q *Queries) CreatePet(ctx context.Context, arg CreatePetParams) (Pet, erro
 		arg.Age,
 		arg.Gender,
 		arg.Healthnotes,
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 =======
@@ -126,6 +139,9 @@ func (q *Queries) CreatePet(ctx context.Context, arg CreatePetParams) (Pet, erro
 =======
 		arg.DataImage,
 <<<<<<< HEAD
+=======
+		arg.DataImage,
+>>>>>>> 0fb3f30 (user images)
 		arg.IsActive,
 >>>>>>> 0fb3f30 (user images)
 =======
@@ -210,6 +226,7 @@ const getPetByID = `-- name: GetPetByID :one
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 SELECT petid, name, type, breed, age, gender, healthnotes, weight, birth_date, username, microchip_number, last_checkup_date, is_active, data_image, original_image FROM pets 
 WHERE petid = $1
 =======
@@ -222,6 +239,9 @@ SELECT petid, name, type, breed, age, gender, healthnotes, weight, birth_date, u
 SELECT petid, name, type, breed, age, gender, healthnotes, weight, birth_date, username, microchip_number, last_checkup_date, is_active, data_image, original_image FROM pets 
 WHERE petid = $1
 >>>>>>> 33fcf96 (Big update)
+=======
+SELECT petid, name, type, breed, age, gender, healthnotes, weight, birth_date, username, microchip_number, last_checkup_date, is_active, data_image, original_image FROM Pet WHERE PetID = $1
+>>>>>>> 0fb3f30 (user images)
 `
 
 func (q *Queries) GetPetByID(ctx context.Context, petid int64) (Pet, error) {
@@ -480,6 +500,7 @@ const listPets = `-- name: ListPets :many
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 SELECT petid, name, type, breed, age, gender, healthnotes, weight, birth_date, username, microchip_number, last_checkup_date, is_active, data_image, original_image FROM pets
 WHERE is_active = true 
 ORDER BY name LIMIT $1 OFFSET $2
@@ -494,6 +515,9 @@ SELECT petid, name, type, breed, age, gender, healthnotes, weight, birth_date, u
 WHERE is_active = true 
 ORDER BY name LIMIT $1 OFFSET $2
 >>>>>>> 33fcf96 (Big update)
+=======
+SELECT petid, name, type, breed, age, gender, healthnotes, weight, birth_date, username, microchip_number, last_checkup_date, is_active, data_image, original_image FROM Pet ORDER BY PetID LIMIT $1 OFFSET $2
+>>>>>>> 0fb3f30 (user images)
 `
 
 type ListPetsParams struct {
@@ -541,6 +565,7 @@ const listPetsByUsername = `-- name: ListPetsByUsername :many
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 SELECT petid, name, type, breed, age, gender, healthnotes, weight, birth_date, username, microchip_number, last_checkup_date, is_active, data_image, original_image FROM pets
 WHERE username = $1 AND is_active = true
 ORDER BY name LIMIT $2 OFFSET $3
@@ -555,6 +580,9 @@ SELECT petid, name, type, breed, age, gender, healthnotes, weight, birth_date, u
 WHERE username = $1 AND is_active = true
 ORDER BY name LIMIT $2 OFFSET $3
 >>>>>>> 33fcf96 (Big update)
+=======
+SELECT petid, name, type, breed, age, gender, healthnotes, weight, birth_date, username, microchip_number, last_checkup_date, is_active, data_image, original_image FROM Pet WHERE username = $1 ORDER BY PetID LIMIT $2 OFFSET $3
+>>>>>>> 0fb3f30 (user images)
 `
 
 type ListPetsByUsernameParams struct {
@@ -655,7 +683,11 @@ type UpdatePetParams struct {
 	LastCheckupDate pgtype.Date   `json:"last_checkup_date"`
 =======
 UPDATE Pet
+<<<<<<< HEAD
 SET Name = $2, Type = $3, Breed = $4, Age = $5, Weight = $6, Gender = $7, HealthNotes = $8, birth_date = $9
+=======
+SET Name = $2, Type = $3, Breed = $4, Age = $5, Weight = $6, Gender = $7, HealthNotes = $8, data_image = $9, is_active = $10
+>>>>>>> 0fb3f30 (user images)
 WHERE PetID = $1
 `
 
@@ -668,6 +700,7 @@ type UpdatePetParams struct {
 	Weight      pgtype.Float8 `json:"weight"`
 	Gender      pgtype.Text   `json:"gender"`
 	Healthnotes pgtype.Text   `json:"healthnotes"`
+<<<<<<< HEAD
 <<<<<<< HEAD
 	DataImage   []byte        `json:"data_image"`
 	IsActive    pgtype.Bool   `json:"is_active"`
@@ -691,6 +724,10 @@ type UpdatePetParams struct {
 	MicrochipNumber pgtype.Text   `json:"microchip_number"`
 	LastCheckupDate pgtype.Date   `json:"last_checkup_date"`
 >>>>>>> 33fcf96 (Big update)
+=======
+	DataImage   []byte        `json:"data_image"`
+	IsActive    pgtype.Bool   `json:"is_active"`
+>>>>>>> 0fb3f30 (user images)
 }
 
 func (q *Queries) UpdatePet(ctx context.Context, arg UpdatePetParams) error {
@@ -705,6 +742,7 @@ func (q *Queries) UpdatePet(ctx context.Context, arg UpdatePetParams) error {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> 33fcf96 (Big update)
 		arg.Weight,
@@ -713,6 +751,8 @@ func (q *Queries) UpdatePet(ctx context.Context, arg UpdatePetParams) error {
 		arg.LastCheckupDate,
 <<<<<<< HEAD
 =======
+=======
+>>>>>>> 0fb3f30 (user images)
 		arg.DataImage,
 		arg.IsActive,
 >>>>>>> 0fb3f30 (user images)

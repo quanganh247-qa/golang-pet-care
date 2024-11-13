@@ -15,6 +15,7 @@ const createUser = `-- name: CreateUser :one
 INSERT INTO users (username, hashed_password, full_name, email, phone_number, address, data_image, original_image, role, created_at, is_verified_email)
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, NOW(), false)
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -47,6 +48,13 @@ RETURNING id
 
 type CreateUserParams struct {
 <<<<<<< HEAD
+=======
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, NOW(), $10)
+RETURNING id
+`
+
+type CreateUserParams struct {
+>>>>>>> 0fb3f30 (user images)
 	Username        string      `json:"username"`
 	HashedPassword  string      `json:"hashed_password"`
 	FullName        string      `json:"full_name"`
@@ -54,6 +62,7 @@ type CreateUserParams struct {
 	PhoneNumber     pgtype.Text `json:"phone_number"`
 	Address         pgtype.Text `json:"address"`
 	DataImage       []byte      `json:"data_image"`
+<<<<<<< HEAD
 	OriginalImage   pgtype.Text `json:"original_image"`
 	Role            pgtype.Text `json:"role"`
 	IsVerifiedEmail pgtype.Bool `json:"is_verified_email"`
@@ -69,9 +78,14 @@ type CreateUserParams struct {
 	OriginalImage  pgtype.Text `json:"original_image"`
 	Role           pgtype.Text `json:"role"`
 >>>>>>> eefcc96 (date time in log)
+=======
+	OriginalImage   string      `json:"original_image"`
+	Role            pgtype.Text `json:"role"`
+	IsVerifiedEmail pgtype.Bool `json:"is_verified_email"`
+>>>>>>> 0fb3f30 (user images)
 }
 
-func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, error) {
+func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (int64, error) {
 	row := q.db.QueryRow(ctx, createUser,
 		arg.Username,
 		arg.HashedPassword,
@@ -82,6 +96,7 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 		arg.DataImage,
 		arg.OriginalImage,
 		arg.Role,
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 	)
@@ -135,6 +150,13 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 	)
 	return i, err
 >>>>>>> ada3717 (Docker file)
+=======
+		arg.IsVerifiedEmail,
+	)
+	var id int64
+	err := row.Scan(&id)
+	return id, err
+>>>>>>> 0fb3f30 (user images)
 }
 
 const deleteUser = `-- name: DeleteUser :exec
@@ -266,6 +288,7 @@ func (q *Queries) GetAllRole(ctx context.Context) ([]pgtype.Text, error) {
 >>>>>>> ffc9071 (AI suggestion)
 const getAllUsers = `-- name: GetAllUsers :many
 <<<<<<< HEAD
+<<<<<<< HEAD
 SELECT id, username, hashed_password, full_name, email, phone_number, address, data_image, original_image, role, status, created_at, is_verified_email, removed_at FROM users
 =======
 SELECT id, username, hashed_password, full_name, email, phone_number, address, data_image, original_image, role, created_at, is_verified_email, removed_at FROM users
@@ -274,6 +297,9 @@ SELECT id, username, hashed_password, full_name, email, phone_number, address, d
 const getAllUsers = `-- name: GetAllUsers :many
 SELECT id, username, hashed_password, full_name, email, phone_number, address, data_image, original_image, role, status, created_at, is_verified_email, removed_at FROM users
 >>>>>>> 4ccd381 (Update appointment flow)
+=======
+SELECT id, username, hashed_password, full_name, email, phone_number, address, data_image, original_image, role, created_at, is_verified_email, removed_at FROM users
+>>>>>>> 0fb3f30 (user images)
 `
 
 func (q *Queries) GetAllUsers(ctx context.Context) ([]User, error) {
@@ -363,12 +389,90 @@ func (q *Queries) GetDoctor(ctx context.Context, id int64) (GetDoctorRow, error)
 	return i, err
 }
 
+<<<<<<< HEAD
 const getDoctorById = `-- name: GetDoctorById :one
 select id, user_id, specialization, years_of_experience, education, certificate_number, bio, consultation_fee from Doctors where id = $1
 `
 
 func (q *Queries) GetDoctorById(ctx context.Context, id int64) (Doctor, error) {
 	row := q.db.QueryRow(ctx, getDoctorById, id)
+=======
+const getUser = `-- name: GetUser :one
+SELECT id, username, hashed_password, full_name, email, phone_number, address, data_image, original_image, role, created_at, is_verified_email
+FROM users
+WHERE username = $1
+`
+
+type GetUserRow struct {
+	ID              int64            `json:"id"`
+	Username        string           `json:"username"`
+	HashedPassword  string           `json:"hashed_password"`
+	FullName        string           `json:"full_name"`
+	Email           string           `json:"email"`
+	PhoneNumber     pgtype.Text      `json:"phone_number"`
+	Address         pgtype.Text      `json:"address"`
+	DataImage       []byte           `json:"data_image"`
+	OriginalImage   string           `json:"original_image"`
+	Role            pgtype.Text      `json:"role"`
+	CreatedAt       pgtype.Timestamp `json:"created_at"`
+	IsVerifiedEmail pgtype.Bool      `json:"is_verified_email"`
+}
+
+func (q *Queries) GetUser(ctx context.Context, username string) (GetUserRow, error) {
+	row := q.db.QueryRow(ctx, getUser, username)
+	var i GetUserRow
+	err := row.Scan(
+		&i.ID,
+		&i.Username,
+		&i.HashedPassword,
+		&i.FullName,
+		&i.Email,
+		&i.PhoneNumber,
+		&i.Address,
+		&i.DataImage,
+		&i.OriginalImage,
+		&i.Role,
+		&i.CreatedAt,
+		&i.IsVerifiedEmail,
+	)
+	return i, err
+}
+
+const insertDoctor = `-- name: InsertDoctor :one
+INSERT INTO Doctors (
+    user_id,
+    specialization,
+    years_of_experience,
+    education,
+    certificate_number,
+    bio,
+    consultation_fee
+) VALUES (
+    $1, $2, $3, $4, $5, $6, $7
+) RETURNING id, user_id, specialization, years_of_experience, education, certificate_number, bio, consultation_fee
+`
+
+type InsertDoctorParams struct {
+	UserID            int64          `json:"user_id"`
+	Specialization    pgtype.Text    `json:"specialization"`
+	YearsOfExperience pgtype.Int4    `json:"years_of_experience"`
+	Education         pgtype.Text    `json:"education"`
+	CertificateNumber pgtype.Text    `json:"certificate_number"`
+	Bio               pgtype.Text    `json:"bio"`
+	ConsultationFee   pgtype.Numeric `json:"consultation_fee"`
+}
+
+func (q *Queries) InsertDoctor(ctx context.Context, arg InsertDoctorParams) (Doctor, error) {
+	row := q.db.QueryRow(ctx, insertDoctor,
+		arg.UserID,
+		arg.Specialization,
+		arg.YearsOfExperience,
+		arg.Education,
+		arg.CertificateNumber,
+		arg.Bio,
+		arg.ConsultationFee,
+	)
+>>>>>>> 0fb3f30 (user images)
 	var i Doctor
 	err := row.Scan(
 		&i.ID,
@@ -918,10 +1022,22 @@ func (q *Queries) UpdateAvatarUser(ctx context.Context, arg UpdateAvatarUserPara
 }
 
 const updateUser = `-- name: UpdateUser :one
+<<<<<<< HEAD
 UPDATE users
 SET full_name = $2, email = $3, phone_number = $4, address = $5
 WHERE username = $1
 RETURNING id, username, hashed_password, full_name, email, phone_number, address, data_image, original_image, role, status, created_at, is_verified_email, removed_at
+=======
+UPDATE users 
+SET 
+  hashed_password = COALESCE($1, hashed_password),
+  full_name =  COALESCE($2,full_name),
+  email = COALESCE($3,email),
+  is_verified_email = COALESCE($4,is_verified_email)
+WHERE
+  username = $5
+RETURNING id, username, hashed_password, full_name, email, phone_number, address, data_image, original_image, role, created_at, is_verified_email, removed_at
+>>>>>>> 0fb3f30 (user images)
 `
 
 type UpdateUserParams struct {

@@ -1,6 +1,7 @@
 -- name: InsertDeviceToken :one
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 INSERT INTO device_tokens (
     username, token, device_type, last_used_at, expired_at
 ) VALUES ($1, $2, $3, $4, $5) RETURNING *;
@@ -33,3 +34,12 @@ DELETE FROM DeviceTokens WHERE username = $1 AND token = $2;
 =======
 DELETE FROM device_tokens WHERE username = $1 AND token = $2;
 >>>>>>> 33fcf96 (Big update)
+=======
+INSERT INTO DeviceTokens (
+    username,token,device_type,last_used_at,expired_at
+)VALUES ($1,$2,$3,$4,$5) RETURNING *;
+
+-- name: GetDeviceTokenByUsername :many
+SELECT * FROM DeviceTokens WHERE username = $1;
+
+>>>>>>> 0fb3f30 (user images)

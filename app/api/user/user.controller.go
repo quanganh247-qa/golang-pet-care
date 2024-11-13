@@ -3,6 +3,8 @@ package user
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
+	"io/ioutil"
 	"net/http"
 	"strconv"
 
@@ -86,6 +88,7 @@ func (controller *UserController) createUser(ctx *gin.Context) {
 	var req createUserRequest
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> edfe5ad (OTP verifycation)
 
@@ -109,6 +112,8 @@ func (controller *UserController) createUser(ctx *gin.Context) {
 
 	res, err := controller.service.createUserService(ctx, req)
 =======
+=======
+>>>>>>> 0fb3f30 (user images)
 	username := ctx.PostForm("username")
 	password := ctx.PostForm("password")
 	fullName := ctx.PostForm("full_name")
@@ -116,6 +121,7 @@ func (controller *UserController) createUser(ctx *gin.Context) {
 	phoneNumber := ctx.PostForm("phone_number")
 	address := ctx.PostForm("address")
 	role := ctx.PostForm("role")
+<<<<<<< HEAD
 =======
 >>>>>>> edfe5ad (OTP verifycation)
 
@@ -133,13 +139,65 @@ func (controller *UserController) createUser(ctx *gin.Context) {
 
 	req.DataImage = dataImage
 	req.OriginalImage = originalImageName
+=======
+>>>>>>> 0fb3f30 (user images)
 
-	res, err := controller.service.createUserService(ctx, req)
+	err := ctx.Request.ParseMultipartForm(10 << 20) // 10 MB max
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
 		return
 	}
-	ctx.JSON(http.StatusCreated, util.SuccessResponse("Success", res))
+
+	// Handle image file
+	file, header, err := ctx.Request.FormFile("image")
+
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(fmt.Errorf("image is required")))
+		return
+	}
+	defer file.Close()
+
+	// Get the original image name
+	originalImageName := header.Filename
+
+	// Read the file content into a byte array
+	dataImage, err := ioutil.ReadAll(file)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to read data image"})
+		return
+	}
+	// get original image
+
+	req.DataImage = dataImage
+	req.Username = username
+	req.Password = password
+	req.FullName = fullName
+	req.Email = email
+	req.PhoneNumber = phoneNumber
+	req.Address = address
+	req.Role = role
+	req.OriginalImage = originalImageName
+
+	err = controller.service.createUserService(ctx, req)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
+		return
+	}
+	ctx.JSON(http.StatusCreated, util.SuccessResponse("Success", nil))
+}
+
+func (controller *UserController) getUserDetails(ctx *gin.Context) {
+	authPayload, err := middleware.GetAuthorizationPayload(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
+		return
+	}
+	user, err := controller.service.getUserDetailsService(ctx, authPayload.Username)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
+		return
+	}
+	ctx.JSON(http.StatusOK, util.SuccessResponse("Success", user))
 }
 
 func (controller *UserController) getUserDetails(ctx *gin.Context) {

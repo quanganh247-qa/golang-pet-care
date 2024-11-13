@@ -105,6 +105,7 @@ func (s *PetService) CreatePet(ctx *gin.Context, username string, req createPetR
 		res, err := q.CreatePet(ctx, db.CreatePetParams{
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> 9d28896 (image pet)
 			Username:        username,
@@ -123,6 +124,8 @@ func (s *PetService) CreatePet(ctx *gin.Context, username string, req createPetR
 			MicrochipNumber: pgtype.Text{String: req.MicrochipNumber, Valid: true},
 <<<<<<< HEAD
 =======
+=======
+>>>>>>> 0fb3f30 (user images)
 			Username:    username,
 			Name:        req.Name,
 			Type:        req.Type,
@@ -131,6 +134,7 @@ func (s *PetService) CreatePet(ctx *gin.Context, username string, req createPetR
 			Weight:      pgtype.Float8{Float64: req.Weight, Valid: true},
 			Gender:      pgtype.Text{String: req.Gender, Valid: true},
 			Healthnotes: pgtype.Text{String: req.Healthnotes, Valid: true},
+<<<<<<< HEAD
 >>>>>>> 0fb3f30 (user images)
 =======
 			OriginalImage:   req.OriginalImage,
@@ -142,6 +146,8 @@ func (s *PetService) CreatePet(ctx *gin.Context, username string, req createPetR
 >>>>>>> 9d28896 (image pet)
 =======
 >>>>>>> 67140c6 (updated create pet)
+=======
+>>>>>>> 0fb3f30 (user images)
 		})
 		if err != nil {
 			return fmt.Errorf("failed to create pet: %w", err)
@@ -345,9 +351,12 @@ func (s *PetService) UpdatePet(ctx *gin.Context, petid int64, req createPetReque
 		Weight:      pgtype.Float8{Float64: req.Weight, Valid: true},
 		Gender:      pgtype.Text{String: req.Gender, Valid: true},
 		Healthnotes: pgtype.Text{String: req.Healthnotes, Valid: true},
+<<<<<<< HEAD
 >>>>>>> 0fb3f30 (user images)
 =======
 >>>>>>> 5ea33aa (PUT pet info)
+=======
+>>>>>>> 0fb3f30 (user images)
 	}
 
 	if req.BOD != "" {

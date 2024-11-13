@@ -43,6 +43,7 @@ type Querier interface {
 	CreatePet(ctx context.Context, arg CreatePetParams) (Pet, error)
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> c8bec46 (feat: add chatbot, room management, and pet allergy features)
 	CreatePetAllergy(ctx context.Context, arg CreatePetAllergyParams) (PetAllergy, error)
@@ -118,6 +119,11 @@ type Querier interface {
 =======
 	CreateUser(ctx context.Context, arg CreateUserParams) (User, error)
 >>>>>>> ada3717 (Docker file)
+=======
+	CreateService(ctx context.Context, arg CreateServiceParams) (Service, error)
+	CreateServiceType(ctx context.Context, arg CreateServiceTypeParams) (Servicetype, error)
+	CreateUser(ctx context.Context, arg CreateUserParams) (int64, error)
+>>>>>>> 0fb3f30 (user images)
 	CreateVaccination(ctx context.Context, arg CreateVaccinationParams) (Vaccination, error)
 	CreateVerifyEmail(ctx context.Context, arg CreateVerifyEmailParams) (VerifyEmail, error)
 <<<<<<< HEAD
@@ -340,6 +346,7 @@ type Querier interface {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	GetAppointmentsQueue(ctx context.Context, doctorID pgtype.Int8) ([]Appointment, error)
 =======
 	GetAppointmentsQueue(ctx context.Context) ([]Appointment, error)
@@ -409,6 +416,9 @@ type Querier interface {
 <<<<<<< HEAD
 <<<<<<< HEAD
 >>>>>>> 6c35562 (dicease and treatment plan)
+=======
+	GetDeviceTokenByUsername(ctx context.Context, username string) ([]Devicetoken, error)
+>>>>>>> 0fb3f30 (user images)
 	GetDoctor(ctx context.Context, id int64) (GetDoctorRow, error)
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -581,6 +591,7 @@ type Querier interface {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> 79a3bcc (medicine api)
 	GetUser(ctx context.Context, username string) (User, error)
@@ -649,6 +660,11 @@ type Querier interface {
 =======
 	InsertDeviceToken(ctx context.Context, arg InsertDeviceTokenParams) (DeviceToken, error)
 >>>>>>> 33fcf96 (Big update)
+=======
+	GetUser(ctx context.Context, username string) (GetUserRow, error)
+	GetVaccinationByID(ctx context.Context, vaccinationid int64) (Vaccination, error)
+	InsertDeviceToken(ctx context.Context, arg InsertDeviceTokenParams) (Devicetoken, error)
+>>>>>>> 0fb3f30 (user images)
 	InsertDoctor(ctx context.Context, arg InsertDoctorParams) (Doctor, error)
 <<<<<<< HEAD
 <<<<<<< HEAD

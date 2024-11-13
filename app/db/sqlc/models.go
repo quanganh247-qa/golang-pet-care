@@ -116,6 +116,7 @@ type CheckoutService struct {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> ada3717 (Docker file)
 type Clinic struct {
@@ -171,6 +172,9 @@ type Devicetoken struct {
 >>>>>>> 4ccd381 (Update appointment flow)
 type DeviceToken struct {
 >>>>>>> 33fcf96 (Big update)
+=======
+type Devicetoken struct {
+>>>>>>> 0fb3f30 (user images)
 	ID         int64            `json:"id"`
 	Username   string           `json:"username"`
 	Token      string           `json:"token"`
@@ -180,6 +184,7 @@ type DeviceToken struct {
 	ExpiredAt  pgtype.Timestamp `json:"expired_at"`
 }
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 =======
@@ -206,6 +211,8 @@ type DiseaseMedicine struct {
 >>>>>>> 6c35562 (dicease and treatment plan)
 =======
 >>>>>>> e859654 (Elastic search)
+=======
+>>>>>>> 0fb3f30 (user images)
 type Doctor struct {
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -397,6 +404,32 @@ type Medication struct {
 	Notes          pgtype.Text      `json:"notes"`
 }
 
+type Notification struct {
+	Notificationid   int64            `json:"notificationid"`
+	Petid            pgtype.Int8      `json:"petid"`
+	Title            string           `json:"title"`
+	Body             pgtype.Text      `json:"body"`
+	Duedate          pgtype.Timestamp `json:"duedate"`
+	Repeatinterval   pgtype.Text      `json:"repeatinterval"`
+	Iscompleted      pgtype.Bool      `json:"iscompleted"`
+	Notificationsent pgtype.Bool      `json:"notificationsent"`
+}
+
+type Notificationhistory struct {
+	ID             int64              `json:"id"`
+	NotificationID int64              `json:"notification_id"`
+	UserID         int64              `json:"user_id"`
+	DeviceTokenID  pgtype.Int8        `json:"device_token_id"`
+	Title          string             `json:"title"`
+	Body           pgtype.Text        `json:"body"`
+	Data           []byte             `json:"data"`
+	SentAt         pgtype.Timestamptz `json:"sent_at"`
+	DeliveredAt    pgtype.Timestamptz `json:"delivered_at"`
+	OpenedAt       pgtype.Timestamptz `json:"opened_at"`
+	ErrorMessage   pgtype.Text        `json:"error_message"`
+	CreatedAt      pgtype.Timestamptz `json:"created_at"`
+}
+
 type Pet struct {
 	Petid           int64         `json:"petid"`
 	Name            string        `json:"name"`
@@ -414,12 +447,16 @@ type Pet struct {
 	DataImage       []byte        `json:"data_image"`
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	OriginalImage   pgtype.Text   `json:"original_image"`
 =======
 	OriginalImage   string        `json:"original_image"`
 >>>>>>> 0fb3f30 (user images)
 =======
 	OriginalImage   pgtype.Text   `json:"original_image"`
+=======
+	OriginalImage   string        `json:"original_image"`
+>>>>>>> 0fb3f30 (user images)
 }
 
 type PetAllergy struct {
@@ -429,6 +466,7 @@ type PetAllergy struct {
 	Detail pgtype.Text `json:"detail"`
 }
 
+<<<<<<< HEAD
 type PetLog struct {
 	LogID    int64            `json:"log_id"`
 	Petid    int64            `json:"petid"`
@@ -620,6 +658,8 @@ type Product struct {
 >>>>>>> c449ffc (feat: cart api)
 =======
 >>>>>>> 4ccd381 (Update appointment flow)
+=======
+>>>>>>> 0fb3f30 (user images)
 type Service struct {
 	ID          int64            `json:"id"`
 	Name        pgtype.Text      `json:"name"`
@@ -699,6 +739,7 @@ type TimeSlot struct {
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 type SoapNote struct {
 	ID            pgtype.UUID      `json:"id"`
@@ -767,6 +808,8 @@ type TreatmentPhase struct {
 }
 
 >>>>>>> 6c35562 (dicease and treatment plan)
+=======
+>>>>>>> 0fb3f30 (user images)
 type User struct {
 	ID              int64            `json:"id"`
 	Username        string           `json:"username"`
@@ -778,6 +821,7 @@ type User struct {
 	DataImage       []byte           `json:"data_image"`
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	OriginalImage   pgtype.Text      `json:"original_image"`
 =======
 	OriginalImage   string           `json:"original_image"`
@@ -785,6 +829,9 @@ type User struct {
 =======
 	OriginalImage   pgtype.Text      `json:"original_image"`
 >>>>>>> 272832d (redis cache)
+=======
+	OriginalImage   string           `json:"original_image"`
+>>>>>>> 0fb3f30 (user images)
 	Role            pgtype.Text      `json:"role"`
 	Status          pgtype.Text      `json:"status"`
 	CreatedAt       pgtype.Timestamp `json:"created_at"`

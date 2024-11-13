@@ -12,12 +12,15 @@ type DeviceTokenControllerInterface interface {
 	insertDeviceToken(ctx *gin.Context)
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	deleteDeviceToken(ctx *gin.Context)
 =======
 >>>>>>> 0fb3f30 (user images)
 =======
 	deleteDeviceToken(ctx *gin.Context)
 >>>>>>> 9d28896 (image pet)
+=======
+>>>>>>> 0fb3f30 (user images)
 }
 
 func (c *DeviceTokenController) insertDeviceToken(ctx *gin.Context) {
@@ -45,6 +48,7 @@ func (c *DeviceTokenController) insertDeviceToken(ctx *gin.Context) {
 }
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> 9d28896 (image pet)
 
@@ -68,3 +72,5 @@ func (c *DeviceTokenController) deleteDeviceToken(ctx *gin.Context) {
 >>>>>>> 0fb3f30 (user images)
 =======
 >>>>>>> 9d28896 (image pet)
+=======
+>>>>>>> 0fb3f30 (user images)

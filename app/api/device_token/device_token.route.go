@@ -25,12 +25,15 @@ func Routes(routerGroup middleware.RouterGroup) {
 		authRoute.POST("/create", deviceTokenApi.controller.insertDeviceToken)
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 		authRoute.DELETE("/:token", deviceTokenApi.controller.deleteDeviceToken)
 =======
 >>>>>>> 0fb3f30 (user images)
 =======
 		authRoute.DELETE("/:token", deviceTokenApi.controller.deleteDeviceToken)
 >>>>>>> 9d28896 (image pet)
+=======
+>>>>>>> 0fb3f30 (user images)
 
 	}
 

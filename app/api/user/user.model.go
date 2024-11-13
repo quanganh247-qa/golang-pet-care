@@ -78,6 +78,7 @@ type createUserRequest struct {
 type UserResponse struct {
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> 272832d (redis cache)
 	Username      string    `json:"username"`
@@ -103,6 +104,8 @@ type UpdateUserImageParams struct {
 	DataImage     []byte `json:"data_image"`
 	OriginalImage string `json:"original_image"`
 =======
+=======
+>>>>>>> 0fb3f30 (user images)
 	Username        string    `json:"username"`
 	FullName        string    `json:"full_name"`
 	Email           string    `json:"email"`
@@ -113,6 +116,7 @@ type UpdateUserImageParams struct {
 	DataImage       []byte    `json:"data_image"`
 	OriginalImage   string    `json:"original_image"`
 	RemovedAt       time.Time `json:"removed_at"`
+<<<<<<< HEAD
 >>>>>>> 0fb3f30 (user images)
 =======
 >>>>>>> 272832d (redis cache)
@@ -128,6 +132,8 @@ type UpdateUserParams struct {
 type UpdateUserImageParams struct {
 	DataImage     []byte `json:"data_image"`
 	OriginalImage string `json:"original_image"`
+=======
+>>>>>>> 0fb3f30 (user images)
 }
 
 type loginUserRequest struct {
@@ -155,6 +161,7 @@ type loginUSerResponse struct {
 	User                  UserResponse `json:"user"`
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	DeviceToken           string       `json:"device_token"`
 =======
 	DeviceToken           []string     `json:"device_token"`
@@ -162,6 +169,9 @@ type loginUSerResponse struct {
 =======
 	DeviceToken           string       `json:"device_token"`
 >>>>>>> c3c833d (login api)
+=======
+	DeviceToken           []string     `json:"device_token"`
+>>>>>>> 0fb3f30 (user images)
 	DataImage             string       `json:"data_image"`
 }
 

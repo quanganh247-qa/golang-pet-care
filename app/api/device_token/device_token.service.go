@@ -14,12 +14,15 @@ type DeviceTokenServiceInterface interface {
 	InsertToken(ctx context.Context, req DVTRequest, username string) (*DVTResponse, error)
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	DeleteDevicetToken(ctx context.Context, username string, token string) error
 =======
 >>>>>>> 0fb3f30 (user images)
 =======
 	DeleteDevicetToken(ctx context.Context, username string, token string) error
 >>>>>>> 9d28896 (image pet)
+=======
+>>>>>>> 0fb3f30 (user images)
 }
 
 func (s *DeviceTokenService) InsertToken(ctx context.Context, req DVTRequest, username string) (*DVTResponse, error) {
@@ -51,6 +54,7 @@ func (s *DeviceTokenService) InsertToken(ctx context.Context, req DVTRequest, us
 }
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> 9d28896 (image pet)
 
@@ -79,3 +83,5 @@ func (s *DeviceTokenService) DeleteDevicetToken(ctx context.Context, username st
 >>>>>>> 0fb3f30 (user images)
 =======
 >>>>>>> 9d28896 (image pet)
+=======
+>>>>>>> 0fb3f30 (user images)

@@ -2,6 +2,7 @@
 INSERT INTO users (username, hashed_password, full_name, email, phone_number, address, data_image, original_image, role, created_at, is_verified_email)
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, NOW(), false)
 RETURNING *;
 <<<<<<< HEAD
@@ -14,11 +15,16 @@ RETURNING id;
 >>>>>>> 0fb3f30 (user images)
 =======
 >>>>>>> ada3717 (Docker file)
+=======
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, NOW(), $10)
+RETURNING id;
+>>>>>>> 0fb3f30 (user images)
 
 -- name: GetUser :one
 SELECT id, username, hashed_password, full_name, email, phone_number, address, data_image, original_image, role, created_at, is_verified_email
 FROM users
 WHERE username = $1;
+<<<<<<< HEAD
 <<<<<<< HEAD
 
 
@@ -36,6 +42,8 @@ SELECT *
 FROM users
 WHERE email = $1;
 
+=======
+>>>>>>> 0fb3f30 (user images)
 
 -- name: GetAllUsers :many
 SELECT * FROM users ;

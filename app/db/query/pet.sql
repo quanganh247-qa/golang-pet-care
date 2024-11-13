@@ -2,6 +2,7 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> 33fcf96 (Big update)
 INSERT INTO pets (
@@ -28,6 +29,8 @@ INSERT INTO pets (
 SELECT * FROM pets 
 WHERE petid = $1;
 =======
+=======
+>>>>>>> 0fb3f30 (user images)
 INSERT INTO Pet (username, Name, Type, Breed, Age, Weight, Gender, HealthNotes, data_image, is_active)
 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
 =======
@@ -41,7 +44,11 @@ SELECT * FROM Pet WHERE PetID = $1 AND is_active is true;
 
 -- name: UpdatePet :exec
 UPDATE Pet
+<<<<<<< HEAD
 SET Name = $2, Type = $3, Breed = $4, Age = $5, Weight = $6, Gender = $7, HealthNotes = $8, birth_date = $9
+=======
+SET Name = $2, Type = $3, Breed = $4, Age = $5, Weight = $6, Gender = $7, HealthNotes = $8, data_image = $9, is_active = $10
+>>>>>>> 0fb3f30 (user images)
 WHERE PetID = $1;
 
 -- name: DeletePet :exec
