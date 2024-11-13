@@ -14,6 +14,8 @@ import (
 	"github.com/quanganh247-qa/go-blog-be/app/api/user"
 	"github.com/quanganh247-qa/go-blog-be/app/middleware"
 	"github.com/quanganh247-qa/go-blog-be/app/util"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 func (server *Server) SetupRoutes() {
@@ -33,7 +35,7 @@ func (server *Server) SetupRoutes() {
 	routerGroup := middleware.RouterGroup{
 		RouterDefault: router,
 	}
-	// router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler, ginSwagger.URL("/static/swagger.json")))
+	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	user.Routes(routerGroup)
 	service_type.Routes(routerGroup)
 	pet.Routes(routerGroup)

@@ -1,6 +1,6 @@
 -- name: CreatePet :one
-INSERT INTO Pet (username, Name, Type, Breed, Age, Weight, Gender, HealthNotes, data_image, is_active)
-VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+INSERT INTO Pet (username, Name, Type, Breed, Age, Weight, Gender, HealthNotes, data_image, original_image, birth_date, microchip_number, is_active)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, true)
 RETURNING *;
 
 -- name: GetPetByID :one

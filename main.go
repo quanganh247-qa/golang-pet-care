@@ -2,10 +2,24 @@ package main
 
 import (
 	"log"
+	"os"
+	"syscall"
 
 	"github.com/quanganh247-qa/go-blog-be/app/api"
 	"github.com/quanganh247-qa/go-blog-be/app/util"
 )
+
+// @title Pet Care Management System
+// @version 1.0
+// @description Pet care management system APIs built with Go using Gin framework
+// @host localhost:8088
+// @BasePath /api/v1
+
+var interruptSignals = []os.Signal{
+	os.Interrupt,
+	syscall.SIGTERM,
+	syscall.SIGINT,
+}
 
 func main() {
 	config, err := util.LoadConfig(".")
@@ -14,7 +28,7 @@ func main() {
 	}
 
 	server := runGinServer(*config)
-
+	log.Fatal("run gin server")
 	defer func() {
 		server.Connection.Close()
 	}()

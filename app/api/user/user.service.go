@@ -1,8 +1,10 @@
 package user
 
 import (
+	"context"
 	"database/sql"
 	"fmt"
+	"log"
 	"math/big"
 	"net/http"
 	"time"
@@ -13,6 +15,7 @@ import (
 	"github.com/lib/pq"
 	_ "github.com/lib/pq"
 	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
+	"github.com/quanganh247-qa/go-blog-be/app/service/rabbitmq"
 	"github.com/quanganh247-qa/go-blog-be/app/util"
 )
 
@@ -22,7 +25,7 @@ type UserServiceInterface interface {
 	getUserDetailsService(ctx *gin.Context, username string) (*UserResponse, error)
 	getAllUsersService(ctx *gin.Context) ([]UserResponse, error)
 	loginUserService(ctx *gin.Context, req loginUserRequest) (*loginUSerResponse, error)
-	logoutUsersService(ctx *gin.Context, username string) error
+	logoutUsersService(ctx *gin.Context, username string, token string) error
 	verifyEmailService(ctx *gin.Context, req VerrifyEmailTxParams) (VerrifyEmailTxResult, error)
 	createDoctorService(ctx *gin.Context, arg InsertDoctorRequest, username string) (*DoctorResponse, error)
 	createDoctorScheduleService(ctx *gin.Context, arg InsertDoctorScheduleRequest, username string) (*DoctorScheduleResponse, error)
@@ -69,19 +72,6 @@ func (server *UserService) createUserService(ctx *gin.Context, req createUserReq
 			return fmt.Errorf("internal server error: %v", err)
 		}
 	}
-
-	// // **Send Email using RabbitMQ**
-	// emailPayload := rabbitmq.PayloadVerifyEmail{
-	// 	Username: arg.Username,
-	// }
-
-	// err = server.emailQueue.PublishEmail(emailPayload)
-
-	// if err != nil {
-	// 	log.Println("Error publishing email:", err)
-	// 	ctx.JSON(http.StatusInternalServerError, "failed to send verification email")
-	// 	return nil, fmt.Errorf("failed to send verification email: %v", err)
-	// }
 
 	return nil
 }
@@ -159,10 +149,16 @@ func (service *UserService) loginUserService(ctx *gin.Context, req loginUserRequ
 	}, nil
 }
 
-func (service *UserService) logoutUsersService(ctx *gin.Context, username string) error {
+func (service *UserService) logoutUsersService(ctx *gin.Context, username string, token string) error {
 	host, secure := util.SetCookieSameSite(ctx)
 	ctx.SetCookie("refresh_token", "", -1, "/", host, secure, true)
-
+	err := service.storeDB.DeleteDeviceToken(ctx, db.DeleteDeviceTokenParams{
+		Username: username,
+		Token:    token,
+	})
+	if err != nil {
+		return fmt.Errorf("failed to delete token: %w", err)
+	}
 	// service.redis.RemoveUserInfoCache(username)
 	return nil
 }
@@ -427,21 +423,45 @@ func (s *UserService) UpdateDoctorAvailable(ctx *gin.Context, timeSlotID int64) 
 	return nil // Successfully updated
 }
 
-// func (s *UserService) InsertTokenInfoService(ctx *gin.Context, arg InsertTokenInfoRequest, username string) (*db.TokenInfo, error) {
-// 	tokenInfo, err := s.storeDB.InsertTokenInfo(ctx, db.InsertTokenInfoParams{
-// 		AccessToken:  arg.AccessToken,
-// 		TokenType:    arg.TokenType,
-// 		UserName:     username,
-// 		RefreshToken: pgtype.Text{String: arg.RefreshToken.String, Valid: true},
-// 		Expiry:       arg.Expiry,
-// 	})
-// 	if err != nil {
-// 		return nil, fmt.Errorf("failed to insert token info: %w", err)
-// 	}
-// 	return &db.TokenInfo{
-// 		AccessToken:  tokenInfo.AccessToken,
-// 		TokenType:    tokenInfo.TokenType,
-// 		RefreshToken: tokenInfo.RefreshToken,
-// 		Expiry:       tokenInfo.Expiry,
-// 	}, nil
-// }
+func (s *UserService) ProccessTaskSendVerifyEmail(ctx context.Context, payload rabbitmq.PayloadVerifyEmail) error {
+	// var payload PayloadVerifyEmail
+	// if err := json.Unmarshal(task.Payload(), &payload); err != nil {
+	// 	return fmt.Errorf("failed to unmarshal payload: %w", err)
+	// }
+	log.Printf("Processing task for user: %s", payload.Username)
+
+	user, err := s.storeDB.GetUser(ctx, payload.Username)
+	if err != nil {
+
+		if err == sql.ErrNoRows {
+			return fmt.Errorf("user doesn't exists: %w", err)
+		}
+		return fmt.Errorf("failed to get user: %w", err)
+	}
+	log.Printf("User retrieved successfully")
+
+	verifyEmail, err := s.storeDB.CreateVerifyEmail(ctx, db.CreateVerifyEmailParams{
+		Username:   user.Username,
+		Email:      user.Email,
+		SecretCode: util.RandomString(32),
+	})
+	if err != nil {
+		return fmt.Errorf("failed to create verify email %w", err)
+	}
+	subject := "Welcome to Simple Bank"
+	// TODO: replace this URL with an environment variable that points to a front-end page
+	verifyUrl := fmt.Sprintf("http://localhost:8088/api/v1/user/verify-email?email_id=%d&secret_code=%s",
+		verifyEmail.ID, verifyEmail.SecretCode)
+	content := fmt.Sprintf(`Hello %s,<br/>
+	Thank you for registering with us!<br/>
+	Please <a href="%s">click here</a> to verify your email address.<br/>
+	`, user.FullName, verifyUrl)
+	to := []string{user.Email}
+	fmt.Println(subject)
+	err = s.mailer.SendEmail(subject, content, to, nil, nil, nil)
+	if err != nil {
+		return fmt.Errorf("failed to send verify email: %w", err)
+	}
+
+	return nil
+}
