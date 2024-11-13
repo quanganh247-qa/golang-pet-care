@@ -36,16 +36,25 @@ type PetServiceInterface interface {
 	UpdatePetAvatar(ctx *gin.Context, petid int64, req updatePetAvatarRequest) error
 }
 
+<<<<<<< HEAD
 func (s *PetService) CreatePet(ctx *gin.Context, username string, req createPetRequest) (*CreatePetResponse, error) {
 	var pet CreatePetResponse
 
 	bod, err := time.Parse("2006-01-02", req.BOD)
+=======
+func (s *PetService) CreatePet(ctx *gin.Context, username string, req createPetRequest) (*createPetResponse, error) {
+	var pet createPetResponse
+	bod, _, err := util.ParseStringToTime(req.BOD, "")
+>>>>>>> 9d28896 (image pet)
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse BOD: %w", err)
 	}
 	err = s.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
 		res, err := q.CreatePet(ctx, db.CreatePetParams{
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 9d28896 (image pet)
 			Username:        username,
 			Name:            req.Name,
 			Type:            req.Type,
@@ -55,6 +64,7 @@ func (s *PetService) CreatePet(ctx *gin.Context, username string, req createPetR
 			Gender:          pgtype.Text{String: req.Gender, Valid: true},
 			Healthnotes:     pgtype.Text{String: req.Healthnotes, Valid: true},
 			DataImage:       req.DataImage,
+<<<<<<< HEAD
 			OriginalImage:   pgtype.Text{String: req.OriginalImage, Valid: true},
 			BirthDate:       pgtype.Date{Time: bod, Valid: true},
 			MicrochipNumber: pgtype.Text{String: req.MicrochipNumber, Valid: true},
@@ -68,10 +78,16 @@ func (s *PetService) CreatePet(ctx *gin.Context, username string, req createPetR
 			Gender:      pgtype.Text{String: req.Gender, Valid: true},
 			Healthnotes: pgtype.Text{String: req.Healthnotes, Valid: true},
 >>>>>>> 0fb3f30 (user images)
+=======
+			OriginalImage:   req.OriginalImage,
+			BirthDate:       pgtype.Date{Time: bod, Valid: true},
+			MicrochipNumber: pgtype.Text{String: req.MicrophoneNumber, Valid: true},
+>>>>>>> 9d28896 (image pet)
 		})
 		if err != nil {
 			return fmt.Errorf("failed to create pet: %w", err)
 		}
+<<<<<<< HEAD
 
 		if _, err := q.CreateMedicalRecord(ctx, pgtype.Int8{Int64: res.Petid, Valid: true}); err != nil {
 			return fmt.Errorf("failed to create medical record: %w", err)
@@ -86,6 +102,17 @@ func (s *PetService) CreatePet(ctx *gin.Context, username string, req createPetR
 			DataImage:       pet.DataImage,
 			OriginalImage:   res.OriginalImage.String,
 			MicrochipNumber: res.MicrochipNumber.String,
+=======
+		pet = createPetResponse{
+			Petid:     res.Petid,
+			Username:  res.Username,
+			Name:      res.Name,
+			Type:      res.Type,
+			Breed:     res.Breed.String,
+			Age:       int16(res.Age.Int32),
+			Weight:    res.Weight.Float64,
+			DataImage: pet.DataImage,
+>>>>>>> 9d28896 (image pet)
 		}
 		return nil
 
@@ -96,9 +123,32 @@ func (s *PetService) CreatePet(ctx *gin.Context, username string, req createPetR
 	return &pet, nil
 }
 
+<<<<<<< HEAD
 func (s *PetService) GetPetByID(ctx *gin.Context, petid int64) (*CreatePetResponse, error) {
 
 	pet, err := s.redis.PetInfoLoadCache(petid)
+=======
+func (s *PetService) GetPetByID(ctx *gin.Context, petid int64) (*createPetResponse, error) {
+	var pet createPetResponse
+	err := s.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
+		res, err := q.GetPetByID(ctx, petid)
+		if err != nil {
+			return fmt.Errorf("failed to get pet: %w", err)
+		}
+		pet = createPetResponse{
+			Petid:         res.Petid,
+			Username:      res.Username,
+			Name:          res.Name,
+			Type:          res.Type,
+			Breed:         res.Breed.String,
+			Age:           int16(res.Age.Int32),
+			Weight:        res.Weight.Float64,
+			DataImage:     res.DataImage,
+			OriginalImage: res.OriginalImage,
+		}
+		return nil
+	})
+>>>>>>> 9d28896 (image pet)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get pet: %w", err)
 	}
@@ -138,7 +188,11 @@ func (s *PetService) ListPets(ctx *gin.Context, req listPetsRequest, pagination 
 		}
 
 		for _, r := range res {
+<<<<<<< HEAD
 			pets = append(pets, CreatePetResponse{
+=======
+			pets = append(pets, createPetResponse{
+>>>>>>> 9d28896 (image pet)
 				Petid:         r.Petid,
 				Username:      r.Username,
 				Name:          r.Name,
@@ -147,7 +201,11 @@ func (s *PetService) ListPets(ctx *gin.Context, req listPetsRequest, pagination 
 				Age:           int16(r.Age.Int32),
 				Weight:        r.Weight.Float64,
 				DataImage:     r.DataImage,
+<<<<<<< HEAD
 				OriginalImage: r.OriginalImage.String,
+=======
+				OriginalImage: r.OriginalImage,
+>>>>>>> 9d28896 (image pet)
 			})
 		}
 		return nil
@@ -294,7 +352,11 @@ func (s *PetService) ListPetsByUsername(ctx *gin.Context, username string, pagin
 		}
 
 		for _, r := range res {
+<<<<<<< HEAD
 			pets = append(pets, CreatePetResponse{
+=======
+			pets = append(pets, createPetResponse{
+>>>>>>> 9d28896 (image pet)
 				Petid:         r.Petid,
 				Username:      r.Username,
 				Name:          r.Name,
@@ -303,7 +365,11 @@ func (s *PetService) ListPetsByUsername(ctx *gin.Context, username string, pagin
 				Age:           int16(r.Age.Int32),
 				Weight:        r.Weight.Float64,
 				DataImage:     r.DataImage,
+<<<<<<< HEAD
 				OriginalImage: r.OriginalImage.String,
+=======
+				OriginalImage: r.OriginalImage,
+>>>>>>> 9d28896 (image pet)
 			})
 		}
 		return nil

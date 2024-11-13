@@ -1,0 +1,88 @@
+basePath: /api/v1
+definitions:
+  user.UserResponse:
+    properties:
+      address:
+        type: string
+      data_image:
+        items:
+          type: integer
+        type: array
+      email:
+        type: string
+      full_name:
+        type: string
+      is_verified_email:
+        type: boolean
+      original_image:
+        type: string
+      phone_number:
+        type: string
+      removed_at:
+        type: string
+      role:
+        type: string
+      username:
+        type: string
+    type: object
+  user.loginUSerResponse:
+    properties:
+      access_token:
+        type: string
+      access_token_expires_at:
+        type: string
+      data_image:
+        type: string
+      device_token:
+        items:
+          type: string
+        type: array
+      refresh_token:
+        type: string
+      refresh_token_expires_at:
+        type: string
+      user:
+        $ref: '#/definitions/user.UserResponse'
+    type: object
+  user.loginUserRequest:
+    properties:
+      password:
+        maxLength: 25
+        minLength: 6
+        type: string
+      username:
+        type: string
+    required:
+    - password
+    - username
+    type: object
+host: localhost:8088
+info:
+  contact: {}
+  description: Pet care management system APIs built with Go using Gin framework
+  title: Pet Care Management System
+  version: "1.0"
+paths:
+  /user/login:
+    post:
+      consumes:
+      - application/json
+      description: Login user
+      parameters:
+      - description: User info
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/user.loginUserRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/user.loginUSerResponse'
+      summary: Login user
+      tags:
+      - users
+swagger: "2.0"

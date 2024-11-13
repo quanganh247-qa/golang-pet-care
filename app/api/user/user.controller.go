@@ -159,6 +159,15 @@ func (controller *UserController) getAllUsers(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, util.SuccessResponse("Success", res))
 }
 
+// LoginUser           	godoc
+// @Summary 			Login user
+// @Description 		Login user
+// @Tags 				users
+// @Accept  			json
+// @Produce  			json
+// @Param 				user body loginUserRequest true "User info"
+// @Success 			200 {object} loginUSerResponse
+// @Router 				/user/login [post]
 func (controller *UserController) loginUser(ctx *gin.Context) {
 	var req loginUserRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -193,7 +202,11 @@ func (controller *UserController) loginUser(ctx *gin.Context) {
 }
 
 func (controller *UserController) logoutUser(ctx *gin.Context) {
+<<<<<<< HEAD
 	token := ctx.Query("token")
+=======
+	token := ctx.Param("token")
+>>>>>>> 9d28896 (image pet)
 
 	authPayload, err := middleware.GetAuthorizationPayload(ctx)
 	if err != nil {
@@ -236,6 +249,7 @@ func (controller *UserController) getAccessToken(ctx *gin.Context) {
 }
 
 func (controller *UserController) verifyEmail(ctx *gin.Context) {
+<<<<<<< HEAD
 	var req VerrifyInput
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, util.ErrorValidator(err))
@@ -254,6 +268,32 @@ func (controller *UserController) verifyEmail(ctx *gin.Context) {
 	}
 
 	err = controller.service.verifyEmailService(ctx, arg)
+=======
+	var req VerrifyEmailTxParams
+
+	emailID := ctx.Query("email_id")
+	secretCode := ctx.Query("secret_code")
+
+	// Check if both parameters are present
+	if emailID == "" || secretCode == "" {
+		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(fmt.Errorf("missing email_id or secret_code in query parameters")))
+		return
+	}
+
+	// convert strign to int 64
+	emailIDInt, err := strconv.ParseInt(emailID, 10, 64)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(fmt.Errorf("invalid email_id parameter")))
+		return
+	}
+
+	req = VerrifyEmailTxParams{
+		EmailId:    emailIDInt,
+		SecretCode: secretCode,
+	}
+
+	res, err := controller.service.verifyEmailService(ctx, req)
+>>>>>>> 9d28896 (image pet)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
 		return

@@ -21,7 +21,12 @@ test:
 	go test -v -cover ./...
 	
 server:
+<<<<<<< HEAD
 	gin -p 8089 -i run /Users/dhquanganh/Documents/TLCN/golang-pet-care/main.go
+=======
+	gin -p 8081 -i run main.go
+
+>>>>>>> 9d28896 (image pet)
 
 postgres:
 	docker run -d  --name postgres  -p 5433:5432 -e POSTGRES_PASSWORD=12345678  -e PGDATA=/var/lib/postgresql/data/pgdata  -v postgres_volume:/var/lib/postgresql/data  postgres:15-alpine

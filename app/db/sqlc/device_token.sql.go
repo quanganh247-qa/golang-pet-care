@@ -12,8 +12,13 @@ import (
 )
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 const deleteDeviceToken = `-- name: DeleteDeviceToken :exec
 DELETE FROM device_tokens WHERE username = $1 AND token = $2
+=======
+const deleteDeviceToken = `-- name: DeleteDeviceToken :exec
+DELETE FROM DeviceTokens WHERE username = $1 AND token = $2
+>>>>>>> 9d28896 (image pet)
 `
 
 type DeleteDeviceTokenParams struct {
@@ -26,12 +31,15 @@ func (q *Queries) DeleteDeviceToken(ctx context.Context, arg DeleteDeviceTokenPa
 	return err
 }
 
+<<<<<<< HEAD
 const getDeviceTokenByUsername = `-- name: GetDeviceTokenByUsername :many
 SELECT id, username, token, device_type, created_at, last_used_at, expired_at FROM device_tokens WHERE username = $1
 `
 
 func (q *Queries) GetDeviceTokenByUsername(ctx context.Context, username string) ([]DeviceToken, error) {
 =======
+=======
+>>>>>>> 9d28896 (image pet)
 const getDeviceTokenByUsername = `-- name: GetDeviceTokenByUsername :many
 SELECT id, username, token, device_type, created_at, last_used_at, expired_at FROM DeviceTokens WHERE username = $1
 `
