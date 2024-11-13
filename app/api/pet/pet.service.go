@@ -24,15 +24,14 @@ func (s *PetService) CreatePet(ctx *gin.Context, username string, req createPetR
 	var pet createPetResponse
 	err := s.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
 		res, err := q.CreatePet(ctx, db.CreatePetParams{
-			Username:     username,
-			Name:         req.Name,
-			Type:         req.Type,
-			Breed:        pgtype.Text{String: req.Breed, Valid: true},
-			Age:          pgtype.Int4{Int32: int32(req.Age), Valid: true},
-			Weight:       pgtype.Float8{Float64: req.Weight, Valid: true},
-			Gender:       pgtype.Text{String: req.Gender, Valid: true},
-			Healthnotes:  pgtype.Text{String: req.Healthnotes, Valid: true},
-			Profileimage: pgtype.Text{String: req.Profileimage, Valid: true},
+			Username:    username,
+			Name:        req.Name,
+			Type:        req.Type,
+			Breed:       pgtype.Text{String: req.Breed, Valid: true},
+			Age:         pgtype.Int4{Int32: int32(req.Age), Valid: true},
+			Weight:      pgtype.Float8{Float64: req.Weight, Valid: true},
+			Gender:      pgtype.Text{String: req.Gender, Valid: true},
+			Healthnotes: pgtype.Text{String: req.Healthnotes, Valid: true},
 		})
 		if err != nil {
 			return fmt.Errorf("failed to create pet: %w", err)
@@ -117,15 +116,14 @@ func (s *PetService) ListPets(ctx *gin.Context, req listPetsRequest, pagination 
 
 func (s *PetService) UpdatePet(ctx *gin.Context, petid int64, req createPetRequest) error {
 	params := db.UpdatePetParams{
-		Petid:        petid,
-		Name:         req.Name,
-		Type:         req.Type,
-		Breed:        pgtype.Text{String: req.Breed, Valid: true},
-		Age:          pgtype.Int4{Int32: int32(req.Age), Valid: true},
-		Weight:       pgtype.Float8{Float64: req.Weight, Valid: true},
-		Gender:       pgtype.Text{String: req.Gender, Valid: true},
-		Healthnotes:  pgtype.Text{String: req.Healthnotes, Valid: true},
-		Profileimage: pgtype.Text{String: req.Profileimage, Valid: true},
+		Petid:       petid,
+		Name:        req.Name,
+		Type:        req.Type,
+		Breed:       pgtype.Text{String: req.Breed, Valid: true},
+		Age:         pgtype.Int4{Int32: int32(req.Age), Valid: true},
+		Weight:      pgtype.Float8{Float64: req.Weight, Valid: true},
+		Gender:      pgtype.Text{String: req.Gender, Valid: true},
+		Healthnotes: pgtype.Text{String: req.Healthnotes, Valid: true},
 	}
 
 	return s.storeDB.UpdatePet(ctx, params)

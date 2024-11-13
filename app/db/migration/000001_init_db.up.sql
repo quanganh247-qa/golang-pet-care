@@ -1,18 +1,22 @@
+-- Create users table with proper constraints
 CREATE TABLE users (
-  id BIGSERIAL NOT NULL,
-  username varchar NOT NULL UNIQUE,
-  hashed_password varchar NOT NULL,
-  full_name varchar NOT NULL,
-  email varchar NOT NULL,
-  phone_number varchar,
-  address varchar,
-  avatar varchar(255),
-  role VARCHAR(20),
-  created_at timestamp NOT NULL DEFAULT (now()),
-  is_verified_email bool DEFAULT false,
-  removed_at timestamp,
-  PRIMARY KEY (id)
+    id BIGSERIAL NOT NULL,
+    username VARCHAR NOT NULL,
+    hashed_password VARCHAR NOT NULL,
+    full_name VARCHAR NOT NULL,
+    email VARCHAR NOT NULL UNIQUE, -- Added unique constraint on email
+    phone_number VARCHAR,
+    address VARCHAR,
+    data_image BYTEA NOT NULL,
+    original_image VARCHAR(255) NOT NULL,
+    role VARCHAR(20),
+    created_at TIMESTAMP NOT NULL DEFAULT now(),
+    is_verified_email BOOL DEFAULT false,
+    removed_at TIMESTAMP,
+    CONSTRAINT users_pkey PRIMARY KEY (id),  
+    CONSTRAINT users_username_key UNIQUE (username)
 );
+
 
 CREATE TABLE verify_emails (
   id BIGSERIAL NOT NULL,
@@ -33,13 +37,14 @@ CREATE TABLE Pet (
   age int4,
   gender varchar(10),
   healthnotes text,
-  profileimage varchar(255),
   weight float8,
   birth_date date,
   username varchar NOT NULL,
   microchip_number varchar(50),
   last_checkup_date date,
   is_active BOOLEAN DEFAULT true,
+  data_image BYTEA NOT NULL,
+  original_image VARCHAR(255) NOT NULL,
   PRIMARY KEY (petid)
 );
 
@@ -75,16 +80,6 @@ CREATE TABLE ActivityLog (
   notes TEXT
 );
 
-CREATE TABLE Reminders (
-  reminderID BIGSERIAL PRIMARY KEY,
-  petID BIGINT,
-  title VARCHAR(100) NOT NULL,
-  description TEXT,
-  dueDate timestamp NOT NULL,
-  repeatInterval VARCHAR(50),
-  isCompleted BOOLEAN DEFAULT false,
-  notificationSent BOOLEAN DEFAULT false
-);
 
 CREATE TABLE ServiceType (
   typeID BIGSERIAL PRIMARY KEY,
@@ -181,6 +176,66 @@ CREATE TABLE DoctorSchedules (
   max_appointments INT DEFAULT 1
 );
 
+
+CREATE TABLE Medications (
+  medication_id BIGSERIAL NOT NULL,
+  pet_id BIGINT NOT NULL,
+  medication_name varchar(100) NOT NULL,
+  dosage varchar(50) NOT NULL,
+  frequency varchar(50) NOT NULL,
+  start_date timestamp NOT NULL,
+  end_date timestamp,
+  notes text,
+  PRIMARY KEY (medication_id),
+  FOREIGN KEY (pet_id) REFERENCES Pet (petid) ON DELETE CASCADE
+);
+
+-- Create device tokens table with proper foreign key reference
+CREATE TABLE DeviceTokens (
+  id BIGSERIAL PRIMARY KEY,
+  username VARCHAR NOT NULL,
+  token VARCHAR NOT NULL UNIQUE,
+  device_type VARCHAR(50),
+  created_at TIMESTAMP NOT NULL DEFAULT now(),
+  last_used_at TIMESTAMP,
+  expired_at TIMESTAMP,
+  CONSTRAINT fk_device_tokens_username 
+      FOREIGN KEY (username) 
+      REFERENCES users(username) 
+      ON DELETE CASCADE
+);
+
+-- Create notifications table with necessary fields
+CREATE TABLE Notification (
+  notificationID BIGSERIAL PRIMARY KEY,
+  petID BIGINT,
+  title VARCHAR(100) NOT NULL,
+  body TEXT,
+  dueDate TIMESTAMP NOT NULL,
+  repeatInterval VARCHAR(50),
+  isCompleted BOOLEAN DEFAULT false,
+  notificationSent BOOLEAN DEFAULT false
+);
+
+-- Modify notification_history table to include username
+CREATE TABLE NotificationHistory (
+    id BIGSERIAL PRIMARY KEY,
+    notification_id BIGINT NOT NULL,
+    user_id BIGINT NOT NULL,
+    device_token_id BIGINT,
+    title VARCHAR(255) NOT NULL,
+    body TEXT,
+    data JSONB,
+    sent_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+    delivered_at TIMESTAMPTZ,
+    opened_at TIMESTAMPTZ,
+    error_message TEXT,
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (notification_id) REFERENCES Notification(notificationID) ON DELETE SET NULL,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (device_token_id) REFERENCES DeviceTokens(id) ON DELETE SET NULL
+);
+
 ALTER TABLE Pet ADD CONSTRAINT pet_users_fk FOREIGN KEY (username) REFERENCES users (username);
 
 ALTER TABLE Vaccination ADD CONSTRAINT vaccination_pet_fk FOREIGN KEY (petID) REFERENCES Pet (petid);
@@ -189,15 +244,13 @@ ALTER TABLE FeedingSchedule ADD CONSTRAINT feeding_pet_fk FOREIGN KEY (petID) RE
 
 ALTER TABLE ActivityLog ADD CONSTRAINT activity_pet_fk FOREIGN KEY (petID) REFERENCES Pet (petid);
 
-ALTER TABLE Reminders ADD CONSTRAINT reminder_pet_fk FOREIGN KEY (petID) REFERENCES Pet (petid);
+ALTER TABLE Notification ADD CONSTRAINT not_pet_fk FOREIGN KEY (petID) REFERENCES Pet (petid);
 
 ALTER TABLE Service ADD CONSTRAINT service_type_fk FOREIGN KEY (typeID) REFERENCES ServiceType (typeID);
 
 ALTER TABLE Appointment ADD CONSTRAINT appointment_pet_fk FOREIGN KEY (petid) REFERENCES Pet (petid);
 
 ALTER TABLE Appointment ADD CONSTRAINT appointment_service_fk FOREIGN KEY (service_id) REFERENCES Service (serviceID);
-
--- ALTER TABLE Checkout ADD CONSTRAINT checkout_pet_fk FOREIGN KEY (PetID) REFERENCES Pet (petid);
 
 ALTER TABLE CheckoutService ADD CONSTRAINT cs_checkout_fk FOREIGN KEY (checkoutID) REFERENCES Checkout (checkout_id);
 
@@ -207,27 +260,10 @@ ALTER TABLE Doctors ADD CONSTRAINT fk_doctor_user FOREIGN KEY (user_id) REFERENC
 
 ALTER TABLE DoctorSchedules ADD CONSTRAINT fk_schedule_doctor FOREIGN KEY (doctor_id) REFERENCES Doctors (id);
 
--- ALTER TABLE DoctorTimeOff ADD CONSTRAINT fk_timeoff_doctor FOREIGN KEY (doctor_id) REFERENCES Doctors (id);
-
--- ALTER TABLE Appointment ADD CONSTRAINT fk_appointment_timeslot FOREIGN KEY (time_slot_id) REFERENCES TimeSlots (id);
 
 
--- public.token_info definition
 
--- Drop table
-
--- DROP TABLE public.token_info;
-
-CREATE TABLE token_info (
-	id bigserial NOT NULL,
-	user_name varchar NOT NULL,
-	access_token text NOT NULL,
-	token_type varchar NOT NULL,
-	refresh_token text NULL,
-	expiry timestamptz NOT NULL,
-	created_at timestamptz DEFAULT now() NULL,
-	updated_at timestamptz DEFAULT now() NULL,
-	CONSTRAINT token_info_pk PRIMARY KEY (id),
-	CONSTRAINT token_info_unique UNIQUE (user_name)
-);
-
+-- -- Create indexes for better query performance
+-- CREATE INDEX idx_device_tokens_user ON DeviceTokens(user_id, username);
+-- CREATE INDEX idx_users_username ON users(username);
+-- CREATE INDEX idx_users_email ON users(email);

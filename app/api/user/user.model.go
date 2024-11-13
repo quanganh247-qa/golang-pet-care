@@ -23,16 +23,29 @@ type UserApi struct {
 }
 
 type createUserRequest struct {
-	Username string `json:"username" binding:"required,alphanum"`
-	Password string `json:"password" binding:"required,min=6,max=25"`
-	FullName string `json:"full_name" binding:"required"`
-	Email    string `json:"email" binding:"required,email"`
+	Username        string `json:"username" binding:"required,alphanum"`
+	Password        string `json:"password" binding:"required,min=6,max=25"`
+	FullName        string `json:"full_name" binding:"required"`
+	Email           string `json:"email" binding:"required,email"`
+	PhoneNumber     string `json:"phone_number"`
+	Address         string `json:"address"`
+	Role            string `json:"role" binding:"required"`
+	IsVerifiedEmail bool   `json:"is_verified_email"`
+	DataImage       []byte `json:"-"`
+	OriginalImage   string `json:"original_image"`
 }
 
 type UserResponse struct {
-	Username string `json:"username"`
-	FullName string `json:"full_name"`
-	Email    string `json:"email"`
+	Username        string    `json:"username"`
+	FullName        string    `json:"full_name"`
+	Email           string    `json:"email"`
+	PhoneNumber     string    `json:"phone_number"`
+	Address         string    `json:"address"`
+	Role            string    `json:"role"`
+	IsVerifiedEmail bool      `json:"is_verified_email"`
+	DataImage       []byte    `json:"data_image"`
+	OriginalImage   string    `json:"original_image"`
+	RemovedAt       time.Time `json:"removed_at"`
 }
 
 type loginUserRequest struct {
@@ -45,6 +58,8 @@ type loginUSerResponse struct {
 	RefreshToken          string       `json:"refresh_token"`
 	RefreshTokenExpiresAt time.Time    `json:"refresh_token_expires_at"`
 	User                  UserResponse `json:"user"`
+	DeviceToken           []string     `json:"device_token"`
+	DataImage             string       `json:"data_image"`
 }
 
 type InsertDoctorRequest struct {

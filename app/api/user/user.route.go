@@ -24,6 +24,7 @@ func Routes(routerGroup middleware.RouterGroup) {
 		// authRoute.POST("/create", userApi.controller.createUser)
 		user.POST("/create", userApi.controller.createUser)
 		user.GET("/all", userApi.controller.getAllUsers)
+		authRoute.GET("/", userApi.controller.getUserDetails)
 		user.POST("/login", userApi.controller.loginUser)
 		user.PUT("/verify-email", userApi.controller.verifyEmail)
 		authRoute.GET("/refresh_token", userApi.controller.getAccessToken)
