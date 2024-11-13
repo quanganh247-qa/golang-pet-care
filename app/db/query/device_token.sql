@@ -6,3 +6,5 @@ INSERT INTO DeviceTokens (
 -- name: GetDeviceTokenByUsername :many
 SELECT * FROM DeviceTokens WHERE username = $1;
 
+-- name: DeleteDeviceToken :exec
+DELETE FROM DeviceTokens WHERE username = $1 AND token = $2;

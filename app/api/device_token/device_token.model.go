@@ -2,7 +2,6 @@ package device_token
 
 import (
 	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
-	"github.com/quanganh247-qa/go-blog-be/app/service/rabbitmq"
 )
 
 type DeviceTokenController struct {
@@ -10,8 +9,7 @@ type DeviceTokenController struct {
 }
 
 type DeviceTokenService struct {
-	storeDB    db.Store
-	emailQueue *rabbitmq.EmailQueue
+	storeDB db.Store
 }
 
 // route

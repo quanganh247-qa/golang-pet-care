@@ -2,6 +2,7 @@ package pet
 
 import (
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"strconv"
 
@@ -21,15 +22,72 @@ type PetControllerInterface interface {
 
 func (c *PetController) CreatePet(ctx *gin.Context) {
 	var req createPetRequest
-	if err := ctx.ShouldBindJSON(&req); err != nil {
-		ctx.JSON(400, gin.H{"error": err.Error()})
+
+	name := ctx.PostForm("name")
+	t := ctx.PostForm("type")
+	breed := ctx.PostForm("breed")
+	age := ctx.PostForm("age")
+	weight := ctx.PostForm("weight")
+	gender := ctx.PostForm("gender")
+	healthnotes := ctx.PostForm("healthnotes")
+	microchip := ctx.PostForm("microchip_number")
+	bod := ctx.PostForm("birth_date")
+
+	err := ctx.Request.ParseMultipartForm(10 << 20) // 10 MB max
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
 		return
 	}
+
+	// Handle image file
+	file, header, err := ctx.Request.FormFile("image")
+
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(fmt.Errorf("image is required")))
+		return
+	}
+	defer file.Close()
+
+	// Read the file content into a byte array
+	dataImage, err := ioutil.ReadAll(file)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to read data image"})
+		return
+	}
+	// get original image
+
 	authPayload, err := middleware.GetAuthorizationPayload(ctx)
 	if err != nil {
 		ctx.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
+
+	req.Name = name
+	req.Type = t
+	req.Breed = breed
+	req.Healthnotes = healthnotes
+	req.Gender = gender
+	req.OriginalImage = header.Filename
+	req.DataImage = dataImage
+	req.MicrophoneNumber = microchip
+	req.BOD = bod
+
+	// convert string to  int 16
+	ageInt, err := strconv.Atoi(age)
+	if err != nil {
+		ctx.JSON(400, gin.H{"error": "Invalid age"})
+		return
+	}
+	req.Age = int16(ageInt)
+	weightFl, err := strconv.ParseFloat(weight, 64)
+	if err != nil {
+		ctx.JSON(400, gin.H{"error": "Invalid weight value"})
+
+		return
+	}
+	req.Weight = float64(weightFl)
+
+	// Save the pet to the database
 
 	res, err := c.service.CreatePet(ctx, authPayload.Username, req)
 	if err != nil {

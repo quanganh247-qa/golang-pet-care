@@ -19,17 +19,6 @@ test:
 server:
 	gin -p 8081 -i run main.go
 
-mock:
-	mockgen -package mockdb -destination app/db/mock/store.go github.com/hpt/go-client/app/db/sqlc Store
-
-proto:
-	rm -rf app/pb/*.go
-	protoc --proto_path=app/proto  --go_out=app/pb --go_opt=paths=source_relative \
-	--go-grpc_out=app/pb --go-grpc_opt=paths=source_relative \
-	app/proto/*.proto 
-
-evans:
-	evans --host localhost --port 9090 -r repl
 
 postgres:
 	docker run -d  --name postgres  -p 5433:5432 -e POSTGRES_PASSWORD=12345678  -e PGDATA=/var/lib/postgresql/data/pgdata  -v postgres_volume:/var/lib/postgresql/data  postgres:15-alpine

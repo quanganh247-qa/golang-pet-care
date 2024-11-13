@@ -10,6 +10,7 @@ import (
 
 type DeviceTokenControllerInterface interface {
 	insertDeviceToken(ctx *gin.Context)
+	deleteDeviceToken(ctx *gin.Context)
 }
 
 func (c *DeviceTokenController) insertDeviceToken(ctx *gin.Context) {
@@ -34,4 +35,20 @@ func (c *DeviceTokenController) insertDeviceToken(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, util.SuccessResponse("Device token inserted successfully", token))
 
+}
+
+func (c *DeviceTokenController) deleteDeviceToken(ctx *gin.Context) {
+
+	token := ctx.Param("token")
+	authPayload, err := middleware.GetAuthorizationPayload(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
+		return
+	}
+	err = c.service.DeleteDevicetToken(ctx, authPayload.Username, token)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
+		return
+	}
+	ctx.JSON(http.StatusOK, util.SuccessResponse("Device token deleted successfully", nil))
 }

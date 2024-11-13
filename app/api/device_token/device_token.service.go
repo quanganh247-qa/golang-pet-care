@@ -12,6 +12,7 @@ import (
 
 type DeviceTokenServiceInterface interface {
 	InsertToken(ctx context.Context, req DVTRequest, username string) (*DVTResponse, error)
+	DeleteDevicetToken(ctx context.Context, username string, token string) error
 }
 
 func (s *DeviceTokenService) InsertToken(ctx context.Context, req DVTRequest, username string) (*DVTResponse, error) {
@@ -40,4 +41,25 @@ func (s *DeviceTokenService) InsertToken(ctx context.Context, req DVTRequest, us
 		LastUsedAt: token.LastUsedAt.Time.Format(time.RFC3339),
 		ExpiredAt:  token.ExpiredAt.Time.Format(time.RFC3339),
 	}, nil
+}
+
+func (s *DeviceTokenService) DeleteDevicetToken(ctx context.Context, username string, token string) error {
+
+	var err error
+	err = s.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
+		err = q.DeleteDeviceToken(ctx, db.DeleteDeviceTokenParams{
+			Username: username,
+			Token:    token,
+		})
+		if err != nil {
+			return fmt.Errorf("failed to delete token: %w", err)
+
+		}
+		return nil
+	})
+	if err != nil {
+		return fmt.Errorf("failed to delete token: %w", err)
+	}
+	return err
+
 }

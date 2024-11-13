@@ -8,7 +8,7 @@ import (
 	"log"
 
 	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
-	"github.com/quanganh247-qa/go-blog-be/app/mail"
+	"github.com/quanganh247-qa/go-blog-be/app/service/mail"
 	"github.com/quanganh247-qa/go-blog-be/app/util"
 	"github.com/rabbitmq/amqp091-go"
 )

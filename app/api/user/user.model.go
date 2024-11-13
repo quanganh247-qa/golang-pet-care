@@ -5,6 +5,7 @@ import (
 
 	"github.com/jackc/pgx/v5/pgtype"
 	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
+	"github.com/quanganh247-qa/go-blog-be/app/service/mail"
 	"github.com/quanganh247-qa/go-blog-be/app/service/rabbitmq"
 )
 
@@ -15,6 +16,7 @@ type UserController struct {
 type UserService struct {
 	storeDB    db.Store
 	emailQueue *rabbitmq.EmailQueue
+	mailer     mail.EmailSender
 }
 
 // route

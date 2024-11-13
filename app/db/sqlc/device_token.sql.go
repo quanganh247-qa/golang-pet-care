@@ -11,6 +11,20 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+const deleteDeviceToken = `-- name: DeleteDeviceToken :exec
+DELETE FROM DeviceTokens WHERE username = $1 AND token = $2
+`
+
+type DeleteDeviceTokenParams struct {
+	Username string `json:"username"`
+	Token    string `json:"token"`
+}
+
+func (q *Queries) DeleteDeviceToken(ctx context.Context, arg DeleteDeviceTokenParams) error {
+	_, err := q.db.Exec(ctx, deleteDeviceToken, arg.Username, arg.Token)
+	return err
+}
+
 const getDeviceTokenByUsername = `-- name: GetDeviceTokenByUsername :many
 SELECT id, username, token, device_type, created_at, last_used_at, expired_at FROM DeviceTokens WHERE username = $1
 `

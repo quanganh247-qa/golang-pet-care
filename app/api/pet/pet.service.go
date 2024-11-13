@@ -22,28 +22,37 @@ type PetServiceInterface interface {
 
 func (s *PetService) CreatePet(ctx *gin.Context, username string, req createPetRequest) (*createPetResponse, error) {
 	var pet createPetResponse
-	err := s.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
+	bod, _, err := util.ParseStringToTime(req.BOD, "")
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse BOD: %w", err)
+	}
+	err = s.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
 		res, err := q.CreatePet(ctx, db.CreatePetParams{
-			Username:    username,
-			Name:        req.Name,
-			Type:        req.Type,
-			Breed:       pgtype.Text{String: req.Breed, Valid: true},
-			Age:         pgtype.Int4{Int32: int32(req.Age), Valid: true},
-			Weight:      pgtype.Float8{Float64: req.Weight, Valid: true},
-			Gender:      pgtype.Text{String: req.Gender, Valid: true},
-			Healthnotes: pgtype.Text{String: req.Healthnotes, Valid: true},
+			Username:        username,
+			Name:            req.Name,
+			Type:            req.Type,
+			Breed:           pgtype.Text{String: req.Breed, Valid: true},
+			Age:             pgtype.Int4{Int32: int32(req.Age), Valid: true},
+			Weight:          pgtype.Float8{Float64: req.Weight, Valid: true},
+			Gender:          pgtype.Text{String: req.Gender, Valid: true},
+			Healthnotes:     pgtype.Text{String: req.Healthnotes, Valid: true},
+			DataImage:       req.DataImage,
+			OriginalImage:   req.OriginalImage,
+			BirthDate:       pgtype.Date{Time: bod, Valid: true},
+			MicrochipNumber: pgtype.Text{String: req.MicrophoneNumber, Valid: true},
 		})
 		if err != nil {
 			return fmt.Errorf("failed to create pet: %w", err)
 		}
 		pet = createPetResponse{
-			Petid:    res.Petid,
-			Username: res.Username,
-			Name:     res.Name,
-			Type:     res.Type,
-			Breed:    res.Breed.String,
-			Age:      int16(res.Age.Int32),
-			Weight:   res.Weight.Float64,
+			Petid:     res.Petid,
+			Username:  res.Username,
+			Name:      res.Name,
+			Type:      res.Type,
+			Breed:     res.Breed.String,
+			Age:       int16(res.Age.Int32),
+			Weight:    res.Weight.Float64,
+			DataImage: pet.DataImage,
 		}
 		return nil
 
@@ -62,13 +71,15 @@ func (s *PetService) GetPetByID(ctx *gin.Context, petid int64) (*createPetRespon
 			return fmt.Errorf("failed to get pet: %w", err)
 		}
 		pet = createPetResponse{
-			Petid:    res.Petid,
-			Username: res.Username,
-			Name:     res.Name,
-			Type:     res.Type,
-			Breed:    res.Breed.String,
-			Age:      int16(res.Age.Int32),
-			Weight:   res.Weight.Float64,
+			Petid:         res.Petid,
+			Username:      res.Username,
+			Name:          res.Name,
+			Type:          res.Type,
+			Breed:         res.Breed.String,
+			Age:           int16(res.Age.Int32),
+			Weight:        res.Weight.Float64,
+			DataImage:     res.DataImage,
+			OriginalImage: res.OriginalImage,
 		}
 		return nil
 	})
@@ -95,13 +106,15 @@ func (s *PetService) ListPets(ctx *gin.Context, req listPetsRequest, pagination 
 
 		for _, r := range res {
 			pets = append(pets, createPetResponse{
-				Petid:    r.Petid,
-				Username: r.Username,
-				Name:     r.Name,
-				Type:     r.Type,
-				Breed:    r.Breed.String,
-				Age:      int16(r.Age.Int32),
-				Weight:   r.Weight.Float64,
+				Petid:         r.Petid,
+				Username:      r.Username,
+				Name:          r.Name,
+				Type:          r.Type,
+				Breed:         r.Breed.String,
+				Age:           int16(r.Age.Int32),
+				Weight:        r.Weight.Float64,
+				DataImage:     r.DataImage,
+				OriginalImage: r.OriginalImage,
 			})
 		}
 		return nil
@@ -151,13 +164,15 @@ func (s *PetService) ListPetsByUsername(ctx *gin.Context, username string, pagin
 
 		for _, r := range res {
 			pets = append(pets, createPetResponse{
-				Petid:    r.Petid,
-				Username: r.Username,
-				Name:     r.Name,
-				Type:     r.Type,
-				Breed:    r.Breed.String,
-				Age:      int16(r.Age.Int32),
-				Weight:   r.Weight.Float64,
+				Petid:         r.Petid,
+				Username:      r.Username,
+				Name:          r.Name,
+				Type:          r.Type,
+				Breed:         r.Breed.String,
+				Age:           int16(r.Age.Int32),
+				Weight:        r.Weight.Float64,
+				DataImage:     r.DataImage,
+				OriginalImage: r.OriginalImage,
 			})
 		}
 		return nil

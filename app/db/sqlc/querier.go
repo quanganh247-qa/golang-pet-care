@@ -21,6 +21,7 @@ type Querier interface {
 	CreateVaccination(ctx context.Context, arg CreateVaccinationParams) (Vaccination, error)
 	CreateVerifyEmail(ctx context.Context, arg CreateVerifyEmailParams) (VerifyEmail, error)
 	DeleteActivityLog(ctx context.Context, logid int64) error
+	DeleteDeviceToken(ctx context.Context, arg DeleteDeviceTokenParams) error
 	DeleteFeedingSchedule(ctx context.Context, feedingscheduleid int64) error
 	DeletePet(ctx context.Context, petid int64) error
 	DeleteService(ctx context.Context, serviceid int64) error
