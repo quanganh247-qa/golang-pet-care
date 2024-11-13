@@ -31,6 +31,7 @@ type Querier interface {
 	CreateMedicine(ctx context.Context, arg CreateMedicineParams) (Medicine, error)
 	CreateOrder(ctx context.Context, arg CreateOrderParams) (Order, error)
 	CreatePet(ctx context.Context, arg CreatePetParams) (Pet, error)
+<<<<<<< HEAD
 	CreatePetAllergy(ctx context.Context, arg CreatePetAllergyParams) (PetAllergy, error)
 	CreatePetLog(ctx context.Context, arg CreatePetLogParams) (PetLog, error)
 	CreatePetSchedule(ctx context.Context, arg CreatePetScheduleParams) error
@@ -42,6 +43,11 @@ type Querier interface {
 	CreateTreatment(ctx context.Context, arg CreateTreatmentParams) (PetTreatment, error)
 	CreateTreatmentPhase(ctx context.Context, arg CreateTreatmentPhaseParams) (TreatmentPhase, error)
 	CreateUser(ctx context.Context, arg CreateUserParams) (User, error)
+=======
+	CreateService(ctx context.Context, arg CreateServiceParams) (Service, error)
+	CreateServiceType(ctx context.Context, arg CreateServiceTypeParams) (Servicetype, error)
+	CreateUser(ctx context.Context, arg CreateUserParams) (int64, error)
+>>>>>>> 0fb3f30 (user images)
 	CreateVaccination(ctx context.Context, arg CreateVaccinationParams) (Vaccination, error)
 	CreateVerifyEmail(ctx context.Context, arg CreateVerifyEmailParams) (VerifyEmail, error)
 	CreatetNotification(ctx context.Context, arg CreatetNotificationParams) (Notification, error)
@@ -87,6 +93,7 @@ type Querier interface {
 	GetAppointmentsByTimeSlot(ctx context.Context, timeSlotID pgtype.Int8) ([]GetAppointmentsByTimeSlotRow, error)
 	GetAppointmentsByUser(ctx context.Context, username pgtype.Text) ([]GetAppointmentsByUserRow, error)
 	GetAppointmentsOfDoctorWithDetails(ctx context.Context, id int64) ([]GetAppointmentsOfDoctorWithDetailsRow, error)
+<<<<<<< HEAD
 	GetAppointmentsQueue(ctx context.Context, doctorID pgtype.Int8) ([]Appointment, error)
 	GetAvailableDoctors(ctx context.Context, date pgtype.Date) ([]GetAvailableDoctorsRow, error)
 	GetAvailableRooms(ctx context.Context, arg GetAvailableRoomsParams) ([]Room, error)
@@ -102,6 +109,9 @@ type Querier interface {
 	GetDiceaseAndMedicinesInfo(ctx context.Context, lower string) ([]GetDiceaseAndMedicinesInfoRow, error)
 	GetDiseaseByID(ctx context.Context, id int64) (Disease, error)
 	GetDiseaseTreatmentPlanWithPhases(ctx context.Context, lower string) ([]GetDiseaseTreatmentPlanWithPhasesRow, error)
+=======
+	GetDeviceTokenByUsername(ctx context.Context, username string) ([]Devicetoken, error)
+>>>>>>> 0fb3f30 (user images)
 	GetDoctor(ctx context.Context, id int64) (GetDoctorRow, error)
 <<<<<<< HEAD
 	GetDoctorByUserId(ctx context.Context, userID int64) (Doctor, error)
@@ -157,10 +167,16 @@ type Querier interface {
 	GetServiceType(ctx context.Context, typeid int64) (Servicetype, error)
 	GetTimeSlotByID(ctx context.Context, id int64) (GetTimeSlotByIDRow, error)
 	GetTimeslotsAvailable(ctx context.Context, arg GetTimeslotsAvailableParams) ([]GetTimeslotsAvailableRow, error)
+<<<<<<< HEAD
 	GetUser(ctx context.Context, username string) (User, error)
 >>>>>>> 79a3bcc (medicine api)
 	GetVaccinationByID(ctx context.Context, vaccinationid int64) (Vaccination, error)
 	InsertDeviceToken(ctx context.Context, arg InsertDeviceTokenParams) (DeviceToken, error)
+=======
+	GetUser(ctx context.Context, username string) (GetUserRow, error)
+	GetVaccinationByID(ctx context.Context, vaccinationid int64) (Vaccination, error)
+	InsertDeviceToken(ctx context.Context, arg InsertDeviceTokenParams) (Devicetoken, error)
+>>>>>>> 0fb3f30 (user images)
 	InsertDoctor(ctx context.Context, arg InsertDoctorParams) (Doctor, error)
 <<<<<<< HEAD
 	InsertProduct(ctx context.Context, arg InsertProductParams) (Product, error)

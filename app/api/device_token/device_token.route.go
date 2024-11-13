@@ -23,7 +23,10 @@ func Routes(routerGroup middleware.RouterGroup) {
 	{
 		// authRoute.POST("/create", DeviceTokenApi.controller.createDeviceToken)
 		authRoute.POST("/create", deviceTokenApi.controller.insertDeviceToken)
+<<<<<<< HEAD
 		authRoute.DELETE("/:token", deviceTokenApi.controller.deleteDeviceToken)
+=======
+>>>>>>> 0fb3f30 (user images)
 
 	}
 

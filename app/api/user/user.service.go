@@ -19,7 +19,12 @@ import (
 )
 
 type UserServiceInterface interface {
+<<<<<<< HEAD
 	createUserService(ctx *gin.Context, req createUserRequest) (*VerrifyEmailTxParams, error)
+=======
+	// createUserService(ctx *gin.Context, req createUserRequest) (*db.User, error)
+	createUserService(ctx *gin.Context, req createUserRequest) error
+>>>>>>> 0fb3f30 (user images)
 	getUserDetailsService(ctx *gin.Context, username string) (*UserResponse, error)
 	getAllUsersService(ctx *gin.Context) ([]UserResponse, error)
 	loginUserService(ctx *gin.Context, req loginUserRequest) (*loginUSerResponse, error)
@@ -48,16 +53,22 @@ type UserServiceInterface interface {
 >>>>>>> 79a3bcc (medicine api)
 }
 
+<<<<<<< HEAD
 func (server *UserService) createUserService(ctx *gin.Context, req createUserRequest) (*VerrifyEmailTxParams, error) {
 	var userID int64
+=======
+func (server *UserService) createUserService(ctx *gin.Context, req createUserRequest) error {
+
+>>>>>>> 0fb3f30 (user images)
 	hashedPwd, err := util.HashPassword(req.Password)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, fmt.Sprintf("cannot hash password: %v", err))
-		return nil, fmt.Errorf("cannot hash password: %v", err)
+		return fmt.Errorf("cannot hash password: %v", err)
 	}
 	var otp int64
 
 	arg := db.CreateUserParams{
+<<<<<<< HEAD
 		Username:       req.Username,
 		HashedPassword: hashedPwd,
 		FullName:       req.FullName,
@@ -67,9 +78,22 @@ func (server *UserService) createUserService(ctx *gin.Context, req createUserReq
 		DataImage:      req.DataImage,
 		OriginalImage:  pgtype.Text{String: req.OriginalImage, Valid: true},
 		Role:           pgtype.Text{String: "user", Valid: true}, //
+=======
+		Username:        req.Username,
+		HashedPassword:  hashedPwd,
+		FullName:        req.FullName,
+		Email:           req.Email,
+		PhoneNumber:     pgtype.Text{String: req.PhoneNumber, Valid: true},
+		Address:         pgtype.Text{String: req.Address, Valid: true},
+		DataImage:       req.DataImage,
+		OriginalImage:   req.OriginalImage,
+		Role:            pgtype.Text{String: "user", Valid: true}, //
+		IsVerifiedEmail: pgtype.Bool{Bool: true, Valid: true},
+>>>>>>> 0fb3f30 (user images)
 	}
 	err = server.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
 
+<<<<<<< HEAD
 		_, err := server.storeDB.CreateUser(ctx, arg) // Check this line carefully
 
 		if err != nil {
@@ -118,6 +142,20 @@ func (server *UserService) createUserService(ctx *gin.Context, req createUserReq
 				ctx.JSON(http.StatusInternalServerError, fmt.Sprintf("failed to delete user after error: %v", deleteErr))
 				return nil, fmt.Errorf("failed to delete user after error: %w", deleteErr)
 			}
+=======
+	_, err = server.storeDB.CreateUser(ctx, arg) // Check this line carefully
+
+	if err != nil {
+		if pqErr, ok := err.(*pq.Error); ok {
+			switch pqErr.Code.Name() {
+			case "unique_violation":
+				ctx.JSON(http.StatusForbidden, "username or email already exists")
+				return fmt.Errorf("username or email already exists")
+			}
+		} else {
+			ctx.JSON(http.StatusInternalServerError, "internal server error")
+			return fmt.Errorf("internal server error: %v", err)
+>>>>>>> 0fb3f30 (user images)
 		}
 
 		ctx.JSON(http.StatusInternalServerError, fmt.Sprintf("failed to create user: %v", err))
@@ -131,8 +169,22 @@ func (server *UserService) createUserService(ctx *gin.Context, req createUserReq
 
 }
 
+<<<<<<< HEAD
 func (server *UserService) getUserDetailsService(ctx *gin.Context, username string) (*UserResponse, error) {
 	user, err := server.redis.UserInfoLoadCache(username)
+=======
+	// if err != nil {
+	// 	log.Println("Error publishing email:", err)
+	// 	ctx.JSON(http.StatusInternalServerError, "failed to send verification email")
+	// 	return nil, fmt.Errorf("failed to send verification email: %v", err)
+	// }
+
+	return nil
+}
+
+func (server *UserService) getUserDetailsService(ctx *gin.Context, username string) (*UserResponse, error) {
+	user, err := server.storeDB.GetUser(ctx, username)
+>>>>>>> 0fb3f30 (user images)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			ctx.JSON(http.StatusNotFound, "user not found")
@@ -144,13 +196,21 @@ func (server *UserService) getUserDetailsService(ctx *gin.Context, username stri
 	return &UserResponse{
 		Username:      user.Username,
 		FullName:      user.FullName,
+<<<<<<< HEAD
 		Role:          user.Role,
 		Email:         user.Email,
 		PhoneNumber:   user.PhoneNumber,
 		Address:       user.Address,
 		DataImage:     []byte(user.DataImage),
+=======
+		Email:         user.Email,
+		PhoneNumber:   user.PhoneNumber.String,
+		Address:       user.Address.String,
+		DataImage:     user.DataImage,
+>>>>>>> 0fb3f30 (user images)
 		OriginalImage: user.OriginalImage,
 	}, nil
+	// TODO: Implement logout logic
 }
 
 func (server *UserService) getAllUsersService(ctx *gin.Context) ([]UserResponse, error) {
@@ -181,6 +241,7 @@ func (service *UserService) loginUserService(ctx *gin.Context, req loginUserRequ
 		ctx.JSON(http.StatusInternalServerError, "internal server error")
 		return nil, fmt.Errorf("internal server error: %v", err)
 	}
+<<<<<<< HEAD
 
 	_, err = service.redis.UserInfoLoadCache(req.Username)
 	if err != nil {
@@ -188,10 +249,15 @@ func (service *UserService) loginUserService(ctx *gin.Context, req loginUserRequ
 			ctx.JSON(http.StatusNotFound, "user not found")
 			return nil, fmt.Errorf("user not found")
 		}
+=======
+	device_tokens, err := service.storeDB.GetDeviceTokenByUsername(ctx, req.Username)
+	if err != nil {
+>>>>>>> 0fb3f30 (user images)
 		ctx.JSON(http.StatusInternalServerError, "internal server error")
 		return nil, fmt.Errorf("internal server error: %v", err)
 	}
 
+<<<<<<< HEAD
 	err = util.CheckPassword(req.Password, user.HashedPassword)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, "Incorrect passward")
@@ -211,6 +277,11 @@ func (service *UserService) loginUserService(ctx *gin.Context, req loginUserRequ
 
 	if err != nil {
 		return nil, fmt.Errorf("invalid token device")
+=======
+	var device_tokens_response []string
+	for _, d := range device_tokens {
+		device_tokens_response = append(device_tokens_response, d.Token)
+>>>>>>> 0fb3f30 (user images)
 	}
 
 	return &loginUSerResponse{
@@ -220,7 +291,11 @@ func (service *UserService) loginUserService(ctx *gin.Context, req loginUserRequ
 			Email:     user.Email,
 			DataImage: []byte(user.DataImage),
 		},
+<<<<<<< HEAD
 		DeviceToken: tokens.Token,
+=======
+		DeviceToken: device_tokens_response,
+>>>>>>> 0fb3f30 (user images)
 	}, nil
 }
 

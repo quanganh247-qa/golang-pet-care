@@ -64,6 +64,7 @@ type CheckoutService struct {
 	Subtotal          pgtype.Float8 `json:"subtotal"`
 }
 
+<<<<<<< HEAD
 type Clinic struct {
 	ID      int64       `json:"id"`
 	Name    pgtype.Text `json:"name"`
@@ -82,6 +83,9 @@ type Consultation struct {
 }
 
 type DeviceToken struct {
+=======
+type Devicetoken struct {
+>>>>>>> 0fb3f30 (user images)
 	ID         int64            `json:"id"`
 	Username   string           `json:"username"`
 	Token      string           `json:"token"`
@@ -91,6 +95,7 @@ type DeviceToken struct {
 	ExpiredAt  pgtype.Timestamp `json:"expired_at"`
 }
 
+<<<<<<< HEAD
 type Disease struct {
 	ID          int64              `json:"id"`
 	Name        string             `json:"name"`
@@ -100,6 +105,8 @@ type Disease struct {
 	UpdatedAt   pgtype.Timestamptz `json:"updated_at"`
 }
 
+=======
+>>>>>>> 0fb3f30 (user images)
 type Doctor struct {
 	ID                int64       `json:"id"`
 	UserID            int64       `json:"user_id"`
@@ -202,6 +209,32 @@ type Medication struct {
 >>>>>>> 79a3bcc (medicine api)
 }
 
+type Notification struct {
+	Notificationid   int64            `json:"notificationid"`
+	Petid            pgtype.Int8      `json:"petid"`
+	Title            string           `json:"title"`
+	Body             pgtype.Text      `json:"body"`
+	Duedate          pgtype.Timestamp `json:"duedate"`
+	Repeatinterval   pgtype.Text      `json:"repeatinterval"`
+	Iscompleted      pgtype.Bool      `json:"iscompleted"`
+	Notificationsent pgtype.Bool      `json:"notificationsent"`
+}
+
+type Notificationhistory struct {
+	ID             int64              `json:"id"`
+	NotificationID int64              `json:"notification_id"`
+	UserID         int64              `json:"user_id"`
+	DeviceTokenID  pgtype.Int8        `json:"device_token_id"`
+	Title          string             `json:"title"`
+	Body           pgtype.Text        `json:"body"`
+	Data           []byte             `json:"data"`
+	SentAt         pgtype.Timestamptz `json:"sent_at"`
+	DeliveredAt    pgtype.Timestamptz `json:"delivered_at"`
+	OpenedAt       pgtype.Timestamptz `json:"opened_at"`
+	ErrorMessage   pgtype.Text        `json:"error_message"`
+	CreatedAt      pgtype.Timestamptz `json:"created_at"`
+}
+
 type Pet struct {
 	Petid           int64         `json:"petid"`
 	Name            string        `json:"name"`
@@ -217,7 +250,11 @@ type Pet struct {
 	LastCheckupDate pgtype.Date   `json:"last_checkup_date"`
 	IsActive        pgtype.Bool   `json:"is_active"`
 	DataImage       []byte        `json:"data_image"`
+<<<<<<< HEAD
 	OriginalImage   pgtype.Text   `json:"original_image"`
+=======
+	OriginalImage   string        `json:"original_image"`
+>>>>>>> 0fb3f30 (user images)
 }
 
 type PetAllergy struct {
@@ -227,6 +264,7 @@ type PetAllergy struct {
 	Detail pgtype.Text `json:"detail"`
 }
 
+<<<<<<< HEAD
 type PetLog struct {
 	LogID    int64            `json:"log_id"`
 	Petid    int64            `json:"petid"`
@@ -298,6 +336,8 @@ type Room struct {
 	AvailableAt          pgtype.Timestamp `json:"available_at"`
 }
 
+=======
+>>>>>>> 0fb3f30 (user images)
 type Service struct {
 	ID          int64            `json:"id"`
 	Name        pgtype.Text      `json:"name"`
@@ -326,6 +366,7 @@ type State struct {
 	UpdatedAt pgtype.Timestamp `json:"updated_at"`
 }
 
+<<<<<<< HEAD
 type TimeSlot struct {
 	ID             int64            `json:"id"`
 	DoctorID       int32            `json:"doctor_id"`
@@ -349,6 +390,8 @@ type TreatmentPhase struct {
 	CreatedAt   pgtype.Timestamptz `json:"created_at"`
 }
 
+=======
+>>>>>>> 0fb3f30 (user images)
 type User struct {
 	ID              int64            `json:"id"`
 	Username        string           `json:"username"`
@@ -358,7 +401,11 @@ type User struct {
 	PhoneNumber     pgtype.Text      `json:"phone_number"`
 	Address         pgtype.Text      `json:"address"`
 	DataImage       []byte           `json:"data_image"`
+<<<<<<< HEAD
 	OriginalImage   pgtype.Text      `json:"original_image"`
+=======
+	OriginalImage   string           `json:"original_image"`
+>>>>>>> 0fb3f30 (user images)
 	Role            pgtype.Text      `json:"role"`
 	Status          pgtype.Text      `json:"status"`
 	CreatedAt       pgtype.Timestamp `json:"created_at"`

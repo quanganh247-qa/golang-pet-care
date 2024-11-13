@@ -40,6 +40,7 @@ type createUserRequest struct {
 }
 
 type UserResponse struct {
+<<<<<<< HEAD
 	Username      string    `json:"username"`
 	FullName      string    `json:"full_name"`
 	Email         string    `json:"email"`
@@ -61,6 +62,18 @@ type UpdateUserParams struct {
 type UpdateUserImageParams struct {
 	DataImage     []byte `json:"data_image"`
 	OriginalImage string `json:"original_image"`
+=======
+	Username        string    `json:"username"`
+	FullName        string    `json:"full_name"`
+	Email           string    `json:"email"`
+	PhoneNumber     string    `json:"phone_number"`
+	Address         string    `json:"address"`
+	Role            string    `json:"role"`
+	IsVerifiedEmail bool      `json:"is_verified_email"`
+	DataImage       []byte    `json:"data_image"`
+	OriginalImage   string    `json:"original_image"`
+	RemovedAt       time.Time `json:"removed_at"`
+>>>>>>> 0fb3f30 (user images)
 }
 
 type loginUserRequest struct {
@@ -75,7 +88,11 @@ type loginUSerResponse struct {
 	RefreshToken          string       `json:"refresh_token"`
 	RefreshTokenExpiresAt time.Time    `json:"refresh_token_expires_at"`
 	User                  UserResponse `json:"user"`
+<<<<<<< HEAD
 	DeviceToken           string       `json:"device_token"`
+=======
+	DeviceToken           []string     `json:"device_token"`
+>>>>>>> 0fb3f30 (user images)
 	DataImage             string       `json:"data_image"`
 }
 

@@ -12,6 +12,7 @@ import (
 )
 
 const createPet = `-- name: CreatePet :one
+<<<<<<< HEAD
 INSERT INTO pets (
     name,
     type,
@@ -46,6 +47,24 @@ type CreatePetParams struct {
 	LastCheckupDate pgtype.Date   `json:"last_checkup_date"`
 	DataImage       []byte        `json:"data_image"`
 	OriginalImage   pgtype.Text   `json:"original_image"`
+=======
+INSERT INTO Pet (username, Name, Type, Breed, Age, Weight, Gender, HealthNotes, data_image, is_active)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+RETURNING petid, name, type, breed, age, gender, healthnotes, weight, birth_date, username, microchip_number, last_checkup_date, is_active, data_image, original_image
+`
+
+type CreatePetParams struct {
+	Username    string        `json:"username"`
+	Name        string        `json:"name"`
+	Type        string        `json:"type"`
+	Breed       pgtype.Text   `json:"breed"`
+	Age         pgtype.Int4   `json:"age"`
+	Weight      pgtype.Float8 `json:"weight"`
+	Gender      pgtype.Text   `json:"gender"`
+	Healthnotes pgtype.Text   `json:"healthnotes"`
+	DataImage   []byte        `json:"data_image"`
+	IsActive    pgtype.Bool   `json:"is_active"`
+>>>>>>> 0fb3f30 (user images)
 }
 
 func (q *Queries) CreatePet(ctx context.Context, arg CreatePetParams) (Pet, error) {
@@ -56,6 +75,7 @@ func (q *Queries) CreatePet(ctx context.Context, arg CreatePetParams) (Pet, erro
 		arg.Age,
 		arg.Gender,
 		arg.Healthnotes,
+<<<<<<< HEAD
 		arg.Weight,
 		arg.BirthDate,
 		arg.Username,
@@ -63,6 +83,10 @@ func (q *Queries) CreatePet(ctx context.Context, arg CreatePetParams) (Pet, erro
 		arg.LastCheckupDate,
 		arg.DataImage,
 		arg.OriginalImage,
+=======
+		arg.DataImage,
+		arg.IsActive,
+>>>>>>> 0fb3f30 (user images)
 	)
 	var i Pet
 	err := row.Scan(
@@ -135,8 +159,12 @@ func (q *Queries) GetAllPets(ctx context.Context) ([]Pet, error) {
 }
 
 const getPetByID = `-- name: GetPetByID :one
+<<<<<<< HEAD
 SELECT petid, name, type, breed, age, gender, healthnotes, weight, birth_date, username, microchip_number, last_checkup_date, is_active, data_image, original_image FROM pets 
 WHERE petid = $1
+=======
+SELECT petid, name, type, breed, age, gender, healthnotes, weight, birth_date, username, microchip_number, last_checkup_date, is_active, data_image, original_image FROM Pet WHERE PetID = $1
+>>>>>>> 0fb3f30 (user images)
 `
 
 func (q *Queries) GetPetByID(ctx context.Context, petid int64) (Pet, error) {
@@ -318,9 +346,13 @@ func (q *Queries) GetPetProfileSummary(ctx context.Context, petid int64) ([]GetP
 }
 
 const listPets = `-- name: ListPets :many
+<<<<<<< HEAD
 SELECT petid, name, type, breed, age, gender, healthnotes, weight, birth_date, username, microchip_number, last_checkup_date, is_active, data_image, original_image FROM pets
 WHERE is_active = true 
 ORDER BY name LIMIT $1 OFFSET $2
+=======
+SELECT petid, name, type, breed, age, gender, healthnotes, weight, birth_date, username, microchip_number, last_checkup_date, is_active, data_image, original_image FROM Pet ORDER BY PetID LIMIT $1 OFFSET $2
+>>>>>>> 0fb3f30 (user images)
 `
 
 type ListPetsParams struct {
@@ -365,9 +397,13 @@ func (q *Queries) ListPets(ctx context.Context, arg ListPetsParams) ([]Pet, erro
 }
 
 const listPetsByUsername = `-- name: ListPetsByUsername :many
+<<<<<<< HEAD
 SELECT petid, name, type, breed, age, gender, healthnotes, weight, birth_date, username, microchip_number, last_checkup_date, is_active, data_image, original_image FROM pets
 WHERE username = $1 AND is_active = true
 ORDER BY name LIMIT $2 OFFSET $3
+=======
+SELECT petid, name, type, breed, age, gender, healthnotes, weight, birth_date, username, microchip_number, last_checkup_date, is_active, data_image, original_image FROM Pet WHERE username = $1 ORDER BY PetID LIMIT $2 OFFSET $3
+>>>>>>> 0fb3f30 (user images)
 `
 
 type ListPetsByUsernameParams struct {
@@ -424,6 +460,7 @@ func (q *Queries) SetPetInactive(ctx context.Context, petid int64) error {
 }
 
 const updatePet = `-- name: UpdatePet :exec
+<<<<<<< HEAD
 UPDATE pets
 SET 
     name = $2,
@@ -451,6 +488,24 @@ type UpdatePetParams struct {
 	BirthDate       pgtype.Date   `json:"birth_date"`
 	MicrochipNumber pgtype.Text   `json:"microchip_number"`
 	LastCheckupDate pgtype.Date   `json:"last_checkup_date"`
+=======
+UPDATE Pet
+SET Name = $2, Type = $3, Breed = $4, Age = $5, Weight = $6, Gender = $7, HealthNotes = $8, data_image = $9, is_active = $10
+WHERE PetID = $1
+`
+
+type UpdatePetParams struct {
+	Petid       int64         `json:"petid"`
+	Name        string        `json:"name"`
+	Type        string        `json:"type"`
+	Breed       pgtype.Text   `json:"breed"`
+	Age         pgtype.Int4   `json:"age"`
+	Weight      pgtype.Float8 `json:"weight"`
+	Gender      pgtype.Text   `json:"gender"`
+	Healthnotes pgtype.Text   `json:"healthnotes"`
+	DataImage   []byte        `json:"data_image"`
+	IsActive    pgtype.Bool   `json:"is_active"`
+>>>>>>> 0fb3f30 (user images)
 }
 
 func (q *Queries) UpdatePet(ctx context.Context, arg UpdatePetParams) error {
@@ -462,10 +517,15 @@ func (q *Queries) UpdatePet(ctx context.Context, arg UpdatePetParams) error {
 		arg.Age,
 		arg.Gender,
 		arg.Healthnotes,
+<<<<<<< HEAD
 		arg.Weight,
 		arg.BirthDate,
 		arg.MicrochipNumber,
 		arg.LastCheckupDate,
+=======
+		arg.DataImage,
+		arg.IsActive,
+>>>>>>> 0fb3f30 (user images)
 	)
 	return err
 }
