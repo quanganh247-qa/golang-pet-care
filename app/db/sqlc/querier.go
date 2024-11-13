@@ -50,6 +50,7 @@ type Querier interface {
 >>>>>>> 0fb3f30 (user images)
 	CreateVaccination(ctx context.Context, arg CreateVaccinationParams) (Vaccination, error)
 	CreateVerifyEmail(ctx context.Context, arg CreateVerifyEmailParams) (VerifyEmail, error)
+<<<<<<< HEAD
 	CreatetNotification(ctx context.Context, arg CreatetNotificationParams) (Notification, error)
 	DecreaseItemQuantity(ctx context.Context, arg DecreaseItemQuantityParams) error
 	DeleteDeviceToken(ctx context.Context, arg DeleteDeviceTokenParams) error
@@ -57,6 +58,11 @@ type Querier interface {
 	DeleteMedicalHistory(ctx context.Context, id int64) error
 	DeleteMedicalRecord(ctx context.Context, id int64) error
 	DeleteNotificationsByUsername(ctx context.Context, username string) error
+=======
+	DeleteActivityLog(ctx context.Context, logid int64) error
+	DeleteDeviceToken(ctx context.Context, arg DeleteDeviceTokenParams) error
+	DeleteFeedingSchedule(ctx context.Context, feedingscheduleid int64) error
+>>>>>>> 9d28896 (image pet)
 	DeletePet(ctx context.Context, petid int64) error
 	DeletePetAllergy(ctx context.Context, id int64) error
 	DeletePetLog(ctx context.Context, logID int64) error

@@ -11,9 +11,13 @@ import (
 type DeviceTokenControllerInterface interface {
 	insertDeviceToken(ctx *gin.Context)
 <<<<<<< HEAD
+<<<<<<< HEAD
 	deleteDeviceToken(ctx *gin.Context)
 =======
 >>>>>>> 0fb3f30 (user images)
+=======
+	deleteDeviceToken(ctx *gin.Context)
+>>>>>>> 9d28896 (image pet)
 }
 
 func (c *DeviceTokenController) insertDeviceToken(ctx *gin.Context) {
@@ -40,6 +44,9 @@ func (c *DeviceTokenController) insertDeviceToken(ctx *gin.Context) {
 
 }
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 9d28896 (image pet)
 
 func (c *DeviceTokenController) deleteDeviceToken(ctx *gin.Context) {
 
@@ -56,5 +63,8 @@ func (c *DeviceTokenController) deleteDeviceToken(ctx *gin.Context) {
 	}
 	ctx.JSON(http.StatusOK, util.SuccessResponse("Device token deleted successfully", nil))
 }
+<<<<<<< HEAD
 =======
 >>>>>>> 0fb3f30 (user images)
+=======
+>>>>>>> 9d28896 (image pet)

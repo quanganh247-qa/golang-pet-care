@@ -33,6 +33,8 @@ import (
 	"github.com/quanganh247-qa/go-blog-be/app/service/elasticsearch"
 	"github.com/quanganh247-qa/go-blog-be/app/service/worker"
 	"github.com/quanganh247-qa/go-blog-be/app/util"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor, config util.Config, es *elasticsearch.ESService) {
@@ -54,10 +56,16 @@ func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor, config
 	routerGroup := middleware.RouterGroup{
 		RouterDefault: router,
 	}
+<<<<<<< HEAD
 	router.GET("/health", server.healthCheck)
 
 	chatbot.Routes(routerGroup, chatHandler)
 	user.Routes(routerGroup, taskDistributor, config)
+=======
+	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	user.Routes(routerGroup)
+	service_type.Routes(routerGroup)
+>>>>>>> 9d28896 (image pet)
 	pet.Routes(routerGroup)
 	service.Routes(routerGroup)
 <<<<<<< HEAD

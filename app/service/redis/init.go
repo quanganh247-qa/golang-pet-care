@@ -4,6 +4,10 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+<<<<<<< HEAD
+=======
+	"log"
+>>>>>>> 9d28896 (image pet)
 	"time"
 
 	"github.com/redis/go-redis/v9"
@@ -18,7 +22,7 @@ var (
 	ctxRedis = context.Background()
 )
 
-func InitRedis(address string) {
+func InitRedis(address string) error {
 	Client = &ClientType{
 		RedisClient: redis.NewClient(&redis.Options{
 			Addr:     address,
@@ -26,6 +30,15 @@ func InitRedis(address string) {
 			DB:       0,  // use default DB
 		}),
 	}
+	// Test the connection
+	pong, err := Client.RedisClient.Ping(ctxRedis).Result() // Fixed: Added RedisClient
+	if err != nil {
+		log.Fatal(err) // Handle error and exit the program
+		return fmt.Errorf("cannot connect to redis: %v", err)
+	}
+
+	log.Printf("Redis connected successfully at %s (Ping response: %s)", address, pong)
+	return nil
 }
 func (client *ClientType) Set(ctx context.Context, key string, value interface{}, duration time.Duration) error {
 	dataValue, err := json.Marshal(value)

@@ -5,9 +5,14 @@ import (
 
 	"github.com/jackc/pgx/v5/pgtype"
 	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
+<<<<<<< HEAD
 	"github.com/quanganh247-qa/go-blog-be/app/service/redis"
 	"github.com/quanganh247-qa/go-blog-be/app/service/worker"
 	"github.com/quanganh247-qa/go-blog-be/app/util"
+=======
+	"github.com/quanganh247-qa/go-blog-be/app/service/mail"
+	"github.com/quanganh247-qa/go-blog-be/app/service/rabbitmq"
+>>>>>>> 9d28896 (image pet)
 )
 
 type UserController struct {
@@ -15,10 +20,16 @@ type UserController struct {
 }
 
 type UserService struct {
+<<<<<<< HEAD
 	storeDB         db.Store
 	redis           *redis.ClientType
 	taskDistributor worker.TaskDistributor
 	config          util.Config
+=======
+	storeDB    db.Store
+	emailQueue *rabbitmq.EmailQueue
+	mailer     mail.EmailSender
+>>>>>>> 9d28896 (image pet)
 }
 
 // route

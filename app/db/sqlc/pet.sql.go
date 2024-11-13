@@ -13,6 +13,7 @@ import (
 
 const createPet = `-- name: CreatePet :one
 <<<<<<< HEAD
+<<<<<<< HEAD
 INSERT INTO pets (
     name,
     type,
@@ -50,10 +51,15 @@ type CreatePetParams struct {
 =======
 INSERT INTO Pet (username, Name, Type, Breed, Age, Weight, Gender, HealthNotes, data_image, is_active)
 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+=======
+INSERT INTO Pet (username, Name, Type, Breed, Age, Weight, Gender, HealthNotes, data_image, original_image, birth_date, microchip_number, is_active)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, true)
+>>>>>>> 9d28896 (image pet)
 RETURNING petid, name, type, breed, age, gender, healthnotes, weight, birth_date, username, microchip_number, last_checkup_date, is_active, data_image, original_image
 `
 
 type CreatePetParams struct {
+<<<<<<< HEAD
 	Username    string        `json:"username"`
 	Name        string        `json:"name"`
 	Type        string        `json:"type"`
@@ -65,6 +71,20 @@ type CreatePetParams struct {
 	DataImage   []byte        `json:"data_image"`
 	IsActive    pgtype.Bool   `json:"is_active"`
 >>>>>>> 0fb3f30 (user images)
+=======
+	Username        string        `json:"username"`
+	Name            string        `json:"name"`
+	Type            string        `json:"type"`
+	Breed           pgtype.Text   `json:"breed"`
+	Age             pgtype.Int4   `json:"age"`
+	Weight          pgtype.Float8 `json:"weight"`
+	Gender          pgtype.Text   `json:"gender"`
+	Healthnotes     pgtype.Text   `json:"healthnotes"`
+	DataImage       []byte        `json:"data_image"`
+	OriginalImage   string        `json:"original_image"`
+	BirthDate       pgtype.Date   `json:"birth_date"`
+	MicrochipNumber pgtype.Text   `json:"microchip_number"`
+>>>>>>> 9d28896 (image pet)
 }
 
 func (q *Queries) CreatePet(ctx context.Context, arg CreatePetParams) (Pet, error) {
@@ -85,8 +105,14 @@ func (q *Queries) CreatePet(ctx context.Context, arg CreatePetParams) (Pet, erro
 		arg.OriginalImage,
 =======
 		arg.DataImage,
+<<<<<<< HEAD
 		arg.IsActive,
 >>>>>>> 0fb3f30 (user images)
+=======
+		arg.OriginalImage,
+		arg.BirthDate,
+		arg.MicrochipNumber,
+>>>>>>> 9d28896 (image pet)
 	)
 	var i Pet
 	err := row.Scan(
