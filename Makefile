@@ -17,7 +17,7 @@ test:
 	go test -v -cover ./...
 	
 server:
-	gin -p 8081 -i run main.go
+	gin -p 8089 -i run main.go
 
 
 postgres:
