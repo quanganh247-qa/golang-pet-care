@@ -65,6 +65,7 @@ func (s *PetService) CreatePet(ctx *gin.Context, username string, req createPetR
 			Healthnotes:     pgtype.Text{String: req.Healthnotes, Valid: true},
 			DataImage:       req.DataImage,
 <<<<<<< HEAD
+<<<<<<< HEAD
 			OriginalImage:   pgtype.Text{String: req.OriginalImage, Valid: true},
 			BirthDate:       pgtype.Date{Time: bod, Valid: true},
 			MicrochipNumber: pgtype.Text{String: req.MicrochipNumber, Valid: true},
@@ -80,6 +81,9 @@ func (s *PetService) CreatePet(ctx *gin.Context, username string, req createPetR
 >>>>>>> 0fb3f30 (user images)
 =======
 			OriginalImage:   req.OriginalImage,
+=======
+			OriginalImage:   pgtype.Text{String: req.OriginalImage, Valid: true},
+>>>>>>> 272832d (redis cache)
 			BirthDate:       pgtype.Date{Time: bod, Valid: true},
 			MicrochipNumber: pgtype.Text{String: req.MicrophoneNumber, Valid: true},
 >>>>>>> 9d28896 (image pet)
@@ -144,7 +148,7 @@ func (s *PetService) GetPetByID(ctx *gin.Context, petid int64) (*createPetRespon
 			Age:           int16(res.Age.Int32),
 			Weight:        res.Weight.Float64,
 			DataImage:     res.DataImage,
-			OriginalImage: res.OriginalImage,
+			OriginalImage: res.OriginalImage.String,
 		}
 		return nil
 	})
@@ -202,10 +206,14 @@ func (s *PetService) ListPets(ctx *gin.Context, req listPetsRequest, pagination 
 				Weight:        r.Weight.Float64,
 				DataImage:     r.DataImage,
 <<<<<<< HEAD
+<<<<<<< HEAD
 				OriginalImage: r.OriginalImage.String,
 =======
 				OriginalImage: r.OriginalImage,
 >>>>>>> 9d28896 (image pet)
+=======
+				OriginalImage: r.OriginalImage.String,
+>>>>>>> 272832d (redis cache)
 			})
 		}
 		return nil
@@ -366,10 +374,14 @@ func (s *PetService) ListPetsByUsername(ctx *gin.Context, username string, pagin
 				Weight:        r.Weight.Float64,
 				DataImage:     r.DataImage,
 <<<<<<< HEAD
+<<<<<<< HEAD
 				OriginalImage: r.OriginalImage.String,
 =======
 				OriginalImage: r.OriginalImage,
 >>>>>>> 9d28896 (image pet)
+=======
+				OriginalImage: r.OriginalImage.String,
+>>>>>>> 272832d (redis cache)
 			})
 		}
 		return nil

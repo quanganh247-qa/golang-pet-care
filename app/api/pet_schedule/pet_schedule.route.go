@@ -1,4 +1,5 @@
 package petschedule
+<<<<<<< HEAD
 
 import (
 	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
@@ -32,3 +33,5 @@ func Routes(routerGroup middleware.RouterGroup, config *util.Config) {
 	}
 
 }
+=======
+>>>>>>> 272832d (redis cache)

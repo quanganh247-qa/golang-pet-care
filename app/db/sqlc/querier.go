@@ -11,6 +11,7 @@ import (
 )
 
 type Querier interface {
+<<<<<<< HEAD
 	ActiveReminder(ctx context.Context, arg ActiveReminderParams) error
 	AddItemToCart(ctx context.Context, arg AddItemToCartParams) (CartItem, error)
 	// Assign Carprofen to the Initial Phase
@@ -44,12 +45,18 @@ type Querier interface {
 	CreateTreatmentPhase(ctx context.Context, arg CreateTreatmentPhaseParams) (TreatmentPhase, error)
 	CreateUser(ctx context.Context, arg CreateUserParams) (User, error)
 =======
+=======
+	CreateAppointment(ctx context.Context, arg CreateAppointmentParams) (Appointment, error)
+	CreatePet(ctx context.Context, arg CreatePetParams) (Pet, error)
+	CreatePetSchedule(ctx context.Context, arg CreatePetScheduleParams) error
+>>>>>>> 272832d (redis cache)
 	CreateService(ctx context.Context, arg CreateServiceParams) (Service, error)
 	CreateServiceType(ctx context.Context, arg CreateServiceTypeParams) (Servicetype, error)
 	CreateUser(ctx context.Context, arg CreateUserParams) (int64, error)
 >>>>>>> 0fb3f30 (user images)
 	CreateVaccination(ctx context.Context, arg CreateVaccinationParams) (Vaccination, error)
 	CreateVerifyEmail(ctx context.Context, arg CreateVerifyEmailParams) (VerifyEmail, error)
+<<<<<<< HEAD
 <<<<<<< HEAD
 	CreatetNotification(ctx context.Context, arg CreatetNotificationParams) (Notification, error)
 	DecreaseItemQuantity(ctx context.Context, arg DecreaseItemQuantityParams) error
@@ -63,6 +70,9 @@ type Querier interface {
 	DeleteDeviceToken(ctx context.Context, arg DeleteDeviceTokenParams) error
 	DeleteFeedingSchedule(ctx context.Context, feedingscheduleid int64) error
 >>>>>>> 9d28896 (image pet)
+=======
+	DeleteDeviceToken(ctx context.Context, arg DeleteDeviceTokenParams) error
+>>>>>>> 272832d (redis cache)
 	DeletePet(ctx context.Context, petid int64) error
 	DeletePetAllergy(ctx context.Context, id int64) error
 	DeletePetLog(ctx context.Context, logID int64) error
@@ -86,7 +96,7 @@ type Querier interface {
 	GetAllTreatmentPhasesByTreatmentID(ctx context.Context, treatmentID pgtype.Int8) ([]TreatmentPhase, error)
 =======
 	GetActiveDoctors(ctx context.Context, arg GetActiveDoctorsParams) ([]GetActiveDoctorsRow, error)
-	GetActivityLogByID(ctx context.Context, logid int64) (Activitylog, error)
+	GetAllSchedulesByPet(ctx context.Context, arg GetAllSchedulesByPetParams) ([]PetSchedule, error)
 	GetAllServices(ctx context.Context, arg GetAllServicesParams) ([]Service, error)
 	GetAllTimeSlots(ctx context.Context, arg GetAllTimeSlotsParams) ([]GetAllTimeSlotsRow, error)
 >>>>>>> 79a3bcc (medicine api)
@@ -124,6 +134,7 @@ type Querier interface {
 	GetDiseaseTreatmentPlanWithPhases(ctx context.Context, lower string) ([]GetDiseaseTreatmentPlanWithPhasesRow, error)
 >>>>>>> 6c35562 (dicease and treatment plan)
 	GetDoctor(ctx context.Context, id int64) (GetDoctorRow, error)
+<<<<<<< HEAD
 <<<<<<< HEAD
 	GetDoctorByUserId(ctx context.Context, userID int64) (Doctor, error)
 	GetDoctorByUsername(ctx context.Context, username string) (GetDoctorByUsernameRow, error)
@@ -172,6 +183,8 @@ type Querier interface {
 	GetUserByEmail(ctx context.Context, email string) (User, error)
 =======
 	GetFeedingScheduleByPetID(ctx context.Context, petid pgtype.Int8) ([]Feedingschedule, error)
+=======
+>>>>>>> 272832d (redis cache)
 	GetPetByID(ctx context.Context, petid int64) (Pet, error)
 	GetServiceByID(ctx context.Context, serviceid int64) (Service, error)
 	GetServiceType(ctx context.Context, typeid int64) (Servicetype, error)
@@ -199,6 +212,7 @@ type Querier interface {
 =======
 	InsertDoctorSchedule(ctx context.Context, arg InsertDoctorScheduleParams) (Doctorschedule, error)
 	InsertTimeslot(ctx context.Context, arg InsertTimeslotParams) (Timeslot, error)
+<<<<<<< HEAD
 	ListActiveFeedingSchedules(ctx context.Context) ([]Feedingschedule, error)
 	ListActivityLogs(ctx context.Context, arg ListActivityLogsParams) ([]Activitylog, error)
 >>>>>>> 79a3bcc (medicine api)
@@ -211,6 +225,12 @@ type Querier interface {
 	RemoveItemFromCart(ctx context.Context, arg RemoveItemFromCartParams) error
 	SetPetInactive(ctx context.Context, petid int64) error
 	UpdateAppointmentByID(ctx context.Context, arg UpdateAppointmentByIDParams) error
+=======
+	ListPets(ctx context.Context, arg ListPetsParams) ([]Pet, error)
+	ListPetsByUsername(ctx context.Context, arg ListPetsByUsernameParams) ([]Pet, error)
+	ListVaccinationsByPetID(ctx context.Context, petid pgtype.Int8) ([]Vaccination, error)
+	SetPetInactive(ctx context.Context, arg SetPetInactiveParams) error
+>>>>>>> 272832d (redis cache)
 	UpdateAppointmentStatus(ctx context.Context, arg UpdateAppointmentStatusParams) error
 <<<<<<< HEAD
 	UpdateAvatarUser(ctx context.Context, arg UpdateAvatarUserParams) (User, error)
@@ -222,6 +242,7 @@ type Querier interface {
 =======
 	// Replace $2 with the specific date (YYYY-MM-DD)
 	UpdateDoctorAvailable(ctx context.Context, arg UpdateDoctorAvailableParams) error
+<<<<<<< HEAD
 	UpdateFeedingSchedule(ctx context.Context, arg UpdateFeedingScheduleParams) error
 <<<<<<< HEAD
 	// -- name: UpdateMedicine :exec
@@ -232,6 +253,8 @@ type Querier interface {
 >>>>>>> 79a3bcc (medicine api)
 =======
 >>>>>>> 6c35562 (dicease and treatment plan)
+=======
+>>>>>>> 272832d (redis cache)
 	UpdateNotification(ctx context.Context, appointmentID int64) error
 	UpdateOrderPaymentStatus(ctx context.Context, id int64) (Order, error)
 	UpdatePet(ctx context.Context, arg UpdatePetParams) error

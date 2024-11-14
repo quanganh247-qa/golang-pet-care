@@ -6,6 +6,7 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
 <<<<<<< HEAD
+<<<<<<< HEAD
 	"github.com/quanganh247-qa/go-blog-be/app/service/redis"
 	"github.com/quanganh247-qa/go-blog-be/app/service/worker"
 	"github.com/quanganh247-qa/go-blog-be/app/util"
@@ -13,6 +14,9 @@ import (
 	"github.com/quanganh247-qa/go-blog-be/app/service/mail"
 	"github.com/quanganh247-qa/go-blog-be/app/service/rabbitmq"
 >>>>>>> 9d28896 (image pet)
+=======
+	"github.com/quanganh247-qa/go-blog-be/app/service/redis"
+>>>>>>> 272832d (redis cache)
 )
 
 type UserController struct {
@@ -20,6 +24,7 @@ type UserController struct {
 }
 
 type UserService struct {
+<<<<<<< HEAD
 <<<<<<< HEAD
 	storeDB         db.Store
 	redis           *redis.ClientType
@@ -30,6 +35,10 @@ type UserService struct {
 	emailQueue *rabbitmq.EmailQueue
 	mailer     mail.EmailSender
 >>>>>>> 9d28896 (image pet)
+=======
+	storeDB db.Store
+	redis   *redis.ClientType
+>>>>>>> 272832d (redis cache)
 }
 
 // route
@@ -52,6 +61,9 @@ type createUserRequest struct {
 
 type UserResponse struct {
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 272832d (redis cache)
 	Username      string    `json:"username"`
 	FullName      string    `json:"full_name"`
 	Email         string    `json:"email"`
@@ -61,6 +73,7 @@ type UserResponse struct {
 	DataImage     []byte    `json:"data_image"`
 	OriginalImage string    `json:"original_image"`
 	RemovedAt     time.Time `json:"removed_at"`
+<<<<<<< HEAD
 }
 
 type UpdateUserParams struct {
@@ -85,6 +98,8 @@ type UpdateUserImageParams struct {
 	OriginalImage   string    `json:"original_image"`
 	RemovedAt       time.Time `json:"removed_at"`
 >>>>>>> 0fb3f30 (user images)
+=======
+>>>>>>> 272832d (redis cache)
 }
 
 type loginUserRequest struct {

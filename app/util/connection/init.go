@@ -6,12 +6,18 @@ import (
 	"log"
 	"time"
 
+<<<<<<< HEAD
 	"github.com/fatih/color"
 	"github.com/hibiken/asynq"
 	"github.com/jackc/pgx/v5/pgxpool"
 	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
 	"github.com/quanganh247-qa/go-blog-be/app/service/mail"
 	"github.com/quanganh247-qa/go-blog-be/app/service/minio"
+=======
+	"github.com/hibiken/asynq"
+	"github.com/jackc/pgx/v5/pgxpool"
+	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
+>>>>>>> 272832d (redis cache)
 	"github.com/quanganh247-qa/go-blog-be/app/service/redis"
 	"github.com/quanganh247-qa/go-blog-be/app/service/token"
 	"github.com/quanganh247-qa/go-blog-be/app/service/worker"
@@ -44,10 +50,21 @@ func Init(config util.Config) (*Connection, error) {
 		return nil, fmt.Errorf("cannot connect to db: %w", err)
 	}
 
+<<<<<<< HEAD
 	// Verify the connection
 	if err := connPool.Ping(context.Background()); err != nil {
 		return nil, fmt.Errorf("cannot ping database: %w", err)
 	}
+=======
+	_ = asynq.RedisClientOpt{
+		Addr: config.RedisAddress,
+	}
+	redis.InitRedis(config.RedisAddress)
+
+	// // Initialize RabbitMQ client
+	// clientRabbitMQ := rabbitmq.Init(config.RabbitMQAddress)
+	// sender := mail.NewGmailSender(config.EmailSenderName, config.EmailSenderAddress, config.EmailSenderPassword)
+>>>>>>> 272832d (redis cache)
 
 	// Khởi tạo Redis
 	go redis.InitRedis(config.RedisAddress)

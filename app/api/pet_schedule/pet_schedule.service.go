@@ -2,18 +2,25 @@ package petschedule
 
 import (
 	"fmt"
+<<<<<<< HEAD
 	"net/http"
 	"strconv"
 	"time"
+=======
+>>>>>>> 272832d (redis cache)
 
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5/pgtype"
 	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
+<<<<<<< HEAD
 	"github.com/quanganh247-qa/go-blog-be/app/service/llm"
+=======
+>>>>>>> 272832d (redis cache)
 	"github.com/quanganh247-qa/go-blog-be/app/util"
 )
 
 type PetScheduleServiceInterface interface {
+<<<<<<< HEAD
 	CreatePetScheduleService(ctx *gin.Context, req PetScheduleRequest, petID int64) error
 	GetAllSchedulesByPetService(ctx *gin.Context, petID int64, pagination *util.Pagination) ([]PetScheduleResponse, error)
 	ListPetSchedulesByUsernameService(ctx *gin.Context, username string) ([]PetSchedules, error)
@@ -55,11 +62,32 @@ func (s *PetScheduleService) CreatePetScheduleService(ctx *gin.Context, req PetS
 			EventRepeat:      pgtype.Text{String: req.EventRepeat, Valid: true},
 			EndDate:          endDate,
 			Notes:            pgtype.Text{String: req.Notes, Valid: true},
+=======
+	CreatePetScheduleService(ctx *gin.Context, req PetScheduleRequest) error
+}
+
+func (s *PetScheduleService) CreatePetScheduleService(ctx *gin.Context, req PetScheduleRequest) error {
+
+	eventTime, _, err := util.ParseStringToTime(req.EventTime, "")
+	if err != nil {
+		return fmt.Errorf("parse event time")
+	}
+
+	// Implement logic to create a pet schedule
+	err = s.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
+		return q.CreatePetSchedule(ctx, db.CreatePetScheduleParams{
+			ScheduleType: req.ScheduleType,
+			EventTime:    pgtype.Timestamp{Time: eventTime, Valid: true},
+			ActivityType: pgtype.Text{String: req.ActivityType, Valid: true},
+			Frequency:    pgtype.Text{String: req.Frequency, Valid: true},
+			Notes:        pgtype.Text{String: req.Notes, Valid: true},
+>>>>>>> 272832d (redis cache)
 		})
 	})
 	if err != nil {
 		return fmt.Errorf("error creating pet schdule: ", err)
 	}
+<<<<<<< HEAD
 	return nil
 }
 
@@ -262,3 +290,10 @@ func (s *PetScheduleService) ProcessSuggestionGemini(ctx *gin.Context, descripti
 	}
 	return res, nil
 }
+=======
+	// Use the provided request to create the schedule in the database
+	// Return an error if the schedule creation fails
+
+	return nil
+}
+>>>>>>> 272832d (redis cache)
