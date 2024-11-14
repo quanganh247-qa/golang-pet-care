@@ -121,26 +121,42 @@ func (service *UserService) loginUserService(ctx *gin.Context, req loginUserRequ
 		ctx.JSON(http.StatusInternalServerError, "internal server error")
 		return nil, fmt.Errorf("internal server error: %v", err)
 	}
-	device_tokens, err := service.storeDB.GetDeviceTokenByUsername(ctx, req.Username)
+
+	err = util.CheckPassword(req.Password, user.HashedPassword)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, "internal server error")
-		return nil, fmt.Errorf("internal server error: %v", err)
+		ctx.JSON(http.StatusInternalServerError, "Incorrect passward")
+		return nil, fmt.Errorf("Incorrect passward")
 	}
 
-	var device_tokens_response []string
-	for _, d := range device_tokens {
-		device_tokens_response = append(device_tokens_response, d.Token)
+	// device_tokens, err := service.storeDB.GetDeviceTokenByUsername(ctx, req.Username)
+	// if err != nil {
+	// 	ctx.JSON(http.StatusInternalServerError, "internal server error")
+	// 	return nil, fmt.Errorf("internal server error: %v", err)
+	// }
+
+	// var device_tokens_response []string
+	// for _, d := range device_tokens {
+	// 	device_tokens_response = append(device_tokens_response, d.Token)
+	// }
+
+	tokens, err := service.storeDB.InsertDeviceToken(ctx, db.InsertDeviceTokenParams{
+		Username:   req.Username,
+		Token:      req.Token,
+		DeviceType: pgtype.Text{String: req.DeviceType, Valid: true},
+	})
+
+	if err != nil {
+		return nil, fmt.Errorf("invalid token device")
 	}
 
 	return &loginUSerResponse{
-		AccessTokenExpiresAt:  time.Now().Add(time.Hour),
-		RefreshTokenExpiresAt: time.Now().Add(time.Hour * 24),
 		User: UserResponse{
-			Username: user.Username,
-			FullName: user.FullName,
-			Email:    user.Email,
+			Username:  user.Username,
+			FullName:  user.FullName,
+			Email:     user.Email,
+			DataImage: user.DataImage,
 		},
-		DeviceToken: device_tokens_response,
+		DeviceToken: tokens.Token,
 	}, nil
 }
 

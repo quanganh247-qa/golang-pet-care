@@ -50,6 +50,9 @@ type UserResponse struct {
 type loginUserRequest struct {
 	Username string `json:"username" binding:"required,alphanum"`
 	Password string `json:"password" binding:"required,min=6,max=25"`
+	// Token      string `json:"token" binding:"required"`
+	Token      string `json:"token"`
+	DeviceType string `json:"device_type"`
 }
 type loginUSerResponse struct {
 	AccessToken           string       `json:"access_token"`
@@ -57,7 +60,7 @@ type loginUSerResponse struct {
 	RefreshToken          string       `json:"refresh_token"`
 	RefreshTokenExpiresAt time.Time    `json:"refresh_token_expires_at"`
 	User                  UserResponse `json:"user"`
-	DeviceToken           []string     `json:"device_token"`
+	DeviceToken           string       `json:"device_token"`
 	DataImage             string       `json:"data_image"`
 }
 
