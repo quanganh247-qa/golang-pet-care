@@ -74,6 +74,7 @@ func Routes(routerGroup middleware.RouterGroup, taskDistributor worker.TaskDistr
 		authRoute.POST("/logout", userApi.controller.logoutUser)
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 		authRoute.PUT("/", userApi.controller.updatetUser)
 		authRoute.PUT("/avatar", userApi.controller.updatetUserAvatar)
 <<<<<<< HEAD
@@ -93,6 +94,8 @@ func Routes(routerGroup middleware.RouterGroup, taskDistributor worker.TaskDistr
 		user.PUT("/reset-password", userApi.controller.ForgotPassword)
 		authRoute.PUT("/change-password", userApi.controller.UpdatePassword)
 >>>>>>> a2c21c8 (update pass)
+=======
+>>>>>>> bed48f6 (route logout)
 
 <<<<<<< HEAD
 <<<<<<< HEAD
