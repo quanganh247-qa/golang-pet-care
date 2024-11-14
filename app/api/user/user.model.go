@@ -103,8 +103,14 @@ type UpdateUserImageParams struct {
 }
 
 type loginUserRequest struct {
+<<<<<<< HEAD
 	Username   string `json:"username" binding:"required,alphanum"`
 	Password   string `json:"password" binding:"required,min=6,max=25"`
+=======
+	Username string `json:"username" binding:"required,alphanum"`
+	Password string `json:"password" binding:"required,min=6,max=25"`
+	// Token      string `json:"token" binding:"required"`
+>>>>>>> c3c833d (login api)
 	Token      string `json:"token"`
 	DeviceType string `json:"device_type"`
 }
@@ -115,10 +121,14 @@ type loginUSerResponse struct {
 	RefreshTokenExpiresAt time.Time    `json:"refresh_token_expires_at"`
 	User                  UserResponse `json:"user"`
 <<<<<<< HEAD
+<<<<<<< HEAD
 	DeviceToken           string       `json:"device_token"`
 =======
 	DeviceToken           []string     `json:"device_token"`
 >>>>>>> 0fb3f30 (user images)
+=======
+	DeviceToken           string       `json:"device_token"`
+>>>>>>> c3c833d (login api)
 	DataImage             string       `json:"data_image"`
 }
 
