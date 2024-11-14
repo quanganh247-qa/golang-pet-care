@@ -276,8 +276,11 @@ type Querier interface {
 <<<<<<< HEAD
 =======
 	GetActivityLogByID(ctx context.Context, logid int64) (Activitylog, error)
+<<<<<<< HEAD
 	GetAllMedicinesByPet(ctx context.Context, arg GetAllMedicinesByPetParams) ([]Medication, error)
 >>>>>>> 79a3bcc (medicine api)
+=======
+>>>>>>> 6c35562 (dicease and treatment plan)
 	GetAllServices(ctx context.Context, arg GetAllServicesParams) ([]Service, error)
 <<<<<<< HEAD
 	GetAllTimeSlots(ctx context.Context, arg GetAllTimeSlotsParams) ([]GetAllTimeSlotsRow, error)
@@ -407,6 +410,7 @@ type Querier interface {
 >>>>>>> 21608b5 (cart and order api)
 	GetDeviceTokenByUsername(ctx context.Context, username string) ([]Devicetoken, error)
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> 0fb3f30 (user images)
 =======
 	// 1. Query cơ bản để lấy thông tin bệnh và thuốc điều trị
@@ -419,6 +423,11 @@ type Querier interface {
 =======
 	GetDeviceTokenByUsername(ctx context.Context, username string) ([]Devicetoken, error)
 >>>>>>> 0fb3f30 (user images)
+=======
+	// 1. Query cơ bản để lấy thông tin bệnh và thuốc điều trị
+	GetDiceaseAndMedicinesInfo(ctx context.Context, lower string) ([]GetDiceaseAndMedicinesInfoRow, error)
+	GetDiseaseTreatmentPlanWithPhases(ctx context.Context, lower string) ([]GetDiseaseTreatmentPlanWithPhasesRow, error)
+>>>>>>> 6c35562 (dicease and treatment plan)
 	GetDoctor(ctx context.Context, id int64) (GetDoctorRow, error)
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -501,8 +510,11 @@ type Querier interface {
 	GetPetAllergy(ctx context.Context, id int64) (PetAllergy, error)
 =======
 	GetFeedingScheduleByPetID(ctx context.Context, petid pgtype.Int8) ([]Feedingschedule, error)
+<<<<<<< HEAD
 	GetMedicinesByID(ctx context.Context, medicationID int64) (Medication, error)
 >>>>>>> 79a3bcc (medicine api)
+=======
+>>>>>>> 6c35562 (dicease and treatment plan)
 	GetPetByID(ctx context.Context, petid int64) (Pet, error)
 	GetPetDetailByUserID(ctx context.Context, arg GetPetDetailByUserIDParams) (GetPetDetailByUserIDRow, error)
 	GetPetLogByID(ctx context.Context, arg GetPetLogByIDParams) (GetPetLogByIDRow, error)
@@ -687,6 +699,7 @@ type Querier interface {
 =======
 	InsertDoctorSchedule(ctx context.Context, arg InsertDoctorScheduleParams) (Doctorschedule, error)
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> 6f3ea8a (update sqlc)
 =======
@@ -701,6 +714,8 @@ type Querier interface {
 <<<<<<< HEAD
 =======
 	InsertMedicine(ctx context.Context, arg InsertMedicineParams) (Medication, error)
+=======
+>>>>>>> 6c35562 (dicease and treatment plan)
 	InsertTimeslot(ctx context.Context, arg InsertTimeslotParams) (Timeslot, error)
 >>>>>>> 79a3bcc (medicine api)
 	ListActiveFeedingSchedules(ctx context.Context) ([]Feedingschedule, error)
@@ -793,6 +808,7 @@ type Querier interface {
 	UpdateFeedingSchedule(ctx context.Context, arg UpdateFeedingScheduleParams) error
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> 79a3bcc (medicine api)
 	// -- name: UpdateMedicine :exec
@@ -817,6 +833,8 @@ type Querier interface {
 >>>>>>> 3bf345d (happy new year)
 =======
 >>>>>>> 79a3bcc (medicine api)
+=======
+>>>>>>> 6c35562 (dicease and treatment plan)
 	UpdateNotification(ctx context.Context, appointmentID int64) error
 	UpdateOrderPaymentStatus(ctx context.Context, id int64) (Order, error)
 	UpdatePet(ctx context.Context, arg UpdatePetParams) error

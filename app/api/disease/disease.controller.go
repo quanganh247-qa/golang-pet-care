@@ -4,17 +4,21 @@ import (
 	"net/http"
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	"strconv"
 =======
 >>>>>>> 6c35562 (dicease and treatment plan)
 =======
 	"strconv"
 >>>>>>> 6a85052 (get treatment by disease)
+=======
+>>>>>>> 6c35562 (dicease and treatment plan)
 
 	"github.com/gin-gonic/gin"
 	"github.com/quanganh247-qa/go-blog-be/app/util"
 )
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 type DiseaseControllerInterface interface {
@@ -978,4 +982,31 @@ func (c *DiseaseController) GetAllergiesByPetID(ctx *gin.Context) {
 		"message": "Allergies retrieved successfully",
 		"data":    allergies,
 	})
+=======
+type DiceaseControllerInterface interface {
+	getDiceaseAnhMedicinesInfo(ctx *gin.Context)
+	getDiseaseTreatmentPlanWithPhases(ctx *gin.Context)
+}
+
+func (c *DiceaseController) getDiceaseAnhMedicinesInfo(ctx *gin.Context) {
+	disease := ctx.Query("disease")
+	info, err := c.service.GetDiceaseAnhMedicinesInfoService(ctx, disease)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	ctx.JSON(http.StatusOK, util.SuccessResponse("Information", info))
+
+}
+
+func (c *DiceaseController) getDiseaseTreatmentPlanWithPhases(ctx *gin.Context) {
+	disease := ctx.Query("disease")
+	treatment, err := c.service.GetDiseaseTreatmentPlanWithPhasesService(ctx, disease)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	ctx.JSON(http.StatusOK, util.SuccessResponse("Treatment Plan", treatment))
+
+>>>>>>> 6c35562 (dicease and treatment plan)
 }

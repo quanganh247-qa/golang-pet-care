@@ -6,6 +6,7 @@ import (
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> e859654 (Elastic search)
 	"github.com/quanganh247-qa/go-blog-be/app/service/elasticsearch"
@@ -47,11 +48,25 @@ func Routes(routerGroup middleware.RouterGroup) {
 =======
 				es:      es,
 >>>>>>> e859654 (Elastic search)
+=======
+)
+
+func Routes(routerGroup middleware.RouterGroup) {
+	dicease := routerGroup.RouterDefault.Group("/dicease")
+	authRoute := routerGroup.RouterAuth(dicease)
+
+	// Khoi tao api
+	diceaseApi := &DiceaseApi{
+		&DiceaseController{
+			service: &DiceaseService{
+				storeDB: db.StoreDB, // This should refer to the actual instance
+>>>>>>> 6c35562 (dicease and treatment plan)
 			},
 		},
 	}
 
 	{
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -107,4 +122,11 @@ func Routes(routerGroup middleware.RouterGroup) {
 =======
 
 >>>>>>> ada3717 (Docker file)
+=======
+		authRoute.GET("/", diceaseApi.controller.getDiceaseAnhMedicinesInfo)
+		authRoute.GET("/treatment-plan", diceaseApi.controller.getDiseaseTreatmentPlanWithPhases)
+
+	}
+
+>>>>>>> 6c35562 (dicease and treatment plan)
 }

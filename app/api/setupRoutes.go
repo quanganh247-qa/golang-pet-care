@@ -39,6 +39,7 @@ import (
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> 4ccd381 (Update appointment flow)
 	"github.com/quanganh247-qa/go-blog-be/app/api/doctor"
@@ -81,6 +82,8 @@ import (
 =======
 	"github.com/quanganh247-qa/go-blog-be/app/api/medications"
 >>>>>>> 79a3bcc (medicine api)
+=======
+>>>>>>> 6c35562 (dicease and treatment plan)
 	"github.com/quanganh247-qa/go-blog-be/app/api/pet"
 	petschedule "github.com/quanganh247-qa/go-blog-be/app/api/pet_schedule"
 <<<<<<< HEAD
@@ -252,6 +255,7 @@ func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor, config
 	service.Routes(routerGroup)
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	appointment.Routes(routerGroup, taskDistributor)
 	device_token.Routes(routerGroup)
 	disease.Routes(routerGroup, es)
@@ -297,6 +301,12 @@ func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor, config
 =======
 	device_token.Routes(routerGroup)
 >>>>>>> 0fb3f30 (user images)
+=======
+	appointment.Routes(routerGroup)
+	// medications.Routes(routerGroup)
+	device_token.Routes(routerGroup)
+	disease.Routes(routerGroup)
+>>>>>>> 6c35562 (dicease and treatment plan)
 	server.Router = routerDefault
 >>>>>>> 79a3bcc (medicine api)
 =======

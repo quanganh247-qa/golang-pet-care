@@ -3,6 +3,7 @@ package disease
 import (
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	"time"
 
 	"github.com/lib/pq"
@@ -94,6 +95,22 @@ type DiseaseService struct {
 =======
 	es      *elasticsearch.ESService
 >>>>>>> e859654 (Elastic search)
+=======
+	"github.com/lib/pq"
+	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
+)
+
+type DiceaseApi struct {
+	controller DiceaseControllerInterface
+}
+
+type DiceaseController struct {
+	service DiceaseServiceInterface
+}
+
+type DiceaseService struct {
+	storeDB db.Store
+>>>>>>> 6c35562 (dicease and treatment plan)
 }
 
 // DiseaseMedicineInfo holds the disease and associated medicine information.
@@ -107,6 +124,7 @@ type DiseaseMedicineInfo struct {
 
 // MedicineInfo holds medicine-related details for a specific disease.
 type MedicineInfo struct {
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 =======
@@ -221,6 +239,8 @@ type CreateAllergyRequest struct {
 	Type   string `json:"type"`
 	Detail string `json:"detail"`
 =======
+=======
+>>>>>>> 6c35562 (dicease and treatment plan)
 	MedicineID   int     `json:"medicine_id"`
 	MedicineName string  `json:"medicine_name"`
 	Usage        *string `json:"usage"`
@@ -228,6 +248,7 @@ type CreateAllergyRequest struct {
 	Frequency    *string `json:"frequency"`
 	Duration     *string `json:"duration"`
 	SideEffects  *string `json:"side_effects"`
+<<<<<<< HEAD
 =======
 >>>>>>> ada3717 (Docker file)
 }
@@ -235,6 +256,11 @@ type CreateAllergyRequest struct {
 <<<<<<< HEAD
 type TreatmentPlan struct {
 	DiseaseID       int           `json:"disease_id"`
+=======
+}
+
+type TreatmentPlan struct {
+>>>>>>> 6c35562 (dicease and treatment plan)
 	DiseaseName     string        `json:"disease_name"`
 	Description     string        `json:"description"`
 	Symptoms        []string      `json:"symptoms"`
@@ -243,10 +269,14 @@ type TreatmentPlan struct {
 
 type PhaseDetail struct {
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 6c35562 (dicease and treatment plan)
 	PhaseNumber int            `json:"phase_number"`
 	PhaseName   string         `json:"phase_name"`
 	Duration    string         `json:"duration"`
 	Medicines   []MedicineInfo `json:"medicines"`
+<<<<<<< HEAD
 >>>>>>> 6c35562 (dicease and treatment plan)
 =======
 	PhaseID          int            `json:"phase_id"`
@@ -359,4 +389,6 @@ type PetAllergy struct {
 type CreateAllergyRequest struct {
 	Type   string `json:"type"`
 	Detail string `json:"detail"`
+=======
+>>>>>>> 6c35562 (dicease and treatment plan)
 }
