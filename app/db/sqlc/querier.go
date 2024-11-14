@@ -29,15 +29,16 @@ type Querier interface {
 	DeleteVaccination(ctx context.Context, vaccinationid int64) error
 	GetActiveDoctors(ctx context.Context, arg GetActiveDoctorsParams) ([]GetActiveDoctorsRow, error)
 	GetActivityLogByID(ctx context.Context, logid int64) (Activitylog, error)
-	GetAllMedicinesByPet(ctx context.Context, arg GetAllMedicinesByPetParams) ([]Medication, error)
 	GetAllServices(ctx context.Context, arg GetAllServicesParams) ([]Service, error)
 	GetAllTimeSlots(ctx context.Context, arg GetAllTimeSlotsParams) ([]GetAllTimeSlotsRow, error)
 	GetAllUsers(ctx context.Context) ([]User, error)
 	GetAppointmentsOfDoctorWithDetails(ctx context.Context, id int64) ([]GetAppointmentsOfDoctorWithDetailsRow, error)
 	GetDeviceTokenByUsername(ctx context.Context, username string) ([]Devicetoken, error)
+	// 1. Query cơ bản để lấy thông tin bệnh và thuốc điều trị
+	GetDiceaseAndMedicinesInfo(ctx context.Context, lower string) ([]GetDiceaseAndMedicinesInfoRow, error)
+	GetDiseaseTreatmentPlanWithPhases(ctx context.Context, lower string) ([]GetDiseaseTreatmentPlanWithPhasesRow, error)
 	GetDoctor(ctx context.Context, id int64) (GetDoctorRow, error)
 	GetFeedingScheduleByPetID(ctx context.Context, petid pgtype.Int8) ([]Feedingschedule, error)
-	GetMedicinesByID(ctx context.Context, medicationID int64) (Medication, error)
 	GetPetByID(ctx context.Context, petid int64) (Pet, error)
 	GetServiceByID(ctx context.Context, serviceid int64) (Service, error)
 	GetServiceType(ctx context.Context, typeid int64) (Servicetype, error)
@@ -48,7 +49,6 @@ type Querier interface {
 	InsertDeviceToken(ctx context.Context, arg InsertDeviceTokenParams) (Devicetoken, error)
 	InsertDoctor(ctx context.Context, arg InsertDoctorParams) (Doctor, error)
 	InsertDoctorSchedule(ctx context.Context, arg InsertDoctorScheduleParams) (Doctorschedule, error)
-	InsertMedicine(ctx context.Context, arg InsertMedicineParams) (Medication, error)
 	InsertTimeslot(ctx context.Context, arg InsertTimeslotParams) (Timeslot, error)
 	ListActiveFeedingSchedules(ctx context.Context) ([]Feedingschedule, error)
 	ListActivityLogs(ctx context.Context, arg ListActivityLogsParams) ([]Activitylog, error)
@@ -61,11 +61,6 @@ type Querier interface {
 	// Replace $2 with the specific date (YYYY-MM-DD)
 	UpdateDoctorAvailable(ctx context.Context, arg UpdateDoctorAvailableParams) error
 	UpdateFeedingSchedule(ctx context.Context, arg UpdateFeedingScheduleParams) error
-	// -- name: UpdateMedicine :exec
-	// UPDATE Medications
-	// SET medication_name = $2, dosage = $3, frequency = $4, start_date = $5, end_date = $6, notes = $7
-	// WHERE medication_id = $1;
-	UpdateMedicine(ctx context.Context, arg UpdateMedicineParams) (Medication, error)
 	UpdateNotification(ctx context.Context, appointmentID int64) error
 	UpdatePet(ctx context.Context, arg UpdatePetParams) error
 	UpdateService(ctx context.Context, arg UpdateServiceParams) error

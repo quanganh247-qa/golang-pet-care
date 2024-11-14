@@ -60,6 +60,20 @@ type Devicetoken struct {
 	ExpiredAt  pgtype.Timestamp `json:"expired_at"`
 }
 
+type Disease struct {
+	ID          int64              `json:"id"`
+	Name        string             `json:"name"`
+	Description pgtype.Text        `json:"description"`
+	Symptoms    []byte             `json:"symptoms"`
+	CreatedAt   pgtype.Timestamptz `json:"created_at"`
+	UpdatedAt   pgtype.Timestamptz `json:"updated_at"`
+}
+
+type DiseaseMedicine struct {
+	DiseaseID  int64 `json:"disease_id"`
+	MedicineID int64 `json:"medicine_id"`
+}
+
 type Doctor struct {
 	ID                int64          `json:"id"`
 	UserID            int64          `json:"user_id"`
@@ -93,15 +107,17 @@ type Feedingschedule struct {
 	Isactive          pgtype.Bool      `json:"isactive"`
 }
 
-type Medication struct {
-	MedicationID   int64            `json:"medication_id"`
-	PetID          int64            `json:"pet_id"`
-	MedicationName string           `json:"medication_name"`
-	Dosage         string           `json:"dosage"`
-	Frequency      string           `json:"frequency"`
-	StartDate      pgtype.Timestamp `json:"start_date"`
-	EndDate        pgtype.Timestamp `json:"end_date"`
-	Notes          pgtype.Text      `json:"notes"`
+type Medicine struct {
+	ID          int64              `json:"id"`
+	Name        string             `json:"name"`
+	Description pgtype.Text        `json:"description"`
+	Usage       pgtype.Text        `json:"usage"`
+	Dosage      pgtype.Text        `json:"dosage"`
+	Frequency   pgtype.Text        `json:"frequency"`
+	Duration    pgtype.Text        `json:"duration"`
+	SideEffects pgtype.Text        `json:"side_effects"`
+	CreatedAt   pgtype.Timestamptz `json:"created_at"`
+	UpdatedAt   pgtype.Timestamptz `json:"updated_at"`
 }
 
 type Notification struct {
@@ -148,6 +164,17 @@ type Pet struct {
 	OriginalImage   string        `json:"original_image"`
 }
 
+type PetTreatment struct {
+	ID        int64              `json:"id"`
+	PetID     pgtype.Int8        `json:"pet_id"`
+	DiseaseID pgtype.Int8        `json:"disease_id"`
+	StartDate pgtype.Date        `json:"start_date"`
+	EndDate   pgtype.Date        `json:"end_date"`
+	Status    pgtype.Text        `json:"status"`
+	Notes     pgtype.Text        `json:"notes"`
+	CreatedAt pgtype.Timestamptz `json:"created_at"`
+}
+
 type Petservicelocation struct {
 	Locationid    int64          `json:"locationid"`
 	Name          string         `json:"name"`
@@ -159,6 +186,15 @@ type Petservicelocation struct {
 	Servicetypes  []string       `json:"servicetypes"`
 	Rating        pgtype.Numeric `json:"rating"`
 	Isverified    pgtype.Bool    `json:"isverified"`
+}
+
+type PhaseMedicine struct {
+	PhaseID    int64       `json:"phase_id"`
+	MedicineID int64       `json:"medicine_id"`
+	Dosage     pgtype.Text `json:"dosage"`
+	Frequency  pgtype.Text `json:"frequency"`
+	Duration   pgtype.Text `json:"duration"`
+	Notes      pgtype.Text `json:"notes"`
 }
 
 type Service struct {
@@ -186,6 +222,28 @@ type Timeslot struct {
 	EndTime   pgtype.Timestamp `json:"end_time"`
 	IsActive  pgtype.Bool      `json:"is_active"`
 	Day       pgtype.Date      `json:"day"`
+}
+
+type TreatmentPhase struct {
+	ID          int64              `json:"id"`
+	DiseaseID   pgtype.Int8        `json:"disease_id"`
+	PhaseNumber pgtype.Int4        `json:"phase_number"`
+	PhaseName   pgtype.Text        `json:"phase_name"`
+	Description pgtype.Text        `json:"description"`
+	Duration    pgtype.Text        `json:"duration"`
+	Notes       pgtype.Text        `json:"notes"`
+	CreatedAt   pgtype.Timestamptz `json:"created_at"`
+}
+
+type TreatmentProgress struct {
+	ID          int64              `json:"id"`
+	TreatmentID pgtype.Int8        `json:"treatment_id"`
+	PhaseID     pgtype.Int8        `json:"phase_id"`
+	StartDate   pgtype.Date        `json:"start_date"`
+	EndDate     pgtype.Date        `json:"end_date"`
+	Status      pgtype.Text        `json:"status"`
+	Notes       pgtype.Text        `json:"notes"`
+	CreatedAt   pgtype.Timestamptz `json:"created_at"`
 }
 
 type User struct {
