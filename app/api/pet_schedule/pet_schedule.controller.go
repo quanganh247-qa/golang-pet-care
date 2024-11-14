@@ -1,28 +1,41 @@
 package petschedule
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> e01abc5 (pet schedule api)
 import (
 	"net/http"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+<<<<<<< HEAD
 	"github.com/quanganh247-qa/go-blog-be/app/middleware"
+=======
+>>>>>>> e01abc5 (pet schedule api)
 	"github.com/quanganh247-qa/go-blog-be/app/util"
 )
 
 type PetScheduleControllerInterface interface {
 	createPetSchedule(ctx *gin.Context)
 	getAllSchedulesByPet(ctx *gin.Context)
+<<<<<<< HEAD
 	listPetSchedulesByUsername(ctx *gin.Context)
 	activePetSchedule(ctx *gin.Context)
 	deletePetSchedule(ctx *gin.Context)
 	updatePetScheduleService(ctx *gin.Context)
 	generateScheduleSuggestion(ctx *gin.Context)
+=======
+>>>>>>> e01abc5 (pet schedule api)
 }
 
 func (c *PetScheduleController) createPetSchedule(ctx *gin.Context) {
 
+<<<<<<< HEAD
 	petIDStr := ctx.Param("petid")
+=======
+	petIDStr := ctx.Query("pet_id")
+>>>>>>> e01abc5 (pet schedule api)
 	if petIDStr == "" {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Missed value pet id"})
 		return
@@ -50,7 +63,11 @@ func (c *PetScheduleController) createPetSchedule(ctx *gin.Context) {
 }
 
 func (s *PetScheduleController) getAllSchedulesByPet(ctx *gin.Context) {
+<<<<<<< HEAD
 	petIDStr := ctx.Param("petid")
+=======
+	petIDStr := ctx.Query("pet_id")
+>>>>>>> e01abc5 (pet schedule api)
 	petID, err := strconv.ParseInt(petIDStr, 10, 64)
 	if err != nil {
 		// Handle the error, e.g., by sending an error response or logging it
@@ -70,6 +87,7 @@ func (s *PetScheduleController) getAllSchedulesByPet(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, util.SuccessResponse("Schedules", schedules))
+<<<<<<< HEAD
 }
 
 func (s *PetScheduleController) listPetSchedulesByUsername(ctx *gin.Context) {
@@ -170,4 +188,6 @@ func (s *PetScheduleController) generateScheduleSuggestion(ctx *gin.Context) {
 =======
 type PetScheduleControllerInterface interface {
 >>>>>>> 272832d (redis cache)
+=======
+>>>>>>> e01abc5 (pet schedule api)
 }

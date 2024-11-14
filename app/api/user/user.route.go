@@ -65,10 +65,13 @@ func Routes(routerGroup middleware.RouterGroup, taskDistributor worker.TaskDistr
 		authRoute.GET("/all-time-slots/:doctor_id", userApi.controller.getAllTimeSlots)
 		authRoute.PUT("/update-available/:id", userApi.controller.updateDoctorAvailableTime)
 
+<<<<<<< HEAD
 		// Token info for google calendar
 		// authRoute.POST("/token-info", userApi.controller.insertTokenInfo)
 >>>>>>> 79a3bcc (medicine api)
 
+=======
+>>>>>>> e01abc5 (pet schedule api)
 	}
 
 }
