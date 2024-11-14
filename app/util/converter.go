@@ -111,6 +111,9 @@ func ParseStringToTime(startDate string, endDate string) (time.Time, time.Time, 
 	}
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> e01abc5 (pet schedule api)
 	// If endDate is provided, parse it; otherwise, return a zero time for parsedEndDate
 	var parsedEndDate time.Time
 	if endDate != "" {

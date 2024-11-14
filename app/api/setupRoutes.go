@@ -26,9 +26,12 @@ import (
 >>>>>>> 6c35562 (dicease and treatment plan)
 	"github.com/quanganh247-qa/go-blog-be/app/api/pet"
 	petschedule "github.com/quanganh247-qa/go-blog-be/app/api/pet_schedule"
+<<<<<<< HEAD
 	"github.com/quanganh247-qa/go-blog-be/app/api/products"
 	"github.com/quanganh247-qa/go-blog-be/app/api/rooms"
 	"github.com/quanganh247-qa/go-blog-be/app/api/search"
+=======
+>>>>>>> e01abc5 (pet schedule api)
 	"github.com/quanganh247-qa/go-blog-be/app/api/service"
 	"github.com/quanganh247-qa/go-blog-be/app/api/user"
 	"github.com/quanganh247-qa/go-blog-be/app/api/vaccination"
@@ -91,6 +94,7 @@ func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor, config
 	// medications.Routes(routerGroup)
 	device_token.Routes(routerGroup)
 	disease.Routes(routerGroup)
+	petschedule.Routes(routerGroup)
 	server.Router = routerDefault
 >>>>>>> 79a3bcc (medicine api)
 

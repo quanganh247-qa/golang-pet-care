@@ -15,18 +15,17 @@ import (
 	"go.uber.org/zap"
 )
 
-// @title Pet Care Management System
-// @version 1.0
-// @description Pet care management system APIs built with Go using Gin framework
-// @host localhost:8088
-// @BasePath /api/v1
-
 var interruptSignals = []os.Signal{
 	os.Interrupt,
 	syscall.SIGTERM,
 	syscall.SIGINT,
 }
 
+// @title Pet Care Management System
+// @version 1.0
+// @description Pet care management system APIs built with Go using Gin framework
+// @host localhost:8088
+// @BasePath /api/v1
 func main() {
 	config, err := util.LoadConfig(".")
 	if err != nil {
@@ -54,8 +53,12 @@ func main() {
 
 =======
 	server := runGinServer(*config)
+<<<<<<< HEAD
 	log.Fatal("run gin server")
 >>>>>>> 9d28896 (image pet)
+=======
+
+>>>>>>> e01abc5 (pet schedule api)
 	defer func() {
 		server.Connection.Close()
 	}()

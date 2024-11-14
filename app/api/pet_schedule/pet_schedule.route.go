@@ -1,13 +1,22 @@
 package petschedule
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> e01abc5 (pet schedule api)
 
 import (
 	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
 	"github.com/quanganh247-qa/go-blog-be/app/middleware"
+<<<<<<< HEAD
 	"github.com/quanganh247-qa/go-blog-be/app/util"
 )
 
 func Routes(routerGroup middleware.RouterGroup, config *util.Config) {
+=======
+)
+
+func Routes(routerGroup middleware.RouterGroup) {
+>>>>>>> e01abc5 (pet schedule api)
 	petSchedule := routerGroup.RouterDefault.Group("/pet-schedule")
 	authRoute := routerGroup.RouterAuth(petSchedule)
 	// PetSchedule.Use(middleware.IPbasedRateLimitingMiddleware())
@@ -17,12 +26,16 @@ func Routes(routerGroup middleware.RouterGroup, config *util.Config) {
 		&PetScheduleController{
 			service: &PetScheduleService{
 				storeDB: db.StoreDB, // This should refer to the actual instance
+<<<<<<< HEAD
 				config:  config,
+=======
+>>>>>>> e01abc5 (pet schedule api)
 			},
 		},
 	}
 
 	{
+<<<<<<< HEAD
 		authRoute.POST("/pet/:pet_id", petScheduleApi.controller.createPetSchedule)
 		authRoute.GET("/pet/:pet_id", petScheduleApi.controller.getAllSchedulesByPet)
 		authRoute.PUT("/active/:schedule_id", petScheduleApi.controller.activePetSchedule)
@@ -35,3 +48,14 @@ func Routes(routerGroup middleware.RouterGroup, config *util.Config) {
 }
 =======
 >>>>>>> 272832d (redis cache)
+=======
+		authRoute.POST("/create", petScheduleApi.controller.createPetSchedule)
+		authRoute.GET("/pet", petScheduleApi.controller.getAllSchedulesByPet)
+		// authRoute.GET("/list", petScheduleApi.controller.ListPetSchedules)
+		// authRoute.GET("/", petScheduleApi.controller.ListPetSchedulesByUsername)
+		// authRoute.PUT("/update/:petScheduleid", petScheduleApi.controller.UpdatePetSchedule)
+		// authRoute.DELETE("/delete/:petScheduleid", petScheduleApi.controller.DeletePetSchedule)
+	}
+
+}
+>>>>>>> e01abc5 (pet schedule api)
