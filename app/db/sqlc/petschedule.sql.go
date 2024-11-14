@@ -12,14 +12,15 @@ import (
 )
 
 const createPetSchedule = `-- name: CreatePetSchedule :exec
-INSERT INTO pet_schedule (schedule_type, event_time, duration, activity_type, frequency, notes)
-VALUES ($1, $2, $3, $4, $5, $6)
+INSERT INTO pet_schedule (pet_id,schedule_type, event_time, duration, activity_type, frequency, notes)
+VALUES ($1, $2, $3, $4, $5, $6, $7)
 `
 
 type CreatePetScheduleParams struct {
+	PetID        pgtype.Int8      `json:"pet_id"`
 	ScheduleType string           `json:"schedule_type"`
 	EventTime    pgtype.Timestamp `json:"event_time"`
-	Duration     pgtype.Interval  `json:"duration"`
+	Duration     pgtype.Text      `json:"duration"`
 	ActivityType pgtype.Text      `json:"activity_type"`
 	Frequency    pgtype.Text      `json:"frequency"`
 	Notes        pgtype.Text      `json:"notes"`
@@ -27,6 +28,7 @@ type CreatePetScheduleParams struct {
 
 func (q *Queries) CreatePetSchedule(ctx context.Context, arg CreatePetScheduleParams) error {
 	_, err := q.db.Exec(ctx, createPetSchedule,
+		arg.PetID,
 		arg.ScheduleType,
 		arg.EventTime,
 		arg.Duration,
@@ -38,16 +40,17 @@ func (q *Queries) CreatePetSchedule(ctx context.Context, arg CreatePetSchedulePa
 }
 
 const getAllSchedulesByPet = `-- name: GetAllSchedulesByPet :many
-SELECT id, pet_id, schedule_type, event_time, duration, food_type, quantity, activity_type, frequency, notes, created_at, is_active FROM pet_schedule where pet_id = $1 ORDER BY pet_id LIMIT $1 OFFSET $2
+SELECT id, pet_id, schedule_type, event_time, duration, food_type, quantity, activity_type, frequency, notes, created_at, is_active FROM pet_schedule where pet_id = $3 ORDER BY pet_id LIMIT $1 OFFSET $2
 `
 
 type GetAllSchedulesByPetParams struct {
-	Limit  int32 `json:"limit"`
-	Offset int32 `json:"offset"`
+	Limit  int32       `json:"limit"`
+	Offset int32       `json:"offset"`
+	PetID  pgtype.Int8 `json:"pet_id"`
 }
 
 func (q *Queries) GetAllSchedulesByPet(ctx context.Context, arg GetAllSchedulesByPetParams) ([]PetSchedule, error) {
-	rows, err := q.db.Query(ctx, getAllSchedulesByPet, arg.Limit, arg.Offset)
+	rows, err := q.db.Query(ctx, getAllSchedulesByPet, arg.Limit, arg.Offset, arg.PetID)
 	if err != nil {
 		return nil, err
 	}

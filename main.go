@@ -9,18 +9,17 @@ import (
 	"github.com/quanganh247-qa/go-blog-be/app/util"
 )
 
-// @title Pet Care Management System
-// @version 1.0
-// @description Pet care management system APIs built with Go using Gin framework
-// @host localhost:8088
-// @BasePath /api/v1
-
 var interruptSignals = []os.Signal{
 	os.Interrupt,
 	syscall.SIGTERM,
 	syscall.SIGINT,
 }
 
+// @title Pet Care Management System
+// @version 1.0
+// @description Pet care management system APIs built with Go using Gin framework
+// @host localhost:8088
+// @BasePath /api/v1
 func main() {
 	config, err := util.LoadConfig(".")
 	if err != nil {
@@ -28,7 +27,7 @@ func main() {
 	}
 
 	server := runGinServer(*config)
-	log.Fatal("run gin server")
+
 	defer func() {
 		server.Connection.Close()
 	}()
@@ -48,8 +47,3 @@ func runGinServer(config util.Config) *api.Server {
 
 	return server
 }
-
-// func runTaskConsume(config util.Config) {
-// 	mailer := mail.NewGmailSender(config.EmailSenderName, config.EmailSenderAddress, config.EmailSenderPassword)
-// 	rabbitmq.Client.Email.ConsumeMessage(mailer)
-// }

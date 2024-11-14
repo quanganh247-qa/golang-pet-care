@@ -148,7 +148,7 @@ type PetSchedule struct {
 	PetID        pgtype.Int8      `json:"pet_id"`
 	ScheduleType string           `json:"schedule_type"`
 	EventTime    pgtype.Timestamp `json:"event_time"`
-	Duration     pgtype.Interval  `json:"duration"`
+	Duration     pgtype.Text      `json:"duration"`
 	FoodType     pgtype.Text      `json:"food_type"`
 	Quantity     pgtype.Float8    `json:"quantity"`
 	ActivityType pgtype.Text      `json:"activity_type"`
