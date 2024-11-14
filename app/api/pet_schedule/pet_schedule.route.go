@@ -1,6 +1,7 @@
 package petschedule
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> e01abc5 (pet schedule api)
 
@@ -84,3 +85,5 @@ func Routes(routerGroup middleware.RouterGroup, config *util.Config) {
 
 }
 >>>>>>> e01abc5 (pet schedule api)
+=======
+>>>>>>> 272832d (redis cache)

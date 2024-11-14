@@ -11,6 +11,7 @@ import (
 >>>>>>> 6610455 (feat: redis queue)
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 	"time"
 
@@ -33,6 +34,11 @@ import (
 =======
 	"github.com/quanganh247-qa/go-blog-be/app/service/minio"
 >>>>>>> ada3717 (Docker file)
+=======
+	"github.com/hibiken/asynq"
+	"github.com/jackc/pgx/v5/pgxpool"
+	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
+>>>>>>> 272832d (redis cache)
 	"github.com/quanganh247-qa/go-blog-be/app/service/redis"
 	"github.com/quanganh247-qa/go-blog-be/app/service/token"
 	"github.com/quanganh247-qa/go-blog-be/app/service/worker"
@@ -79,6 +85,7 @@ func Init(config util.Config) (*Connection, error) {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> ada3717 (Docker file)
 	// Verify the connection
@@ -101,6 +108,13 @@ func Init(config util.Config) (*Connection, error) {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+=======
+	_ = asynq.RedisClientOpt{
+		Addr: config.RedisAddress,
+	}
+	redis.InitRedis(config.RedisAddress)
+
+>>>>>>> 272832d (redis cache)
 	// // Initialize RabbitMQ client
 	// clientRabbitMQ := rabbitmq.Init(config.RabbitMQAddress)
 	// sender := mail.NewGmailSender(config.EmailSenderName, config.EmailSenderAddress, config.EmailSenderPassword)

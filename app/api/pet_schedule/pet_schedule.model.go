@@ -2,6 +2,7 @@ package petschedule
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> e859654 (Elastic search)
 import (
@@ -14,6 +15,9 @@ import db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
 >>>>>>> 272832d (redis cache)
 =======
 >>>>>>> e859654 (Elastic search)
+=======
+import db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
+>>>>>>> 272832d (redis cache)
 
 type PetScheduleApi struct {
 	controller PetScheduleControllerInterface
@@ -25,6 +29,7 @@ type PetScheduleController struct {
 
 type PetScheduleService struct {
 	storeDB db.Store
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 =======
@@ -78,12 +83,18 @@ type ScheduleSuggestion struct {
 
 type PetScheduleRequest struct {
 <<<<<<< HEAD
+=======
+}
+
+type PetScheduleRequest struct {
+>>>>>>> 272832d (redis cache)
 	ScheduleType string `json:"schedule_type"`
 	EventTime    string `json:"event_time"`
 	Duration     string `json:"duration"`
 	ActivityType string `json:"activity_type"`
 	Frequency    string `json:"frequency"`
 	Notes        string `json:"notes"`
+<<<<<<< HEAD
 >>>>>>> 272832d (redis cache)
 =======
 	PetID            int64  `json:"pet_id"`
@@ -127,4 +138,6 @@ type ActiceRemider struct {
 
 type ScheduleSuggestion struct {
 	Voice string `json:"voice"`
+=======
+>>>>>>> 272832d (redis cache)
 }

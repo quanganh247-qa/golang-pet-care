@@ -2,6 +2,7 @@ package petschedule
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> e01abc5 (pet schedule api)
 import (
@@ -313,4 +314,7 @@ func (s *PetScheduleController) generateScheduleSuggestion(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, util.SuccessResponse("Schedule suggestion", response))
+=======
+type PetScheduleControllerInterface interface {
+>>>>>>> 272832d (redis cache)
 }

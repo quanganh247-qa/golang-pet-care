@@ -127,6 +127,7 @@ func (s *PetService) CreatePet(ctx *gin.Context, username string, req createPetR
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 			OriginalImage:   pgtype.Text{String: req.OriginalImage, Valid: true},
 			BirthDate:       pgtype.Date{Time: bod, Valid: true},
 			MicrochipNumber: pgtype.Text{String: req.MicrochipNumber, Valid: true},
@@ -158,6 +159,9 @@ func (s *PetService) CreatePet(ctx *gin.Context, username string, req createPetR
 >>>>>>> 0fb3f30 (user images)
 =======
 			OriginalImage:   req.OriginalImage,
+=======
+			OriginalImage:   pgtype.Text{String: req.OriginalImage, Valid: true},
+>>>>>>> 272832d (redis cache)
 			BirthDate:       pgtype.Date{Time: bod, Valid: true},
 			MicrochipNumber: pgtype.Text{String: req.MicrophoneNumber, Valid: true},
 >>>>>>> 9d28896 (image pet)
@@ -256,8 +260,12 @@ func (s *PetService) GetPetByID(ctx *gin.Context, petid int64) (*createPetRespon
 			Age:           int16(res.Age.Int32),
 			Weight:        res.Weight.Float64,
 			DataImage:     res.DataImage,
+<<<<<<< HEAD
 			OriginalImage: res.OriginalImage,
 >>>>>>> 9d28896 (image pet)
+=======
+			OriginalImage: res.OriginalImage.String,
+>>>>>>> 272832d (redis cache)
 		}
 		return nil
 	})
@@ -339,6 +347,7 @@ func (s *PetService) ListPets(ctx *gin.Context, req listPetsRequest, pagination 
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 				OriginalImage: r.OriginalImage.String,
 =======
 				OriginalImage: r.OriginalImage,
@@ -349,6 +358,9 @@ func (s *PetService) ListPets(ctx *gin.Context, req listPetsRequest, pagination 
 =======
 				OriginalImage: r.OriginalImage,
 >>>>>>> 9d28896 (image pet)
+=======
+				OriginalImage: r.OriginalImage.String,
+>>>>>>> 272832d (redis cache)
 			})
 		}
 		return nil
@@ -551,6 +563,7 @@ func (s *PetService) ListPetsByUsername(ctx *gin.Context, username string, pagin
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 				OriginalImage: r.OriginalImage.String,
 =======
 				OriginalImage: r.OriginalImage,
@@ -561,6 +574,9 @@ func (s *PetService) ListPetsByUsername(ctx *gin.Context, username string, pagin
 =======
 				OriginalImage: r.OriginalImage,
 >>>>>>> 9d28896 (image pet)
+=======
+				OriginalImage: r.OriginalImage.String,
+>>>>>>> 272832d (redis cache)
 			})
 		}
 		return nil

@@ -63,6 +63,7 @@ type CreateUserParams struct {
 	Address         pgtype.Text `json:"address"`
 	DataImage       []byte      `json:"data_image"`
 <<<<<<< HEAD
+<<<<<<< HEAD
 	OriginalImage   pgtype.Text `json:"original_image"`
 	Role            pgtype.Text `json:"role"`
 	IsVerifiedEmail pgtype.Bool `json:"is_verified_email"`
@@ -80,6 +81,9 @@ type CreateUserParams struct {
 >>>>>>> eefcc96 (date time in log)
 =======
 	OriginalImage   string      `json:"original_image"`
+=======
+	OriginalImage   pgtype.Text `json:"original_image"`
+>>>>>>> 272832d (redis cache)
 	Role            pgtype.Text `json:"role"`
 	IsVerifiedEmail pgtype.Bool `json:"is_verified_email"`
 >>>>>>> 0fb3f30 (user images)
@@ -412,7 +416,7 @@ type GetUserRow struct {
 	PhoneNumber     pgtype.Text      `json:"phone_number"`
 	Address         pgtype.Text      `json:"address"`
 	DataImage       []byte           `json:"data_image"`
-	OriginalImage   string           `json:"original_image"`
+	OriginalImage   pgtype.Text      `json:"original_image"`
 	Role            pgtype.Text      `json:"role"`
 	CreatedAt       pgtype.Timestamp `json:"created_at"`
 	IsVerifiedEmail pgtype.Bool      `json:"is_verified_email"`

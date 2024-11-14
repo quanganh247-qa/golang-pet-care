@@ -6,8 +6,11 @@ import (
 	"github.com/quanganh247-qa/go-blog-be/app/service/redis"
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	"github.com/quanganh247-qa/go-blog-be/app/service/worker"
 	"github.com/quanganh247-qa/go-blog-be/app/util"
+=======
+>>>>>>> 272832d (redis cache)
 =======
 >>>>>>> 272832d (redis cache)
 )
@@ -41,6 +44,7 @@ func Routes(routerGroup middleware.RouterGroup, taskDistributor worker.TaskDistr
 =======
 				storeDB: db.StoreDB, // This should refer to the actual instance
 				redis:   redis.Client,
+<<<<<<< HEAD
 >>>>>>> 272832d (redis cache)
 =======
 				storeDB:         db.StoreDB, // This should refer to the actual instance
@@ -49,6 +53,8 @@ func Routes(routerGroup middleware.RouterGroup, taskDistributor worker.TaskDistr
 >>>>>>> 6610455 (feat: redis queue)
 =======
 >>>>>>> 1a9e82a (reset password api)
+=======
+>>>>>>> 272832d (redis cache)
 			},
 		},
 	}

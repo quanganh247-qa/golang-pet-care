@@ -252,8 +252,11 @@ func MapStructs(source interface{}, destination interface{}) error {
 }
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> 79a3bcc (medicine api)
 =======
+=======
+>>>>>>> 272832d (redis cache)
 
 // StringToInterval converts a string duration (like "00:30:00") to a pgtype.Interval
 func StringToInterval(duration string) (pgtype.Interval, error) {
@@ -324,8 +327,11 @@ func IntervalToString(interval pgtype.Interval) string {
 
 	return duration.String()
 }
+<<<<<<< HEAD
 >>>>>>> 272832d (redis cache)
 =======
 >>>>>>> 883d5b3 (update treatment)
 =======
 >>>>>>> 79a3bcc (medicine api)
+=======
+>>>>>>> 272832d (redis cache)

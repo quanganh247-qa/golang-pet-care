@@ -8,6 +8,7 @@ import (
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	"github.com/quanganh247-qa/go-blog-be/app/service/redis"
 	"github.com/quanganh247-qa/go-blog-be/app/service/worker"
 <<<<<<< HEAD
@@ -27,6 +28,9 @@ import (
 =======
 	"github.com/quanganh247-qa/go-blog-be/app/util"
 >>>>>>> 1a9e82a (reset password api)
+=======
+	"github.com/quanganh247-qa/go-blog-be/app/service/redis"
+>>>>>>> 272832d (redis cache)
 )
 
 type UserController struct {
@@ -34,6 +38,7 @@ type UserController struct {
 }
 
 type UserService struct {
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -61,6 +66,10 @@ type UserService struct {
 >>>>>>> 1a9e82a (reset password api)
 =======
 >>>>>>> 9d28896 (image pet)
+=======
+	storeDB db.Store
+	redis   *redis.ClientType
+>>>>>>> 272832d (redis cache)
 }
 
 // route
@@ -85,6 +94,9 @@ type UserResponse struct {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 272832d (redis cache)
 =======
 >>>>>>> 272832d (redis cache)
 	Username      string    `json:"username"`
@@ -96,6 +108,7 @@ type UserResponse struct {
 	DataImage     []byte    `json:"data_image"`
 	OriginalImage string    `json:"original_image"`
 	RemovedAt     time.Time `json:"removed_at"`
+<<<<<<< HEAD
 <<<<<<< HEAD
 }
 
@@ -140,6 +153,8 @@ type UpdateUserImageParams struct {
 	OriginalImage string `json:"original_image"`
 =======
 >>>>>>> 0fb3f30 (user images)
+=======
+>>>>>>> 272832d (redis cache)
 }
 
 type loginUserRequest struct {

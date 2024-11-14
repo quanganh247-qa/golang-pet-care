@@ -128,7 +128,7 @@ type CreatePetParams struct {
 	Gender          pgtype.Text   `json:"gender"`
 	Healthnotes     pgtype.Text   `json:"healthnotes"`
 	DataImage       []byte        `json:"data_image"`
-	OriginalImage   string        `json:"original_image"`
+	OriginalImage   pgtype.Text   `json:"original_image"`
 	BirthDate       pgtype.Date   `json:"birth_date"`
 	MicrochipNumber pgtype.Text   `json:"microchip_number"`
 >>>>>>> 9d28896 (image pet)

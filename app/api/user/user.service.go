@@ -1,9 +1,9 @@
 package user
 
 import (
-	"context"
 	"database/sql"
 	"fmt"
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -19,6 +19,8 @@ import (
 =======
 	"log"
 >>>>>>> 9d28896 (image pet)
+=======
+>>>>>>> 272832d (redis cache)
 	"math/big"
 >>>>>>> 9d28896 (image pet)
 =======
@@ -32,6 +34,7 @@ import (
 	"github.com/lib/pq"
 	_ "github.com/lib/pq"
 	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -52,10 +55,13 @@ import (
 =======
 	"github.com/quanganh247-qa/go-blog-be/app/service/rabbitmq"
 >>>>>>> 9d28896 (image pet)
+=======
+>>>>>>> 272832d (redis cache)
 	"github.com/quanganh247-qa/go-blog-be/app/util"
 )
 
 type UserServiceInterface interface {
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -72,6 +78,8 @@ type UserServiceInterface interface {
 >>>>>>> edfe5ad (OTP verifycation)
 =======
 	// createUserService(ctx *gin.Context, req createUserRequest) (*db.User, error)
+=======
+>>>>>>> 272832d (redis cache)
 	createUserService(ctx *gin.Context, req createUserRequest) error
 >>>>>>> 0fb3f30 (user images)
 	getUserDetailsService(ctx *gin.Context, username string) (*UserResponse, error)
@@ -186,6 +194,7 @@ func (server *UserService) createUserService(ctx *gin.Context, req createUserReq
 		Address:         pgtype.Text{String: req.Address, Valid: true},
 		DataImage:       req.DataImage,
 <<<<<<< HEAD
+<<<<<<< HEAD
 		OriginalImage:   pgtype.Text{String: req.OriginalImage, Valid: true},
 		Role:            pgtype.Text{String: "user", Valid: true}, //
 		IsVerifiedEmail: pgtype.Bool{Bool: true, Valid: true},
@@ -194,6 +203,9 @@ func (server *UserService) createUserService(ctx *gin.Context, req createUserReq
 >>>>>>> 6610455 (feat: redis queue)
 =======
 		OriginalImage:   req.OriginalImage,
+=======
+		OriginalImage:   pgtype.Text{String: req.OriginalImage, Valid: true},
+>>>>>>> 272832d (redis cache)
 		Role:            pgtype.Text{String: "user", Valid: true}, //
 		IsVerifiedEmail: pgtype.Bool{Bool: true, Valid: true},
 >>>>>>> 0fb3f30 (user images)
@@ -402,8 +414,12 @@ func (server *UserService) getUserDetailsService(ctx *gin.Context, username stri
 }
 
 func (server *UserService) getUserDetailsService(ctx *gin.Context, username string) (*UserResponse, error) {
+<<<<<<< HEAD
 	user, err := server.storeDB.GetUser(ctx, username)
 >>>>>>> 0fb3f30 (user images)
+=======
+	user, err := server.redis.UserInfoLoadCache(username)
+>>>>>>> 272832d (redis cache)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			ctx.JSON(http.StatusNotFound, "user not found")
@@ -439,13 +455,18 @@ func (server *UserService) getUserDetailsService(ctx *gin.Context, username stri
 >>>>>>> 272832d (redis cache)
 =======
 		Email:         user.Email,
+<<<<<<< HEAD
 		PhoneNumber:   user.PhoneNumber.String,
 		Address:       user.Address.String,
 		DataImage:     user.DataImage,
 >>>>>>> 0fb3f30 (user images)
+=======
+		PhoneNumber:   user.PhoneNumber,
+		Address:       user.Address,
+		DataImage:     []byte(user.DataImage),
+>>>>>>> 272832d (redis cache)
 		OriginalImage: user.OriginalImage,
 	}, nil
-	// TODO: Implement logout logic
 }
 
 func (server *UserService) getAllUsersService(ctx *gin.Context) ([]UserResponse, error) {
@@ -650,12 +671,16 @@ func (service *UserService) logoutUsersService(ctx *gin.Context, username string
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	service.redis.RemoveUserInfoCache(username)
 =======
 =======
 >>>>>>> 9d28896 (image pet)
 	// service.redis.RemoveUserInfoCache(username)
 >>>>>>> 9d28896 (image pet)
+=======
+	service.redis.RemoveUserInfoCache(username)
+>>>>>>> 272832d (redis cache)
 =======
 	service.redis.RemoveUserInfoCache(username)
 >>>>>>> 272832d (redis cache)
@@ -1120,6 +1145,7 @@ func (s *UserService) GetAllRoleService(ctx *gin.Context) ([]string, error) {
 =======
 	return nil // Successfully updated
 }
+<<<<<<< HEAD
 
 <<<<<<< HEAD
 >>>>>>> 79a3bcc (medicine api)
@@ -1302,3 +1328,5 @@ func (s *UserService) ForgotPasswordService(ctx *gin.Context, email string) erro
 >>>>>>> 79a3bcc (medicine api)
 =======
 >>>>>>> 9d28896 (image pet)
+=======
+>>>>>>> 272832d (redis cache)

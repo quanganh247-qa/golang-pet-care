@@ -7,6 +7,7 @@ import (
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 	"log"
 >>>>>>> 3835eb4 (update pet_schedule api)
@@ -33,10 +34,13 @@ import (
 =======
 	"time"
 >>>>>>> e01abc5 (pet schedule api)
+=======
+>>>>>>> 272832d (redis cache)
 
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5/pgtype"
 	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 	"github.com/quanganh247-qa/go-blog-be/app/service/llm"
@@ -45,10 +49,13 @@ import (
 =======
 	"github.com/quanganh247-qa/go-blog-be/app/service/llm"
 >>>>>>> ffc9071 (AI suggestion)
+=======
+>>>>>>> 272832d (redis cache)
 	"github.com/quanganh247-qa/go-blog-be/app/util"
 )
 
 type PetScheduleServiceInterface interface {
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 	CreatePetScheduleService(ctx *gin.Context, req PetScheduleRequest, petID int64) error
@@ -150,10 +157,27 @@ func (s *PetScheduleService) CreatePetScheduleService(ctx *gin.Context, req PetS
 			PetID:        pgtype.Int8{Int64: petID, Valid: true},
 			ScheduleType: req.ScheduleType,
 			Duration:     pgtype.Text{String: req.Duration, Valid: true},
+=======
+	CreatePetScheduleService(ctx *gin.Context, req PetScheduleRequest) error
+}
+
+func (s *PetScheduleService) CreatePetScheduleService(ctx *gin.Context, req PetScheduleRequest) error {
+
+	eventTime, _, err := util.ParseStringToTime(req.EventTime, "")
+	if err != nil {
+		return fmt.Errorf("parse event time")
+	}
+
+	// Implement logic to create a pet schedule
+	err = s.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
+		return q.CreatePetSchedule(ctx, db.CreatePetScheduleParams{
+			ScheduleType: req.ScheduleType,
+>>>>>>> 272832d (redis cache)
 			EventTime:    pgtype.Timestamp{Time: eventTime, Valid: true},
 			ActivityType: pgtype.Text{String: req.ActivityType, Valid: true},
 			Frequency:    pgtype.Text{String: req.Frequency, Valid: true},
 			Notes:        pgtype.Text{String: req.Notes, Valid: true},
+<<<<<<< HEAD
 >>>>>>> 272832d (redis cache)
 =======
 			PetID:            pgtype.Int8{Int64: petID, Valid: true},
@@ -163,11 +187,14 @@ func (s *PetScheduleService) CreatePetScheduleService(ctx *gin.Context, req PetS
 			EndDate:          endDate,
 			Notes:            pgtype.Text{String: req.Notes, Valid: true},
 >>>>>>> 3835eb4 (update pet_schedule api)
+=======
+>>>>>>> 272832d (redis cache)
 		})
 	})
 	if err != nil {
 		return fmt.Errorf("error creating pet schdule: ", err)
 	}
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 	return nil
@@ -623,11 +650,14 @@ func (s *PetScheduleService) ProcessSuggestionGemini(ctx *gin.Context, descripti
 <<<<<<< HEAD
 <<<<<<< HEAD
 =======
+=======
+>>>>>>> 272832d (redis cache)
 	// Use the provided request to create the schedule in the database
 	// Return an error if the schedule creation fails
 
 	return nil
 }
+<<<<<<< HEAD
 >>>>>>> 272832d (redis cache)
 =======
 	return nil
@@ -753,3 +783,5 @@ func (s *PetScheduleService) DeletePetScheduleService(ctx *gin.Context, schedule
 >>>>>>> ffc9071 (AI suggestion)
 =======
 >>>>>>> e859654 (Elastic search)
+=======
+>>>>>>> 272832d (redis cache)

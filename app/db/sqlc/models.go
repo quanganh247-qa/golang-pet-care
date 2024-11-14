@@ -11,6 +11,7 @@ import (
 type Appointment struct {
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> 4ccd381 (Update appointment flow)
 	AppointmentID     int64            `json:"appointment_id"`
@@ -49,6 +50,8 @@ type CartItem struct {
 	UnitPrice  float64       `json:"unit_price"`
 	TotalPrice pgtype.Float8 `json:"total_price"`
 =======
+=======
+>>>>>>> 272832d (redis cache)
 	AppointmentID int64            `json:"appointment_id"`
 	Petid         pgtype.Int8      `json:"petid"`
 	Username      pgtype.Text      `json:"username"`
@@ -281,6 +284,7 @@ type MedicalHistory struct {
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 type Doctorschedule struct {
 	ID        int64            `json:"id"`
 	DoctorID  int32            `json:"doctor_id"`
@@ -402,6 +406,8 @@ type Order struct {
 	Notes           pgtype.Text      `json:"notes"`
 }
 
+=======
+>>>>>>> 272832d (redis cache)
 type Medicine struct {
 	ID          int64              `json:"id"`
 	Name        string             `json:"name"`
@@ -459,6 +465,7 @@ type Pet struct {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	OriginalImage   pgtype.Text   `json:"original_image"`
 =======
 	OriginalImage   string        `json:"original_image"`
@@ -468,6 +475,24 @@ type Pet struct {
 =======
 	OriginalImage   string        `json:"original_image"`
 >>>>>>> 0fb3f30 (user images)
+=======
+	OriginalImage   pgtype.Text   `json:"original_image"`
+}
+
+type PetSchedule struct {
+	ID           int64            `json:"id"`
+	PetID        pgtype.Int8      `json:"pet_id"`
+	ScheduleType string           `json:"schedule_type"`
+	EventTime    pgtype.Timestamp `json:"event_time"`
+	Duration     pgtype.Interval  `json:"duration"`
+	FoodType     pgtype.Text      `json:"food_type"`
+	Quantity     pgtype.Float8    `json:"quantity"`
+	ActivityType pgtype.Text      `json:"activity_type"`
+	Frequency    pgtype.Text      `json:"frequency"`
+	Notes        pgtype.Text      `json:"notes"`
+	CreatedAt    pgtype.Timestamp `json:"created_at"`
+	IsActive     pgtype.Bool      `json:"is_active"`
+>>>>>>> 272832d (redis cache)
 }
 
 <<<<<<< HEAD
@@ -684,19 +709,6 @@ type PetTreatment struct {
 	CreatedAt pgtype.Timestamptz `json:"created_at"`
 }
 
-type Petservicelocation struct {
-	Locationid    int64          `json:"locationid"`
-	Name          string         `json:"name"`
-	Address       string         `json:"address"`
-	Latitude      pgtype.Numeric `json:"latitude"`
-	Longitude     pgtype.Numeric `json:"longitude"`
-	Contactnumber pgtype.Text    `json:"contactnumber"`
-	Businesshours pgtype.Text    `json:"businesshours"`
-	Servicetypes  []string       `json:"servicetypes"`
-	Rating        pgtype.Numeric `json:"rating"`
-	Isverified    pgtype.Bool    `json:"isverified"`
-}
-
 type PhaseMedicine struct {
 	PhaseID    int64       `json:"phase_id"`
 	MedicineID int64       `json:"medicine_id"`
@@ -894,6 +906,7 @@ type User struct {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	OriginalImage   pgtype.Text      `json:"original_image"`
 =======
 	OriginalImage   string           `json:"original_image"`
@@ -904,6 +917,9 @@ type User struct {
 =======
 	OriginalImage   string           `json:"original_image"`
 >>>>>>> 0fb3f30 (user images)
+=======
+	OriginalImage   pgtype.Text      `json:"original_image"`
+>>>>>>> 272832d (redis cache)
 	Role            pgtype.Text      `json:"role"`
 	Status          pgtype.Text      `json:"status"`
 	CreatedAt       pgtype.Timestamp `json:"created_at"`

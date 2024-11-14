@@ -13,6 +13,7 @@ import (
 type Querier interface {
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	ActiveReminder(ctx context.Context, arg ActiveReminderParams) error
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -120,12 +121,18 @@ type Querier interface {
 	CreateUser(ctx context.Context, arg CreateUserParams) (User, error)
 >>>>>>> ada3717 (Docker file)
 =======
+=======
+	CreateAppointment(ctx context.Context, arg CreateAppointmentParams) (Appointment, error)
+	CreatePet(ctx context.Context, arg CreatePetParams) (Pet, error)
+	CreatePetSchedule(ctx context.Context, arg CreatePetScheduleParams) error
+>>>>>>> 272832d (redis cache)
 	CreateService(ctx context.Context, arg CreateServiceParams) (Service, error)
 	CreateServiceType(ctx context.Context, arg CreateServiceTypeParams) (Servicetype, error)
 	CreateUser(ctx context.Context, arg CreateUserParams) (int64, error)
 >>>>>>> 0fb3f30 (user images)
 	CreateVaccination(ctx context.Context, arg CreateVaccinationParams) (Vaccination, error)
 	CreateVerifyEmail(ctx context.Context, arg CreateVerifyEmailParams) (VerifyEmail, error)
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -174,6 +181,9 @@ type Querier interface {
 =======
 	DeleteNotificationsByUsername(ctx context.Context, username string) error
 >>>>>>> e859654 (Elastic search)
+=======
+	DeleteDeviceToken(ctx context.Context, arg DeleteDeviceTokenParams) error
+>>>>>>> 272832d (redis cache)
 	DeletePet(ctx context.Context, petid int64) error
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -257,6 +267,7 @@ type Querier interface {
 =======
 	GetActiveDoctors(ctx context.Context, arg GetActiveDoctorsParams) ([]GetActiveDoctorsRow, error)
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> 6f3ea8a (update sqlc)
 =======
@@ -281,6 +292,9 @@ type Querier interface {
 >>>>>>> 79a3bcc (medicine api)
 =======
 >>>>>>> 6c35562 (dicease and treatment plan)
+=======
+	GetAllSchedulesByPet(ctx context.Context, arg GetAllSchedulesByPetParams) ([]PetSchedule, error)
+>>>>>>> 272832d (redis cache)
 	GetAllServices(ctx context.Context, arg GetAllServicesParams) ([]Service, error)
 <<<<<<< HEAD
 	GetAllTimeSlots(ctx context.Context, arg GetAllTimeSlotsParams) ([]GetAllTimeSlotsRow, error)
@@ -437,6 +451,7 @@ type Querier interface {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	GetDoctorByUserId(ctx context.Context, userID int64) (Doctor, error)
 <<<<<<< HEAD
 	GetDoctorByUsername(ctx context.Context, username string) (GetDoctorByUsernameRow, error)
@@ -515,6 +530,8 @@ type Querier interface {
 >>>>>>> 79a3bcc (medicine api)
 =======
 >>>>>>> 6c35562 (dicease and treatment plan)
+=======
+>>>>>>> 272832d (redis cache)
 	GetPetByID(ctx context.Context, petid int64) (Pet, error)
 	GetPetDetailByUserID(ctx context.Context, arg GetPetDetailByUserIDParams) (GetPetDetailByUserIDRow, error)
 	GetPetLogByID(ctx context.Context, arg GetPetLogByIDParams) (GetPetLogByIDRow, error)
@@ -712,6 +729,7 @@ type Querier interface {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 	InsertMedicine(ctx context.Context, arg InsertMedicineParams) (Medication, error)
 =======
@@ -721,6 +739,8 @@ type Querier interface {
 	ListActiveFeedingSchedules(ctx context.Context) ([]Feedingschedule, error)
 	ListActivityLogs(ctx context.Context, arg ListActivityLogsParams) ([]Activitylog, error)
 >>>>>>> 79a3bcc (medicine api)
+=======
+>>>>>>> 272832d (redis cache)
 	ListPets(ctx context.Context, arg ListPetsParams) ([]Pet, error)
 	ListPetsByUsername(ctx context.Context, arg ListPetsByUsernameParams) ([]Pet, error)
 	ListTreatmentsByPet(ctx context.Context, arg ListTreatmentsByPetParams) ([]PetTreatment, error)
@@ -761,6 +781,7 @@ type Querier interface {
 <<<<<<< HEAD
 	SetPetInactive(ctx context.Context, arg SetPetInactiveParams) error
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> 272832d (redis cache)
 =======
 =======
@@ -775,6 +796,8 @@ type Querier interface {
 >>>>>>> 4ccd381 (Update appointment flow)
 	UpdateAppointmentByID(ctx context.Context, arg UpdateAppointmentByIDParams) error
 >>>>>>> e859654 (Elastic search)
+=======
+>>>>>>> 272832d (redis cache)
 	UpdateAppointmentStatus(ctx context.Context, arg UpdateAppointmentStatusParams) error
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -804,6 +827,7 @@ type Querier interface {
 >>>>>>> a415f25 (new data)
 	// Replace $2 with the specific date (YYYY-MM-DD)
 	UpdateDoctorAvailable(ctx context.Context, arg UpdateDoctorAvailableParams) error
+<<<<<<< HEAD
 <<<<<<< HEAD
 	UpdateFeedingSchedule(ctx context.Context, arg UpdateFeedingScheduleParams) error
 <<<<<<< HEAD
@@ -835,6 +859,8 @@ type Querier interface {
 >>>>>>> 79a3bcc (medicine api)
 =======
 >>>>>>> 6c35562 (dicease and treatment plan)
+=======
+>>>>>>> 272832d (redis cache)
 	UpdateNotification(ctx context.Context, appointmentID int64) error
 	UpdateOrderPaymentStatus(ctx context.Context, id int64) (Order, error)
 	UpdatePet(ctx context.Context, arg UpdatePetParams) error
