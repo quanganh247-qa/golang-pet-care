@@ -1,12 +1,14 @@
 package user
 
 import (
-	"context"
 	"database/sql"
 	"fmt"
+<<<<<<< HEAD
 	"log"
 <<<<<<< HEAD
 =======
+=======
+>>>>>>> 272832d (redis cache)
 	"math/big"
 >>>>>>> 9d28896 (image pet)
 	"net/http"
@@ -19,19 +21,25 @@ import (
 	_ "github.com/lib/pq"
 	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
 <<<<<<< HEAD
+<<<<<<< HEAD
 	"github.com/quanganh247-qa/go-blog-be/app/service/mail"
 	"github.com/quanganh247-qa/go-blog-be/app/service/worker"
 =======
 	"github.com/quanganh247-qa/go-blog-be/app/service/rabbitmq"
 >>>>>>> 9d28896 (image pet)
+=======
+>>>>>>> 272832d (redis cache)
 	"github.com/quanganh247-qa/go-blog-be/app/util"
 )
 
 type UserServiceInterface interface {
 <<<<<<< HEAD
+<<<<<<< HEAD
 	createUserService(ctx *gin.Context, req createUserRequest) (*VerrifyEmailTxParams, error)
 =======
 	// createUserService(ctx *gin.Context, req createUserRequest) (*db.User, error)
+=======
+>>>>>>> 272832d (redis cache)
 	createUserService(ctx *gin.Context, req createUserRequest) error
 >>>>>>> 0fb3f30 (user images)
 	getUserDetailsService(ctx *gin.Context, username string) (*UserResponse, error)
@@ -99,7 +107,7 @@ func (server *UserService) createUserService(ctx *gin.Context, req createUserReq
 		PhoneNumber:     pgtype.Text{String: req.PhoneNumber, Valid: true},
 		Address:         pgtype.Text{String: req.Address, Valid: true},
 		DataImage:       req.DataImage,
-		OriginalImage:   req.OriginalImage,
+		OriginalImage:   pgtype.Text{String: req.OriginalImage, Valid: true},
 		Role:            pgtype.Text{String: "user", Valid: true}, //
 		IsVerifiedEmail: pgtype.Bool{Bool: true, Valid: true},
 >>>>>>> 0fb3f30 (user images)
@@ -199,8 +207,12 @@ func (server *UserService) getUserDetailsService(ctx *gin.Context, username stri
 }
 
 func (server *UserService) getUserDetailsService(ctx *gin.Context, username string) (*UserResponse, error) {
+<<<<<<< HEAD
 	user, err := server.storeDB.GetUser(ctx, username)
 >>>>>>> 0fb3f30 (user images)
+=======
+	user, err := server.redis.UserInfoLoadCache(username)
+>>>>>>> 272832d (redis cache)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			ctx.JSON(http.StatusNotFound, "user not found")
@@ -220,13 +232,18 @@ func (server *UserService) getUserDetailsService(ctx *gin.Context, username stri
 		DataImage:     []byte(user.DataImage),
 =======
 		Email:         user.Email,
+<<<<<<< HEAD
 		PhoneNumber:   user.PhoneNumber.String,
 		Address:       user.Address.String,
 		DataImage:     user.DataImage,
 >>>>>>> 0fb3f30 (user images)
+=======
+		PhoneNumber:   user.PhoneNumber,
+		Address:       user.Address,
+		DataImage:     []byte(user.DataImage),
+>>>>>>> 272832d (redis cache)
 		OriginalImage: user.OriginalImage,
 	}, nil
-	// TODO: Implement logout logic
 }
 
 func (server *UserService) getAllUsersService(ctx *gin.Context) ([]UserResponse, error) {
@@ -330,10 +347,14 @@ func (service *UserService) logoutUsersService(ctx *gin.Context, username string
 		return fmt.Errorf("failed to delete token: %w", err)
 	}
 <<<<<<< HEAD
+<<<<<<< HEAD
 	service.redis.RemoveUserInfoCache(username)
 =======
 	// service.redis.RemoveUserInfoCache(username)
 >>>>>>> 9d28896 (image pet)
+=======
+	service.redis.RemoveUserInfoCache(username)
+>>>>>>> 272832d (redis cache)
 	return nil
 }
 
@@ -597,6 +618,7 @@ func (s *UserService) GetAllRoleService(ctx *gin.Context) ([]string, error) {
 =======
 	return nil // Successfully updated
 }
+<<<<<<< HEAD
 
 <<<<<<< HEAD
 // func (s *UserService) InsertTokenInfoService(ctx *gin.Context, arg InsertTokenInfoRequest, username string) (*db.TokenInfo, error) {
@@ -662,3 +684,5 @@ func (s *UserService) ProccessTaskSendVerifyEmail(ctx context.Context, payload r
 	return nil
 }
 >>>>>>> 9d28896 (image pet)
+=======
+>>>>>>> 272832d (redis cache)

@@ -4,8 +4,11 @@ import (
 	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
 	"github.com/quanganh247-qa/go-blog-be/app/middleware"
 	"github.com/quanganh247-qa/go-blog-be/app/service/redis"
+<<<<<<< HEAD
 	"github.com/quanganh247-qa/go-blog-be/app/service/worker"
 	"github.com/quanganh247-qa/go-blog-be/app/util"
+=======
+>>>>>>> 272832d (redis cache)
 )
 
 func Routes(routerGroup middleware.RouterGroup, taskDistributor worker.TaskDistributor, config util.Config) {
@@ -16,10 +19,15 @@ func Routes(routerGroup middleware.RouterGroup, taskDistributor worker.TaskDistr
 	userApi := &UserApi{
 		&UserController{
 			service: &UserService{
+<<<<<<< HEAD
 				storeDB:         db.StoreDB, // This should refer to the actual instance
 				redis:           redis.Client,
 				taskDistributor: taskDistributor,
 				config:          config,
+=======
+				storeDB: db.StoreDB, // This should refer to the actual instance
+				redis:   redis.Client,
+>>>>>>> 272832d (redis cache)
 			},
 		},
 	}

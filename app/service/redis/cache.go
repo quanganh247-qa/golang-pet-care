@@ -20,12 +20,19 @@ func (c *ClientType) LoadCacheByKey(key string, result interface{}, duration tim
 	return // Return closure
 }
 
+<<<<<<< HEAD
 type UserInfo struct {
+=======
+type userInfo struct {
+>>>>>>> 272832d (redis cache)
 	UserID          int64  `json:"user_id"`
 	Username        string `json:"username"`
 	FullName        string `json:"full_name"`
 	Email           string `json:"email"`
+<<<<<<< HEAD
 	HashedPassword  string `json:"hashed_password"`
+=======
+>>>>>>> 272832d (redis cache)
 	PhoneNumber     string `json:"phone_number"`
 	Address         string `json:"address"`
 	Role            string `json:"role"`
@@ -49,6 +56,7 @@ func (c *ClientType) UserInfoLoadCache(username string) (*UserInfo, error) {
 			return nil, err
 		}
 
+<<<<<<< HEAD
 		userRes := UserInfo{
 			UserID:          userData.ID,
 			Username:        userData.Username,
@@ -61,6 +69,18 @@ func (c *ClientType) UserInfoLoadCache(username string) (*UserInfo, error) {
 			PhoneNumber:     userData.PhoneNumber.String,
 			Address:         userData.Address.String,
 			Role:            userData.Role.String,
+=======
+		userRes := userInfo{
+			UserID:        userData.ID,
+			Username:      userData.Username,
+			Email:         userData.Email,
+			FullName:      userData.FullName,
+			DataImage:     string(userData.DataImage),
+			OriginalImage: userData.OriginalImage.String,
+			PhoneNumber:   userData.PhoneNumber.String,
+			Address:       userData.Address.String,
+			Role:          userData.Role.String,
+>>>>>>> 272832d (redis cache)
 		}
 		err = c.SetWithBackground(userKey, &userRes, time.Hour*12)
 		if err != nil {

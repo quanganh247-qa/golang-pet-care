@@ -41,7 +41,7 @@ type CreateUserParams struct {
 	PhoneNumber     pgtype.Text `json:"phone_number"`
 	Address         pgtype.Text `json:"address"`
 	DataImage       []byte      `json:"data_image"`
-	OriginalImage   string      `json:"original_image"`
+	OriginalImage   pgtype.Text `json:"original_image"`
 	Role            pgtype.Text `json:"role"`
 	IsVerifiedEmail pgtype.Bool `json:"is_verified_email"`
 >>>>>>> 0fb3f30 (user images)
