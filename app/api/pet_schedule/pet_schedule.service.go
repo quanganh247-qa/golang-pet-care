@@ -8,6 +8,7 @@ import (
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 	"log"
 >>>>>>> 3835eb4 (update pet_schedule api)
@@ -36,6 +37,9 @@ import (
 >>>>>>> e01abc5 (pet schedule api)
 =======
 >>>>>>> 272832d (redis cache)
+=======
+	"time"
+>>>>>>> e01abc5 (pet schedule api)
 
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5/pgtype"
@@ -55,6 +59,7 @@ import (
 )
 
 type PetScheduleServiceInterface interface {
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -159,20 +164,33 @@ func (s *PetScheduleService) CreatePetScheduleService(ctx *gin.Context, req PetS
 			Duration:     pgtype.Text{String: req.Duration, Valid: true},
 =======
 	CreatePetScheduleService(ctx *gin.Context, req PetScheduleRequest) error
+=======
+	CreatePetScheduleService(ctx *gin.Context, req PetScheduleRequest, petID int64) error
+	GetAllSchedulesByPetService(ctx *gin.Context, petID int64, pagination *util.Pagination) ([]PetScheduleResonse, error)
+>>>>>>> e01abc5 (pet schedule api)
 }
 
-func (s *PetScheduleService) CreatePetScheduleService(ctx *gin.Context, req PetScheduleRequest) error {
+func (s *PetScheduleService) CreatePetScheduleService(ctx *gin.Context, req PetScheduleRequest, petID int64) error {
+
+	if pet, err := s.storeDB.GetPetByID(ctx, petID); err != nil {
+		return fmt.Errorf("Cannot find pet with ID %s: %w", pet.Name, err)
+	}
 
 	eventTime, _, err := util.ParseStringToTime(req.EventTime, "")
 	if err != nil {
-		return fmt.Errorf("parse event time")
+		return fmt.Errorf("parse event time%w", err)
 	}
 
 	// Implement logic to create a pet schedule
 	err = s.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
 		return q.CreatePetSchedule(ctx, db.CreatePetScheduleParams{
+			PetID:        pgtype.Int8{Int64: petID, Valid: true},
 			ScheduleType: req.ScheduleType,
+<<<<<<< HEAD
 >>>>>>> 272832d (redis cache)
+=======
+			Duration:     pgtype.Text{String: req.Duration, Valid: true},
+>>>>>>> e01abc5 (pet schedule api)
 			EventTime:    pgtype.Timestamp{Time: eventTime, Valid: true},
 			ActivityType: pgtype.Text{String: req.ActivityType, Valid: true},
 			Frequency:    pgtype.Text{String: req.Frequency, Valid: true},
@@ -194,6 +212,7 @@ func (s *PetScheduleService) CreatePetScheduleService(ctx *gin.Context, req PetS
 	if err != nil {
 		return fmt.Errorf("error creating pet schdule: ", err)
 	}
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -669,6 +688,15 @@ func (s *PetScheduleService) GetAllSchedulesByPetService(ctx *gin.Context, petID
 
 	fmt.Println(petID)
 
+=======
+	return nil
+}
+
+func (s *PetScheduleService) GetAllSchedulesByPetService(ctx *gin.Context, petID int64, pagination *util.Pagination) ([]PetScheduleResonse, error) {
+
+	offset := (pagination.Page - 1) * pagination.PageSize
+
+>>>>>>> e01abc5 (pet schedule api)
 	res, err := s.storeDB.GetAllSchedulesByPet(ctx, db.GetAllSchedulesByPetParams{
 		Limit:  int32(pagination.PageSize),
 		Offset: int32(offset),
@@ -678,6 +706,7 @@ func (s *PetScheduleService) GetAllSchedulesByPetService(ctx *gin.Context, petID
 		return nil, fmt.Errorf("error fetching pet schedule: ", err)
 	}
 
+<<<<<<< HEAD
 	var petSchedules []PetScheduleResponse
 	for _, r := range res {
 		petSchedules = append(petSchedules, PetScheduleResponse{
@@ -689,11 +718,25 @@ func (s *PetScheduleService) GetAllSchedulesByPetService(ctx *gin.Context, petID
 			EndType:          r.EndType.Bool,
 			EndDate:          r.EndDate.Time.Format(time.RFC3339),
 			Notes:            r.Notes.String,
+=======
+	var petSchedules []PetScheduleResonse
+	for _, r := range res {
+
+		petSchedules = append(petSchedules, PetScheduleResonse{
+			ID:           r.PetID.Int64,
+			ScheduleType: r.ScheduleType,
+			Duration:     r.Duration.String,
+			EventTime:    r.EventTime.Time.Format(time.RFC3339),
+			ActivityType: r.ActivityType.String,
+			Frequency:    r.Frequency.String,
+			Notes:        r.Notes.String,
+>>>>>>> e01abc5 (pet schedule api)
 		})
 	}
 
 	return petSchedules, nil
 }
+<<<<<<< HEAD
 <<<<<<< HEAD
 >>>>>>> e01abc5 (pet schedule api)
 =======
@@ -785,3 +828,5 @@ func (s *PetScheduleService) DeletePetScheduleService(ctx *gin.Context, schedule
 >>>>>>> e859654 (Elastic search)
 =======
 >>>>>>> 272832d (redis cache)
+=======
+>>>>>>> e01abc5 (pet schedule api)

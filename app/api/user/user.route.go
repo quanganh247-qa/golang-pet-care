@@ -122,6 +122,7 @@ func Routes(routerGroup middleware.RouterGroup, taskDistributor worker.TaskDistr
 		authRoute.PUT("/update-available/:id", userApi.controller.updateDoctorAvailableTime)
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 		// Token info for google calendar
 		// authRoute.POST("/token-info", userApi.controller.insertTokenInfo)
 <<<<<<< HEAD
@@ -139,6 +140,8 @@ func Routes(routerGroup middleware.RouterGroup, taskDistributor worker.TaskDistr
 		authRoute.GET("/roles", userApi.controller.GetAllRole)
 
 >>>>>>> ada3717 (Docker file)
+=======
+>>>>>>> e01abc5 (pet schedule api)
 	}
 
 }

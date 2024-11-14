@@ -3,6 +3,9 @@ package petschedule
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> e01abc5 (pet schedule api)
 =======
 >>>>>>> e01abc5 (pet schedule api)
 import (
@@ -12,18 +15,22 @@ import (
 	"github.com/gin-gonic/gin"
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	"github.com/quanganh247-qa/go-blog-be/app/middleware"
 =======
 >>>>>>> e01abc5 (pet schedule api)
 =======
 	"github.com/quanganh247-qa/go-blog-be/app/middleware"
 >>>>>>> 6610455 (feat: redis queue)
+=======
+>>>>>>> e01abc5 (pet schedule api)
 	"github.com/quanganh247-qa/go-blog-be/app/util"
 )
 
 type PetScheduleControllerInterface interface {
 	createPetSchedule(ctx *gin.Context)
 	getAllSchedulesByPet(ctx *gin.Context)
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 	listPetSchedulesByUsername(ctx *gin.Context)
@@ -46,10 +53,13 @@ type PetScheduleControllerInterface interface {
 >>>>>>> 4c66ef3 (feat: update schedule API)
 =======
 >>>>>>> ffc9071 (AI suggestion)
+=======
+>>>>>>> e01abc5 (pet schedule api)
 }
 
 func (c *PetScheduleController) createPetSchedule(ctx *gin.Context) {
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 	petIDStr := ctx.Param("petid")
@@ -59,6 +69,9 @@ func (c *PetScheduleController) createPetSchedule(ctx *gin.Context) {
 =======
 	petIDStr := ctx.Param("petid")
 >>>>>>> 6610455 (feat: redis queue)
+=======
+	petIDStr := ctx.Query("pet_id")
+>>>>>>> e01abc5 (pet schedule api)
 	if petIDStr == "" {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Missed value pet id"})
 		return
@@ -88,6 +101,7 @@ func (c *PetScheduleController) createPetSchedule(ctx *gin.Context) {
 func (s *PetScheduleController) getAllSchedulesByPet(ctx *gin.Context) {
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	petIDStr := ctx.Param("petid")
 =======
 	petIDStr := ctx.Query("pet_id")
@@ -95,6 +109,9 @@ func (s *PetScheduleController) getAllSchedulesByPet(ctx *gin.Context) {
 =======
 	petIDStr := ctx.Param("petid")
 >>>>>>> 6610455 (feat: redis queue)
+=======
+	petIDStr := ctx.Query("pet_id")
+>>>>>>> e01abc5 (pet schedule api)
 	petID, err := strconv.ParseInt(petIDStr, 10, 64)
 	if err != nil {
 		// Handle the error, e.g., by sending an error response or logging it
@@ -114,6 +131,7 @@ func (s *PetScheduleController) getAllSchedulesByPet(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, util.SuccessResponse("Schedules", schedules))
+<<<<<<< HEAD
 <<<<<<< HEAD
 }
 
@@ -317,4 +335,6 @@ func (s *PetScheduleController) generateScheduleSuggestion(ctx *gin.Context) {
 =======
 type PetScheduleControllerInterface interface {
 >>>>>>> 272832d (redis cache)
+=======
+>>>>>>> e01abc5 (pet schedule api)
 }
