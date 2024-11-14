@@ -28,6 +28,7 @@ func Routes(routerGroup middleware.RouterGroup) {
 		user.POST("/login", userApi.controller.loginUser)
 		user.PUT("/verify-email", userApi.controller.verifyEmail)
 		authRoute.GET("/refresh_token", userApi.controller.getAccessToken)
+		authRoute.POST("/logout", userApi.controller.logoutUser)
 
 		// Doctor
 		authRoute.POST("/create-doctor", userApi.controller.createDoctor)
