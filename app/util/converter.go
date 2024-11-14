@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/jackc/pgx/pgtype"
 )
 
 func ConvertedQuery(query map[string][]string) map[string]string {
@@ -124,4 +125,74 @@ func ParseStringToTime(startDate string, endDate string) (time.Time, time.Time, 
 	}
 
 	return parsedStartDate, parsedEndDate, nil
+}
+
+// StringToInterval converts a string duration (like "00:30:00") to a pgtype.Interval
+func StringToInterval(duration string) (pgtype.Interval, error) {
+	var interval pgtype.Interval
+
+	// If duration is empty, return null interval
+	if duration == "" {
+		interval.Status = pgtype.Null
+		return interval, nil
+	}
+
+	// Check if the format is HH:MM:SS
+	parts := strings.Split(duration, ":")
+	if len(parts) == 3 {
+		// Parse hours, minutes, and seconds
+		hours, err := strconv.Atoi(parts[0])
+		if err != nil {
+			return interval, fmt.Errorf("invalid hours in duration: %w", err)
+		}
+
+		minutes, err := strconv.Atoi(parts[1])
+		if err != nil {
+			return interval, fmt.Errorf("invalid minutes in duration: %w", err)
+		}
+
+		seconds, err := strconv.Atoi(parts[2])
+		if err != nil {
+			return interval, fmt.Errorf("invalid seconds in duration: %w", err)
+		}
+
+		// Convert to microseconds
+		totalMicroseconds := (int64(hours)*3600 + int64(minutes)*60 + int64(seconds)) * 1e6
+
+		interval.Microseconds = totalMicroseconds
+		interval.Status = pgtype.Present
+		return interval, nil
+	}
+
+	// Otherwise, handle default time.ParseDuration format (e.g., "1h", "30m")
+	parsed, err := time.ParseDuration(duration)
+	if err != nil {
+		return interval, fmt.Errorf("invalid duration format: %w", err)
+	}
+
+	// Convert to microseconds for PostgreSQL interval
+	microseconds := parsed.Microseconds()
+
+	interval.Microseconds = microseconds
+	interval.Status = pgtype.Present
+
+	return interval, nil
+}
+
+// Helper function to convert pgtype.Interval to string
+func IntervalToString(interval pgtype.Interval) string {
+	if interval.Status != pgtype.Present {
+		return ""
+	}
+
+	// Convert microseconds back to duration
+	duration := time.Duration(interval.Microseconds) * time.Microsecond
+
+	// Add days (assuming 24 hours per day)
+	duration += time.Duration(interval.Days) * 24 * time.Hour
+
+	// Add months (approximate - assuming 30 days per month)
+	duration += time.Duration(interval.Months) * 30 * 24 * time.Hour
+
+	return duration.String()
 }

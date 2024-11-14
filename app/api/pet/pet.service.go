@@ -37,7 +37,7 @@ func (s *PetService) CreatePet(ctx *gin.Context, username string, req createPetR
 			Gender:          pgtype.Text{String: req.Gender, Valid: true},
 			Healthnotes:     pgtype.Text{String: req.Healthnotes, Valid: true},
 			DataImage:       req.DataImage,
-			OriginalImage:   req.OriginalImage,
+			OriginalImage:   pgtype.Text{String: req.OriginalImage, Valid: true},
 			BirthDate:       pgtype.Date{Time: bod, Valid: true},
 			MicrochipNumber: pgtype.Text{String: req.MicrophoneNumber, Valid: true},
 		})
@@ -79,7 +79,7 @@ func (s *PetService) GetPetByID(ctx *gin.Context, petid int64) (*createPetRespon
 			Age:           int16(res.Age.Int32),
 			Weight:        res.Weight.Float64,
 			DataImage:     res.DataImage,
-			OriginalImage: res.OriginalImage,
+			OriginalImage: res.OriginalImage.String,
 		}
 		return nil
 	})
@@ -114,7 +114,7 @@ func (s *PetService) ListPets(ctx *gin.Context, req listPetsRequest, pagination 
 				Age:           int16(r.Age.Int32),
 				Weight:        r.Weight.Float64,
 				DataImage:     r.DataImage,
-				OriginalImage: r.OriginalImage,
+				OriginalImage: r.OriginalImage.String,
 			})
 		}
 		return nil
@@ -172,7 +172,7 @@ func (s *PetService) ListPetsByUsername(ctx *gin.Context, username string, pagin
 				Age:           int16(r.Age.Int32),
 				Weight:        r.Weight.Float64,
 				DataImage:     r.DataImage,
-				OriginalImage: r.OriginalImage,
+				OriginalImage: r.OriginalImage.String,
 			})
 		}
 		return nil

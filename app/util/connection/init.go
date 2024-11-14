@@ -4,8 +4,10 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/hibiken/asynq"
 	"github.com/jackc/pgx/v5/pgxpool"
 	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
+	"github.com/quanganh247-qa/go-blog-be/app/service/redis"
 	"github.com/quanganh247-qa/go-blog-be/app/service/token"
 	"github.com/quanganh247-qa/go-blog-be/app/util"
 )
@@ -26,6 +28,11 @@ func Init(config util.Config) (*Connection, error) {
 	if err != nil {
 		return nil, fmt.Errorf("cannot connect to db: %w", err)
 	}
+
+	_ = asynq.RedisClientOpt{
+		Addr: config.RedisAddress,
+	}
+	redis.InitRedis(config.RedisAddress)
 
 	// // Initialize RabbitMQ client
 	// clientRabbitMQ := rabbitmq.Init(config.RabbitMQAddress)

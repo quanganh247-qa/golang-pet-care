@@ -5,8 +5,7 @@ import (
 
 	"github.com/jackc/pgx/v5/pgtype"
 	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
-	"github.com/quanganh247-qa/go-blog-be/app/service/mail"
-	"github.com/quanganh247-qa/go-blog-be/app/service/rabbitmq"
+	"github.com/quanganh247-qa/go-blog-be/app/service/redis"
 )
 
 type UserController struct {
@@ -14,9 +13,8 @@ type UserController struct {
 }
 
 type UserService struct {
-	storeDB    db.Store
-	emailQueue *rabbitmq.EmailQueue
-	mailer     mail.EmailSender
+	storeDB db.Store
+	redis   *redis.ClientType
 }
 
 // route
@@ -38,16 +36,15 @@ type createUserRequest struct {
 }
 
 type UserResponse struct {
-	Username        string    `json:"username"`
-	FullName        string    `json:"full_name"`
-	Email           string    `json:"email"`
-	PhoneNumber     string    `json:"phone_number"`
-	Address         string    `json:"address"`
-	Role            string    `json:"role"`
-	IsVerifiedEmail bool      `json:"is_verified_email"`
-	DataImage       []byte    `json:"data_image"`
-	OriginalImage   string    `json:"original_image"`
-	RemovedAt       time.Time `json:"removed_at"`
+	Username      string    `json:"username"`
+	FullName      string    `json:"full_name"`
+	Email         string    `json:"email"`
+	PhoneNumber   string    `json:"phone_number"`
+	Address       string    `json:"address"`
+	Role          string    `json:"role"`
+	DataImage     []byte    `json:"data_image"`
+	OriginalImage string    `json:"original_image"`
+	RemovedAt     time.Time `json:"removed_at"`
 }
 
 type loginUserRequest struct {

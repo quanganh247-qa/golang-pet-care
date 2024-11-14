@@ -1,10 +1,8 @@
 package user
 
 import (
-	"context"
 	"database/sql"
 	"fmt"
-	"log"
 	"math/big"
 	"net/http"
 	"time"
@@ -15,12 +13,10 @@ import (
 	"github.com/lib/pq"
 	_ "github.com/lib/pq"
 	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
-	"github.com/quanganh247-qa/go-blog-be/app/service/rabbitmq"
 	"github.com/quanganh247-qa/go-blog-be/app/util"
 )
 
 type UserServiceInterface interface {
-	// createUserService(ctx *gin.Context, req createUserRequest) (*db.User, error)
 	createUserService(ctx *gin.Context, req createUserRequest) error
 	getUserDetailsService(ctx *gin.Context, username string) (*UserResponse, error)
 	getAllUsersService(ctx *gin.Context) ([]UserResponse, error)
@@ -53,7 +49,7 @@ func (server *UserService) createUserService(ctx *gin.Context, req createUserReq
 		PhoneNumber:     pgtype.Text{String: req.PhoneNumber, Valid: true},
 		Address:         pgtype.Text{String: req.Address, Valid: true},
 		DataImage:       req.DataImage,
-		OriginalImage:   req.OriginalImage,
+		OriginalImage:   pgtype.Text{String: req.OriginalImage, Valid: true},
 		Role:            pgtype.Text{String: "user", Valid: true}, //
 		IsVerifiedEmail: pgtype.Bool{Bool: true, Valid: true},
 	}
@@ -77,7 +73,7 @@ func (server *UserService) createUserService(ctx *gin.Context, req createUserReq
 }
 
 func (server *UserService) getUserDetailsService(ctx *gin.Context, username string) (*UserResponse, error) {
-	user, err := server.storeDB.GetUser(ctx, username)
+	user, err := server.redis.UserInfoLoadCache(username)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			ctx.JSON(http.StatusNotFound, "user not found")
@@ -90,12 +86,11 @@ func (server *UserService) getUserDetailsService(ctx *gin.Context, username stri
 		Username:      user.Username,
 		FullName:      user.FullName,
 		Email:         user.Email,
-		PhoneNumber:   user.PhoneNumber.String,
-		Address:       user.Address.String,
-		DataImage:     user.DataImage,
+		PhoneNumber:   user.PhoneNumber,
+		Address:       user.Address,
+		DataImage:     []byte(user.DataImage),
 		OriginalImage: user.OriginalImage,
 	}, nil
-	// TODO: Implement logout logic
 }
 
 func (server *UserService) getAllUsersService(ctx *gin.Context) ([]UserResponse, error) {
@@ -159,7 +154,7 @@ func (service *UserService) logoutUsersService(ctx *gin.Context, username string
 	if err != nil {
 		return fmt.Errorf("failed to delete token: %w", err)
 	}
-	// service.redis.RemoveUserInfoCache(username)
+	service.redis.RemoveUserInfoCache(username)
 	return nil
 }
 
@@ -421,47 +416,4 @@ func (s *UserService) UpdateDoctorAvailable(ctx *gin.Context, timeSlotID int64) 
 	}
 
 	return nil // Successfully updated
-}
-
-func (s *UserService) ProccessTaskSendVerifyEmail(ctx context.Context, payload rabbitmq.PayloadVerifyEmail) error {
-	// var payload PayloadVerifyEmail
-	// if err := json.Unmarshal(task.Payload(), &payload); err != nil {
-	// 	return fmt.Errorf("failed to unmarshal payload: %w", err)
-	// }
-	log.Printf("Processing task for user: %s", payload.Username)
-
-	user, err := s.storeDB.GetUser(ctx, payload.Username)
-	if err != nil {
-
-		if err == sql.ErrNoRows {
-			return fmt.Errorf("user doesn't exists: %w", err)
-		}
-		return fmt.Errorf("failed to get user: %w", err)
-	}
-	log.Printf("User retrieved successfully")
-
-	verifyEmail, err := s.storeDB.CreateVerifyEmail(ctx, db.CreateVerifyEmailParams{
-		Username:   user.Username,
-		Email:      user.Email,
-		SecretCode: util.RandomString(32),
-	})
-	if err != nil {
-		return fmt.Errorf("failed to create verify email %w", err)
-	}
-	subject := "Welcome to Simple Bank"
-	// TODO: replace this URL with an environment variable that points to a front-end page
-	verifyUrl := fmt.Sprintf("http://localhost:8088/api/v1/user/verify-email?email_id=%d&secret_code=%s",
-		verifyEmail.ID, verifyEmail.SecretCode)
-	content := fmt.Sprintf(`Hello %s,<br/>
-	Thank you for registering with us!<br/>
-	Please <a href="%s">click here</a> to verify your email address.<br/>
-	`, user.FullName, verifyUrl)
-	to := []string{user.Email}
-	fmt.Println(subject)
-	err = s.mailer.SendEmail(subject, content, to, nil, nil, nil)
-	if err != nil {
-		return fmt.Errorf("failed to send verify email: %w", err)
-	}
-
-	return nil
 }
