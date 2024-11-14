@@ -166,11 +166,14 @@ type loginUserRequest struct {
 	Username string `json:"username" binding:"required,alphanum"`
 	Password string `json:"password" binding:"required,min=6,max=25"`
 	// Token      string `json:"token" binding:"required"`
+<<<<<<< HEAD
 >>>>>>> c3c833d (login api)
 =======
 	Username   string `json:"username" binding:"required,alphanum"`
 	Password   string `json:"password" binding:"required,min=6,max=25"`
 >>>>>>> 290baeb (fixed vaccine routes)
+=======
+>>>>>>> c3c833d (login api)
 	Token      string `json:"token"`
 	DeviceType string `json:"device_type"`
 }
@@ -183,6 +186,7 @@ type loginUSerResponse struct {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	DeviceToken           string       `json:"device_token"`
 =======
 	DeviceToken           []string     `json:"device_token"`
@@ -193,6 +197,9 @@ type loginUSerResponse struct {
 =======
 	DeviceToken           []string     `json:"device_token"`
 >>>>>>> 0fb3f30 (user images)
+=======
+	DeviceToken           string       `json:"device_token"`
+>>>>>>> c3c833d (login api)
 	DataImage             string       `json:"data_image"`
 }
 

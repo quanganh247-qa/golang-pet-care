@@ -500,6 +500,7 @@ func (service *UserService) loginUserService(ctx *gin.Context, req loginUserRequ
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -565,6 +566,15 @@ func (service *UserService) loginUserService(ctx *gin.Context, req loginUserRequ
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+=======
+
+	err = util.CheckPassword(req.Password, user.HashedPassword)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, "Incorrect passward")
+		return nil, fmt.Errorf("Incorrect passward")
+	}
+
+>>>>>>> c3c833d (login api)
 	// device_tokens, err := service.storeDB.GetDeviceTokenByUsername(ctx, req.Username)
 	// if err != nil {
 	// 	ctx.JSON(http.StatusInternalServerError, "internal server error")
@@ -575,6 +585,7 @@ func (service *UserService) loginUserService(ctx *gin.Context, req loginUserRequ
 	// for _, d := range device_tokens {
 	// 	device_tokens_response = append(device_tokens_response, d.Token)
 	// }
+<<<<<<< HEAD
 >>>>>>> c3c833d (login api)
 
 =======
@@ -586,6 +597,9 @@ func (service *UserService) loginUserService(ctx *gin.Context, req loginUserRequ
 	}
 
 >>>>>>> edfe5ad (OTP verifycation)
+=======
+
+>>>>>>> c3c833d (login api)
 	tokens, err := service.storeDB.InsertDeviceToken(ctx, db.InsertDeviceTokenParams{
 		Username:   req.Username,
 		Token:      req.Token,
@@ -594,6 +608,7 @@ func (service *UserService) loginUserService(ctx *gin.Context, req loginUserRequ
 
 	if err != nil {
 		return nil, fmt.Errorf("invalid token device")
+<<<<<<< HEAD
 <<<<<<< HEAD
 =======
 	var device_tokens_response []string
@@ -607,10 +622,13 @@ func (service *UserService) loginUserService(ctx *gin.Context, req loginUserRequ
 	for _, d := range device_tokens {
 		device_tokens_response = append(device_tokens_response, d.Token)
 >>>>>>> 0fb3f30 (user images)
+=======
+>>>>>>> c3c833d (login api)
 	}
 
 	return &loginUSerResponse{
 		User: UserResponse{
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 			Username:  user.Username,
@@ -644,6 +662,14 @@ func (service *UserService) loginUserService(ctx *gin.Context, req loginUserRequ
 =======
 		DeviceToken: device_tokens_response,
 >>>>>>> 0fb3f30 (user images)
+=======
+			Username:  user.Username,
+			FullName:  user.FullName,
+			Email:     user.Email,
+			DataImage: user.DataImage,
+		},
+		DeviceToken: tokens.Token,
+>>>>>>> c3c833d (login api)
 	}, nil
 }
 
