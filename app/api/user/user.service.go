@@ -275,6 +275,7 @@ func (service *UserService) loginUserService(ctx *gin.Context, req loginUserRequ
 		return nil, fmt.Errorf("internal server error: %v", err)
 	}
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 	_, err = service.redis.UserInfoLoadCache(req.Username)
 	if err != nil {
@@ -301,6 +302,25 @@ func (service *UserService) loginUserService(ctx *gin.Context, req loginUserRequ
 		ctx.JSON(http.StatusForbidden, "email not verified")
 		return nil, fmt.Errorf("email not verified")
 	}
+=======
+
+	err = util.CheckPassword(req.Password, user.HashedPassword)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, "Incorrect passward")
+		return nil, fmt.Errorf("Incorrect passward")
+	}
+
+	// device_tokens, err := service.storeDB.GetDeviceTokenByUsername(ctx, req.Username)
+	// if err != nil {
+	// 	ctx.JSON(http.StatusInternalServerError, "internal server error")
+	// 	return nil, fmt.Errorf("internal server error: %v", err)
+	// }
+
+	// var device_tokens_response []string
+	// for _, d := range device_tokens {
+	// 	device_tokens_response = append(device_tokens_response, d.Token)
+	// }
+>>>>>>> c3c833d (login api)
 
 	tokens, err := service.storeDB.InsertDeviceToken(ctx, db.InsertDeviceTokenParams{
 		Username:   req.Username,
@@ -310,11 +330,14 @@ func (service *UserService) loginUserService(ctx *gin.Context, req loginUserRequ
 
 	if err != nil {
 		return nil, fmt.Errorf("invalid token device")
+<<<<<<< HEAD
 =======
 	var device_tokens_response []string
 	for _, d := range device_tokens {
 		device_tokens_response = append(device_tokens_response, d.Token)
 >>>>>>> 0fb3f30 (user images)
+=======
+>>>>>>> c3c833d (login api)
 	}
 
 	return &loginUSerResponse{
@@ -322,6 +345,7 @@ func (service *UserService) loginUserService(ctx *gin.Context, req loginUserRequ
 			Username:  user.Username,
 			FullName:  user.FullName,
 			Email:     user.Email,
+<<<<<<< HEAD
 			DataImage: []byte(user.DataImage),
 		},
 <<<<<<< HEAD
@@ -329,6 +353,11 @@ func (service *UserService) loginUserService(ctx *gin.Context, req loginUserRequ
 =======
 		DeviceToken: device_tokens_response,
 >>>>>>> 0fb3f30 (user images)
+=======
+			DataImage: user.DataImage,
+		},
+		DeviceToken: tokens.Token,
+>>>>>>> c3c833d (login api)
 	}, nil
 }
 

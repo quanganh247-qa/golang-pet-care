@@ -28,9 +28,13 @@ test:
 	
 server:
 <<<<<<< HEAD
+<<<<<<< HEAD
 	gin -p 8089 -i run /Users/dhquanganh/Documents/TLCN/golang-pet-care/main.go
 =======
 	gin -p 8081 -i run main.go
+=======
+	gin -p 8089 -i run main.go
+>>>>>>> c3c833d (login api)
 
 >>>>>>> 9d28896 (image pet)
 
