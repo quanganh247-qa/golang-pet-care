@@ -21,15 +21,16 @@ func (c *ClientType) LoadCacheByKey(key string, result interface{}, duration tim
 }
 
 type userInfo struct {
-	UserID   int64  `json:"userID"`
-	Username string `json:"username"`
-	Email    string `json:"email"`
-	FullName string `json:"fullName"`
-	PlanType string `json:"planType"`
-	// Phone    string `json:"phone"`
-	// EmployeeCode string          `json:"employeeCode"`
-	// Avatar       string          `json:"avatar"`
-	// Permissions map[string]bool `json:"permissions"`
+	UserID          int64  `json:"user_id"`
+	Username        string `json:"username"`
+	FullName        string `json:"full_name"`
+	Email           string `json:"email"`
+	PhoneNumber     string `json:"phone_number"`
+	Address         string `json:"address"`
+	Role            string `json:"role"`
+	IsVerifiedEmail bool   `json:"is_verified_email"`
+	DataImage       string `json:"data_image"`
+	OriginalImage   string `json:"original_image"`
 }
 
 func (c *ClientType) UserInfoLoadCache(username string) (*userInfo, error) {
@@ -45,14 +46,17 @@ func (c *ClientType) UserInfoLoadCache(username string) (*userInfo, error) {
 			}
 			return nil, err
 		}
-		// var perms map[string]bool
-		// err = json.Unmarshal([]byte(userData.))
 
 		userRes := userInfo{
-			UserID:   userData.ID,
-			Username: userData.Username,
-			Email:    userData.Email,
-			FullName: userData.FullName,
+			UserID:        userData.ID,
+			Username:      userData.Username,
+			Email:         userData.Email,
+			FullName:      userData.FullName,
+			DataImage:     string(userData.DataImage),
+			OriginalImage: userData.OriginalImage.String,
+			PhoneNumber:   userData.PhoneNumber.String,
+			Address:       userData.Address.String,
+			Role:          userData.Role.String,
 		}
 		err = c.SetWithBackground(userKey, &userRes, time.Hour*12)
 		if err != nil {

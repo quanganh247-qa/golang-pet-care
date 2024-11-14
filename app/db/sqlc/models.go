@@ -8,15 +8,6 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
-type Activitylog struct {
-	Logid        int64            `json:"logid"`
-	Petid        pgtype.Int8      `json:"petid"`
-	Activitytype string           `json:"activitytype"`
-	Starttime    pgtype.Timestamp `json:"starttime"`
-	Duration     pgtype.Interval  `json:"duration"`
-	Notes        pgtype.Text      `json:"notes"`
-}
-
 type Appointment struct {
 	AppointmentID int64            `json:"appointment_id"`
 	Petid         pgtype.Int8      `json:"petid"`
@@ -95,18 +86,6 @@ type Doctorschedule struct {
 	MaxAppointments pgtype.Int4      `json:"max_appointments"`
 }
 
-type Feedingschedule struct {
-	Feedingscheduleid int64            `json:"feedingscheduleid"`
-	Petid             pgtype.Int8      `json:"petid"`
-	Mealtime          pgtype.Time      `json:"mealtime"`
-	Foodtype          string           `json:"foodtype"`
-	Quantity          float64          `json:"quantity"`
-	Frequency         string           `json:"frequency"`
-	Lastfed           pgtype.Timestamp `json:"lastfed"`
-	Notes             pgtype.Text      `json:"notes"`
-	Isactive          pgtype.Bool      `json:"isactive"`
-}
-
 type Medicine struct {
 	ID          int64              `json:"id"`
 	Name        string             `json:"name"`
@@ -161,7 +140,22 @@ type Pet struct {
 	LastCheckupDate pgtype.Date   `json:"last_checkup_date"`
 	IsActive        pgtype.Bool   `json:"is_active"`
 	DataImage       []byte        `json:"data_image"`
-	OriginalImage   string        `json:"original_image"`
+	OriginalImage   pgtype.Text   `json:"original_image"`
+}
+
+type PetSchedule struct {
+	ID           int64            `json:"id"`
+	PetID        pgtype.Int8      `json:"pet_id"`
+	ScheduleType string           `json:"schedule_type"`
+	EventTime    pgtype.Timestamp `json:"event_time"`
+	Duration     pgtype.Interval  `json:"duration"`
+	FoodType     pgtype.Text      `json:"food_type"`
+	Quantity     pgtype.Float8    `json:"quantity"`
+	ActivityType pgtype.Text      `json:"activity_type"`
+	Frequency    pgtype.Text      `json:"frequency"`
+	Notes        pgtype.Text      `json:"notes"`
+	CreatedAt    pgtype.Timestamp `json:"created_at"`
+	IsActive     pgtype.Bool      `json:"is_active"`
 }
 
 type PetTreatment struct {
@@ -173,19 +167,6 @@ type PetTreatment struct {
 	Status    pgtype.Text        `json:"status"`
 	Notes     pgtype.Text        `json:"notes"`
 	CreatedAt pgtype.Timestamptz `json:"created_at"`
-}
-
-type Petservicelocation struct {
-	Locationid    int64          `json:"locationid"`
-	Name          string         `json:"name"`
-	Address       string         `json:"address"`
-	Latitude      pgtype.Numeric `json:"latitude"`
-	Longitude     pgtype.Numeric `json:"longitude"`
-	Contactnumber pgtype.Text    `json:"contactnumber"`
-	Businesshours pgtype.Text    `json:"businesshours"`
-	Servicetypes  []string       `json:"servicetypes"`
-	Rating        pgtype.Numeric `json:"rating"`
-	Isverified    pgtype.Bool    `json:"isverified"`
 }
 
 type PhaseMedicine struct {
@@ -255,7 +236,7 @@ type User struct {
 	PhoneNumber     pgtype.Text      `json:"phone_number"`
 	Address         pgtype.Text      `json:"address"`
 	DataImage       []byte           `json:"data_image"`
-	OriginalImage   string           `json:"original_image"`
+	OriginalImage   pgtype.Text      `json:"original_image"`
 	Role            pgtype.Text      `json:"role"`
 	CreatedAt       pgtype.Timestamp `json:"created_at"`
 	IsVerifiedEmail pgtype.Bool      `json:"is_verified_email"`

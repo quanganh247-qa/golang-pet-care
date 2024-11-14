@@ -416,7 +416,7 @@ CREATE TABLE treatment_progress (
 
 INSERT INTO users (username, hashed_password, full_name, email, phone_number, address, original_image, role, is_verified_email)
 VALUES 
-('nguyenhoa', 'hashed_password_example', 'Nguyễn Văn Hòa', 'hoa.nguyen@example.com', '0123456789', '123 Đường ABC, Hà Nội', 'hoa_avatar.png', 'user', true),
+('dhqanh1', '$2a$10$tLnDg/6/QNu/nD3bIcoR2OtUqNUci4jkzlswN6cHRxhJ4QuEOvXHW', 'Nguyễn Văn Hòa', 'hoa.nguyen@example.com', '0123456789', '123 Đường ABC, Hà Nội', 'hoa_avatar.png', 'user', true),
 ('trangnguyen', 'hashed_password_example', 'Trần Thị Trang', 'trang.nguyen@example.com', '0987654321', '456 Đường XYZ, TP HCM',  'trang_avatar.png', 'admin', false);
 
 INSERT INTO Pet (name, type, breed, age, gender, healthnotes, weight, birth_date, username, microchip_number, last_checkup_date,original_image)
