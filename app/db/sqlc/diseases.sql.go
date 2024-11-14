@@ -11,6 +11,7 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+<<<<<<< HEAD
 const createDisease = `-- name: CreateDisease :one
 INSERT INTO diseases (name, description, symptoms, created_at, updated_at) VALUES ($1, $2, $3, now(), now()) RETURNING id, name, description, symptoms, created_at, updated_at
 `
@@ -35,6 +36,8 @@ func (q *Queries) CreateDisease(ctx context.Context, arg CreateDiseaseParams) (D
 	return i, err
 }
 
+=======
+>>>>>>> 6c35562 (dicease and treatment plan)
 const getDiceaseAndMedicinesInfo = `-- name: GetDiceaseAndMedicinesInfo :many
 SELECT 
     d.id AS disease_id,
@@ -49,7 +52,12 @@ SELECT
     m.duration,
     m.side_effects
 FROM diseases d
+<<<<<<< HEAD
 LEFT JOIN medicines m ON d.id = m.disease_id
+=======
+LEFT JOIN disease_medicines dm ON d.id = dm.disease_id
+LEFT JOIN medicines m ON dm.medicine_id = m.id
+>>>>>>> 6c35562 (dicease and treatment plan)
 WHERE LOWER(d.name) LIKE LOWER($1)
 `
 
@@ -100,6 +108,7 @@ func (q *Queries) GetDiceaseAndMedicinesInfo(ctx context.Context, lower string) 
 	return items, nil
 }
 
+<<<<<<< HEAD
 const getDiseaseByID = `-- name: GetDiseaseByID :one
 SELECT id, name, description, symptoms, created_at, updated_at FROM diseases WHERE id = $1 LIMIT 1
 `
@@ -131,6 +140,20 @@ SELECT
     m.name AS medicine_name,
     m.description AS medicine_description,
     pm.phase_id AS phase_id,
+=======
+const getDiseaseTreatmentPlanWithPhases = `-- name: GetDiseaseTreatmentPlanWithPhases :many
+SELECT 
+    d.name AS disease_name,
+    d.description AS disease_description,
+    d.symptoms,
+    tp.phase_number,
+    tp.phase_name,
+    tp.description AS phase_description,
+    tp.duration AS phase_duration,
+    tp.notes AS phase_notes,
+    m.name AS medicine_name,
+    m.description AS medicine_description,
+>>>>>>> 6c35562 (dicease and treatment plan)
     COALESCE(pm.dosage, m.dosage) AS dosage,
     COALESCE(pm.frequency, m.frequency) AS frequency,
     COALESCE(pm.duration, m.duration) AS duration,
@@ -141,6 +164,7 @@ JOIN treatment_phases tp ON d.id = tp.disease_id
 JOIN phase_medicines pm ON tp.id = pm.phase_id
 JOIN medicines m ON pm.medicine_id = m.id
 WHERE LOWER(d.name) LIKE LOWER($1)
+<<<<<<< HEAD
 ORDER BY tp.start_date, m.name
 `
 
@@ -156,6 +180,22 @@ type GetDiseaseTreatmentPlanWithPhasesRow struct {
 	MedicineName        string      `json:"medicine_name"`
 	MedicineDescription pgtype.Text `json:"medicine_description"`
 	PhaseID             int64       `json:"phase_id"`
+=======
+ORDER BY tp.phase_number, m.name
+`
+
+type GetDiseaseTreatmentPlanWithPhasesRow struct {
+	DiseaseName         string      `json:"disease_name"`
+	DiseaseDescription  pgtype.Text `json:"disease_description"`
+	Symptoms            []byte      `json:"symptoms"`
+	PhaseNumber         pgtype.Int4 `json:"phase_number"`
+	PhaseName           pgtype.Text `json:"phase_name"`
+	PhaseDescription    pgtype.Text `json:"phase_description"`
+	PhaseDuration       pgtype.Text `json:"phase_duration"`
+	PhaseNotes          pgtype.Text `json:"phase_notes"`
+	MedicineName        string      `json:"medicine_name"`
+	MedicineDescription pgtype.Text `json:"medicine_description"`
+>>>>>>> 6c35562 (dicease and treatment plan)
 	Dosage              pgtype.Text `json:"dosage"`
 	Frequency           pgtype.Text `json:"frequency"`
 	Duration            pgtype.Text `json:"duration"`
@@ -173,6 +213,7 @@ func (q *Queries) GetDiseaseTreatmentPlanWithPhases(ctx context.Context, lower s
 	for rows.Next() {
 		var i GetDiseaseTreatmentPlanWithPhasesRow
 		if err := rows.Scan(
+<<<<<<< HEAD
 			&i.DiseaseID,
 			&i.DiseaseName,
 			&i.DiseaseDescription,
@@ -184,6 +225,18 @@ func (q *Queries) GetDiseaseTreatmentPlanWithPhases(ctx context.Context, lower s
 			&i.MedicineName,
 			&i.MedicineDescription,
 			&i.PhaseID,
+=======
+			&i.DiseaseName,
+			&i.DiseaseDescription,
+			&i.Symptoms,
+			&i.PhaseNumber,
+			&i.PhaseName,
+			&i.PhaseDescription,
+			&i.PhaseDuration,
+			&i.PhaseNotes,
+			&i.MedicineName,
+			&i.MedicineDescription,
+>>>>>>> 6c35562 (dicease and treatment plan)
 			&i.Dosage,
 			&i.Frequency,
 			&i.Duration,
@@ -199,6 +252,7 @@ func (q *Queries) GetDiseaseTreatmentPlanWithPhases(ctx context.Context, lower s
 	}
 	return items, nil
 }
+<<<<<<< HEAD
 
 const getTreatmentByDiseaseId = `-- name: GetTreatmentByDiseaseId :many
 SELECT 
@@ -283,3 +337,5 @@ func (q *Queries) GetTreatmentByDiseaseId(ctx context.Context, arg GetTreatmentB
 	}
 	return items, nil
 }
+=======
+>>>>>>> 6c35562 (dicease and treatment plan)

@@ -3,6 +3,7 @@ package disease
 import (
 	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
 	"github.com/quanganh247-qa/go-blog-be/app/middleware"
+<<<<<<< HEAD
 	"github.com/quanganh247-qa/go-blog-be/app/service/elasticsearch"
 	"github.com/quanganh247-qa/go-blog-be/app/util/perms"
 )
@@ -18,11 +19,25 @@ func Routes(routerGroup middleware.RouterGroup, es *elasticsearch.ESService) {
 			service: &DiseaseService{
 				storeDB: db.StoreDB, // This should refer to the actual instance
 				es:      es,
+=======
+)
+
+func Routes(routerGroup middleware.RouterGroup) {
+	dicease := routerGroup.RouterDefault.Group("/dicease")
+	authRoute := routerGroup.RouterAuth(dicease)
+
+	// Khoi tao api
+	diceaseApi := &DiceaseApi{
+		&DiceaseController{
+			service: &DiceaseService{
+				storeDB: db.StoreDB, // This should refer to the actual instance
+>>>>>>> 6c35562 (dicease and treatment plan)
 			},
 		},
 	}
 
 	{
+<<<<<<< HEAD
 		authRoute.GET("/pet/:pet_id/treatments", diseaseApi.controller.GetTreatmentsByPetID)
 		authRoute.GET("/treatment/:treatment_id/phases", diseaseApi.controller.GetTreatmentPhasesByTreatmentID)
 		authRoute.GET("/treatment/:treatment_id/phases/:phase_id/medicines", diseaseApi.controller.GetMedicinesByPhaseID)
@@ -40,5 +55,11 @@ func Routes(routerGroup middleware.RouterGroup, es *elasticsearch.ESService) {
 	}
 
 	dicease.POST("/disease", diseaseApi.controller.CreateDisease)
+=======
+		authRoute.GET("/", diceaseApi.controller.getDiceaseAnhMedicinesInfo)
+		authRoute.GET("/treatment-plan", diceaseApi.controller.getDiseaseTreatmentPlanWithPhases)
+
+	}
+>>>>>>> 6c35562 (dicease and treatment plan)
 
 }

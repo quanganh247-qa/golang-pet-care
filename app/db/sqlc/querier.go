@@ -87,7 +87,6 @@ type Querier interface {
 =======
 	GetActiveDoctors(ctx context.Context, arg GetActiveDoctorsParams) ([]GetActiveDoctorsRow, error)
 	GetActivityLogByID(ctx context.Context, logid int64) (Activitylog, error)
-	GetAllMedicinesByPet(ctx context.Context, arg GetAllMedicinesByPetParams) ([]Medication, error)
 	GetAllServices(ctx context.Context, arg GetAllServicesParams) ([]Service, error)
 	GetAllTimeSlots(ctx context.Context, arg GetAllTimeSlotsParams) ([]GetAllTimeSlotsRow, error)
 >>>>>>> 79a3bcc (medicine api)
@@ -117,7 +116,13 @@ type Querier interface {
 	GetDiseaseTreatmentPlanWithPhases(ctx context.Context, lower string) ([]GetDiseaseTreatmentPlanWithPhasesRow, error)
 =======
 	GetDeviceTokenByUsername(ctx context.Context, username string) ([]Devicetoken, error)
+<<<<<<< HEAD
 >>>>>>> 0fb3f30 (user images)
+=======
+	// 1. Query cơ bản để lấy thông tin bệnh và thuốc điều trị
+	GetDiceaseAndMedicinesInfo(ctx context.Context, lower string) ([]GetDiceaseAndMedicinesInfoRow, error)
+	GetDiseaseTreatmentPlanWithPhases(ctx context.Context, lower string) ([]GetDiseaseTreatmentPlanWithPhasesRow, error)
+>>>>>>> 6c35562 (dicease and treatment plan)
 	GetDoctor(ctx context.Context, id int64) (GetDoctorRow, error)
 <<<<<<< HEAD
 	GetDoctorByUserId(ctx context.Context, userID int64) (Doctor, error)
@@ -167,7 +172,6 @@ type Querier interface {
 	GetUserByEmail(ctx context.Context, email string) (User, error)
 =======
 	GetFeedingScheduleByPetID(ctx context.Context, petid pgtype.Int8) ([]Feedingschedule, error)
-	GetMedicinesByID(ctx context.Context, medicationID int64) (Medication, error)
 	GetPetByID(ctx context.Context, petid int64) (Pet, error)
 	GetServiceByID(ctx context.Context, serviceid int64) (Service, error)
 	GetServiceType(ctx context.Context, typeid int64) (Servicetype, error)
@@ -194,7 +198,6 @@ type Querier interface {
 	ListPetSchedulesByUsername(ctx context.Context, username string) ([]ListPetSchedulesByUsernameRow, error)
 =======
 	InsertDoctorSchedule(ctx context.Context, arg InsertDoctorScheduleParams) (Doctorschedule, error)
-	InsertMedicine(ctx context.Context, arg InsertMedicineParams) (Medication, error)
 	InsertTimeslot(ctx context.Context, arg InsertTimeslotParams) (Timeslot, error)
 	ListActiveFeedingSchedules(ctx context.Context) ([]Feedingschedule, error)
 	ListActivityLogs(ctx context.Context, arg ListActivityLogsParams) ([]Activitylog, error)
@@ -220,12 +223,15 @@ type Querier interface {
 	// Replace $2 with the specific date (YYYY-MM-DD)
 	UpdateDoctorAvailable(ctx context.Context, arg UpdateDoctorAvailableParams) error
 	UpdateFeedingSchedule(ctx context.Context, arg UpdateFeedingScheduleParams) error
+<<<<<<< HEAD
 	// -- name: UpdateMedicine :exec
 	// UPDATE Medications
 	// SET medication_name = $2, dosage = $3, frequency = $4, start_date = $5, end_date = $6, notes = $7
 	// WHERE medication_id = $1;
 	UpdateMedicine(ctx context.Context, arg UpdateMedicineParams) (Medication, error)
 >>>>>>> 79a3bcc (medicine api)
+=======
+>>>>>>> 6c35562 (dicease and treatment plan)
 	UpdateNotification(ctx context.Context, appointmentID int64) error
 	UpdateOrderPaymentStatus(ctx context.Context, id int64) (Order, error)
 	UpdatePet(ctx context.Context, arg UpdatePetParams) error
