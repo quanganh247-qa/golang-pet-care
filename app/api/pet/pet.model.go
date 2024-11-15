@@ -20,6 +20,9 @@ type PetService struct {
 
 type createPetRequest struct {
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 67140c6 (updated create pet)
 	Name            string  `json:"name"`
 	Type            string  `json:"type"`
 	Breed           string  `json:"breed"`
@@ -29,6 +32,7 @@ type createPetRequest struct {
 	Healthnotes     string  `json:"healthnotes"`
 	BOD             string  `json:"birth_date"`
 	MicrochipNumber string  `json:"microchip_number"`
+<<<<<<< HEAD
 	ProfileImage    string  `json:"profileimage"`
 	DataImage       []byte  `json:"-"`
 	OriginalImage   string  `json:"original_name"`
@@ -71,6 +75,24 @@ type createPetResponse struct {
 	DataImage     []byte  `json:"-"`
 	OriginalImage string  `json:"original_name"`
 >>>>>>> 9d28896 (image pet)
+=======
+	DataImage       []byte  `json:"-"`
+	OriginalImage   string  `json:"original_name"`
+}
+
+type createPetResponse struct {
+	Petid           int64   `json:"petid"`
+	Username        string  `json:"username"`
+	Name            string  `json:"name"`
+	Type            string  `json:"type"`
+	Breed           string  `json:"breed"`
+	Age             int16   `json:"age"`
+	BOD             string  `json:"birth_date"`
+	Weight          float64 `json:"weight"`
+	DataImage       []byte  `json:"-"`
+	OriginalImage   string  `json:"original_name"`
+	MicrochipNumber string  `json:"microchip_number"`
+>>>>>>> 67140c6 (updated create pet)
 }
 
 type listPetsRequest struct {
