@@ -2,8 +2,12 @@ package pet
 
 import (
 <<<<<<< HEAD
+<<<<<<< HEAD
 	"encoding/json"
 =======
+=======
+	"encoding/json"
+>>>>>>> 67140c6 (updated create pet)
 	"fmt"
 <<<<<<< HEAD
 >>>>>>> c73e2dc (pagination function)
@@ -36,12 +40,16 @@ func (c *PetController) CreatePet(ctx *gin.Context) {
 	var req createPetRequest
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 67140c6 (updated create pet)
 	// Parse the JSON data from the "data" form field
 	jsonData := ctx.PostForm("data")
 	if err := json.Unmarshal([]byte(jsonData), &req); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid JSON data"})
 		return
 	}
+<<<<<<< HEAD
 
 	dataImage, originalImageName, err := util.HandleImageUpload(ctx, "image")
 	if err != nil {
@@ -58,6 +66,8 @@ func (c *PetController) CreatePet(ctx *gin.Context) {
 	healthnotes := ctx.PostForm("healthnotes")
 	microchip := ctx.PostForm("microchip_number")
 	bod := ctx.PostForm("birth_date")
+=======
+>>>>>>> 67140c6 (updated create pet)
 
 	err := ctx.Request.ParseMultipartForm(10 << 20) // 10 MB max
 	if err != nil {
@@ -89,6 +99,7 @@ func (c *PetController) CreatePet(ctx *gin.Context) {
 		return
 	}
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 	req.OriginalImage = originalImageName
 	req.DataImage = dataImage
@@ -105,27 +116,12 @@ func (c *PetController) CreatePet(ctx *gin.Context) {
 	req.Breed = breed
 	req.Healthnotes = healthnotes
 	req.Gender = gender
+=======
+>>>>>>> 67140c6 (updated create pet)
 	req.OriginalImage = header.Filename
 	req.DataImage = dataImage
-	req.MicrophoneNumber = microchip
-	req.BOD = bod
 
-	// convert string to  int 16
-	ageInt, err := strconv.Atoi(age)
-	if err != nil {
-		ctx.JSON(400, gin.H{"error": "Invalid age"})
-		return
-	}
-	req.Age = int16(ageInt)
-	weightFl, err := strconv.ParseFloat(weight, 64)
-	if err != nil {
-		ctx.JSON(400, gin.H{"error": "Invalid weight value"})
-
-		return
-	}
-	req.Weight = float64(weightFl)
-
-	// Save the pet to the database
+	fmt.Println(req.BOD)
 
 	res, err := c.service.CreatePet(ctx, authPayload.Username, req)
 	if err != nil {
