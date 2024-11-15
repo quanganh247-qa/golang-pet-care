@@ -4,7 +4,7 @@ VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, true)
 RETURNING *;
 
 -- name: GetPetByID :one
-SELECT * FROM Pet WHERE PetID = $1;
+SELECT * FROM Pet WHERE PetID = $1 AND is_active is true;
 
 -- name: UpdatePet :exec
 UPDATE Pet
@@ -15,10 +15,10 @@ WHERE PetID = $1;
 DELETE FROM Pet WHERE PetID = $1;
 
 -- name: ListPets :many
-SELECT * FROM Pet ORDER BY PetID LIMIT $1 OFFSET $2;
+SELECT * FROM Pet WHERE is_active is true ORDER BY PetID LIMIT $1 OFFSET $2;
 
 -- name: ListPetsByUsername :many
 SELECT * FROM Pet WHERE username = $1 ORDER BY PetID LIMIT $2 OFFSET $3;
 
 -- name: SetPetInactive :exec
-UPDATE Pet SET is_active = $2 WHERE PetID = $1;
+UPDATE Pet SET is_active = $2 WHERE PetID = $1 AND is_active is true;

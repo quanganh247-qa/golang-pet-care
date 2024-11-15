@@ -78,6 +78,7 @@ func (s *PetService) GetPetByID(ctx *gin.Context, petid int64) (*createPetRespon
 			Name:          res.Name,
 			Type:          res.Type,
 			Breed:         res.Breed.String,
+			BOD:           res.BirthDate.Time.Format("2006-01-02"),
 			Age:           int16(res.Age.Int32),
 			Weight:        res.Weight.Float64,
 			DataImage:     res.DataImage,
