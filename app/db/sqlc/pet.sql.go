@@ -78,7 +78,7 @@ func (q *Queries) DeletePet(ctx context.Context, petid int64) error {
 }
 
 const getPetByID = `-- name: GetPetByID :one
-SELECT petid, name, type, breed, age, gender, healthnotes, weight, birth_date, username, microchip_number, last_checkup_date, is_active, data_image, original_image FROM Pet WHERE PetID = $1
+SELECT petid, name, type, breed, age, gender, healthnotes, weight, birth_date, username, microchip_number, last_checkup_date, is_active, data_image, original_image FROM Pet WHERE PetID = $1 AND is_active is true
 `
 
 func (q *Queries) GetPetByID(ctx context.Context, petid int64) (Pet, error) {
@@ -105,7 +105,7 @@ func (q *Queries) GetPetByID(ctx context.Context, petid int64) (Pet, error) {
 }
 
 const listPets = `-- name: ListPets :many
-SELECT petid, name, type, breed, age, gender, healthnotes, weight, birth_date, username, microchip_number, last_checkup_date, is_active, data_image, original_image FROM Pet ORDER BY PetID LIMIT $1 OFFSET $2
+SELECT petid, name, type, breed, age, gender, healthnotes, weight, birth_date, username, microchip_number, last_checkup_date, is_active, data_image, original_image FROM Pet WHERE is_active is true ORDER BY PetID LIMIT $1 OFFSET $2
 `
 
 type ListPetsParams struct {
@@ -196,7 +196,7 @@ func (q *Queries) ListPetsByUsername(ctx context.Context, arg ListPetsByUsername
 }
 
 const setPetInactive = `-- name: SetPetInactive :exec
-UPDATE Pet SET is_active = $2 WHERE PetID = $1
+UPDATE Pet SET is_active = $2 WHERE PetID = $1 AND is_active is true
 `
 
 type SetPetInactiveParams struct {
