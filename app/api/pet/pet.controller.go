@@ -311,6 +311,7 @@ func (c *PetController) ListPetsByUsername(ctx *gin.Context) {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 	fmt.Println(authPayload.Username)
 >>>>>>> c73e2dc (pagination function)
@@ -319,6 +320,8 @@ func (c *PetController) ListPetsByUsername(ctx *gin.Context) {
 =======
 	fmt.Println(authPayload.Username)
 >>>>>>> c73e2dc (pagination function)
+=======
+>>>>>>> 0637caf (upadted get lít)
 	pets, err := c.service.ListPetsByUsername(ctx, authPayload.Username, pagination)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})

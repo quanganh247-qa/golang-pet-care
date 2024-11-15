@@ -201,6 +201,7 @@ func (s *PetService) CreatePet(ctx *gin.Context, username string, req createPetR
 			Name:            res.Name,
 			Type:            res.Type,
 			Breed:           res.Breed.String,
+<<<<<<< HEAD
 			DataImage:       pet.DataImage,
 			OriginalImage:   res.OriginalImage.String,
 			MicrochipNumber: res.MicrochipNumber.String,
@@ -240,6 +241,8 @@ func (s *PetService) CreatePet(ctx *gin.Context, username string, req createPetR
 			BOD:             res.BirthDate.Time.Format("2006-01-02"),
 			Age:             int16(res.Age.Int32),
 			Weight:          res.Weight.Float64,
+=======
+>>>>>>> 0637caf (upadted get lít)
 			DataImage:       pet.DataImage,
 			OriginalImage:   res.OriginalImage.String,
 			MicrochipNumber: res.MicrochipNumber.String,

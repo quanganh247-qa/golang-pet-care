@@ -52,9 +52,9 @@ type CreatePetResponse struct {
 	Type            string  `json:"type"`
 	Breed           string  `json:"breed"`
 	Age             int16   `json:"age"`
-	BOD             string  `json:"birth_date"`
 	Weight          float64 `json:"weight"`
 	DataImage       []byte  `json:"data_image"`
+<<<<<<< HEAD
 	OriginalImage   string  `json:"original_name"`
 	MicrochipNumber string  `json:"microchip_number"`
 =======
@@ -120,6 +120,8 @@ type createPetResponse struct {
 >>>>>>> 9d28896 (image pet)
 =======
 	DataImage       []byte  `json:"-"`
+=======
+>>>>>>> 0637caf (upadted get lít)
 	OriginalImage   string  `json:"original_name"`
 	MicrochipNumber string  `json:"microchip_number"`
 >>>>>>> 67140c6 (updated create pet)
