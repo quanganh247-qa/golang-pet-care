@@ -3,6 +3,7 @@ package pet
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5/pgtype"
@@ -22,7 +23,8 @@ type PetServiceInterface interface {
 
 func (s *PetService) CreatePet(ctx *gin.Context, username string, req createPetRequest) (*createPetResponse, error) {
 	var pet createPetResponse
-	bod, _, err := util.ParseStringToTime(req.BOD, "")
+
+	bod, err := time.Parse("2006-01-02", req.BOD)
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse BOD: %w", err)
 	}
@@ -39,20 +41,23 @@ func (s *PetService) CreatePet(ctx *gin.Context, username string, req createPetR
 			DataImage:       req.DataImage,
 			OriginalImage:   pgtype.Text{String: req.OriginalImage, Valid: true},
 			BirthDate:       pgtype.Date{Time: bod, Valid: true},
-			MicrochipNumber: pgtype.Text{String: req.MicrophoneNumber, Valid: true},
+			MicrochipNumber: pgtype.Text{String: req.MicrochipNumber, Valid: true},
 		})
 		if err != nil {
 			return fmt.Errorf("failed to create pet: %w", err)
 		}
 		pet = createPetResponse{
-			Petid:     res.Petid,
-			Username:  res.Username,
-			Name:      res.Name,
-			Type:      res.Type,
-			Breed:     res.Breed.String,
-			Age:       int16(res.Age.Int32),
-			Weight:    res.Weight.Float64,
-			DataImage: pet.DataImage,
+			Petid:           res.Petid,
+			Username:        res.Username,
+			Name:            res.Name,
+			Type:            res.Type,
+			Breed:           res.Breed.String,
+			BOD:             res.BirthDate.Time.Format("2006-01-02"),
+			Age:             int16(res.Age.Int32),
+			Weight:          res.Weight.Float64,
+			DataImage:       pet.DataImage,
+			OriginalImage:   res.OriginalImage.String,
+			MicrochipNumber: res.MicrochipNumber.String,
 		}
 		return nil
 
