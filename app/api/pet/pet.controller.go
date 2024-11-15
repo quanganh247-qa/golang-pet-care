@@ -163,7 +163,6 @@ func (c *PetController) ListPetsByUsername(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	fmt.Println(authPayload.Username)
 	pets, err := c.service.ListPetsByUsername(ctx, authPayload.Username, pagination)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
