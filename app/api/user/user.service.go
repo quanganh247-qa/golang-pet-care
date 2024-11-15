@@ -679,6 +679,7 @@ func (service *UserService) logoutUsersService(ctx *gin.Context, username string
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	fmt.Println(username, token)
 =======
 >>>>>>> 9d28896 (image pet)
@@ -687,6 +688,9 @@ func (service *UserService) logoutUsersService(ctx *gin.Context, username string
 >>>>>>> 8d5618d (feat: update logout)
 =======
 >>>>>>> 9d28896 (image pet)
+=======
+	fmt.Println(username, token)
+>>>>>>> 8d5618d (feat: update logout)
 	err := service.storeDB.DeleteDeviceToken(ctx, db.DeleteDeviceTokenParams{
 		Username: username,
 		Token:    token,
