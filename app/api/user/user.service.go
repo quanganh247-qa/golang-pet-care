@@ -365,9 +365,13 @@ func (service *UserService) logoutUsersService(ctx *gin.Context, username string
 	host, secure := util.SetCookieSameSite(ctx)
 	ctx.SetCookie("refresh_token", "", -1, "/", host, secure, true)
 <<<<<<< HEAD
+<<<<<<< HEAD
 	fmt.Println(username, token)
 =======
 >>>>>>> 9d28896 (image pet)
+=======
+	fmt.Println(username, token)
+>>>>>>> 8d5618d (feat: update logout)
 	err := service.storeDB.DeleteDeviceToken(ctx, db.DeleteDeviceTokenParams{
 		Username: username,
 		Token:    token,

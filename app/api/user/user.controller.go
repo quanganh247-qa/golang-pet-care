@@ -203,10 +203,14 @@ func (controller *UserController) loginUser(ctx *gin.Context) {
 
 func (controller *UserController) logoutUser(ctx *gin.Context) {
 <<<<<<< HEAD
+<<<<<<< HEAD
 	token := ctx.Query("token")
 =======
 	token := ctx.Param("token")
 >>>>>>> 9d28896 (image pet)
+=======
+	token := ctx.Query("token")
+>>>>>>> 8d5618d (feat: update logout)
 
 	authPayload, err := middleware.GetAuthorizationPayload(ctx)
 	if err != nil {
@@ -225,6 +229,12 @@ func (controller *UserController) logoutUser(ctx *gin.Context) {
 func (controller *UserController) getAccessToken(ctx *gin.Context) {
 	util.SetCookieSameSite(ctx)
 	cookie, err := ctx.Cookie("refresh_token")
+<<<<<<< HEAD
+=======
+	if util.Configs.DefaultAuthenticationUsername != "" && err != nil {
+		cookie, _, err = token.TokenMaker.CreateToken(util.Configs.DefaultAuthenticationUsername, nil, util.Configs.AccessTokenDuration)
+	}
+>>>>>>> 8d5618d (feat: update logout)
 	if err != nil {
 		ctx.JSON(http.StatusForbidden, util.ErrorResponse(err))
 		return
@@ -274,7 +284,6 @@ func (controller *UserController) verifyEmail(ctx *gin.Context) {
 	emailID := ctx.Query("email_id")
 	secretCode := ctx.Query("secret_code")
 
-	// Check if both parameters are present
 	if emailID == "" || secretCode == "" {
 		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(fmt.Errorf("missing email_id or secret_code in query parameters")))
 		return
