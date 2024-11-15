@@ -62,9 +62,13 @@ DELETE FROM Pet WHERE PetID = $1;
 
 -- name: ListPets :many
 <<<<<<< HEAD
+<<<<<<< HEAD
 SELECT * FROM pets
 WHERE is_active = true 
 ORDER BY name LIMIT $1 OFFSET $2;
+=======
+SELECT * FROM Pet WHERE is_active is true ORDER BY PetID LIMIT $1 OFFSET $2;
+>>>>>>> 3fdf0ad (updated pet status)
 =======
 SELECT * FROM Pet WHERE is_active is true ORDER BY PetID LIMIT $1 OFFSET $2;
 >>>>>>> 3fdf0ad (updated pet status)
@@ -111,6 +115,7 @@ SELECT * FROM Pet WHERE username = $1 and is_active is true ORDER BY PetID LIMIT
 >>>>>>> 6d9728e (updated remove pet cache)
 
 -- name: SetPetInactive :exec
+<<<<<<< HEAD
 <<<<<<< HEAD
 =======
 
@@ -168,3 +173,6 @@ UPDATE Pet SET data_image = $2, original_image = $3 WHERE PetID = $1 and is_acti
 >>>>>>> ffc9071 (AI suggestion)
 =======
 >>>>>>> c8bec46 (feat: add chatbot, room management, and pet allergy features)
+=======
+UPDATE Pet SET is_active = $2 WHERE PetID = $1 AND is_active is true;
+>>>>>>> 3fdf0ad (updated pet status)
