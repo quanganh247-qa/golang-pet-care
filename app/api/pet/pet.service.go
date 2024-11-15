@@ -5,12 +5,15 @@ import (
 	"fmt"
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	"strings"
 =======
 >>>>>>> 67140c6 (updated create pet)
 =======
 	"strings"
 >>>>>>> ffc9071 (AI suggestion)
+=======
+>>>>>>> 67140c6 (updated create pet)
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -93,6 +96,7 @@ func (s *PetService) CreatePet(ctx *gin.Context, username string, req createPetR
 	var pet createPetResponse
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	bod, _, err := util.ParseStringToTime(req.BOD, "")
 >>>>>>> 9d28896 (image pet)
 =======
@@ -102,6 +106,10 @@ func (s *PetService) CreatePet(ctx *gin.Context, username string, req createPetR
 =======
 	bod, _, err := util.ParseStringToTime(req.BOD, "")
 >>>>>>> 9d28896 (image pet)
+=======
+
+	bod, err := time.Parse("2006-01-02", req.BOD)
+>>>>>>> 67140c6 (updated create pet)
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse BOD: %w", err)
 	}
@@ -131,6 +139,7 @@ func (s *PetService) CreatePet(ctx *gin.Context, username string, req createPetR
 			OriginalImage:   pgtype.Text{String: req.OriginalImage, Valid: true},
 			BirthDate:       pgtype.Date{Time: bod, Valid: true},
 			MicrochipNumber: pgtype.Text{String: req.MicrochipNumber, Valid: true},
+<<<<<<< HEAD
 <<<<<<< HEAD
 =======
 =======
@@ -165,6 +174,8 @@ func (s *PetService) CreatePet(ctx *gin.Context, username string, req createPetR
 			BirthDate:       pgtype.Date{Time: bod, Valid: true},
 			MicrochipNumber: pgtype.Text{String: req.MicrophoneNumber, Valid: true},
 >>>>>>> 9d28896 (image pet)
+=======
+>>>>>>> 67140c6 (updated create pet)
 		})
 		if err != nil {
 			return fmt.Errorf("failed to create pet: %w", err)
@@ -197,6 +208,7 @@ func (s *PetService) CreatePet(ctx *gin.Context, username string, req createPetR
 		pet = createPetResponse{
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> 9d28896 (image pet)
 			Petid:     res.Petid,
@@ -210,17 +222,28 @@ func (s *PetService) CreatePet(ctx *gin.Context, username string, req createPetR
 <<<<<<< HEAD
 >>>>>>> 9d28896 (image pet)
 =======
+=======
+>>>>>>> 67140c6 (updated create pet)
 			Petid:           res.Petid,
 			Username:        res.Username,
 			Name:            res.Name,
 			Type:            res.Type,
 			Breed:           res.Breed.String,
+<<<<<<< HEAD
 			DataImage:       pet.DataImage,
 			OriginalImage:   res.OriginalImage.String,
 			MicrochipNumber: res.MicrochipNumber.String,
 >>>>>>> 67140c6 (updated create pet)
 =======
 >>>>>>> 9d28896 (image pet)
+=======
+			BOD:             res.BirthDate.Time.Format("2006-01-02"),
+			Age:             int16(res.Age.Int32),
+			Weight:          res.Weight.Float64,
+			DataImage:       pet.DataImage,
+			OriginalImage:   res.OriginalImage.String,
+			MicrochipNumber: res.MicrochipNumber.String,
+>>>>>>> 67140c6 (updated create pet)
 		}
 		return nil
 
