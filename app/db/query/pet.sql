@@ -33,7 +33,7 @@ VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, true)
 RETURNING *;
 
 -- name: GetPetByID :one
-SELECT * FROM Pet WHERE PetID = $1;
+SELECT * FROM Pet WHERE PetID = $1 AND is_active is true;
 
 -- name: UpdatePet :exec
 UPDATE Pet
@@ -45,9 +45,13 @@ DELETE FROM Pet WHERE PetID = $1;
 >>>>>>> 0fb3f30 (user images)
 
 -- name: ListPets :many
+<<<<<<< HEAD
 SELECT * FROM pets
 WHERE is_active = true 
 ORDER BY name LIMIT $1 OFFSET $2;
+=======
+SELECT * FROM Pet WHERE is_active is true ORDER BY PetID LIMIT $1 OFFSET $2;
+>>>>>>> 3fdf0ad (updated pet status)
 
 -- name: ListPetsByUsername :many
 SELECT * FROM pets
@@ -73,6 +77,7 @@ WHERE petid = $1;
 DELETE FROM pets WHERE petid = $1;
 
 -- name: SetPetInactive :exec
+<<<<<<< HEAD
 UPDATE pets
 SET is_active = false
 WHERE petid = $1;
@@ -101,3 +106,6 @@ SELECT p.*, u.full_name
 FROM pets AS p
 LEFT JOIN users AS u ON p.username = u.username
 WHERE p.is_active = TRUE AND p.username = $1 AND p.name = $2;
+=======
+UPDATE Pet SET is_active = $2 WHERE PetID = $1 AND is_active is true;
+>>>>>>> 3fdf0ad (updated pet status)
