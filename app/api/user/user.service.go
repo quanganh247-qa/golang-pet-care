@@ -163,6 +163,7 @@ func (service *UserService) loginUserService(ctx *gin.Context, req loginUserRequ
 func (service *UserService) logoutUsersService(ctx *gin.Context, username string, token string) error {
 	host, secure := util.SetCookieSameSite(ctx)
 	ctx.SetCookie("refresh_token", "", -1, "/", host, secure, true)
+	fmt.Println(username, token)
 	err := service.storeDB.DeleteDeviceToken(ctx, db.DeleteDeviceTokenParams{
 		Username: username,
 		Token:    token,
