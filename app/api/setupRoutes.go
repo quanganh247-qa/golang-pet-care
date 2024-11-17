@@ -63,11 +63,15 @@ func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor, config
 		RouterDefault: router,
 	}
 <<<<<<< HEAD
+<<<<<<< HEAD
 	router.GET("/health", server.healthCheck)
 
 	chatbot.Routes(routerGroup, chatHandler)
 	user.Routes(routerGroup, taskDistributor, config)
 =======
+=======
+
+>>>>>>> 7a9ad08 (updated pet api)
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	user.Routes(routerGroup)
 	service_type.Routes(routerGroup)

@@ -33,6 +33,7 @@ type createPetRequest struct {
 	BOD             string  `json:"birth_date"`
 	MicrochipNumber string  `json:"microchip_number"`
 <<<<<<< HEAD
+<<<<<<< HEAD
 	ProfileImage    string  `json:"profileimage"`
 	DataImage       []byte  `json:"-"`
 	OriginalImage   string  `json:"original_name"`
@@ -76,6 +77,9 @@ type createPetResponse struct {
 	OriginalImage string  `json:"original_name"`
 >>>>>>> 9d28896 (image pet)
 =======
+=======
+	ProfileImage    string  `json:"profileimage"`
+>>>>>>> 7a9ad08 (updated pet api)
 	DataImage       []byte  `json:"-"`
 	OriginalImage   string  `json:"original_name"`
 }
