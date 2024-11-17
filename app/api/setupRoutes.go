@@ -36,6 +36,7 @@ func (server *Server) SetupRoutes() {
 	routerGroup := middleware.RouterGroup{
 		RouterDefault: router,
 	}
+
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	user.Routes(routerGroup)
 	service_type.Routes(routerGroup)
