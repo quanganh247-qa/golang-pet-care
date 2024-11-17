@@ -26,6 +26,7 @@ type createPetRequest struct {
 	Healthnotes     string  `json:"healthnotes"`
 	BOD             string  `json:"birth_date"`
 	MicrochipNumber string  `json:"microchip_number"`
+	ProfileImage    string  `json:"profileimage"`
 	DataImage       []byte  `json:"-"`
 	OriginalImage   string  `json:"original_name"`
 }
