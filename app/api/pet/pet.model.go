@@ -39,6 +39,9 @@ type createPetRequest struct {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 7a9ad08 (updated pet api)
 	ProfileImage    string  `json:"profileimage"`
 	DataImage       []byte  `json:"-"`
 	OriginalImage   string  `json:"original_name"`

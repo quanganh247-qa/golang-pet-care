@@ -210,6 +210,7 @@ func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor, config
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	router.GET("/health", server.healthCheck)
 
 	chatbot.Routes(routerGroup, chatHandler)
@@ -247,6 +248,9 @@ func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor, config
 	user.Routes(routerGroup, taskDistributor, config)
 <<<<<<< HEAD
 =======
+=======
+
+>>>>>>> 7a9ad08 (updated pet api)
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	user.Routes(routerGroup)
 >>>>>>> 9d28896 (image pet)
