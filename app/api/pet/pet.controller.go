@@ -19,6 +19,7 @@ type PetControllerInterface interface {
 	ListPetsByUsername(ctx *gin.Context)
 	UpdatePet(ctx *gin.Context)
 	DeletePet(ctx *gin.Context)
+	GetPetLogsByPetID(ctx *gin.Context)
 }
 
 func (c *PetController) CreatePet(ctx *gin.Context) {
@@ -170,4 +171,25 @@ func (c *PetController) ListPetsByUsername(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, pets)
+}
+
+func (c *PetController) GetPetLogsByPetID(ctx *gin.Context) {
+	petidStr := ctx.Param("petid")
+	petid, err := strconv.ParseInt(petidStr, 10, 64)
+	if err != nil {
+		ctx.JSON(400, gin.H{"error": "Invalid pet ID"})
+		return
+	}
+	pagination, err := util.GetPageInQuery(ctx.Request.URL.Query())
+	if err != nil {
+		ctx.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+	res, err := c.service.GetPetLogsByPetIDService(ctx, petid, pagination)
+	if err != nil {
+		ctx.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(200, res)
 }

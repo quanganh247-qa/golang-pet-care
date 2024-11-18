@@ -48,6 +48,7 @@ func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor) {
 	device_token.Routes(routerGroup)
 	disease.Routes(routerGroup)
 	petschedule.Routes(routerGroup)
+
 	server.Router = routerDefault
 
 }

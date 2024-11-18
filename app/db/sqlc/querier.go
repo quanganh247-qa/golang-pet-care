@@ -21,6 +21,7 @@ type Querier interface {
 	CreateVerifyEmail(ctx context.Context, arg CreateVerifyEmailParams) (VerifyEmail, error)
 	DeleteDeviceToken(ctx context.Context, arg DeleteDeviceTokenParams) error
 	DeletePet(ctx context.Context, petid int64) error
+	DeletePetLog(ctx context.Context, petid int64) error
 	DeleteService(ctx context.Context, serviceid int64) error
 	DeleteServiceType(ctx context.Context, typeid int64) error
 	DeleteVaccination(ctx context.Context, vaccinationid int64) error
@@ -36,6 +37,8 @@ type Querier interface {
 	GetDiseaseTreatmentPlanWithPhases(ctx context.Context, lower string) ([]GetDiseaseTreatmentPlanWithPhasesRow, error)
 	GetDoctor(ctx context.Context, id int64) (GetDoctorRow, error)
 	GetPetByID(ctx context.Context, petid int64) (Pet, error)
+	GetPetLogByID(ctx context.Context, arg GetPetLogByIDParams) (GetPetLogByIDRow, error)
+	GetPetLogsByPetID(ctx context.Context, arg GetPetLogsByPetIDParams) ([]GetPetLogsByPetIDRow, error)
 	GetServiceByID(ctx context.Context, serviceid int64) (Service, error)
 	GetServiceType(ctx context.Context, typeid int64) (Servicetype, error)
 	GetTimeSlotByID(ctx context.Context, id int64) (GetTimeSlotByIDRow, error)
@@ -45,6 +48,7 @@ type Querier interface {
 	InsertDeviceToken(ctx context.Context, arg InsertDeviceTokenParams) (Devicetoken, error)
 	InsertDoctor(ctx context.Context, arg InsertDoctorParams) (Doctor, error)
 	InsertDoctorSchedule(ctx context.Context, arg InsertDoctorScheduleParams) (Doctorschedule, error)
+	InsertPetLog(ctx context.Context, arg InsertPetLogParams) (PetLog, error)
 	InsertTimeslot(ctx context.Context, arg InsertTimeslotParams) (Timeslot, error)
 	ListPetSchedulesByUsername(ctx context.Context, username string) ([]ListPetSchedulesByUsernameRow, error)
 	ListPets(ctx context.Context, arg ListPetsParams) ([]Pet, error)
@@ -56,6 +60,7 @@ type Querier interface {
 	UpdateDoctorAvailable(ctx context.Context, arg UpdateDoctorAvailableParams) error
 	UpdateNotification(ctx context.Context, appointmentID int64) error
 	UpdatePet(ctx context.Context, arg UpdatePetParams) error
+	UpdatePetLog(ctx context.Context, arg UpdatePetLogParams) error
 	UpdateService(ctx context.Context, arg UpdateServiceParams) error
 	UpdateVaccination(ctx context.Context, arg UpdateVaccinationParams) error
 	UpdateVerifyEmail(ctx context.Context, arg UpdateVerifyEmailParams) (VerifyEmail, error)
