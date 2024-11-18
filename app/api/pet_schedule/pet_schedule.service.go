@@ -245,6 +245,7 @@ func (s *PetScheduleService) GetAllSchedulesByPetService(ctx *gin.Context, petID
 <<<<<<< HEAD
 	for _, r := range res {
 		petSchedules = append(petSchedules, PetScheduleResponse{
+<<<<<<< HEAD
 			ID:               r.ID,
 			PetID:            r.PetID.Int64,
 			Title:            r.Title.String,
@@ -254,6 +255,16 @@ func (s *PetScheduleService) GetAllSchedulesByPetService(ctx *gin.Context, petID
 			EndDate:          r.EndDate.Time.Format(time.RFC3339),
 			Notes:            r.Notes.String,
 			IsActive:         r.IsActive.Bool,
+=======
+			ID:           r.ID,
+			PetID:        r.PetID.Int64,
+			ScheduleType: r.ScheduleType,
+			Duration:     r.Duration.String,
+			EventTime:    r.EventTime.Time.Format(time.RFC3339),
+			ActivityType: r.ActivityType.String,
+			Frequency:    r.Frequency.String,
+			Notes:        r.Notes.String,
+>>>>>>> 21c69f8 (update pet_schedule and pet log schema)
 		})
 	}
 
