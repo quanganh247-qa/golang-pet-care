@@ -75,6 +75,7 @@ type Querier interface {
 >>>>>>> 272832d (redis cache)
 	DeletePet(ctx context.Context, petid int64) error
 <<<<<<< HEAD
+<<<<<<< HEAD
 	DeletePetAllergy(ctx context.Context, id int64) error
 	DeletePetLog(ctx context.Context, logID int64) error
 	DeletePetSchedule(ctx context.Context, id int64) error
@@ -86,6 +87,9 @@ type Querier interface {
 	DeleteUser(ctx context.Context, id int64) error
 =======
 	DeletePetLog(ctx context.Context, petid int64) error
+=======
+	DeletePetLog(ctx context.Context, logID int64) error
+>>>>>>> 884b92e (update pet logs api)
 	DeleteService(ctx context.Context, serviceid int64) error
 	DeleteServiceType(ctx context.Context, typeid int64) error
 >>>>>>> 7e616af (add pet log schema)

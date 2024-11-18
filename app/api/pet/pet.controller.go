@@ -294,6 +294,7 @@ func (c *PetController) InsertPetLog(ctx *gin.Context) {
 
 func (c *PetController) DeletePetLog(ctx *gin.Context) {
 <<<<<<< HEAD
+<<<<<<< HEAD
 	logidStr := ctx.Param("log_id")
 =======
 	petidStr := ctx.Param("petid")
@@ -302,6 +303,14 @@ func (c *PetController) DeletePetLog(ctx *gin.Context) {
 		ctx.JSON(400, gin.H{"error": "Invalid pet ID"})
 		return
 	}
+=======
+	// petidStr := ctx.Param("petid")
+	// petid, err := strconv.ParseInt(petidStr, 10, 64)
+	// if err != nil {
+	// 	ctx.JSON(400, gin.H{"error": "Invalid pet ID"})
+	// 	return
+	// }
+>>>>>>> 884b92e (update pet logs api)
 
 	logidStr := ctx.Param("logid")
 >>>>>>> 3835eb4 (update pet_schedule api)
@@ -312,10 +321,14 @@ func (c *PetController) DeletePetLog(ctx *gin.Context) {
 	}
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 	err = c.service.DeletePetLogService(ctx, logid)
 =======
 	err = c.service.DeletePetLogService(ctx, petid, logid)
 >>>>>>> 3835eb4 (update pet_schedule api)
+=======
+	err = c.service.DeletePetLogService(ctx, logid)
+>>>>>>> 884b92e (update pet logs api)
 	if err != nil {
 		ctx.JSON(400, gin.H{"error": err.Error()})
 		return
