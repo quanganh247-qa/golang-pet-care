@@ -60,6 +60,7 @@ func Routes(routerGroup middleware.RouterGroup) {
 		authRoute.DELETE("/delete/:petid", petApi.controller.DeletePet)
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> c73e2dc (pagination function)
 =======
 =======
@@ -93,6 +94,11 @@ func Routes(routerGroup middleware.RouterGroup) {
 >>>>>>> ffc9071 (AI suggestion)
 =======
 >>>>>>> c8bec46 (feat: add chatbot, room management, and pet allergy features)
+=======
+
+		// Pet logs
+		authRoute.GET("/logs/:petid", petApi.controller.GetPetLogsByPetID)
+>>>>>>> 7e616af (add pet log schema)
 	}
 
 }

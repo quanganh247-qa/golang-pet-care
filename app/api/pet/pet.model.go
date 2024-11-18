@@ -201,3 +201,10 @@ type PetProfileSummary struct {
 =======
 >>>>>>> c73e2dc (pagination function)
 }
+
+type PetLog struct {
+	PetID    int64  `json:"pet_id"`
+	DateTime string `json:"date_time"`
+	Title    string `json:"title"`
+	Notes    string `json:"notes"`
+}

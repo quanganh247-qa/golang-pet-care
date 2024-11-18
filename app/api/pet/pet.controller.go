@@ -47,6 +47,7 @@ type PetControllerInterface interface {
 	GetPetLogsByPetID(ctx *gin.Context)
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	InsertPetLog(ctx *gin.Context)
 	DeletePetLog(ctx *gin.Context)
 	UpdatePetLog(ctx *gin.Context)
@@ -68,6 +69,8 @@ type PetControllerInterface interface {
 >>>>>>> ffc9071 (AI suggestion)
 =======
 >>>>>>> c8bec46 (feat: add chatbot, room management, and pet allergy features)
+=======
+>>>>>>> 7e616af (add pet log schema)
 }
 
 func (c *PetController) CreatePet(ctx *gin.Context) {
@@ -334,6 +337,7 @@ func (c *PetController) ListPetsByUsername(ctx *gin.Context) {
 func (c *PetController) GetPetLogsByPetID(ctx *gin.Context) {
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	petidStr := ctx.Param("pet_id")
 =======
 	petidStr := ctx.Param("petid")
@@ -341,6 +345,9 @@ func (c *PetController) GetPetLogsByPetID(ctx *gin.Context) {
 =======
 	petidStr := ctx.Param("pet_id")
 >>>>>>> 2fe5baf (treatment phase)
+=======
+	petidStr := ctx.Param("petid")
+>>>>>>> 7e616af (add pet log schema)
 	petid, err := strconv.ParseInt(petidStr, 10, 64)
 	if err != nil {
 		ctx.JSON(400, gin.H{"error": "Invalid pet ID"})
@@ -359,6 +366,7 @@ func (c *PetController) GetPetLogsByPetID(ctx *gin.Context) {
 
 	ctx.JSON(200, res)
 }
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 =======
@@ -529,3 +537,5 @@ func (c *PetController) GetPetProfileSummary(ctx *gin.Context) {
 >>>>>>> ffc9071 (AI suggestion)
 =======
 >>>>>>> c8bec46 (feat: add chatbot, room management, and pet allergy features)
+=======
+>>>>>>> 7e616af (add pet log schema)

@@ -188,6 +188,7 @@ type Querier interface {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	DeletePetAllergy(ctx context.Context, id int64) error
 	DeletePetLog(ctx context.Context, logID int64) error
 	DeletePetSchedule(ctx context.Context, id int64) error
@@ -218,6 +219,9 @@ type Querier interface {
 >>>>>>> 884b92e (update pet logs api)
 =======
 >>>>>>> eb8d761 (updated pet schedule)
+=======
+	DeletePetLog(ctx context.Context, petid int64) error
+>>>>>>> 7e616af (add pet log schema)
 	DeleteService(ctx context.Context, serviceid int64) error
 	DeleteServiceType(ctx context.Context, typeid int64) error
 <<<<<<< HEAD
@@ -533,6 +537,7 @@ type Querier interface {
 =======
 >>>>>>> 272832d (redis cache)
 	GetPetByID(ctx context.Context, petid int64) (Pet, error)
+<<<<<<< HEAD
 	GetPetDetailByUserID(ctx context.Context, arg GetPetDetailByUserIDParams) (GetPetDetailByUserIDRow, error)
 	GetPetLogByID(ctx context.Context, arg GetPetLogByIDParams) (GetPetLogByIDRow, error)
 	GetPetLogsByPetID(ctx context.Context, arg GetPetLogsByPetIDParams) ([]PetLog, error)
@@ -611,6 +616,10 @@ type Querier interface {
 	GetProductByID(ctx context.Context, productID int64) (Product, error)
 <<<<<<< HEAD
 <<<<<<< HEAD
+=======
+	GetPetLogByID(ctx context.Context, arg GetPetLogByIDParams) (GetPetLogByIDRow, error)
+	GetPetLogsByPetID(ctx context.Context, arg GetPetLogsByPetIDParams) ([]GetPetLogsByPetIDRow, error)
+>>>>>>> 7e616af (add pet log schema)
 	GetServiceByID(ctx context.Context, serviceid int64) (Service, error)
 	GetServiceType(ctx context.Context, typeid int64) (Servicetype, error)
 <<<<<<< HEAD
@@ -697,6 +706,7 @@ type Querier interface {
 	InsertDoctor(ctx context.Context, arg InsertDoctorParams) (Doctor, error)
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> e859654 (Elastic search)
 	InsertProduct(ctx context.Context, arg InsertProductParams) (Product, error)
@@ -712,6 +722,11 @@ type Querier interface {
 =======
 	ListPetAllergies(ctx context.Context, arg ListPetAllergiesParams) ([]PetAllergy, error)
 >>>>>>> c8bec46 (feat: add chatbot, room management, and pet allergy features)
+=======
+	InsertDoctorSchedule(ctx context.Context, arg InsertDoctorScheduleParams) (Doctorschedule, error)
+	InsertPetLog(ctx context.Context, arg InsertPetLogParams) (PetLog, error)
+	InsertTimeslot(ctx context.Context, arg InsertTimeslotParams) (Timeslot, error)
+>>>>>>> 7e616af (add pet log schema)
 	ListPetSchedulesByUsername(ctx context.Context, username string) ([]ListPetSchedulesByUsernameRow, error)
 =======
 	InsertDoctorSchedule(ctx context.Context, arg InsertDoctorScheduleParams) (Doctorschedule, error)
@@ -872,6 +887,7 @@ type Querier interface {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	UpdatePetAllergy(ctx context.Context, arg UpdatePetAllergyParams) (PetAllergy, error)
 =======
 >>>>>>> 5ea33aa (PUT pet info)
@@ -929,6 +945,9 @@ type Querier interface {
 	UpdateVerifyEmail(ctx context.Context, arg UpdateVerifyEmailParams) (VerifyEmail, error)
 	VerifiedUser(ctx context.Context, username string) (User, error)
 =======
+=======
+	UpdatePetLog(ctx context.Context, arg UpdatePetLogParams) error
+>>>>>>> 7e616af (add pet log schema)
 =======
 	UpdatePetLog(ctx context.Context, arg UpdatePetLogParams) error
 >>>>>>> 7e616af (add pet log schema)

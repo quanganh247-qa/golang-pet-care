@@ -276,6 +276,7 @@ func (s *PetScheduleService) ListPetSchedulesByUsernameService(ctx *gin.Context,
 			PetName: schedule.Name.String,
 		}
 		groupedSchedules[petKey] = append(groupedSchedules[petKey], PetScheduleResponse{
+<<<<<<< HEAD
 			ID:               schedule.ID,
 			PetID:            schedule.PetID.Int64,
 			Title:            schedule.Title.String,
@@ -285,6 +286,16 @@ func (s *PetScheduleService) ListPetSchedulesByUsernameService(ctx *gin.Context,
 			EndDate:          schedule.EndDate.Time.Format(time.RFC3339),
 			Notes:            schedule.Notes.String,
 			IsActive:         schedule.IsActive.Bool,
+=======
+			ID:           schedule.ID,
+			PetID:        schedule.PetID.Int64,
+			EventTime:    schedule.EventTime.Time.Format(time.RFC3339),
+			ScheduleType: schedule.ScheduleType,
+			ActivityType: schedule.ActivityType.String,
+			Duration:     schedule.Duration.String,
+			Frequency:    schedule.Frequency.String,
+			Notes:        schedule.Notes.String,
+>>>>>>> 7e616af (add pet log schema)
 		})
 
 	}
