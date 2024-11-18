@@ -58,12 +58,17 @@ func (q *Queries) DeletePetLog(ctx context.Context, logID int64) error {
 =======
 const deletePetLog = `-- name: DeletePetLog :exec
 DELETE FROM pet_logs
-WHERE petid = $1
+WHERE  log_id = $1
 `
 
+<<<<<<< HEAD
 func (q *Queries) DeletePetLog(ctx context.Context, petid int64) error {
 	_, err := q.db.Exec(ctx, deletePetLog, petid)
 >>>>>>> 7e616af (add pet log schema)
+=======
+func (q *Queries) DeletePetLog(ctx context.Context, logID int64) error {
+	_, err := q.db.Exec(ctx, deletePetLog, logID)
+>>>>>>> 884b92e (update pet logs api)
 	return err
 }
 
@@ -220,11 +225,11 @@ func (q *Queries) InsertPetLog(ctx context.Context, arg InsertPetLogParams) (Pet
 const updatePetLog = `-- name: UpdatePetLog :exec
 UPDATE pet_logs
 SET datetime = $2, title = $3, notes = $4
-WHERE petid = $1
+WHERE log_id = $1
 `
 
 type UpdatePetLogParams struct {
-	Petid    int64            `json:"petid"`
+	LogID    int64            `json:"log_id"`
 	Datetime pgtype.Timestamp `json:"datetime"`
 	Title    pgtype.Text      `json:"title"`
 	Notes    pgtype.Text      `json:"notes"`
@@ -232,7 +237,7 @@ type UpdatePetLogParams struct {
 
 func (q *Queries) UpdatePetLog(ctx context.Context, arg UpdatePetLogParams) error {
 	_, err := q.db.Exec(ctx, updatePetLog,
-		arg.Petid,
+		arg.LogID,
 		arg.Datetime,
 		arg.Title,
 		arg.Notes,
