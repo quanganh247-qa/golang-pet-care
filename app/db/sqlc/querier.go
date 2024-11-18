@@ -74,6 +74,7 @@ type Querier interface {
 	DeleteDeviceToken(ctx context.Context, arg DeleteDeviceTokenParams) error
 >>>>>>> 272832d (redis cache)
 	DeletePet(ctx context.Context, petid int64) error
+<<<<<<< HEAD
 	DeletePetAllergy(ctx context.Context, id int64) error
 	DeletePetLog(ctx context.Context, logID int64) error
 	DeletePetSchedule(ctx context.Context, id int64) error
@@ -83,6 +84,11 @@ type Querier interface {
 	DeleteTreatment(ctx context.Context, id int64) error
 	DeleteTreatmentPhase(ctx context.Context, id int64) error
 	DeleteUser(ctx context.Context, id int64) error
+=======
+	DeletePetLog(ctx context.Context, petid int64) error
+	DeleteService(ctx context.Context, serviceid int64) error
+	DeleteServiceType(ctx context.Context, typeid int64) error
+>>>>>>> 7e616af (add pet log schema)
 	DeleteVaccination(ctx context.Context, vaccinationid int64) error
 <<<<<<< HEAD
 	GetActiveTreatments(ctx context.Context, arg GetActiveTreatmentsParams) ([]GetActiveTreatmentsRow, error)
@@ -186,6 +192,8 @@ type Querier interface {
 =======
 >>>>>>> 272832d (redis cache)
 	GetPetByID(ctx context.Context, petid int64) (Pet, error)
+	GetPetLogByID(ctx context.Context, arg GetPetLogByIDParams) (GetPetLogByIDRow, error)
+	GetPetLogsByPetID(ctx context.Context, arg GetPetLogsByPetIDParams) ([]GetPetLogsByPetIDRow, error)
 	GetServiceByID(ctx context.Context, serviceid int64) (Service, error)
 	GetServiceType(ctx context.Context, typeid int64) (Servicetype, error)
 	GetTimeSlotByID(ctx context.Context, id int64) (GetTimeSlotByIDRow, error)
@@ -211,6 +219,7 @@ type Querier interface {
 	ListPetSchedulesByUsername(ctx context.Context, username string) ([]ListPetSchedulesByUsernameRow, error)
 =======
 	InsertDoctorSchedule(ctx context.Context, arg InsertDoctorScheduleParams) (Doctorschedule, error)
+	InsertPetLog(ctx context.Context, arg InsertPetLogParams) (PetLog, error)
 	InsertTimeslot(ctx context.Context, arg InsertTimeslotParams) (Timeslot, error)
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -263,6 +272,7 @@ type Querier interface {
 	UpdateOrderPaymentStatus(ctx context.Context, id int64) (Order, error)
 	UpdatePet(ctx context.Context, arg UpdatePetParams) error
 <<<<<<< HEAD
+<<<<<<< HEAD
 	UpdatePetAllergy(ctx context.Context, arg UpdatePetAllergyParams) (PetAllergy, error)
 	UpdatePetAvatar(ctx context.Context, arg UpdatePetAvatarParams) error
 	UpdatePetLog(ctx context.Context, arg UpdatePetLogParams) error
@@ -279,6 +289,9 @@ type Querier interface {
 	UpdateVerifyEmail(ctx context.Context, arg UpdateVerifyEmailParams) (VerifyEmail, error)
 	VerifiedUser(ctx context.Context, username string) (User, error)
 =======
+=======
+	UpdatePetLog(ctx context.Context, arg UpdatePetLogParams) error
+>>>>>>> 7e616af (add pet log schema)
 	UpdateService(ctx context.Context, arg UpdateServiceParams) error
 	UpdateVaccination(ctx context.Context, arg UpdateVaccinationParams) error
 	UpdateVerifyEmail(ctx context.Context, arg UpdateVerifyEmailParams) (VerifyEmail, error)

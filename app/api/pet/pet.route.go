@@ -44,7 +44,13 @@ func Routes(routerGroup middleware.RouterGroup) {
 =======
 		authRoute.PUT("/update/:petid", petApi.controller.UpdatePet)
 		authRoute.DELETE("/delete/:petid", petApi.controller.DeletePet)
+<<<<<<< HEAD
 >>>>>>> c73e2dc (pagination function)
+=======
+
+		// Pet logs
+		authRoute.GET("/logs/:petid", petApi.controller.GetPetLogsByPetID)
+>>>>>>> 7e616af (add pet log schema)
 	}
 
 }

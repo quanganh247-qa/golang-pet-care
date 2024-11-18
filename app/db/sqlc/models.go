@@ -276,6 +276,14 @@ type Pet struct {
 	OriginalImage   pgtype.Text   `json:"original_image"`
 }
 
+type PetLog struct {
+	LogID    int64            `json:"log_id"`
+	Petid    int64            `json:"petid"`
+	Datetime pgtype.Timestamp `json:"datetime"`
+	Title    pgtype.Text      `json:"title"`
+	Notes    pgtype.Text      `json:"notes"`
+}
+
 type PetSchedule struct {
 	ID           int64            `json:"id"`
 	PetID        pgtype.Int8      `json:"pet_id"`
