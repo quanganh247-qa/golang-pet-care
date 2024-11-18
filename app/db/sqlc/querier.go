@@ -213,6 +213,7 @@ type Querier interface {
 	InsertDoctorSchedule(ctx context.Context, arg InsertDoctorScheduleParams) (Doctorschedule, error)
 	InsertTimeslot(ctx context.Context, arg InsertTimeslotParams) (Timeslot, error)
 <<<<<<< HEAD
+<<<<<<< HEAD
 	ListActiveFeedingSchedules(ctx context.Context) ([]Feedingschedule, error)
 	ListActivityLogs(ctx context.Context, arg ListActivityLogsParams) ([]Activitylog, error)
 >>>>>>> 79a3bcc (medicine api)
@@ -226,6 +227,9 @@ type Querier interface {
 	SetPetInactive(ctx context.Context, petid int64) error
 	UpdateAppointmentByID(ctx context.Context, arg UpdateAppointmentByIDParams) error
 =======
+=======
+	ListPetSchedulesByUsername(ctx context.Context, username string) ([]ListPetSchedulesByUsernameRow, error)
+>>>>>>> 6610455 (feat: redis queue)
 	ListPets(ctx context.Context, arg ListPetsParams) ([]Pet, error)
 	ListPetsByUsername(ctx context.Context, arg ListPetsByUsernameParams) ([]Pet, error)
 	ListVaccinationsByPetID(ctx context.Context, petid pgtype.Int8) ([]Vaccination, error)
@@ -258,6 +262,7 @@ type Querier interface {
 	UpdateNotification(ctx context.Context, appointmentID int64) error
 	UpdateOrderPaymentStatus(ctx context.Context, id int64) (Order, error)
 	UpdatePet(ctx context.Context, arg UpdatePetParams) error
+<<<<<<< HEAD
 	UpdatePetAllergy(ctx context.Context, arg UpdatePetAllergyParams) (PetAllergy, error)
 	UpdatePetAvatar(ctx context.Context, arg UpdatePetAvatarParams) error
 	UpdatePetLog(ctx context.Context, arg UpdatePetLogParams) error
@@ -273,6 +278,12 @@ type Querier interface {
 	UpdateVaccination(ctx context.Context, arg UpdateVaccinationParams) error
 	UpdateVerifyEmail(ctx context.Context, arg UpdateVerifyEmailParams) (VerifyEmail, error)
 	VerifiedUser(ctx context.Context, username string) (User, error)
+=======
+	UpdateService(ctx context.Context, arg UpdateServiceParams) error
+	UpdateVaccination(ctx context.Context, arg UpdateVaccinationParams) error
+	UpdateVerifyEmail(ctx context.Context, arg UpdateVerifyEmailParams) (VerifyEmail, error)
+	VerifiedUser(ctx context.Context, arg VerifiedUserParams) (User, error)
+>>>>>>> 6610455 (feat: redis queue)
 }
 
 var _ Querier = (*Queries)(nil)

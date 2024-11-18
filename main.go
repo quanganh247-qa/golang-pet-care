@@ -6,10 +6,15 @@ import (
 	"os"
 	"syscall"
 
+<<<<<<< HEAD
 	"github.com/fatih/color"
 	"github.com/hibiken/asynq"
 	"github.com/quanganh247-qa/go-blog-be/app/api"
 	"github.com/quanganh247-qa/go-blog-be/app/service/elasticsearch"
+=======
+	"github.com/hibiken/asynq"
+	"github.com/quanganh247-qa/go-blog-be/app/api"
+>>>>>>> 6610455 (feat: redis queue)
 	"github.com/quanganh247-qa/go-blog-be/app/service/worker"
 	"github.com/quanganh247-qa/go-blog-be/app/util"
 	"go.uber.org/zap"
@@ -31,10 +36,18 @@ func main() {
 	if err != nil {
 		log.Fatal("cannot load config:", err)
 	}
+	redisOpt := asynq.RedisClientOpt{
+		Addr: config.RedisAddress,
+	}
+	taskDistributor := worker.NewRedisTaskDistributor(redisOpt)
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 	logger, _ := zap.NewProduction()
 	defer logger.Sync()
+=======
+	server := runGinServer(*config, taskDistributor)
+>>>>>>> 6610455 (feat: redis queue)
 
 	redisOpt := asynq.RedisClientOpt{
 		Addr: config.RedisAddress,
@@ -65,8 +78,13 @@ func main() {
 
 }
 
+<<<<<<< HEAD
 func runGinServer(config util.Config, taskDistributor worker.TaskDistributor, es *elasticsearch.ESService) *api.Server {
 	server, err := api.NewServer(config, taskDistributor, es)
+=======
+func runGinServer(config util.Config, taskDistributor worker.TaskDistributor) *api.Server {
+	server, err := api.NewServer(config, taskDistributor)
+>>>>>>> 6610455 (feat: redis queue)
 	if err != nil {
 		fmt.Printf(color.RedString("❌ ERROR: Failed to create server: %v\n", err))
 	}

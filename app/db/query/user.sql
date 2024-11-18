@@ -26,9 +26,15 @@ WHERE email = $1;
 -- name: GetAllUsers :many
 SELECT * FROM users ;
 
+<<<<<<< HEAD
 -- name: UpdateUser :one
 UPDATE users
 SET full_name = $2, email = $3, phone_number = $4, address = $5
+=======
+-- name: VerifiedUser :one
+UPDATE users
+SET is_verified_email = $2
+>>>>>>> 6610455 (feat: redis queue)
 WHERE username = $1
 RETURNING *;
 

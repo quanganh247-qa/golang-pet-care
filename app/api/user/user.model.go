@@ -9,6 +9,7 @@ import (
 <<<<<<< HEAD
 	"github.com/quanganh247-qa/go-blog-be/app/service/redis"
 	"github.com/quanganh247-qa/go-blog-be/app/service/worker"
+<<<<<<< HEAD
 	"github.com/quanganh247-qa/go-blog-be/app/util"
 =======
 	"github.com/quanganh247-qa/go-blog-be/app/service/mail"
@@ -17,6 +18,8 @@ import (
 =======
 	"github.com/quanganh247-qa/go-blog-be/app/service/redis"
 >>>>>>> 272832d (redis cache)
+=======
+>>>>>>> 6610455 (feat: redis queue)
 )
 
 type UserController struct {
@@ -24,6 +27,7 @@ type UserController struct {
 }
 
 type UserService struct {
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 	storeDB         db.Store
@@ -39,6 +43,11 @@ type UserService struct {
 	storeDB db.Store
 	redis   *redis.ClientType
 >>>>>>> 272832d (redis cache)
+=======
+	storeDB         db.Store
+	redis           *redis.ClientType
+	taskDistributor worker.TaskDistributor
+>>>>>>> 6610455 (feat: redis queue)
 }
 
 // route
@@ -170,6 +179,7 @@ type DoctorScheduleResponse struct {
 }
 
 type VerrifyEmailTxParams struct {
+<<<<<<< HEAD
 	SecretCode int64  `json:"secret_code"`
 	Username   string `json:"username"`
 }
@@ -177,6 +187,11 @@ type VerrifyEmailTxParams struct {
 type VerrifyInput struct {
 	SecretCode string `json:"secret_code"`
 	Username   string `json:"username"`
+=======
+	EmailId    int64  `json:"email_id"`
+	SecretCode int64  `json:"secret_code"`
+	Username   string `json:"username"`
+>>>>>>> 6610455 (feat: redis queue)
 }
 
 type VerrifyEmailTxResult struct {
