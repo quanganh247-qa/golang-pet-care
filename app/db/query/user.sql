@@ -50,6 +50,7 @@ SELECT * FROM users ;
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 -- name: UpdateUser :one
 UPDATE users
 SET full_name = $2, email = $3, phone_number = $4, address = $5
@@ -69,6 +70,11 @@ RETURNING *;
 -- name: UpdateAvatarUser :one
 UPDATE users
 SET data_image = $2, original_image = $3
+=======
+-- name: VerifiedUser :one
+UPDATE users
+SET is_verified_email = $2
+>>>>>>> 6610455 (feat: redis queue)
 WHERE username = $1
 RETURNING *;
 

@@ -9,6 +9,7 @@ import (
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 	"log"
 >>>>>>> 3835eb4 (update pet_schedule api)
@@ -29,6 +30,9 @@ import (
 >>>>>>> ffc9071 (AI suggestion)
 =======
 >>>>>>> e859654 (Elastic search)
+=======
+	"net/http"
+>>>>>>> 6610455 (feat: redis queue)
 	"time"
 =======
 >>>>>>> 272832d (redis cache)
@@ -166,8 +170,13 @@ func (s *PetScheduleService) CreatePetScheduleService(ctx *gin.Context, req PetS
 	CreatePetScheduleService(ctx *gin.Context, req PetScheduleRequest) error
 =======
 	CreatePetScheduleService(ctx *gin.Context, req PetScheduleRequest, petID int64) error
+<<<<<<< HEAD
 	GetAllSchedulesByPetService(ctx *gin.Context, petID int64, pagination *util.Pagination) ([]PetScheduleResonse, error)
 >>>>>>> e01abc5 (pet schedule api)
+=======
+	GetAllSchedulesByPetService(ctx *gin.Context, petID int64, pagination *util.Pagination) ([]PetScheduleResponse, error)
+	ListPetSchedulesByUsernameService(ctx *gin.Context, username string) ([]PetSchedules, error)
+>>>>>>> 6610455 (feat: redis queue)
 }
 
 func (s *PetScheduleService) CreatePetScheduleService(ctx *gin.Context, req PetScheduleRequest, petID int64) error {
@@ -233,6 +242,7 @@ func (s *PetScheduleService) GetAllSchedulesByPetService(ctx *gin.Context, petID
 	}
 
 	var petSchedules []PetScheduleResponse
+<<<<<<< HEAD
 	for _, r := range res {
 		petSchedules = append(petSchedules, PetScheduleResponse{
 			ID:               r.ID,
@@ -720,9 +730,11 @@ func (s *PetScheduleService) GetAllSchedulesByPetService(ctx *gin.Context, petID
 			Notes:            r.Notes.String,
 =======
 	var petSchedules []PetScheduleResonse
+=======
+>>>>>>> 6610455 (feat: redis queue)
 	for _, r := range res {
 
-		petSchedules = append(petSchedules, PetScheduleResonse{
+		petSchedules = append(petSchedules, PetScheduleResponse{
 			ID:           r.PetID.Int64,
 			ScheduleType: r.ScheduleType,
 			Duration:     r.Duration.String,
@@ -738,8 +750,11 @@ func (s *PetScheduleService) GetAllSchedulesByPetService(ctx *gin.Context, petID
 }
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> e01abc5 (pet schedule api)
 =======
+=======
+>>>>>>> 6610455 (feat: redis queue)
 
 func (s *PetScheduleService) ListPetSchedulesByUsernameService(ctx *gin.Context, username string) ([]PetSchedules, error) {
 	schedules, err := s.storeDB.ListPetSchedulesByUsername(ctx, username)
@@ -749,6 +764,7 @@ func (s *PetScheduleService) ListPetSchedulesByUsernameService(ctx *gin.Context,
 	}
 
 	// Group schedules by pet ID
+<<<<<<< HEAD
 	groupedSchedules := make(map[PetKey][]PetScheduleResponse)
 	for _, schedule := range schedules {
 		petKey := PetKey{
@@ -764,22 +780,42 @@ func (s *PetScheduleService) ListPetSchedulesByUsernameService(ctx *gin.Context,
 			EndType:          schedule.EndType.Bool,
 			EndDate:          schedule.EndDate.Time.Format(time.RFC3339),
 			Notes:            schedule.Notes.String,
+=======
+	groupedSchedules := make(map[int64][]PetScheduleResponse)
+	for _, schedule := range schedules {
+		groupedSchedules[schedule.PetID.Int64] = append(groupedSchedules[schedule.PetID.Int64], PetScheduleResponse{
+			ID:           schedule.PetID.Int64,
+			PetName:      schedule.Name.String,
+			EventTime:    schedule.EventTime.Time.Format(time.RFC3339),
+			ScheduleType: schedule.ScheduleType,
+			ActivityType: schedule.ActivityType.String,
+			Duration:     schedule.Duration.String,
+			Frequency:    schedule.Frequency.String,
+			Notes:        schedule.Notes.String,
+>>>>>>> 6610455 (feat: redis queue)
 		})
 
 	}
 
 	// Convert the map to a slice of responses
 	var response []PetSchedules
+<<<<<<< HEAD
 	for petKey, schedules := range groupedSchedules {
 		response = append(response, PetSchedules{
 			PetID:     petKey.PetID,
 			PetName:   petKey.PetName,
+=======
+	for petID, schedules := range groupedSchedules {
+		response = append(response, PetSchedules{
+			PetID:     petID,
+>>>>>>> 6610455 (feat: redis queue)
 			Schedules: schedules,
 		})
 	}
 
 	return response, nil
 }
+<<<<<<< HEAD
 <<<<<<< HEAD
 >>>>>>> 6610455 (feat: redis queue)
 =======
@@ -830,3 +866,5 @@ func (s *PetScheduleService) DeletePetScheduleService(ctx *gin.Context, schedule
 >>>>>>> 272832d (redis cache)
 =======
 >>>>>>> e01abc5 (pet schedule api)
+=======
+>>>>>>> 6610455 (feat: redis queue)

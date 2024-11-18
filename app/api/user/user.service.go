@@ -40,6 +40,7 @@ import (
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> 1a9e82a (reset password api)
 	"github.com/quanganh247-qa/go-blog-be/app/service/mail"
@@ -57,6 +58,9 @@ import (
 >>>>>>> 9d28896 (image pet)
 =======
 >>>>>>> 272832d (redis cache)
+=======
+	"github.com/quanganh247-qa/go-blog-be/app/service/worker"
+>>>>>>> 6610455 (feat: redis queue)
 	"github.com/quanganh247-qa/go-blog-be/app/util"
 )
 
@@ -91,6 +95,7 @@ type UserServiceInterface interface {
 	logoutUsersService(ctx *gin.Context, username string, token string) error
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	verifyEmailService(ctx *gin.Context, arg VerrifyEmailTxParams) error
 
 <<<<<<< HEAD
@@ -116,6 +121,9 @@ type UserServiceInterface interface {
 =======
 	verifyEmailService(ctx *gin.Context, arg VerrifyEmailTxParams) error
 >>>>>>> edfe5ad (OTP verifycation)
+=======
+	verifyEmailService(ctx *gin.Context, arg VerrifyEmailTxParams) (VerrifyEmailTxResult, error)
+>>>>>>> 6610455 (feat: redis queue)
 	createDoctorService(ctx *gin.Context, arg InsertDoctorRequest, username string) (*DoctorResponse, error)
 	createDoctorScheduleService(ctx *gin.Context, arg InsertDoctorScheduleRequest, username string) (*DoctorScheduleResponse, error)
 	getDoctorByID(ctx *gin.Context, userID int64) (*DoctorResponse, error)
@@ -171,6 +179,9 @@ func (server *UserService) createUserService(ctx *gin.Context, req createUserReq
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 6610455 (feat: redis queue)
 =======
 >>>>>>> 6610455 (feat: redis queue)
 		Username:       req.Username,
@@ -182,6 +193,7 @@ func (server *UserService) createUserService(ctx *gin.Context, req createUserReq
 		DataImage:      req.DataImage,
 		OriginalImage:  pgtype.Text{String: req.OriginalImage, Valid: true},
 		Role:           pgtype.Text{String: "user", Valid: true}, //
+<<<<<<< HEAD
 <<<<<<< HEAD
 =======
 =======
@@ -209,9 +221,12 @@ func (server *UserService) createUserService(ctx *gin.Context, req createUserReq
 		Role:            pgtype.Text{String: "user", Valid: true}, //
 		IsVerifiedEmail: pgtype.Bool{Bool: true, Valid: true},
 >>>>>>> 0fb3f30 (user images)
+=======
+>>>>>>> 6610455 (feat: redis queue)
 	}
 	err = server.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -338,11 +353,47 @@ func (server *UserService) createUserService(ctx *gin.Context, req createUserReq
 		if err != nil {
 			ctx.JSON(http.StatusInternalServerError, "failed to store otp in redis")
 			return fmt.Errorf("failed to store otp in redis: %v", err)
+=======
+	err = server.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
+
+		_, err = server.storeDB.CreateUser(ctx, arg) // Check this line carefully
+
+		if err != nil {
+			if pqErr, ok := err.(*pq.Error); ok {
+				switch pqErr.Code.Name() {
+				case "unique_violation":
+					ctx.JSON(http.StatusForbidden, "username or email already exists")
+					return fmt.Errorf("username or email already exists")
+				}
+			} else {
+				ctx.JSON(http.StatusInternalServerError, "internal server error")
+				return fmt.Errorf("internal server error: %v", err)
+			}
+		}
+		// Distribute the task to send a verification email
+		payload := &worker.PayloadSendVerifyEmail{
+			Username: req.Username,
+		}
+		// Ensure taskDistributor is not nil
+		if server.taskDistributor == nil {
+			return fmt.Errorf("task distributor is not initialized")
+		}
+
+		opts := []asynq.Option{
+			asynq.Queue(worker.QueueDefault),
+			asynq.MaxRetry(3),
+		}
+		err = server.taskDistributor.DistributeTaskSendVerifyEmail(ctx, payload, opts...)
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, "failed to enqueue task")
+			return fmt.Errorf("failed to enqueue task: %v", err)
+>>>>>>> 6610455 (feat: redis queue)
 		}
 
 		return nil
 
 	})
+<<<<<<< HEAD
 
 	if err != nil {
 <<<<<<< HEAD
@@ -364,6 +415,10 @@ func (server *UserService) createUserService(ctx *gin.Context, req createUserReq
 <<<<<<< HEAD
 		return err
 >>>>>>> 1f24c18 (feat: OTP with redis)
+=======
+	if err != nil {
+		return fmt.Errorf("failed to create user: %w", err)
+>>>>>>> 6610455 (feat: redis queue)
 	}
 
 <<<<<<< HEAD
@@ -566,6 +621,7 @@ func (service *UserService) loginUserService(ctx *gin.Context, req loginUserRequ
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 
 	err = util.CheckPassword(req.Password, user.HashedPassword)
@@ -600,6 +656,8 @@ func (service *UserService) loginUserService(ctx *gin.Context, req loginUserRequ
 =======
 
 >>>>>>> c3c833d (login api)
+=======
+>>>>>>> 6610455 (feat: redis queue)
 	tokens, err := service.storeDB.InsertDeviceToken(ctx, db.InsertDeviceTokenParams{
 		Username:   req.Username,
 		Token:      req.Token,
@@ -737,17 +795,24 @@ func (server *UserService) verifyEmailService(ctx *gin.Context, arg VerrifyEmail
 >>>>>>> 1f24c18 (feat: OTP with redis)
 		if err != nil {
 <<<<<<< HEAD
+<<<<<<< HEAD
 			return fmt.Errorf("failed to verify OTP: %w", err)
 =======
+=======
+>>>>>>> 6610455 (feat: redis queue)
 
 			return err
 >>>>>>> 6610455 (feat: redis queue)
 		}
+		fmt.Println("11", arg.Username)
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 		if storedOTP != arg.SecretCode {
 			return fmt.Errorf("invalid OTP")
 =======
+=======
+>>>>>>> 6610455 (feat: redis queue)
 		result.User, err = q.VerifiedUser(ctx, db.VerifiedUserParams{
 			Username: result.VerifyEmail.Username,
 			IsVerifiedEmail: pgtype.Bool{
@@ -755,6 +820,7 @@ func (server *UserService) verifyEmailService(ctx *gin.Context, arg VerrifyEmail
 				Valid: true,
 			},
 		})
+<<<<<<< HEAD
 =======
 		storedOTP, err := server.redis.ReadOTPFromRedis(arg.Username)
 		if err != nil {
@@ -775,6 +841,12 @@ func (server *UserService) verifyEmailService(ctx *gin.Context, arg VerrifyEmail
 		if err != nil {
 			ctx.JSON(http.StatusInternalServerError, "failed to verify user")
 			return fmt.Errorf("failed to verify user: %w", err)
+=======
+
+		if err != nil {
+
+			return err
+>>>>>>> 6610455 (feat: redis queue)
 		}
 
 		return nil

@@ -117,18 +117,22 @@ import (
 	"github.com/quanganh247-qa/go-blog-be/app/middleware"
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	"github.com/quanganh247-qa/go-blog-be/app/service/elasticsearch"
 =======
 >>>>>>> 6610455 (feat: redis queue)
 =======
 	"github.com/quanganh247-qa/go-blog-be/app/service/elasticsearch"
 >>>>>>> e859654 (Elastic search)
+=======
+>>>>>>> 6610455 (feat: redis queue)
 	"github.com/quanganh247-qa/go-blog-be/app/service/worker"
 	"github.com/quanganh247-qa/go-blog-be/app/util"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -142,6 +146,9 @@ func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor, config
 =======
 func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor, config util.Config, es *elasticsearch.ESService) {
 >>>>>>> e859654 (Elastic search)
+=======
+func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor) {
+>>>>>>> 6610455 (feat: redis queue)
 	gin.SetMode(gin.ReleaseMode)
 	routerDefault := gin.New()
 	routerDefault.SetTrustedProxies(nil)
@@ -252,8 +259,12 @@ func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor, config
 
 >>>>>>> 7a9ad08 (updated pet api)
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+<<<<<<< HEAD
 	user.Routes(routerGroup)
 >>>>>>> 9d28896 (image pet)
+=======
+	user.Routes(routerGroup, taskDistributor)
+>>>>>>> 6610455 (feat: redis queue)
 	service_type.Routes(routerGroup)
 >>>>>>> 9d28896 (image pet)
 =======

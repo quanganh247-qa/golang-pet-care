@@ -16,6 +16,7 @@ import (
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	"github.com/quanganh247-qa/go-blog-be/app/middleware"
 =======
 >>>>>>> e01abc5 (pet schedule api)
@@ -24,12 +25,16 @@ import (
 >>>>>>> 6610455 (feat: redis queue)
 =======
 >>>>>>> e01abc5 (pet schedule api)
+=======
+	"github.com/quanganh247-qa/go-blog-be/app/middleware"
+>>>>>>> 6610455 (feat: redis queue)
 	"github.com/quanganh247-qa/go-blog-be/app/util"
 )
 
 type PetScheduleControllerInterface interface {
 	createPetSchedule(ctx *gin.Context)
 	getAllSchedulesByPet(ctx *gin.Context)
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -55,10 +60,14 @@ type PetScheduleControllerInterface interface {
 >>>>>>> ffc9071 (AI suggestion)
 =======
 >>>>>>> e01abc5 (pet schedule api)
+=======
+	listPetSchedulesByUsername(ctx *gin.Context)
+>>>>>>> 6610455 (feat: redis queue)
 }
 
 func (c *PetScheduleController) createPetSchedule(ctx *gin.Context) {
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -72,6 +81,9 @@ func (c *PetScheduleController) createPetSchedule(ctx *gin.Context) {
 =======
 	petIDStr := ctx.Query("pet_id")
 >>>>>>> e01abc5 (pet schedule api)
+=======
+	petIDStr := ctx.Param("petid")
+>>>>>>> 6610455 (feat: redis queue)
 	if petIDStr == "" {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Missed value pet id"})
 		return
@@ -102,6 +114,7 @@ func (s *PetScheduleController) getAllSchedulesByPet(ctx *gin.Context) {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	petIDStr := ctx.Param("petid")
 =======
 	petIDStr := ctx.Query("pet_id")
@@ -112,6 +125,9 @@ func (s *PetScheduleController) getAllSchedulesByPet(ctx *gin.Context) {
 =======
 	petIDStr := ctx.Query("pet_id")
 >>>>>>> e01abc5 (pet schedule api)
+=======
+	petIDStr := ctx.Param("petid")
+>>>>>>> 6610455 (feat: redis queue)
 	petID, err := strconv.ParseInt(petIDStr, 10, 64)
 	if err != nil {
 		// Handle the error, e.g., by sending an error response or logging it
@@ -337,4 +353,20 @@ type PetScheduleControllerInterface interface {
 >>>>>>> 272832d (redis cache)
 =======
 >>>>>>> e01abc5 (pet schedule api)
+}
+
+func (s *PetScheduleController) listPetSchedulesByUsername(ctx *gin.Context) {
+	authPayload, err := middleware.GetAuthorizationPayload(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
+	}
+
+	schedules, err := s.service.ListPetSchedulesByUsernameService(ctx, authPayload.Username)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, util.ErrorValidator(err))
+		return
+	}
+
+	ctx.JSON(http.StatusOK, util.SuccessResponse("Schedules", schedules))
 }

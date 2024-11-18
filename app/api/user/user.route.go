@@ -7,6 +7,7 @@ import (
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	"github.com/quanganh247-qa/go-blog-be/app/service/worker"
 	"github.com/quanganh247-qa/go-blog-be/app/util"
 =======
@@ -27,6 +28,12 @@ func Routes(routerGroup middleware.RouterGroup, taskDistributor worker.TaskDistr
 =======
 func Routes(routerGroup middleware.RouterGroup, taskDistributor worker.TaskDistributor, config util.Config) {
 >>>>>>> 1a9e82a (reset password api)
+=======
+	"github.com/quanganh247-qa/go-blog-be/app/service/worker"
+)
+
+func Routes(routerGroup middleware.RouterGroup, taskDistributor worker.TaskDistributor) {
+>>>>>>> 6610455 (feat: redis queue)
 	user := routerGroup.RouterDefault.Group("/user")
 	authRoute := routerGroup.RouterAuth(user)
 
@@ -34,6 +41,7 @@ func Routes(routerGroup middleware.RouterGroup, taskDistributor worker.TaskDistr
 	userApi := &UserApi{
 		&UserController{
 			service: &UserService{
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 				storeDB:         db.StoreDB, // This should refer to the actual instance
@@ -55,6 +63,11 @@ func Routes(routerGroup middleware.RouterGroup, taskDistributor worker.TaskDistr
 >>>>>>> 1a9e82a (reset password api)
 =======
 >>>>>>> 272832d (redis cache)
+=======
+				storeDB:         db.StoreDB, // This should refer to the actual instance
+				redis:           redis.Client,
+				taskDistributor: taskDistributor,
+>>>>>>> 6610455 (feat: redis queue)
 			},
 		},
 	}
@@ -67,6 +80,7 @@ func Routes(routerGroup middleware.RouterGroup, taskDistributor worker.TaskDistr
 		user.POST("/login", userApi.controller.loginUser)
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 		user.POST("/verify_email", userApi.controller.verifyEmail)
 		user.POST("/resend_otp/:username", userApi.controller.resendOTP)
 =======
@@ -76,6 +90,9 @@ func Routes(routerGroup middleware.RouterGroup, taskDistributor worker.TaskDistr
 		user.POST("/verify_email", userApi.controller.verifyEmail)
 		user.POST("/resend_otp/:username", userApi.controller.resendOTP)
 >>>>>>> edfe5ad (OTP verifycation)
+=======
+		user.PUT("/verify_email", userApi.controller.verifyEmail)
+>>>>>>> 6610455 (feat: redis queue)
 		authRoute.GET("/refresh_token", userApi.controller.getAccessToken)
 		authRoute.POST("/logout", userApi.controller.logoutUser)
 <<<<<<< HEAD

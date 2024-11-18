@@ -730,6 +730,7 @@ type Querier interface {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 	InsertMedicine(ctx context.Context, arg InsertMedicineParams) (Medication, error)
 =======
@@ -741,6 +742,9 @@ type Querier interface {
 >>>>>>> 79a3bcc (medicine api)
 =======
 >>>>>>> 272832d (redis cache)
+=======
+	ListPetSchedulesByUsername(ctx context.Context, username string) ([]ListPetSchedulesByUsernameRow, error)
+>>>>>>> 6610455 (feat: redis queue)
 	ListPets(ctx context.Context, arg ListPetsParams) ([]Pet, error)
 	ListPetsByUsername(ctx context.Context, arg ListPetsByUsernameParams) ([]Pet, error)
 	ListTreatmentsByPet(ctx context.Context, arg ListTreatmentsByPetParams) ([]PetTreatment, error)
@@ -893,6 +897,7 @@ type Querier interface {
 =======
 	UpdateService(ctx context.Context, arg UpdateServiceParams) error
 <<<<<<< HEAD
+<<<<<<< HEAD
 	UpdateTimeSlot(ctx context.Context, arg UpdateTimeSlotParams) (Timeslot, error)
 >>>>>>> e9037c6 (update sqlc)
 =======
@@ -936,6 +941,11 @@ type Querier interface {
 =======
 	VerifiedUser(ctx context.Context, username string) (User, error)
 >>>>>>> edfe5ad (OTP verifycation)
+=======
+	UpdateVaccination(ctx context.Context, arg UpdateVaccinationParams) error
+	UpdateVerifyEmail(ctx context.Context, arg UpdateVerifyEmailParams) (VerifyEmail, error)
+	VerifiedUser(ctx context.Context, arg VerifiedUserParams) (User, error)
+>>>>>>> 6610455 (feat: redis queue)
 }
 
 var _ Querier = (*Queries)(nil)

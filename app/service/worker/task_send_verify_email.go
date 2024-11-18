@@ -9,6 +9,7 @@ import (
 	"github.com/hibiken/asynq"
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	"github.com/rs/zerolog/log"
 )
 
@@ -63,6 +64,15 @@ type PayloadSendVerifyEmail struct {
 =======
 	OTP      int64  `json:"otp"`
 >>>>>>> 1f24c18 (feat: OTP with redis)
+=======
+	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
+	"github.com/quanganh247-qa/go-blog-be/app/util"
+	"github.com/rs/zerolog/log"
+)
+
+type PayloadSendVerifyEmail struct {
+	Username string `json:"username"`
+>>>>>>> 6610455 (feat: redis queue)
 }
 
 func (distributor *RedisTaskDistributor) DistributeTaskSendVerifyEmail(ctx context.Context,
@@ -100,6 +110,7 @@ func (processor *RedisTaskProccessor) ProccessTaskSendVerifyEmail(ctx context.Co
 		return fmt.Errorf("failed to get user: %w", err)
 	}
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -152,10 +163,17 @@ func (processor *RedisTaskProccessor) ProccessTaskSendVerifyEmail(ctx context.Co
 		Username:   user.Username,
 		Email:      user.Email,
 		SecretCode: payload.OTP,
+=======
+	verifyEmail, err := processor.store.CreateVerifyEmail(ctx, db.CreateVerifyEmailParams{
+		Username:   user.Username,
+		Email:      user.Email,
+		SecretCode: util.RandomInt(10000000, 999999999),
+>>>>>>> 6610455 (feat: redis queue)
 	})
 	if err != nil {
 		return fmt.Errorf("failed to create verify email %w", err)
 	}
+<<<<<<< HEAD
 =======
 >>>>>>> 1a9e82a (reset password api)
 
@@ -207,6 +225,21 @@ func (processor *RedisTaskProccessor) ProccessTaskSendVerifyEmail(ctx context.Co
 	if err != nil {
 		return fmt.Errorf("failed to send verify email: %w", err)
 >>>>>>> 1f24c18 (feat: OTP with redis)
+=======
+	subject := "Welcome to Pet care app"
+	// TODO: replace this URL with an environment variable that points to a front-end page
+	verifyUrl := fmt.Sprintf("http://localhost:8088/api/v1/user/verify_email?email_id=%d&secret_code=%d",
+		verifyEmail.ID, verifyEmail.SecretCode)
+	content := fmt.Sprintf(`Hello %s,<br/>
+	Thank you for registering with us!<br/>
+	Please <a href="%s">click here</a> to verify your email address.<br/>
+	`, user.FullName, verifyUrl)
+	to := []string{user.Email}
+
+	err = processor.mailer.SendEmail(subject, content, to, nil, nil, nil)
+	if err != nil {
+		return fmt.Errorf("failed to send verify email: %w", err)
+>>>>>>> 6610455 (feat: redis queue)
 	}
 
 	return nil

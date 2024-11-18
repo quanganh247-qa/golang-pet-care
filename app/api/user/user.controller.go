@@ -403,11 +403,15 @@ func (controller *UserController) verifyEmail(ctx *gin.Context) {
 		return
 	}
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 6610455 (feat: redis queue)
 	secretCodeInt, err := strconv.ParseInt(secretCode, 10, 64)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(fmt.Errorf("invalid email_id parameter")))
 		return
 	}
+<<<<<<< HEAD
 
 	req = VerrifyEmailTxParams{
 		EmailId:    emailIDInt,
@@ -418,6 +422,12 @@ func (controller *UserController) verifyEmail(ctx *gin.Context) {
 		EmailId:    emailIDInt,
 		SecretCode: secretCode,
 >>>>>>> 9d28896 (image pet)
+=======
+
+	req = VerrifyEmailTxParams{
+		EmailId:    emailIDInt,
+		SecretCode: secretCodeInt,
+>>>>>>> 6610455 (feat: redis queue)
 	}
 
 	res, err := controller.service.verifyEmailService(ctx, req)

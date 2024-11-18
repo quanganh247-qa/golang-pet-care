@@ -562,6 +562,7 @@ func (q *Queries) GetDoctors(ctx context.Context) ([]GetDoctorsRow, error) {
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> e30b070 (Get list appoinment by user)
 =======
 >>>>>>> 6f3ea8a (update sqlc)
@@ -593,6 +594,23 @@ type GetUserRow struct {
 func (q *Queries) GetUser(ctx context.Context, username string) (GetUserRow, error) {
 	row := q.db.QueryRow(ctx, getUser, username)
 	var i GetUserRow
+=======
+const verifiedUser = `-- name: VerifiedUser :one
+UPDATE users
+SET is_verified_email = $2
+WHERE username = $1
+RETURNING id, username, hashed_password, full_name, email, phone_number, address, data_image, original_image, role, created_at, is_verified_email, removed_at
+`
+
+type VerifiedUserParams struct {
+	Username        string      `json:"username"`
+	IsVerifiedEmail pgtype.Bool `json:"is_verified_email"`
+}
+
+func (q *Queries) VerifiedUser(ctx context.Context, arg VerifiedUserParams) (User, error) {
+	row := q.db.QueryRow(ctx, verifiedUser, arg.Username, arg.IsVerifiedEmail)
+	var i User
+>>>>>>> 6610455 (feat: redis queue)
 	err := row.Scan(
 		&i.ID,
 		&i.Username,
