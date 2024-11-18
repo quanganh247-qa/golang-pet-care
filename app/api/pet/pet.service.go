@@ -35,11 +35,16 @@ type PetServiceInterface interface {
 	GetPetLogsByPetIDService(ctx *gin.Context, pet_id int64, pagination *util.Pagination) ([]PetLog, error)
 	InsertPetLogService(ctx context.Context, req PetLog) error
 <<<<<<< HEAD
+<<<<<<< HEAD
 	DeletePetLogService(ctx context.Context, logID int64) error
 	UpdatePetLogService(ctx context.Context, req PetLog, log_id int64) error
 	UpdatePetAvatar(ctx *gin.Context, petid int64, req updatePetAvatarRequest) error
 =======
 >>>>>>> 7e616af (add pet log schema)
+=======
+	DeletePetLogService(ctx context.Context, petID int64, logID int64) error
+	UpdatePetLogService(ctx context.Context, req PetLog, log_id int64) error
+>>>>>>> 3835eb4 (update pet_schedule api)
 }
 
 <<<<<<< HEAD
@@ -560,6 +565,8 @@ func formatVaccinations(vaccinations []db.Vaccination) string {
 	}
 	return result.String()
 }
+
+// Log for pet
 
 func (s *PetService) GetPetLogsByPetIDService(ctx *gin.Context, pet_id int64, pagination *util.Pagination) ([]PetLog, error) {
 	var pets []PetLog
