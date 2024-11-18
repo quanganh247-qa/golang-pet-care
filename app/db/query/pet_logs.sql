@@ -12,12 +12,12 @@ LIMIT $2 OFFSET $3;
 
 -- name: DeletePetLog :exec
 DELETE FROM pet_logs
-WHERE petid = $1;
+WHERE  log_id = $1;
 
 -- name: UpdatePetLog :exec
 UPDATE pet_logs
 SET datetime = $2, title = $3, notes = $4
-WHERE petid = $1;
+WHERE log_id = $1;
 
 -- name: GetPetLogByID :one
 SELECT pet_logs.petid, pet_logs.datetime, pet_logs.title, pet_logs.notes
