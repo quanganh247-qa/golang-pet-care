@@ -61,6 +61,7 @@ type PetServiceInterface interface {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	DeletePetLogService(ctx context.Context, logID int64) error
 	UpdatePetLogService(ctx context.Context, req PetLog, log_id int64) error
 	UpdatePetAvatar(ctx *gin.Context, petid int64, req updatePetAvatarRequest) error
@@ -87,6 +88,9 @@ type PetServiceInterface interface {
 >>>>>>> 7e616af (add pet log schema)
 =======
 	DeletePetLogService(ctx context.Context, petID int64, logID int64) error
+=======
+	DeletePetLogService(ctx context.Context, logID int64) error
+>>>>>>> 884b92e (update pet logs api)
 	UpdatePetLogService(ctx context.Context, req PetLog, log_id int64) error
 >>>>>>> 3835eb4 (update pet_schedule api)
 }
@@ -961,9 +965,9 @@ func (s *PetService) InsertPetLogService(ctx context.Context, req PetLog) error 
 }
 
 // DeletePetLogService delete log for pet
-func (s *PetService) DeletePetLogService(ctx context.Context, petID int64, logID int64) error {
+func (s *PetService) DeletePetLogService(ctx context.Context, logID int64) error {
 	err := s.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
-		err := q.DeletePetLog(ctx, petID)
+		err := q.DeletePetLog(ctx, logID)
 		if err != nil {
 			return fmt.Errorf("failed to delete pet log: %w", err)
 		}
@@ -998,7 +1002,7 @@ func (s *PetService) UpdatePetLogService(ctx context.Context, req PetLog, log_id
 
 	err = s.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
 		err := q.UpdatePetLog(ctx, db.UpdatePetLogParams{
-			Petid:    req.PetID,
+			LogID:    log_id,
 			Datetime: pgtype.Timestamp{Time: time.Now(), Valid: true},
 			Title:    pgtype.Text{String: req.Title, Valid: true},
 			Notes:    pgtype.Text{String: req.Notes, Valid: true},

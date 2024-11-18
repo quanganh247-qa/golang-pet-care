@@ -102,8 +102,8 @@ func Routes(routerGroup middleware.RouterGroup) {
 >>>>>>> 7e616af (add pet log schema)
 =======
 		authRoute.POST("/logs", petApi.controller.InsertPetLog)
-		authRoute.DELETE("/logs/:petid/:logid", petApi.controller.DeletePetLog)
-		authRoute.PUT("/logs/:petid", petApi.controller.UpdatePetLog)
+		authRoute.DELETE("/logs/:logid", petApi.controller.DeletePetLog)
+		authRoute.PUT("/logs/:logid", petApi.controller.UpdatePetLog)
 
 >>>>>>> 3835eb4 (update pet_schedule api)
 	}
