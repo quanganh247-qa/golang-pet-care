@@ -5,6 +5,7 @@ import (
 	"github.com/quanganh247-qa/go-blog-be/app/middleware"
 	"github.com/quanganh247-qa/go-blog-be/app/service/redis"
 <<<<<<< HEAD
+<<<<<<< HEAD
 	"github.com/quanganh247-qa/go-blog-be/app/service/worker"
 	"github.com/quanganh247-qa/go-blog-be/app/util"
 =======
@@ -12,6 +13,12 @@ import (
 )
 
 func Routes(routerGroup middleware.RouterGroup, taskDistributor worker.TaskDistributor, config util.Config) {
+=======
+	"github.com/quanganh247-qa/go-blog-be/app/service/worker"
+)
+
+func Routes(routerGroup middleware.RouterGroup, taskDistributor worker.TaskDistributor) {
+>>>>>>> 6610455 (feat: redis queue)
 	user := routerGroup.RouterDefault.Group("/user")
 	authRoute := routerGroup.RouterAuth(user)
 
@@ -19,6 +26,7 @@ func Routes(routerGroup middleware.RouterGroup, taskDistributor worker.TaskDistr
 	userApi := &UserApi{
 		&UserController{
 			service: &UserService{
+<<<<<<< HEAD
 <<<<<<< HEAD
 				storeDB:         db.StoreDB, // This should refer to the actual instance
 				redis:           redis.Client,
@@ -28,6 +36,11 @@ func Routes(routerGroup middleware.RouterGroup, taskDistributor worker.TaskDistr
 				storeDB: db.StoreDB, // This should refer to the actual instance
 				redis:   redis.Client,
 >>>>>>> 272832d (redis cache)
+=======
+				storeDB:         db.StoreDB, // This should refer to the actual instance
+				redis:           redis.Client,
+				taskDistributor: taskDistributor,
+>>>>>>> 6610455 (feat: redis queue)
 			},
 		},
 	}
@@ -38,8 +51,12 @@ func Routes(routerGroup middleware.RouterGroup, taskDistributor worker.TaskDistr
 		user.GET("/all", userApi.controller.getAllUsers)
 		authRoute.GET("/", userApi.controller.getUserDetails)
 		user.POST("/login", userApi.controller.loginUser)
+<<<<<<< HEAD
 		user.POST("/verify_email", userApi.controller.verifyEmail)
 		user.POST("/resend_otp/:username", userApi.controller.resendOTP)
+=======
+		user.PUT("/verify_email", userApi.controller.verifyEmail)
+>>>>>>> 6610455 (feat: redis queue)
 		authRoute.GET("/refresh_token", userApi.controller.getAccessToken)
 		authRoute.POST("/logout", userApi.controller.logoutUser)
 <<<<<<< HEAD

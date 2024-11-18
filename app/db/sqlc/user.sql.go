@@ -338,6 +338,7 @@ func (q *Queries) UpdateAvatarUser(ctx context.Context, arg UpdateAvatarUserPara
 	return i, err
 }
 
+<<<<<<< HEAD
 const updateUser = `-- name: UpdateUser :one
 <<<<<<< HEAD
 UPDATE users
@@ -353,10 +354,17 @@ SET
   is_verified_email = COALESCE($4,is_verified_email)
 WHERE
   username = $5
+=======
+const verifiedUser = `-- name: VerifiedUser :one
+UPDATE users
+SET is_verified_email = $2
+WHERE username = $1
+>>>>>>> 6610455 (feat: redis queue)
 RETURNING id, username, hashed_password, full_name, email, phone_number, address, data_image, original_image, role, created_at, is_verified_email, removed_at
 >>>>>>> 0fb3f30 (user images)
 `
 
+<<<<<<< HEAD
 type UpdateUserParams struct {
 	Username    string      `json:"username"`
 	FullName    string      `json:"full_name"`
@@ -373,6 +381,15 @@ func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, e
 		arg.PhoneNumber,
 		arg.Address,
 	)
+=======
+type VerifiedUserParams struct {
+	Username        string      `json:"username"`
+	IsVerifiedEmail pgtype.Bool `json:"is_verified_email"`
+}
+
+func (q *Queries) VerifiedUser(ctx context.Context, arg VerifiedUserParams) (User, error) {
+	row := q.db.QueryRow(ctx, verifiedUser, arg.Username, arg.IsVerifiedEmail)
+>>>>>>> 6610455 (feat: redis queue)
 	var i User
 	err := row.Scan(
 		&i.ID,

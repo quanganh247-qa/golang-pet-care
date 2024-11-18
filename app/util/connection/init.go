@@ -4,7 +4,10 @@ import (
 	"context"
 	"fmt"
 	"log"
+<<<<<<< HEAD
 	"time"
+=======
+>>>>>>> 6610455 (feat: redis queue)
 
 <<<<<<< HEAD
 	"github.com/fatih/color"
@@ -12,12 +15,15 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
 	"github.com/quanganh247-qa/go-blog-be/app/service/mail"
+<<<<<<< HEAD
 	"github.com/quanganh247-qa/go-blog-be/app/service/minio"
 =======
 	"github.com/hibiken/asynq"
 	"github.com/jackc/pgx/v5/pgxpool"
 	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
 >>>>>>> 272832d (redis cache)
+=======
+>>>>>>> 6610455 (feat: redis queue)
 	"github.com/quanganh247-qa/go-blog-be/app/service/redis"
 	"github.com/quanganh247-qa/go-blog-be/app/service/token"
 	"github.com/quanganh247-qa/go-blog-be/app/service/worker"
@@ -59,8 +65,12 @@ func Init(config util.Config) (*Connection, error) {
 	_ = asynq.RedisClientOpt{
 		Addr: config.RedisAddress,
 	}
-	redis.InitRedis(config.RedisAddress)
+	err = redis.InitRedis(config.RedisAddress)
+	if err != nil {
+		return nil, fmt.Errorf("cannot connect to redis: %w", err)
+	}
 
+<<<<<<< HEAD
 	// // Initialize RabbitMQ client
 	// clientRabbitMQ := rabbitmq.Init(config.RabbitMQAddress)
 	// sender := mail.NewGmailSender(config.EmailSenderName, config.EmailSenderAddress, config.EmailSenderPassword)
@@ -70,6 +80,13 @@ func Init(config util.Config) (*Connection, error) {
 	go redis.InitRedis(config.RedisAddress)
 	go runTaskProcessor(&config, asynq.RedisClientOpt{Addr: config.RedisAddress}, db.InitStore(connPool))
 	go initMinio(&config)
+=======
+	// _ = db.InitStore(connPool)
+
+	DB := db.InitStore(connPool)
+	fmt.Println("DB")
+	go runTaskProcessor(&config, asynq.RedisClientOpt{Addr: config.RedisAddress}, DB)
+>>>>>>> 6610455 (feat: redis queue)
 
 	conn := &Connection{
 		Close: func() {
@@ -80,17 +97,30 @@ func Init(config util.Config) (*Connection, error) {
 }
 
 func runTaskProcessor(config *util.Config, redisOpt asynq.RedisClientOpt, store db.Store) {
+<<<<<<< HEAD
+=======
+	log.Println("Starting task processor...")
+
+>>>>>>> 6610455 (feat: redis queue)
 	// Kiểm tra mailer
 	mailer := mail.NewGmailSender(config.EmailSenderName, config.EmailSenderAddress, config.EmailSenderPassword)
 	if mailer == nil {
 		log.Fatal("Failed to create mailer")
 	}
+<<<<<<< HEAD
+=======
+	log.Println("Mailer initialized")
+>>>>>>> 6610455 (feat: redis queue)
 
 	// Khởi tạo task processor
 	taskProcessor := worker.NewRedisTaskProccessor(redisOpt, store, mailer)
 	if taskProcessor == nil {
 		log.Fatal("Failed to create task processor")
 	}
+<<<<<<< HEAD
+=======
+	log.Println("Task processor initialized")
+>>>>>>> 6610455 (feat: redis queue)
 
 	// Bắt đầu task processor
 	err := taskProcessor.Start()
@@ -98,6 +128,7 @@ func runTaskProcessor(config *util.Config, redisOpt asynq.RedisClientOpt, store 
 		log.Fatalf("Failed to start task processor: %v", err)
 	}
 }
+<<<<<<< HEAD
 
 func initMinio(config *util.Config) {
 	client, err := minio.NewMinIOClient(
@@ -115,3 +146,5 @@ func initMinio(config *util.Config) {
 	}
 
 }
+=======
+>>>>>>> 6610455 (feat: redis queue)

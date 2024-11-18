@@ -36,6 +36,7 @@ func Routes(routerGroup middleware.RouterGroup) {
 
 	{
 <<<<<<< HEAD
+<<<<<<< HEAD
 		authRoute.POST("/pet/:pet_id", petScheduleApi.controller.createPetSchedule)
 		authRoute.GET("/pet/:pet_id", petScheduleApi.controller.getAllSchedulesByPet)
 		authRoute.PUT("/active/:schedule_id", petScheduleApi.controller.activePetSchedule)
@@ -51,8 +52,12 @@ func Routes(routerGroup middleware.RouterGroup) {
 =======
 		authRoute.POST("/create", petScheduleApi.controller.createPetSchedule)
 		authRoute.GET("/pet", petScheduleApi.controller.getAllSchedulesByPet)
+=======
+		authRoute.POST("/pet/:petid", petScheduleApi.controller.createPetSchedule)
+		authRoute.GET("/pet/:petid", petScheduleApi.controller.getAllSchedulesByPet)
+>>>>>>> 6610455 (feat: redis queue)
 		// authRoute.GET("/list", petScheduleApi.controller.ListPetSchedules)
-		// authRoute.GET("/", petScheduleApi.controller.ListPetSchedulesByUsername)
+		authRoute.GET("/", petScheduleApi.controller.listPetSchedulesByUsername)
 		// authRoute.PUT("/update/:petScheduleid", petScheduleApi.controller.UpdatePetSchedule)
 		// authRoute.DELETE("/delete/:petScheduleid", petScheduleApi.controller.DeletePetSchedule)
 	}
