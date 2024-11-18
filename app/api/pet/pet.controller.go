@@ -20,6 +20,9 @@ type PetControllerInterface interface {
 	UpdatePet(ctx *gin.Context)
 	DeletePet(ctx *gin.Context)
 	GetPetLogsByPetID(ctx *gin.Context)
+	InsertPetLog(ctx *gin.Context)
+	DeletePetLog(ctx *gin.Context)
+	UpdatePetLog(ctx *gin.Context)
 }
 
 func (c *PetController) CreatePet(ctx *gin.Context) {
@@ -192,4 +195,67 @@ func (c *PetController) GetPetLogsByPetID(ctx *gin.Context) {
 	}
 
 	ctx.JSON(200, res)
+}
+
+func (c *PetController) InsertPetLog(ctx *gin.Context) {
+	var req PetLog
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+
+	err := c.service.InsertPetLogService(ctx, req)
+	if err != nil {
+		ctx.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(200, gin.H{"message": "Insert pet log successfully"})
+}
+
+func (c *PetController) DeletePetLog(ctx *gin.Context) {
+	petidStr := ctx.Param("petid")
+	petid, err := strconv.ParseInt(petidStr, 10, 64)
+	if err != nil {
+		ctx.JSON(400, gin.H{"error": "Invalid pet ID"})
+		return
+	}
+
+	logidStr := ctx.Param("logid")
+	logid, err := strconv.ParseInt(logidStr, 10, 64)
+	if err != nil {
+		ctx.JSON(400, gin.H{"error": "Invalid log ID"})
+		return
+	}
+
+	err = c.service.DeletePetLogService(ctx, petid, logid)
+	if err != nil {
+		ctx.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(200, gin.H{"message": "Delete pet log successfully"})
+}
+
+func (c *PetController) UpdatePetLog(ctx *gin.Context) {
+	var req PetLog
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+
+	logidStr := ctx.Param("logid")
+	logid, err := strconv.ParseInt(logidStr, 10, 64)
+	if err != nil {
+		ctx.JSON(400, gin.H{"error": "Invalid log ID"})
+		return
+	}
+
+	err = c.service.UpdatePetLogService(ctx, req, logid)
+	if err != nil {
+		ctx.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(200, gin.H{"message": "Update pet log successfully"})
 }
