@@ -488,6 +488,7 @@ type PetLog struct {
 }
 
 type PetSchedule struct {
+<<<<<<< HEAD
 	ID           int64            `json:"id"`
 	PetID        pgtype.Int8      `json:"pet_id"`
 	ScheduleType string           `json:"schedule_type"`
@@ -501,6 +502,17 @@ type PetSchedule struct {
 	CreatedAt    pgtype.Timestamp `json:"created_at"`
 	IsActive     pgtype.Bool      `json:"is_active"`
 >>>>>>> 272832d (redis cache)
+=======
+	ID               int64            `json:"id"`
+	PetID            pgtype.Int8      `json:"pet_id"`
+	Title            pgtype.Text      `json:"title"`
+	ReminderDatetime pgtype.Timestamp `json:"reminder_datetime"`
+	EventRepeat      pgtype.Text      `json:"event_repeat"`
+	EndType          pgtype.Text      `json:"end_type"`
+	EndDate          pgtype.Date      `json:"end_date"`
+	Notes            pgtype.Text      `json:"notes"`
+	CreatedAt        pgtype.Timestamp `json:"created_at"`
+>>>>>>> 3835eb4 (update pet_schedule api)
 }
 
 <<<<<<< HEAD

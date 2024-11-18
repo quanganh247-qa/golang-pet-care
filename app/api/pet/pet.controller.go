@@ -48,6 +48,7 @@ type PetControllerInterface interface {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	InsertPetLog(ctx *gin.Context)
 	DeletePetLog(ctx *gin.Context)
 	UpdatePetLog(ctx *gin.Context)
@@ -71,6 +72,11 @@ type PetControllerInterface interface {
 >>>>>>> c8bec46 (feat: add chatbot, room management, and pet allergy features)
 =======
 >>>>>>> 7e616af (add pet log schema)
+=======
+	InsertPetLog(ctx *gin.Context)
+	DeletePetLog(ctx *gin.Context)
+	UpdatePetLog(ctx *gin.Context)
+>>>>>>> 3835eb4 (update pet_schedule api)
 }
 
 func (c *PetController) CreatePet(ctx *gin.Context) {
@@ -369,6 +375,9 @@ func (c *PetController) GetPetLogsByPetID(ctx *gin.Context) {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 3835eb4 (update pet_schedule api)
 =======
 >>>>>>> 3835eb4 (update pet_schedule api)
 
@@ -393,14 +402,18 @@ func (c *PetController) DeletePetLog(ctx *gin.Context) {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	logidStr := ctx.Param("log_id")
 =======
+=======
+>>>>>>> 3835eb4 (update pet_schedule api)
 	petidStr := ctx.Param("petid")
 	petid, err := strconv.ParseInt(petidStr, 10, 64)
 	if err != nil {
 		ctx.JSON(400, gin.H{"error": "Invalid pet ID"})
 		return
 	}
+<<<<<<< HEAD
 =======
 	// petidStr := ctx.Param("petid")
 	// petid, err := strconv.ParseInt(petidStr, 10, 64)
@@ -417,12 +430,17 @@ func (c *PetController) DeletePetLog(ctx *gin.Context) {
 =======
 	logidStr := ctx.Param("log_id")
 >>>>>>> 2fe5baf (treatment phase)
+=======
+
+	logidStr := ctx.Param("logid")
+>>>>>>> 3835eb4 (update pet_schedule api)
 	logid, err := strconv.ParseInt(logidStr, 10, 64)
 	if err != nil {
 		ctx.JSON(400, gin.H{"error": "Invalid log ID"})
 		return
 	}
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 	err = c.service.DeletePetLogService(ctx, logid)
@@ -432,6 +450,9 @@ func (c *PetController) DeletePetLog(ctx *gin.Context) {
 =======
 	err = c.service.DeletePetLogService(ctx, logid)
 >>>>>>> 884b92e (update pet logs api)
+=======
+	err = c.service.DeletePetLogService(ctx, petid, logid)
+>>>>>>> 3835eb4 (update pet_schedule api)
 	if err != nil {
 		ctx.JSON(400, gin.H{"error": err.Error()})
 		return
@@ -449,6 +470,7 @@ func (c *PetController) UpdatePetLog(ctx *gin.Context) {
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	logidStr := ctx.Param("log_id")
 =======
 	logidStr := ctx.Param("logid")
@@ -456,6 +478,9 @@ func (c *PetController) UpdatePetLog(ctx *gin.Context) {
 =======
 	logidStr := ctx.Param("log_id")
 >>>>>>> 2fe5baf (treatment phase)
+=======
+	logidStr := ctx.Param("logid")
+>>>>>>> 3835eb4 (update pet_schedule api)
 	logid, err := strconv.ParseInt(logidStr, 10, 64)
 	if err != nil {
 		ctx.JSON(400, gin.H{"error": "Invalid log ID"})
@@ -470,6 +495,7 @@ func (c *PetController) UpdatePetLog(ctx *gin.Context) {
 
 	ctx.JSON(200, gin.H{"message": "Update pet log successfully"})
 }
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 
@@ -539,3 +565,5 @@ func (c *PetController) GetPetProfileSummary(ctx *gin.Context) {
 >>>>>>> c8bec46 (feat: add chatbot, room management, and pet allergy features)
 =======
 >>>>>>> 7e616af (add pet log schema)
+=======
+>>>>>>> 3835eb4 (update pet_schedule api)
