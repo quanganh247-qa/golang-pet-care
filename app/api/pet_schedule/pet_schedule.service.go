@@ -2,6 +2,7 @@ package petschedule
 
 import (
 	"fmt"
+	"net/http"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -12,7 +13,8 @@ import (
 
 type PetScheduleServiceInterface interface {
 	CreatePetScheduleService(ctx *gin.Context, req PetScheduleRequest, petID int64) error
-	GetAllSchedulesByPetService(ctx *gin.Context, petID int64, pagination *util.Pagination) ([]PetScheduleResonse, error)
+	GetAllSchedulesByPetService(ctx *gin.Context, petID int64, pagination *util.Pagination) ([]PetScheduleResponse, error)
+	ListPetSchedulesByUsernameService(ctx *gin.Context, username string) ([]PetSchedules, error)
 }
 
 func (s *PetScheduleService) CreatePetScheduleService(ctx *gin.Context, req PetScheduleRequest, petID int64) error {
@@ -44,7 +46,7 @@ func (s *PetScheduleService) CreatePetScheduleService(ctx *gin.Context, req PetS
 	return nil
 }
 
-func (s *PetScheduleService) GetAllSchedulesByPetService(ctx *gin.Context, petID int64, pagination *util.Pagination) ([]PetScheduleResonse, error) {
+func (s *PetScheduleService) GetAllSchedulesByPetService(ctx *gin.Context, petID int64, pagination *util.Pagination) ([]PetScheduleResponse, error) {
 
 	offset := (pagination.Page - 1) * pagination.PageSize
 
@@ -57,10 +59,10 @@ func (s *PetScheduleService) GetAllSchedulesByPetService(ctx *gin.Context, petID
 		return nil, fmt.Errorf("error fetching pet schedule: ", err)
 	}
 
-	var petSchedules []PetScheduleResonse
+	var petSchedules []PetScheduleResponse
 	for _, r := range res {
 
-		petSchedules = append(petSchedules, PetScheduleResonse{
+		petSchedules = append(petSchedules, PetScheduleResponse{
 			ID:           r.PetID.Int64,
 			ScheduleType: r.ScheduleType,
 			Duration:     r.Duration.String,
@@ -72,4 +74,39 @@ func (s *PetScheduleService) GetAllSchedulesByPetService(ctx *gin.Context, petID
 	}
 
 	return petSchedules, nil
+}
+
+func (s *PetScheduleService) ListPetSchedulesByUsernameService(ctx *gin.Context, username string) ([]PetSchedules, error) {
+	schedules, err := s.storeDB.ListPetSchedulesByUsername(ctx, username)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to list pet schedules"})
+		return nil, err
+	}
+
+	// Group schedules by pet ID
+	groupedSchedules := make(map[int64][]PetScheduleResponse)
+	for _, schedule := range schedules {
+		groupedSchedules[schedule.PetID.Int64] = append(groupedSchedules[schedule.PetID.Int64], PetScheduleResponse{
+			ID:           schedule.PetID.Int64,
+			PetName:      schedule.Name.String,
+			EventTime:    schedule.EventTime.Time.Format(time.RFC3339),
+			ScheduleType: schedule.ScheduleType,
+			ActivityType: schedule.ActivityType.String,
+			Duration:     schedule.Duration.String,
+			Frequency:    schedule.Frequency.String,
+			Notes:        schedule.Notes.String,
+		})
+
+	}
+
+	// Convert the map to a slice of responses
+	var response []PetSchedules
+	for petID, schedules := range groupedSchedules {
+		response = append(response, PetSchedules{
+			PetID:     petID,
+			Schedules: schedules,
+		})
+	}
+
+	return response, nil
 }

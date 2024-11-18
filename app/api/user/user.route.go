@@ -4,9 +4,10 @@ import (
 	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
 	"github.com/quanganh247-qa/go-blog-be/app/middleware"
 	"github.com/quanganh247-qa/go-blog-be/app/service/redis"
+	"github.com/quanganh247-qa/go-blog-be/app/service/worker"
 )
 
-func Routes(routerGroup middleware.RouterGroup) {
+func Routes(routerGroup middleware.RouterGroup, taskDistributor worker.TaskDistributor) {
 	user := routerGroup.RouterDefault.Group("/user")
 	authRoute := routerGroup.RouterAuth(user)
 	// user.Use(middleware.IPbasedRateLimitingMiddleware())
@@ -15,8 +16,9 @@ func Routes(routerGroup middleware.RouterGroup) {
 	userApi := &UserApi{
 		&UserController{
 			service: &UserService{
-				storeDB: db.StoreDB, // This should refer to the actual instance
-				redis:   redis.Client,
+				storeDB:         db.StoreDB, // This should refer to the actual instance
+				redis:           redis.Client,
+				taskDistributor: taskDistributor,
 			},
 		},
 	}
@@ -27,7 +29,7 @@ func Routes(routerGroup middleware.RouterGroup) {
 		user.GET("/all", userApi.controller.getAllUsers)
 		authRoute.GET("/", userApi.controller.getUserDetails)
 		user.POST("/login", userApi.controller.loginUser)
-		user.PUT("/verify-email", userApi.controller.verifyEmail)
+		user.PUT("/verify_email", userApi.controller.verifyEmail)
 		authRoute.GET("/refresh_token", userApi.controller.getAccessToken)
 		authRoute.POST("/logout", userApi.controller.logoutUser)
 

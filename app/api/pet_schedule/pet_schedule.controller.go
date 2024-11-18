@@ -5,17 +5,19 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"github.com/quanganh247-qa/go-blog-be/app/middleware"
 	"github.com/quanganh247-qa/go-blog-be/app/util"
 )
 
 type PetScheduleControllerInterface interface {
 	createPetSchedule(ctx *gin.Context)
 	getAllSchedulesByPet(ctx *gin.Context)
+	listPetSchedulesByUsername(ctx *gin.Context)
 }
 
 func (c *PetScheduleController) createPetSchedule(ctx *gin.Context) {
 
-	petIDStr := ctx.Query("pet_id")
+	petIDStr := ctx.Param("petid")
 	if petIDStr == "" {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Missed value pet id"})
 		return
@@ -43,7 +45,7 @@ func (c *PetScheduleController) createPetSchedule(ctx *gin.Context) {
 }
 
 func (s *PetScheduleController) getAllSchedulesByPet(ctx *gin.Context) {
-	petIDStr := ctx.Query("pet_id")
+	petIDStr := ctx.Param("petid")
 	petID, err := strconv.ParseInt(petIDStr, 10, 64)
 	if err != nil {
 		// Handle the error, e.g., by sending an error response or logging it
@@ -57,6 +59,22 @@ func (s *PetScheduleController) getAllSchedulesByPet(ctx *gin.Context) {
 		return
 	}
 	schedules, err := s.service.GetAllSchedulesByPetService(ctx, petID, pagination)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, util.ErrorValidator(err))
+		return
+	}
+
+	ctx.JSON(http.StatusOK, util.SuccessResponse("Schedules", schedules))
+}
+
+func (s *PetScheduleController) listPetSchedulesByUsername(ctx *gin.Context) {
+	authPayload, err := middleware.GetAuthorizationPayload(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
+	}
+
+	schedules, err := s.service.ListPetSchedulesByUsernameService(ctx, authPayload.Username)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, util.ErrorValidator(err))
 		return

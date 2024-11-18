@@ -40,7 +40,7 @@ func (q *Queries) CreatePetSchedule(ctx context.Context, arg CreatePetSchedulePa
 }
 
 const getAllSchedulesByPet = `-- name: GetAllSchedulesByPet :many
-SELECT id, pet_id, schedule_type, event_time, duration, food_type, quantity, activity_type, frequency, notes, created_at, is_active FROM pet_schedule where pet_id = $3 ORDER BY pet_id LIMIT $1 OFFSET $2
+SELECT id, pet_id, schedule_type, event_time, duration, food_type, quantity, activity_type, frequency, notes, created_at, is_active FROM pet_schedule where pet_id = $3 ORDER BY event_time LIMIT $1 OFFSET $2
 `
 
 type GetAllSchedulesByPetParams struct {
@@ -71,6 +71,65 @@ func (q *Queries) GetAllSchedulesByPet(ctx context.Context, arg GetAllSchedulesB
 			&i.Notes,
 			&i.CreatedAt,
 			&i.IsActive,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listPetSchedulesByUsername = `-- name: ListPetSchedulesByUsername :many
+SELECT pet_schedule.id, pet_schedule.pet_id, pet_schedule.schedule_type, pet_schedule.event_time, pet_schedule.duration, pet_schedule.food_type, pet_schedule.quantity, pet_schedule.activity_type, pet_schedule.frequency, pet_schedule.notes, pet_schedule.created_at, pet_schedule.is_active, pet.name
+FROM pet_schedule
+LEFT JOIN pet ON pet_schedule.pet_id = pet.petid
+LEFT JOIN users ON pet.username = users.username
+WHERE users.username = $1
+ORDER BY pet.petid, pet_schedule.event_time
+`
+
+type ListPetSchedulesByUsernameRow struct {
+	ID           int64            `json:"id"`
+	PetID        pgtype.Int8      `json:"pet_id"`
+	ScheduleType string           `json:"schedule_type"`
+	EventTime    pgtype.Timestamp `json:"event_time"`
+	Duration     pgtype.Text      `json:"duration"`
+	FoodType     pgtype.Text      `json:"food_type"`
+	Quantity     pgtype.Float8    `json:"quantity"`
+	ActivityType pgtype.Text      `json:"activity_type"`
+	Frequency    pgtype.Text      `json:"frequency"`
+	Notes        pgtype.Text      `json:"notes"`
+	CreatedAt    pgtype.Timestamp `json:"created_at"`
+	IsActive     pgtype.Bool      `json:"is_active"`
+	Name         pgtype.Text      `json:"name"`
+}
+
+func (q *Queries) ListPetSchedulesByUsername(ctx context.Context, username string) ([]ListPetSchedulesByUsernameRow, error) {
+	rows, err := q.db.Query(ctx, listPetSchedulesByUsername, username)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []ListPetSchedulesByUsernameRow{}
+	for rows.Next() {
+		var i ListPetSchedulesByUsernameRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.PetID,
+			&i.ScheduleType,
+			&i.EventTime,
+			&i.Duration,
+			&i.FoodType,
+			&i.Quantity,
+			&i.ActivityType,
+			&i.Frequency,
+			&i.Notes,
+			&i.CreatedAt,
+			&i.IsActive,
+			&i.Name,
 		); err != nil {
 			return nil, err
 		}

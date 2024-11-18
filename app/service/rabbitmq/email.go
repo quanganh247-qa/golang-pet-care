@@ -9,7 +9,6 @@ import (
 
 	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
 	"github.com/quanganh247-qa/go-blog-be/app/service/mail"
-	"github.com/quanganh247-qa/go-blog-be/app/util"
 	"github.com/rabbitmq/amqp091-go"
 )
 
@@ -174,9 +173,9 @@ func (e *EmailQueue) ProccessTaskSendVerifyEmail(ctx context.Context, payload Pa
 	log.Printf("User retrieved successfully: %+v", user)
 
 	verifyEmail, err := db.StoreDB.CreateVerifyEmail(ctx, db.CreateVerifyEmailParams{
-		Username:   user.Username,
-		Email:      user.Email,
-		SecretCode: util.RandomString(32),
+		Username: user.Username,
+		Email:    user.Email,
+		// SecretCode: util.RandomString(32),
 	})
 	if err != nil {
 		return fmt.Errorf("failed to create verify email %w", err)

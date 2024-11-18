@@ -211,10 +211,15 @@ func (controller *UserController) verifyEmail(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(fmt.Errorf("invalid email_id parameter")))
 		return
 	}
+	secretCodeInt, err := strconv.ParseInt(secretCode, 10, 64)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(fmt.Errorf("invalid email_id parameter")))
+		return
+	}
 
 	req = VerrifyEmailTxParams{
 		EmailId:    emailIDInt,
-		SecretCode: secretCode,
+		SecretCode: secretCodeInt,
 	}
 
 	res, err := controller.service.verifyEmailService(ctx, req)

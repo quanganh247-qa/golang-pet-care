@@ -20,10 +20,10 @@ func Routes(routerGroup middleware.RouterGroup) {
 	}
 
 	{
-		authRoute.POST("/create", petScheduleApi.controller.createPetSchedule)
-		authRoute.GET("/pet", petScheduleApi.controller.getAllSchedulesByPet)
+		authRoute.POST("/pet/:petid", petScheduleApi.controller.createPetSchedule)
+		authRoute.GET("/pet/:petid", petScheduleApi.controller.getAllSchedulesByPet)
 		// authRoute.GET("/list", petScheduleApi.controller.ListPetSchedules)
-		// authRoute.GET("/", petScheduleApi.controller.ListPetSchedulesByUsername)
+		authRoute.GET("/", petScheduleApi.controller.listPetSchedulesByUsername)
 		// authRoute.PUT("/update/:petScheduleid", petScheduleApi.controller.UpdatePetSchedule)
 		// authRoute.DELETE("/delete/:petScheduleid", petScheduleApi.controller.DeletePetSchedule)
 	}

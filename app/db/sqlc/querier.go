@@ -46,6 +46,7 @@ type Querier interface {
 	InsertDoctor(ctx context.Context, arg InsertDoctorParams) (Doctor, error)
 	InsertDoctorSchedule(ctx context.Context, arg InsertDoctorScheduleParams) (Doctorschedule, error)
 	InsertTimeslot(ctx context.Context, arg InsertTimeslotParams) (Timeslot, error)
+	ListPetSchedulesByUsername(ctx context.Context, username string) ([]ListPetSchedulesByUsernameRow, error)
 	ListPets(ctx context.Context, arg ListPetsParams) ([]Pet, error)
 	ListPetsByUsername(ctx context.Context, arg ListPetsByUsernameParams) ([]Pet, error)
 	ListVaccinationsByPetID(ctx context.Context, petid pgtype.Int8) ([]Vaccination, error)
@@ -56,9 +57,9 @@ type Querier interface {
 	UpdateNotification(ctx context.Context, appointmentID int64) error
 	UpdatePet(ctx context.Context, arg UpdatePetParams) error
 	UpdateService(ctx context.Context, arg UpdateServiceParams) error
-	UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error)
 	UpdateVaccination(ctx context.Context, arg UpdateVaccinationParams) error
 	UpdateVerifyEmail(ctx context.Context, arg UpdateVerifyEmailParams) (VerifyEmail, error)
+	VerifiedUser(ctx context.Context, arg VerifiedUserParams) (User, error)
 }
 
 var _ Querier = (*Queries)(nil)
