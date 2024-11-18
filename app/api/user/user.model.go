@@ -6,6 +6,7 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
 	"github.com/quanganh247-qa/go-blog-be/app/service/redis"
+	"github.com/quanganh247-qa/go-blog-be/app/service/worker"
 )
 
 type UserController struct {
@@ -13,8 +14,9 @@ type UserController struct {
 }
 
 type UserService struct {
-	storeDB db.Store
-	redis   *redis.ClientType
+	storeDB         db.Store
+	redis           *redis.ClientType
+	taskDistributor worker.TaskDistributor
 }
 
 // route
@@ -103,7 +105,8 @@ type DoctorScheduleResponse struct {
 
 type VerrifyEmailTxParams struct {
 	EmailId    int64  `json:"email_id"`
-	SecretCode string `json:"secret_code"`
+	SecretCode int64  `json:"secret_code"`
+	Username   string `json:"username"`
 }
 
 type VerrifyEmailTxResult struct {

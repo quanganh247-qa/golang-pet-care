@@ -14,12 +14,13 @@ import (
 	"github.com/quanganh247-qa/go-blog-be/app/api/service_type"
 	"github.com/quanganh247-qa/go-blog-be/app/api/user"
 	"github.com/quanganh247-qa/go-blog-be/app/middleware"
+	"github.com/quanganh247-qa/go-blog-be/app/service/worker"
 	"github.com/quanganh247-qa/go-blog-be/app/util"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
-func (server *Server) SetupRoutes() {
+func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor) {
 	gin.SetMode(gin.ReleaseMode)
 	routerDefault := gin.New()
 	routerDefault.SetTrustedProxies(nil)
@@ -38,7 +39,7 @@ func (server *Server) SetupRoutes() {
 	}
 
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
-	user.Routes(routerGroup)
+	user.Routes(routerGroup, taskDistributor)
 	service_type.Routes(routerGroup)
 	pet.Routes(routerGroup)
 	service.Routes(routerGroup)

@@ -258,7 +258,7 @@ type VerifyEmail struct {
 	ID         int64            `json:"id"`
 	Username   string           `json:"username"`
 	Email      string           `json:"email"`
-	SecretCode string           `json:"secret_code"`
+	SecretCode int64            `json:"secret_code"`
 	IsUsed     bool             `json:"is_used"`
 	CreatedAt  pgtype.Timestamp `json:"created_at"`
 	ExpiredAt  pgtype.Timestamp `json:"expired_at"`
