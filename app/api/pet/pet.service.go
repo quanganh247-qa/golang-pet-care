@@ -264,25 +264,41 @@ func (s *PetService) DeletePetLogService(ctx context.Context, petID int64, logID
 	return nil
 }
 
-// // UpdatePetLogService update log for pet
-// func (s *PetService) UpdatePetLogService(ctx context.Context, req PetLog) error {
+// UpdatePetLogService update log for pet
+func (s *PetService) UpdatePetLogService(ctx context.Context, req PetLog, log_id int64) error {
 
-// 	pet_log, err := s.storeDB.GetPetLogByID(ctx, req.PetID)
+	pet_log, err := s.storeDB.GetPetLogByID(ctx, db.GetPetLogByIDParams{
+		Petid: req.PetID,
+		LogID: log_id,
+	})
+	if err != nil {
+		return fmt.Errorf("failed to get pet log: %w", err)
+	}
+	// check input
+	if req.DateTime == "" {
+		req.DateTime = pet_log.Datetime.Time.Format(time.RFC3339)
+	}
+	if req.Title == "" {
+		req.Title = pet_log.Title.String
+	}
+	if req.Notes == "" {
+		req.Notes = pet_log.Notes.String
+	}
 
-// 	// check input
-// 	if req.DateTime == "" {
-// 		req
-// 	}
-
-// 	err := s.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
-
-// 		if err != nil {
-// 			return fmt.Errorf("failed to update pet log: %w", err)
-// 		}
-// 		return nil
-// 	})
-// 	if err != nil {
-// 		return fmt.Errorf("transaction update log failed: %w", err)
-// 	}
-// 	return nil
-// }
+	err = s.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
+		err := q.UpdatePetLog(ctx, db.UpdatePetLogParams{
+			Petid:    req.PetID,
+			Datetime: pgtype.Timestamp{Time: time.Now(), Valid: true},
+			Title:    pgtype.Text{String: req.Title, Valid: true},
+			Notes:    pgtype.Text{String: req.Notes, Valid: true},
+		})
+		if err != nil {
+			return fmt.Errorf("failed to update pet log: %w", err)
+		}
+		return nil
+	})
+	if err != nil {
+		return fmt.Errorf("transaction update log failed: %w", err)
+	}
+	return nil
+}
