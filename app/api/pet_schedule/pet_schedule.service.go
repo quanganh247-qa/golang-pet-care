@@ -63,7 +63,8 @@ func (s *PetScheduleService) GetAllSchedulesByPetService(ctx *gin.Context, petID
 	for _, r := range res {
 
 		petSchedules = append(petSchedules, PetScheduleResponse{
-			ID:           r.PetID.Int64,
+			ID:           r.ID,
+			PetID:        r.PetID.Int64,
 			ScheduleType: r.ScheduleType,
 			Duration:     r.Duration.String,
 			EventTime:    r.EventTime.Time.Format(time.RFC3339),
