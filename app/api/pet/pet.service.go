@@ -21,6 +21,8 @@ type PetServiceInterface interface {
 	SetPetInactive(ctx context.Context, petid int64) error
 	GetPetLogsByPetIDService(ctx *gin.Context, pet_id int64, pagination *util.Pagination) ([]PetLog, error)
 	InsertPetLogService(ctx context.Context, req PetLog) error
+	DeletePetLogService(ctx context.Context, petID int64, logID int64) error
+	UpdatePetLogService(ctx context.Context, req PetLog, log_id int64) error
 }
 
 func (s *PetService) CreatePet(ctx *gin.Context, username string, req createPetRequest) (*createPetResponse, error) {
@@ -197,6 +199,8 @@ func (s *PetService) SetPetInactive(ctx context.Context, petid int64) error {
 	}
 	return s.storeDB.SetPetInactive(ctx, params)
 }
+
+// Log for pet
 
 func (s *PetService) GetPetLogsByPetIDService(ctx *gin.Context, pet_id int64, pagination *util.Pagination) ([]PetLog, error) {
 	var pets []PetLog

@@ -426,25 +426,6 @@ VALUES
 (1, 'Rabies Vaccine', '2023-01-15', '2024-01-15', 'Trung tâm thú y Hà Nội', 'BATCH001', 'Tiêm phòng bệnh dại định kỳ cho chó'),
 (2, 'Feline Leukemia Vaccine', '2023-05-10', '2024-05-10', 'Trung tâm thú y TP HCM', 'BATCH002', 'Tiêm phòng bệnh bạch cầu cho mèo');
 
--- INSERT INTO pet_schedule (pet_id, schedule_type, event_time, food_type, quantity, frequency, notes, is_active)
--- VALUES
--- -- Feeding schedule for pet with ID 1
--- (1, 'Feeding', '2023-11-15 08:00:00', 'Hạt khô cao cấp', 100, '2 lần/ngày', 'Cho ăn vào buổi sáng, cung cấp thêm nước', true),
--- (1, 'Feeding', '2023-11-15 18:00:00', 'Thịt gà nấu chín', 150, 'Hàng ngày', 'Cho ăn vào buổi tối, tránh thức ăn quá lạnh', true),
-
--- -- Feeding schedule for pet with ID 2
--- (2, 'Feeding', '2023-11-15 07:00:00', 'Thức ăn hạt dành cho mèo', 80, 'Hàng ngày', 'Phù hợp cho mèo con', true),
--- (2, 'Feeding', '2023-11-15 19:00:00', 'Pate thịt', 120, 'Hàng ngày', 'Phục vụ buổi tối', true);
-
--- INSERT INTO pet_schedule (pet_id, schedule_type, event_time, duration, activity_type, frequency, notes, is_active)
--- VALUES
--- -- Activity schedule for pet with ID 1
--- (1, 'Activity', '2023-11-15 09:00:00', '00:30:00', 'Đi dạo', 'Hàng ngày', 'Dạo quanh công viên', true),
--- (1, 'Activity', '2023-11-15 17:00:00', '01:00:00', 'Chơi đùa', 'Hàng ngày', 'Chơi với bóng và đồ chơi', true),
-
--- -- Activity schedule for pet with ID 2
--- (2, 'Activity', '2023-11-15 10:00:00', '00:45:00', 'Tập thể dục', 'Hàng tuần', 'Bài tập nhẹ nhàng để duy trì sức khỏe', true),
--- (2, 'Activity', '2023-11-15 16:00:00', '00:30:00', 'Chơi với đồ chơi', 'Hàng ngày', 'Chơi với đồ chơi mèo', true);
 
 
 INSERT INTO ServiceType (serviceTypeName, description, iconURL)
