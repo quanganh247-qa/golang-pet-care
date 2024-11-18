@@ -22,7 +22,7 @@ INSERT INTO verify_emails (
 type CreateVerifyEmailParams struct {
 	Username   string `json:"username"`
 	Email      string `json:"email"`
-	SecretCode string `json:"secret_code"`
+	SecretCode int64  `json:"secret_code"`
 }
 
 func (q *Queries) CreateVerifyEmail(ctx context.Context, arg CreateVerifyEmailParams) (VerifyEmail, error) {
@@ -48,13 +48,12 @@ WHERE
     id = $1
     AND secret_code = $2
     AND is_used = FALSE
-    AND expired_at > now()
 RETURNING id, username, email, secret_code, is_used, created_at, expired_at
 `
 
 type UpdateVerifyEmailParams struct {
-	ID         int64  `json:"id"`
-	SecretCode string `json:"secret_code"`
+	ID         int64 `json:"id"`
+	SecretCode int64 `json:"secret_code"`
 }
 
 func (q *Queries) UpdateVerifyEmail(ctx context.Context, arg UpdateVerifyEmailParams) (VerifyEmail, error) {

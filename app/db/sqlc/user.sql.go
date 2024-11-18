@@ -325,34 +325,20 @@ func (q *Queries) InsertDoctorSchedule(ctx context.Context, arg InsertDoctorSche
 	return i, err
 }
 
-const updateUser = `-- name: UpdateUser :one
-UPDATE users 
-SET 
-  hashed_password = COALESCE($1, hashed_password),
-  full_name =  COALESCE($2,full_name),
-  email = COALESCE($3,email),
-  is_verified_email = COALESCE($4,is_verified_email)
-WHERE
-  username = $5
+const verifiedUser = `-- name: VerifiedUser :one
+UPDATE users
+SET is_verified_email = $2
+WHERE username = $1
 RETURNING id, username, hashed_password, full_name, email, phone_number, address, data_image, original_image, role, created_at, is_verified_email, removed_at
 `
 
-type UpdateUserParams struct {
-	HashedPassword  pgtype.Text `json:"hashed_password"`
-	FullName        pgtype.Text `json:"full_name"`
-	Email           pgtype.Text `json:"email"`
-	IsVerifiedEmail pgtype.Bool `json:"is_verified_email"`
+type VerifiedUserParams struct {
 	Username        string      `json:"username"`
+	IsVerifiedEmail pgtype.Bool `json:"is_verified_email"`
 }
 
-func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error) {
-	row := q.db.QueryRow(ctx, updateUser,
-		arg.HashedPassword,
-		arg.FullName,
-		arg.Email,
-		arg.IsVerifiedEmail,
-		arg.Username,
-	)
+func (q *Queries) VerifiedUser(ctx context.Context, arg VerifiedUserParams) (User, error) {
+	row := q.db.QueryRow(ctx, verifiedUser, arg.Username, arg.IsVerifiedEmail)
 	var i User
 	err := row.Scan(
 		&i.ID,

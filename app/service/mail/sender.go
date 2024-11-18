@@ -51,8 +51,6 @@ func (sender *GmailSender) SendEmail(subject string,
 	e.Cc = cc
 	e.Bcc = bcc
 
-	fmt.Println(e)
-
 	for _, f := range attachFiles {
 		_, err := e.AttachFile(f)
 		if err != nil {

@@ -5,7 +5,9 @@ import (
 	"os"
 	"syscall"
 
+	"github.com/hibiken/asynq"
 	"github.com/quanganh247-qa/go-blog-be/app/api"
+	"github.com/quanganh247-qa/go-blog-be/app/service/worker"
 	"github.com/quanganh247-qa/go-blog-be/app/util"
 )
 
@@ -25,8 +27,12 @@ func main() {
 	if err != nil {
 		log.Fatal("cannot load config:", err)
 	}
+	redisOpt := asynq.RedisClientOpt{
+		Addr: config.RedisAddress,
+	}
+	taskDistributor := worker.NewRedisTaskDistributor(redisOpt)
 
-	server := runGinServer(*config)
+	server := runGinServer(*config, taskDistributor)
 
 	defer func() {
 		server.Connection.Close()
@@ -34,8 +40,8 @@ func main() {
 
 }
 
-func runGinServer(config util.Config) *api.Server {
-	server, err := api.NewServer(config)
+func runGinServer(config util.Config, taskDistributor worker.TaskDistributor) *api.Server {
+	server, err := api.NewServer(config, taskDistributor)
 	if err != nil {
 		log.Fatal("cannot create server:", err)
 	}

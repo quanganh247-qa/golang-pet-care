@@ -3,12 +3,15 @@ package connection
 import (
 	"context"
 	"fmt"
+	"log"
 
 	"github.com/hibiken/asynq"
 	"github.com/jackc/pgx/v5/pgxpool"
 	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
+	"github.com/quanganh247-qa/go-blog-be/app/service/mail"
 	"github.com/quanganh247-qa/go-blog-be/app/service/redis"
 	"github.com/quanganh247-qa/go-blog-be/app/service/token"
+	"github.com/quanganh247-qa/go-blog-be/app/service/worker"
 	"github.com/quanganh247-qa/go-blog-be/app/util"
 )
 
@@ -32,33 +35,46 @@ func Init(config util.Config) (*Connection, error) {
 	_ = asynq.RedisClientOpt{
 		Addr: config.RedisAddress,
 	}
-	redis.InitRedis(config.RedisAddress)
+	err = redis.InitRedis(config.RedisAddress)
+	if err != nil {
+		return nil, fmt.Errorf("cannot connect to redis: %w", err)
+	}
 
-	// // Initialize RabbitMQ client
-	// clientRabbitMQ := rabbitmq.Init(config.RabbitMQAddress)
-	// sender := mail.NewGmailSender(config.EmailSenderName, config.EmailSenderAddress, config.EmailSenderPassword)
+	// _ = db.InitStore(connPool)
 
-	// err = clientRabbitMQ.Email.ConsumeMessage(sender)
-
-	// if err != nil {
-	// 	log.Println("Error consuming RabbitMQ :", err)
-
-	// }
-	// Initialize the database store
-	db.InitStore(connPool)
+	DB := db.InitStore(connPool)
+	fmt.Println("DB")
+	go runTaskProcessor(&config, asynq.RedisClientOpt{Addr: config.RedisAddress}, DB)
 
 	conn := &Connection{
 		Close: func() {
 			// Close resources when `Close` is called
 			connPool.Close()
-			// if err := clientRabbitMQ.Conn.Close(); err != nil {
-			// 	log.Println("Error closing RabbitMQ connection:", err)
-			// }
-			// if err := clientRabbitMQ.Channel.Close(); err != nil {
-			// 	log.Println("Error closing RabbitMQ channel:", err)
-			// }
-			// fmt.Println("Database and RabbitMQ connections closed.")
 		},
 	}
 	return conn, nil
+}
+
+func runTaskProcessor(config *util.Config, redisOpt asynq.RedisClientOpt, store db.Store) {
+	log.Println("Starting task processor...")
+
+	// Kiểm tra mailer
+	mailer := mail.NewGmailSender(config.EmailSenderName, config.EmailSenderAddress, config.EmailSenderPassword)
+	if mailer == nil {
+		log.Fatal("Failed to create mailer")
+	}
+	log.Println("Mailer initialized")
+
+	// Khởi tạo task processor
+	taskProcessor := worker.NewRedisTaskProccessor(redisOpt, store, mailer)
+	if taskProcessor == nil {
+		log.Fatal("Failed to create task processor")
+	}
+	log.Println("Task processor initialized")
+
+	// Bắt đầu task processor
+	err := taskProcessor.Start()
+	if err != nil {
+		log.Fatalf("Failed to start task processor: %v", err)
+	}
 }
