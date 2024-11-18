@@ -34,9 +34,12 @@ type PetServiceInterface interface {
 	SetPetInactive(ctx context.Context, petid int64) error
 	GetPetLogsByPetIDService(ctx *gin.Context, pet_id int64, pagination *util.Pagination) ([]PetLog, error)
 	InsertPetLogService(ctx context.Context, req PetLog) error
+<<<<<<< HEAD
 	DeletePetLogService(ctx context.Context, logID int64) error
 	UpdatePetLogService(ctx context.Context, req PetLog, log_id int64) error
 	UpdatePetAvatar(ctx *gin.Context, petid int64, req updatePetAvatarRequest) error
+=======
+>>>>>>> 7e616af (add pet log schema)
 }
 
 <<<<<<< HEAD
@@ -557,3 +560,92 @@ func formatVaccinations(vaccinations []db.Vaccination) string {
 	}
 	return result.String()
 }
+
+func (s *PetService) GetPetLogsByPetIDService(ctx *gin.Context, pet_id int64, pagination *util.Pagination) ([]PetLog, error) {
+	var pets []PetLog
+	offset := (pagination.Page - 1) * pagination.PageSize
+
+	listParams := db.GetPetLogsByPetIDParams{
+		Petid:  pet_id,
+		Limit:  int32(pagination.PageSize),
+		Offset: int32(offset),
+	}
+
+	res, err := s.storeDB.GetPetLogsByPetID(ctx, listParams)
+	if err != nil {
+		return nil, fmt.Errorf("failed to list pets  %s: %w", pet_id, err)
+	}
+
+	for _, r := range res {
+		pets = append(pets, PetLog{
+			PetID:    r.Petid,
+			DateTime: r.Datetime.Time.Format(time.RFC3339),
+			Title:    r.Title.String,
+			Notes:    r.Notes.String,
+		})
+	}
+
+	if err != nil {
+		return nil, fmt.Errorf("transaction failed: %w", err)
+	}
+
+	return pets, nil
+}
+
+// Add log for pet
+func (s *PetService) InsertPetLogService(ctx context.Context, req PetLog) error {
+	err := s.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
+		_, err := q.InsertPetLog(ctx, db.InsertPetLogParams{
+			Petid:    req.PetID,
+			Datetime: pgtype.Timestamp{Time: time.Now(), Valid: true},
+			Title:    pgtype.Text{String: req.Title, Valid: true},
+			Notes:    pgtype.Text{String: req.Notes, Valid: true},
+		})
+		if err != nil {
+			return fmt.Errorf("failed to insert pet log: %w", err)
+		}
+		return nil
+	})
+	if err != nil {
+		return fmt.Errorf("transaction failed: %w", err)
+	}
+	return nil
+}
+
+// DeletePetLogService delete log for pet
+func (s *PetService) DeletePetLogService(ctx context.Context, petID int64, logID int64) error {
+	err := s.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
+		err := q.DeletePetLog(ctx, petID)
+		if err != nil {
+			return fmt.Errorf("failed to delete pet log: %w", err)
+		}
+		return nil
+	})
+	if err != nil {
+		return fmt.Errorf("transaction delete log failed: %w", err)
+	}
+	return nil
+}
+
+// // UpdatePetLogService update log for pet
+// func (s *PetService) UpdatePetLogService(ctx context.Context, req PetLog) error {
+
+// 	pet_log, err := s.storeDB.GetPetLogByID(ctx, req.PetID)
+
+// 	// check input
+// 	if req.DateTime == "" {
+// 		req
+// 	}
+
+// 	err := s.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
+
+// 		if err != nil {
+// 			return fmt.Errorf("failed to update pet log: %w", err)
+// 		}
+// 		return nil
+// 	})
+// 	if err != nil {
+// 		return fmt.Errorf("transaction update log failed: %w", err)
+// 	}
+// 	return nil
+// }

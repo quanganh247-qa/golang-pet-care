@@ -11,6 +11,7 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+<<<<<<< HEAD
 const createPetLog = `-- name: CreatePetLog :one
 INSERT INTO pet_logs (
     petid,
@@ -54,15 +55,29 @@ WHERE  log_id = $1
 
 func (q *Queries) DeletePetLog(ctx context.Context, logID int64) error {
 	_, err := q.db.Exec(ctx, deletePetLog, logID)
+=======
+const deletePetLog = `-- name: DeletePetLog :exec
+DELETE FROM pet_logs
+WHERE petid = $1
+`
+
+func (q *Queries) DeletePetLog(ctx context.Context, petid int64) error {
+	_, err := q.db.Exec(ctx, deletePetLog, petid)
+>>>>>>> 7e616af (add pet log schema)
 	return err
 }
 
 const getPetLogByID = `-- name: GetPetLogByID :one
 SELECT pet_logs.petid, pet_logs.datetime, pet_logs.title, pet_logs.notes
 FROM pet_logs
+<<<<<<< HEAD
 LEFT JOIN pets ON pet_logs.petid = pets.petid
 WHERE pet_logs.petid = $1 AND pet_logs.log_id = $2 AND pets.is_active = true 
 ORDER BY pet_logs.datetime DESC
+=======
+LEFT JOIN pet ON pet_logs.petid = pet.petid
+WHERE pet_logs.petid = $1 AND pet_logs.log_id = $2 AND pet.is_active = true
+>>>>>>> 7e616af (add pet log schema)
 `
 
 type GetPetLogByIDParams struct {
@@ -90,9 +105,18 @@ func (q *Queries) GetPetLogByID(ctx context.Context, arg GetPetLogByIDParams) (G
 }
 
 const getPetLogsByPetID = `-- name: GetPetLogsByPetID :many
+<<<<<<< HEAD
 SELECT log_id, petid, datetime, title, notes FROM pet_logs
 WHERE petid = $1
 ORDER BY datetime DESC LIMIT $2 OFFSET $3
+=======
+SELECT pet_logs.petid, pet_logs.datetime, pet_logs.title, pet_logs.notes
+FROM pet_logs
+LEFT JOIN pet ON pet_logs.petid = pet.petid
+WHERE pet_logs.petid = $1 AND pet.is_active = true
+ORDER BY pet_logs.datetime DESC
+LIMIT $2 OFFSET $3
+>>>>>>> 7e616af (add pet log schema)
 `
 
 type GetPetLogsByPetIDParams struct {
@@ -101,17 +125,35 @@ type GetPetLogsByPetIDParams struct {
 	Offset int32 `json:"offset"`
 }
 
+<<<<<<< HEAD
 func (q *Queries) GetPetLogsByPetID(ctx context.Context, arg GetPetLogsByPetIDParams) ([]PetLog, error) {
+=======
+type GetPetLogsByPetIDRow struct {
+	Petid    int64            `json:"petid"`
+	Datetime pgtype.Timestamp `json:"datetime"`
+	Title    pgtype.Text      `json:"title"`
+	Notes    pgtype.Text      `json:"notes"`
+}
+
+func (q *Queries) GetPetLogsByPetID(ctx context.Context, arg GetPetLogsByPetIDParams) ([]GetPetLogsByPetIDRow, error) {
+>>>>>>> 7e616af (add pet log schema)
 	rows, err := q.db.Query(ctx, getPetLogsByPetID, arg.Petid, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
+<<<<<<< HEAD
 	items := []PetLog{}
 	for rows.Next() {
 		var i PetLog
 		if err := rows.Scan(
 			&i.LogID,
+=======
+	items := []GetPetLogsByPetIDRow{}
+	for rows.Next() {
+		var i GetPetLogsByPetIDRow
+		if err := rows.Scan(
+>>>>>>> 7e616af (add pet log schema)
 			&i.Petid,
 			&i.Datetime,
 			&i.Title,
@@ -127,6 +169,7 @@ func (q *Queries) GetPetLogsByPetID(ctx context.Context, arg GetPetLogsByPetIDPa
 	return items, nil
 }
 
+<<<<<<< HEAD
 const updatePetLog = `-- name: UpdatePetLog :exec
 UPDATE pet_logs
 SET 
@@ -143,5 +186,57 @@ type UpdatePetLogParams struct {
 
 func (q *Queries) UpdatePetLog(ctx context.Context, arg UpdatePetLogParams) error {
 	_, err := q.db.Exec(ctx, updatePetLog, arg.LogID, arg.Title, arg.Notes)
+=======
+const insertPetLog = `-- name: InsertPetLog :one
+INSERT INTO pet_logs (petid, datetime, title, notes)
+VALUES ($1, $2, $3, $4) RETURNING log_id, petid, datetime, title, notes
+`
+
+type InsertPetLogParams struct {
+	Petid    int64            `json:"petid"`
+	Datetime pgtype.Timestamp `json:"datetime"`
+	Title    pgtype.Text      `json:"title"`
+	Notes    pgtype.Text      `json:"notes"`
+}
+
+func (q *Queries) InsertPetLog(ctx context.Context, arg InsertPetLogParams) (PetLog, error) {
+	row := q.db.QueryRow(ctx, insertPetLog,
+		arg.Petid,
+		arg.Datetime,
+		arg.Title,
+		arg.Notes,
+	)
+	var i PetLog
+	err := row.Scan(
+		&i.LogID,
+		&i.Petid,
+		&i.Datetime,
+		&i.Title,
+		&i.Notes,
+	)
+	return i, err
+}
+
+const updatePetLog = `-- name: UpdatePetLog :exec
+UPDATE pet_logs
+SET datetime = $2, title = $3, notes = $4
+WHERE petid = $1
+`
+
+type UpdatePetLogParams struct {
+	Petid    int64            `json:"petid"`
+	Datetime pgtype.Timestamp `json:"datetime"`
+	Title    pgtype.Text      `json:"title"`
+	Notes    pgtype.Text      `json:"notes"`
+}
+
+func (q *Queries) UpdatePetLog(ctx context.Context, arg UpdatePetLogParams) error {
+	_, err := q.db.Exec(ctx, updatePetLog,
+		arg.Petid,
+		arg.Datetime,
+		arg.Title,
+		arg.Notes,
+	)
+>>>>>>> 7e616af (add pet log schema)
 	return err
 }
