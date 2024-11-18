@@ -12,45 +12,55 @@ import (
 )
 
 const createPetSchedule = `-- name: CreatePetSchedule :exec
-INSERT INTO pet_schedule (pet_id,schedule_type, event_time, duration, activity_type, frequency, notes)
-VALUES ($1, $2, $3, $4, $5, $6, $7)
+INSERT INTO pet_schedule (
+   pet_id,
+   title,
+   reminder_datetime,
+   event_repeat,
+   end_type,
+   end_date,
+   notes
+) VALUES ($1, $2, $3, $4, $5, $6, $7)
 `
 
 type CreatePetScheduleParams struct {
-	PetID        pgtype.Int8      `json:"pet_id"`
-	ScheduleType string           `json:"schedule_type"`
-	EventTime    pgtype.Timestamp `json:"event_time"`
-	Duration     pgtype.Text      `json:"duration"`
-	ActivityType pgtype.Text      `json:"activity_type"`
-	Frequency    pgtype.Text      `json:"frequency"`
-	Notes        pgtype.Text      `json:"notes"`
+	PetID            pgtype.Int8      `json:"pet_id"`
+	Title            pgtype.Text      `json:"title"`
+	ReminderDatetime pgtype.Timestamp `json:"reminder_datetime"`
+	EventRepeat      pgtype.Text      `json:"event_repeat"`
+	EndType          pgtype.Text      `json:"end_type"`
+	EndDate          pgtype.Date      `json:"end_date"`
+	Notes            pgtype.Text      `json:"notes"`
 }
 
 func (q *Queries) CreatePetSchedule(ctx context.Context, arg CreatePetScheduleParams) error {
 	_, err := q.db.Exec(ctx, createPetSchedule,
 		arg.PetID,
-		arg.ScheduleType,
-		arg.EventTime,
-		arg.Duration,
-		arg.ActivityType,
-		arg.Frequency,
+		arg.Title,
+		arg.ReminderDatetime,
+		arg.EventRepeat,
+		arg.EndType,
+		arg.EndDate,
 		arg.Notes,
 	)
 	return err
 }
 
 const getAllSchedulesByPet = `-- name: GetAllSchedulesByPet :many
-SELECT id, pet_id, schedule_type, event_time, duration, food_type, quantity, activity_type, frequency, notes, created_at, is_active FROM pet_schedule where pet_id = $3 ORDER BY event_time LIMIT $1 OFFSET $2
+SELECT id, pet_id, title, reminder_datetime, event_repeat, end_type, end_date, notes, created_at FROM pet_schedule 
+WHERE pet_id = $1
+ORDER BY reminder_datetime 
+LIMIT $2 OFFSET $3
 `
 
 type GetAllSchedulesByPetParams struct {
+	PetID  pgtype.Int8 `json:"pet_id"`
 	Limit  int32       `json:"limit"`
 	Offset int32       `json:"offset"`
-	PetID  pgtype.Int8 `json:"pet_id"`
 }
 
 func (q *Queries) GetAllSchedulesByPet(ctx context.Context, arg GetAllSchedulesByPetParams) ([]PetSchedule, error) {
-	rows, err := q.db.Query(ctx, getAllSchedulesByPet, arg.Limit, arg.Offset, arg.PetID)
+	rows, err := q.db.Query(ctx, getAllSchedulesByPet, arg.PetID, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
@@ -61,16 +71,13 @@ func (q *Queries) GetAllSchedulesByPet(ctx context.Context, arg GetAllSchedulesB
 		if err := rows.Scan(
 			&i.ID,
 			&i.PetID,
-			&i.ScheduleType,
-			&i.EventTime,
-			&i.Duration,
-			&i.FoodType,
-			&i.Quantity,
-			&i.ActivityType,
-			&i.Frequency,
+			&i.Title,
+			&i.ReminderDatetime,
+			&i.EventRepeat,
+			&i.EndType,
+			&i.EndDate,
 			&i.Notes,
 			&i.CreatedAt,
-			&i.IsActive,
 		); err != nil {
 			return nil, err
 		}
@@ -83,28 +90,25 @@ func (q *Queries) GetAllSchedulesByPet(ctx context.Context, arg GetAllSchedulesB
 }
 
 const listPetSchedulesByUsername = `-- name: ListPetSchedulesByUsername :many
-SELECT pet_schedule.id, pet_schedule.pet_id, pet_schedule.schedule_type, pet_schedule.event_time, pet_schedule.duration, pet_schedule.food_type, pet_schedule.quantity, pet_schedule.activity_type, pet_schedule.frequency, pet_schedule.notes, pet_schedule.created_at, pet_schedule.is_active, pet.name
+SELECT pet_schedule.id, pet_schedule.pet_id, pet_schedule.title, pet_schedule.reminder_datetime, pet_schedule.event_repeat, pet_schedule.end_type, pet_schedule.end_date, pet_schedule.notes, pet_schedule.created_at, pet.name
 FROM pet_schedule
 LEFT JOIN pet ON pet_schedule.pet_id = pet.petid
 LEFT JOIN users ON pet.username = users.username
 WHERE users.username = $1
-ORDER BY pet.petid, pet_schedule.event_time
+ORDER BY pet.petid, pet_schedule.reminder_datetime
 `
 
 type ListPetSchedulesByUsernameRow struct {
-	ID           int64            `json:"id"`
-	PetID        pgtype.Int8      `json:"pet_id"`
-	ScheduleType string           `json:"schedule_type"`
-	EventTime    pgtype.Timestamp `json:"event_time"`
-	Duration     pgtype.Text      `json:"duration"`
-	FoodType     pgtype.Text      `json:"food_type"`
-	Quantity     pgtype.Float8    `json:"quantity"`
-	ActivityType pgtype.Text      `json:"activity_type"`
-	Frequency    pgtype.Text      `json:"frequency"`
-	Notes        pgtype.Text      `json:"notes"`
-	CreatedAt    pgtype.Timestamp `json:"created_at"`
-	IsActive     pgtype.Bool      `json:"is_active"`
-	Name         pgtype.Text      `json:"name"`
+	ID               int64            `json:"id"`
+	PetID            pgtype.Int8      `json:"pet_id"`
+	Title            pgtype.Text      `json:"title"`
+	ReminderDatetime pgtype.Timestamp `json:"reminder_datetime"`
+	EventRepeat      pgtype.Text      `json:"event_repeat"`
+	EndType          pgtype.Text      `json:"end_type"`
+	EndDate          pgtype.Date      `json:"end_date"`
+	Notes            pgtype.Text      `json:"notes"`
+	CreatedAt        pgtype.Timestamp `json:"created_at"`
+	Name             pgtype.Text      `json:"name"`
 }
 
 func (q *Queries) ListPetSchedulesByUsername(ctx context.Context, username string) ([]ListPetSchedulesByUsernameRow, error) {
@@ -119,16 +123,13 @@ func (q *Queries) ListPetSchedulesByUsername(ctx context.Context, username strin
 		if err := rows.Scan(
 			&i.ID,
 			&i.PetID,
-			&i.ScheduleType,
-			&i.EventTime,
-			&i.Duration,
-			&i.FoodType,
-			&i.Quantity,
-			&i.ActivityType,
-			&i.Frequency,
+			&i.Title,
+			&i.ReminderDatetime,
+			&i.EventRepeat,
+			&i.EndType,
+			&i.EndDate,
 			&i.Notes,
 			&i.CreatedAt,
-			&i.IsActive,
 			&i.Name,
 		); err != nil {
 			return nil, err

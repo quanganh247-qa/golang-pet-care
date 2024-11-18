@@ -31,12 +31,18 @@ type PetControllerInterface interface {
 	DeletePet(ctx *gin.Context)
 	GetPetLogsByPetID(ctx *gin.Context)
 <<<<<<< HEAD
+<<<<<<< HEAD
 	InsertPetLog(ctx *gin.Context)
 	DeletePetLog(ctx *gin.Context)
 	UpdatePetLog(ctx *gin.Context)
 	UpdatePetAvatar(ctx *gin.Context)
 =======
 >>>>>>> 7e616af (add pet log schema)
+=======
+	InsertPetLog(ctx *gin.Context)
+	DeletePetLog(ctx *gin.Context)
+	UpdatePetLog(ctx *gin.Context)
+>>>>>>> 3835eb4 (update pet_schedule api)
 }
 
 func (c *PetController) CreatePet(ctx *gin.Context) {
@@ -266,6 +272,9 @@ func (c *PetController) GetPetLogsByPetID(ctx *gin.Context) {
 	ctx.JSON(200, res)
 }
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 3835eb4 (update pet_schedule api)
 
 func (c *PetController) InsertPetLog(ctx *gin.Context) {
 	var req PetLog
@@ -284,14 +293,29 @@ func (c *PetController) InsertPetLog(ctx *gin.Context) {
 }
 
 func (c *PetController) DeletePetLog(ctx *gin.Context) {
+<<<<<<< HEAD
 	logidStr := ctx.Param("log_id")
+=======
+	petidStr := ctx.Param("petid")
+	petid, err := strconv.ParseInt(petidStr, 10, 64)
+	if err != nil {
+		ctx.JSON(400, gin.H{"error": "Invalid pet ID"})
+		return
+	}
+
+	logidStr := ctx.Param("logid")
+>>>>>>> 3835eb4 (update pet_schedule api)
 	logid, err := strconv.ParseInt(logidStr, 10, 64)
 	if err != nil {
 		ctx.JSON(400, gin.H{"error": "Invalid log ID"})
 		return
 	}
 
+<<<<<<< HEAD
 	err = c.service.DeletePetLogService(ctx, logid)
+=======
+	err = c.service.DeletePetLogService(ctx, petid, logid)
+>>>>>>> 3835eb4 (update pet_schedule api)
 	if err != nil {
 		ctx.JSON(400, gin.H{"error": err.Error()})
 		return
@@ -307,7 +331,11 @@ func (c *PetController) UpdatePetLog(ctx *gin.Context) {
 		return
 	}
 
+<<<<<<< HEAD
 	logidStr := ctx.Param("log_id")
+=======
+	logidStr := ctx.Param("logid")
+>>>>>>> 3835eb4 (update pet_schedule api)
 	logid, err := strconv.ParseInt(logidStr, 10, 64)
 	if err != nil {
 		ctx.JSON(400, gin.H{"error": "Invalid log ID"})
@@ -322,6 +350,7 @@ func (c *PetController) UpdatePetLog(ctx *gin.Context) {
 
 	ctx.JSON(200, gin.H{"message": "Update pet log successfully"})
 }
+<<<<<<< HEAD
 
 func (c *PetController) UpdatePetAvatar(ctx *gin.Context) {
 	petidStr := ctx.Param("pet_id")
@@ -350,3 +379,5 @@ func (c *PetController) UpdatePetAvatar(ctx *gin.Context) {
 }
 =======
 >>>>>>> 7e616af (add pet log schema)
+=======
+>>>>>>> 3835eb4 (update pet_schedule api)

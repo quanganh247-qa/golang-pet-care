@@ -67,6 +67,7 @@ type ScheduleSuggestion struct {
 }
 
 type PetScheduleRequest struct {
+<<<<<<< HEAD
 	ScheduleType string `json:"schedule_type"`
 	EventTime    string `json:"event_time"`
 	Duration     string `json:"duration"`
@@ -74,20 +75,28 @@ type PetScheduleRequest struct {
 	Frequency    string `json:"frequency"`
 	Notes        string `json:"notes"`
 >>>>>>> 272832d (redis cache)
+=======
+	PetID            int64  `json:"pet_id"`
+	Title            string `json:"title"`
+	ReminderDateTime string `json:"reminder_datetime"`
+	EventRepeat      string `json:"event_repeat"`
+	EndType          string `json:"end_type"`
+	EndDate          string `json:"end_date"`
+	Notes            string `json:"notes"`
+>>>>>>> 3835eb4 (update pet_schedule api)
 }
 
 type PetScheduleResponse struct {
-	ID int64 `json:"id"`
-	// PetName      string `json:"pet_name"`
-	PetID        int64  `json:"pet_id"`
-	ScheduleType string `json:"schedule_type"`
-	EventTime    string `json:"event_time"`
-	Duration     string `json:"duration"`
-	ActivityType string `json:"activity_type"`
-	Frequency    string `json:"frequency"`
-	Notes        string `json:"notes"`
+	ID               int64  `json:"id"`
+	PetID            int64  `json:"pet_id"`
+	Title            string `json:"title"`
+	ReminderDateTime string `json:"reminder_datetime"`
+	EventRepeat      string `json:"event_repeat"`
+	EndType          string `json:"end_type"`
+	EndDate          string `json:"end_date"`
+	Notes            string `json:"notes"`
+	CreatedAt        string `json:"created_at"`
 }
-
 type PetKey struct {
 	PetID   int64  `json:"pet_id"`
 	PetName string `json:"pet_name"`
