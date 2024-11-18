@@ -207,7 +207,7 @@ func (server *UserService) verifyEmailService(ctx *gin.Context, arg VerrifyEmail
 
 			return err
 		}
-		fmt.Println("11", arg.Username)
+		fmt.Println("11", result.VerifyEmail.Username)
 
 		result.User, err = q.VerifiedUser(ctx, db.VerifiedUserParams{
 			Username: result.VerifyEmail.Username,
