@@ -2,6 +2,7 @@ package petschedule
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"time"
 
@@ -23,21 +24,28 @@ func (s *PetScheduleService) CreatePetScheduleService(ctx *gin.Context, req PetS
 		return fmt.Errorf("Cannot find pet with ID %s: %w", pet.Name, err)
 	}
 
-	eventTime, _, err := util.ParseStringToTime(req.EventTime, "")
+	const iso8601Format = "2006-01-02T15:04:05Z"
+
+	reminderTime, err := time.Parse(iso8601Format, req.ReminderDateTime)
 	if err != nil {
-		return fmt.Errorf("parse event time%w", err)
+		log.Fatalf("invalid start date format: %v", err)
+	}
+	// Parse endDate based on your requirements
+	endDate, err := time.Parse("2006-01-02", req.EndDate)
+	if err != nil {
+		log.Fatalf("invalid end date format: %v", err)
 	}
 
 	// Implement logic to create a pet schedule
 	err = s.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
 		return q.CreatePetSchedule(ctx, db.CreatePetScheduleParams{
-			PetID:        pgtype.Int8{Int64: petID, Valid: true},
-			ScheduleType: req.ScheduleType,
-			Duration:     pgtype.Text{String: req.Duration, Valid: true},
-			EventTime:    pgtype.Timestamp{Time: eventTime, Valid: true},
-			ActivityType: pgtype.Text{String: req.ActivityType, Valid: true},
-			Frequency:    pgtype.Text{String: req.Frequency, Valid: true},
-			Notes:        pgtype.Text{String: req.Notes, Valid: true},
+			PetID:            pgtype.Int8{Int64: petID, Valid: true},
+			Title:            pgtype.Text{String: req.Title, Valid: true},
+			ReminderDatetime: pgtype.Timestamp{Time: reminderTime, Valid: true},
+			EventRepeat:      pgtype.Text{String: req.EventRepeat, Valid: true},
+			EndType:          pgtype.Text{String: req.EndType, Valid: true},
+			EndDate:          pgtype.Date{Time: endDate, Valid: true},
+			Notes:            pgtype.Text{String: req.Notes, Valid: true},
 		})
 	})
 	if err != nil {
@@ -50,6 +58,8 @@ func (s *PetScheduleService) GetAllSchedulesByPetService(ctx *gin.Context, petID
 
 	offset := (pagination.Page - 1) * pagination.PageSize
 
+	fmt.Println(petID)
+
 	res, err := s.storeDB.GetAllSchedulesByPet(ctx, db.GetAllSchedulesByPetParams{
 		Limit:  int32(pagination.PageSize),
 		Offset: int32(offset),
@@ -61,16 +71,15 @@ func (s *PetScheduleService) GetAllSchedulesByPetService(ctx *gin.Context, petID
 
 	var petSchedules []PetScheduleResponse
 	for _, r := range res {
-
 		petSchedules = append(petSchedules, PetScheduleResponse{
-			ID:           r.ID,
-			PetID:        r.PetID.Int64,
-			ScheduleType: r.ScheduleType,
-			Duration:     r.Duration.String,
-			EventTime:    r.EventTime.Time.Format(time.RFC3339),
-			ActivityType: r.ActivityType.String,
-			Frequency:    r.Frequency.String,
-			Notes:        r.Notes.String,
+			ID:               r.ID,
+			PetID:            r.PetID.Int64,
+			Title:            r.Title.String,
+			ReminderDateTime: r.ReminderDatetime.Time.Format(time.RFC3339),
+			EventRepeat:      r.EventRepeat.String,
+			EndType:          r.EndType.String,
+			EndDate:          r.EndDate.Time.Format(time.RFC3339),
+			Notes:            r.Notes.String,
 		})
 	}
 
@@ -92,14 +101,14 @@ func (s *PetScheduleService) ListPetSchedulesByUsernameService(ctx *gin.Context,
 			PetName: schedule.Name.String,
 		}
 		groupedSchedules[petKey] = append(groupedSchedules[petKey], PetScheduleResponse{
-			ID:           schedule.ID,
-			PetID:        schedule.PetID.Int64,
-			EventTime:    schedule.EventTime.Time.Format(time.RFC3339),
-			ScheduleType: schedule.ScheduleType,
-			ActivityType: schedule.ActivityType.String,
-			Duration:     schedule.Duration.String,
-			Frequency:    schedule.Frequency.String,
-			Notes:        schedule.Notes.String,
+			ID:               schedule.ID,
+			PetID:            schedule.PetID.Int64,
+			Title:            schedule.Title.String,
+			ReminderDateTime: schedule.ReminderDatetime.Time.Format(time.RFC3339),
+			EventRepeat:      schedule.EventRepeat.String,
+			EndType:          schedule.EndType.String,
+			EndDate:          schedule.EndDate.Time.Format(time.RFC3339),
+			Notes:            schedule.Notes.String,
 		})
 
 	}

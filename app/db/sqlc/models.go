@@ -152,18 +152,15 @@ type PetLog struct {
 }
 
 type PetSchedule struct {
-	ID           int64            `json:"id"`
-	PetID        pgtype.Int8      `json:"pet_id"`
-	ScheduleType string           `json:"schedule_type"`
-	EventTime    pgtype.Timestamp `json:"event_time"`
-	Duration     pgtype.Text      `json:"duration"`
-	FoodType     pgtype.Text      `json:"food_type"`
-	Quantity     pgtype.Float8    `json:"quantity"`
-	ActivityType pgtype.Text      `json:"activity_type"`
-	Frequency    pgtype.Text      `json:"frequency"`
-	Notes        pgtype.Text      `json:"notes"`
-	CreatedAt    pgtype.Timestamp `json:"created_at"`
-	IsActive     pgtype.Bool      `json:"is_active"`
+	ID               int64            `json:"id"`
+	PetID            pgtype.Int8      `json:"pet_id"`
+	Title            pgtype.Text      `json:"title"`
+	ReminderDatetime pgtype.Timestamp `json:"reminder_datetime"`
+	EventRepeat      pgtype.Text      `json:"event_repeat"`
+	EndType          pgtype.Text      `json:"end_type"`
+	EndDate          pgtype.Date      `json:"end_date"`
+	Notes            pgtype.Text      `json:"notes"`
+	CreatedAt        pgtype.Timestamp `json:"created_at"`
 }
 
 type PetTreatment struct {

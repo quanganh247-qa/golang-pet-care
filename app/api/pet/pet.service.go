@@ -21,6 +21,8 @@ type PetServiceInterface interface {
 	SetPetInactive(ctx context.Context, petid int64) error
 	GetPetLogsByPetIDService(ctx *gin.Context, pet_id int64, pagination *util.Pagination) ([]PetLog, error)
 	InsertPetLogService(ctx context.Context, req PetLog) error
+	DeletePetLogService(ctx context.Context, logID int64) error
+	UpdatePetLogService(ctx context.Context, req PetLog, log_id int64) error
 }
 
 func (s *PetService) CreatePet(ctx *gin.Context, username string, req createPetRequest) (*createPetResponse, error) {
@@ -198,6 +200,8 @@ func (s *PetService) SetPetInactive(ctx context.Context, petid int64) error {
 	return s.storeDB.SetPetInactive(ctx, params)
 }
 
+// Log for pet
+
 func (s *PetService) GetPetLogsByPetIDService(ctx *gin.Context, pet_id int64, pagination *util.Pagination) ([]PetLog, error) {
 	var pets []PetLog
 	offset := (pagination.Page - 1) * pagination.PageSize
@@ -250,9 +254,9 @@ func (s *PetService) InsertPetLogService(ctx context.Context, req PetLog) error 
 }
 
 // DeletePetLogService delete log for pet
-func (s *PetService) DeletePetLogService(ctx context.Context, petID int64, logID int64) error {
+func (s *PetService) DeletePetLogService(ctx context.Context, logID int64) error {
 	err := s.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
-		err := q.DeletePetLog(ctx, petID)
+		err := q.DeletePetLog(ctx, logID)
 		if err != nil {
 			return fmt.Errorf("failed to delete pet log: %w", err)
 		}
@@ -287,7 +291,7 @@ func (s *PetService) UpdatePetLogService(ctx context.Context, req PetLog, log_id
 
 	err = s.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
 		err := q.UpdatePetLog(ctx, db.UpdatePetLogParams{
-			Petid:    req.PetID,
+			LogID:    log_id,
 			Datetime: pgtype.Timestamp{Time: time.Now(), Valid: true},
 			Title:    pgtype.Text{String: req.Title, Valid: true},
 			Notes:    pgtype.Text{String: req.Notes, Valid: true},
