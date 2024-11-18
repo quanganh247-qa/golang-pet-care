@@ -269,6 +269,7 @@ func (s *PetScheduleService) ListPetSchedulesByUsernameService(ctx *gin.Context,
 
 	// Group schedules by pet ID
 	groupedSchedules := make(map[PetKey][]PetScheduleResponse)
+<<<<<<< HEAD
 	for _, schedule := range schedules {
 		petKey := PetKey{
 			PetID:   schedule.PetID.Int64,
@@ -782,10 +783,15 @@ func (s *PetScheduleService) ListPetSchedulesByUsernameService(ctx *gin.Context,
 			Notes:            schedule.Notes.String,
 =======
 	groupedSchedules := make(map[int64][]PetScheduleResponse)
+=======
+>>>>>>> a37b29e (updated list schedules)
 	for _, schedule := range schedules {
-		groupedSchedules[schedule.PetID.Int64] = append(groupedSchedules[schedule.PetID.Int64], PetScheduleResponse{
+		petKey := PetKey{
+			PetID:   schedule.PetID.Int64,
+			PetName: schedule.Name.String,
+		}
+		groupedSchedules[petKey] = append(groupedSchedules[petKey], PetScheduleResponse{
 			ID:           schedule.PetID.Int64,
-			PetName:      schedule.Name.String,
 			EventTime:    schedule.EventTime.Time.Format(time.RFC3339),
 			ScheduleType: schedule.ScheduleType,
 			ActivityType: schedule.ActivityType.String,
@@ -800,6 +806,7 @@ func (s *PetScheduleService) ListPetSchedulesByUsernameService(ctx *gin.Context,
 	// Convert the map to a slice of responses
 	var response []PetSchedules
 <<<<<<< HEAD
+<<<<<<< HEAD
 	for petKey, schedules := range groupedSchedules {
 		response = append(response, PetSchedules{
 			PetID:     petKey.PetID,
@@ -809,6 +816,12 @@ func (s *PetScheduleService) ListPetSchedulesByUsernameService(ctx *gin.Context,
 		response = append(response, PetSchedules{
 			PetID:     petID,
 >>>>>>> 6610455 (feat: redis queue)
+=======
+	for petKey, schedules := range groupedSchedules {
+		response = append(response, PetSchedules{
+			PetID:     petKey.PetID,
+			PetName:   petKey.PetName,
+>>>>>>> a37b29e (updated list schedules)
 			Schedules: schedules,
 		})
 	}

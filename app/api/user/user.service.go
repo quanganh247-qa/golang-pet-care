@@ -804,7 +804,7 @@ func (server *UserService) verifyEmailService(ctx *gin.Context, arg VerrifyEmail
 			return err
 >>>>>>> 6610455 (feat: redis queue)
 		}
-		fmt.Println("11", arg.Username)
+		fmt.Println("11", result.VerifyEmail.Username)
 
 <<<<<<< HEAD
 <<<<<<< HEAD

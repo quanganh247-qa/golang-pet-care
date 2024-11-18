@@ -328,7 +328,11 @@ func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor) {
 >>>>>>> 6c35562 (dicease and treatment plan)
 =======
 	petschedule.Routes(routerGroup)
+<<<<<<< HEAD
 >>>>>>> e01abc5 (pet schedule api)
+=======
+
+>>>>>>> a37b29e (updated list schedules)
 	server.Router = routerDefault
 >>>>>>> 79a3bcc (medicine api)
 =======

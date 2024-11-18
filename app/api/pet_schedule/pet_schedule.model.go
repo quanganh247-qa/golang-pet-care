@@ -143,8 +143,8 @@ type ScheduleSuggestion struct {
 }
 
 type PetScheduleResponse struct {
-	ID           int64  `json:"id"`
-	PetName      string `json:"pet_name"`
+	ID int64 `json:"id"`
+	// PetName      string `json:"pet_name"`
 	ScheduleType string `json:"schedule_type"`
 	EventTime    string `json:"event_time"`
 	Duration     string `json:"duration"`
@@ -153,7 +153,13 @@ type PetScheduleResponse struct {
 	Notes        string `json:"notes"`
 }
 
+type PetKey struct {
+	PetID   int64  `json:"pet_id"`
+	PetName string `json:"pet_name"`
+}
+
 type PetSchedules struct {
-	PetID     int64                 `json:"petid"`
+	PetID     int64                 `json:"pet_id"`
+	PetName   string                `json:"pet_name"`
 	Schedules []PetScheduleResponse `json:"schedules"`
 }
