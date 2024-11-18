@@ -91,7 +91,8 @@ func (s *PetScheduleService) ListPetSchedulesByUsernameService(ctx *gin.Context,
 			PetName: schedule.Name.String,
 		}
 		groupedSchedules[petKey] = append(groupedSchedules[petKey], PetScheduleResponse{
-			ID:           schedule.PetID.Int64,
+			ID:           schedule.ID,
+			PetID:        schedule.PetID.Int64,
 			EventTime:    schedule.EventTime.Time.Format(time.RFC3339),
 			ScheduleType: schedule.ScheduleType,
 			ActivityType: schedule.ActivityType.String,

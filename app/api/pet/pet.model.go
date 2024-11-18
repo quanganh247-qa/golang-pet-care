@@ -51,3 +51,10 @@ type listPetsRequest struct {
 	Age    int     `json:"age"`
 	Weight float64 `json:"weight"`
 }
+
+type PetLog struct {
+	PetID    int64  `json:"pet_id"`
+	DateTime string `json:"date_time"`
+	Title    string `json:"title"`
+	Notes    string `json:"notes"`
+}

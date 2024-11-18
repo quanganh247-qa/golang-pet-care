@@ -26,6 +26,7 @@ type PetScheduleRequest struct {
 type PetScheduleResponse struct {
 	ID int64 `json:"id"`
 	// PetName      string `json:"pet_name"`
+	PetID        int64  `json:"pet_id"`
 	ScheduleType string `json:"schedule_type"`
 	EventTime    string `json:"event_time"`
 	Duration     string `json:"duration"`
