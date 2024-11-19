@@ -13,7 +13,7 @@ SELECT * FROM users ;
 
 -- name: VerifiedUser :one
 UPDATE users
-SET is_verified_email = $2
+SET is_verified_email = true
 WHERE username = $1
 RETURNING *;
 

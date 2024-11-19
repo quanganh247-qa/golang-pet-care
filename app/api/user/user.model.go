@@ -104,7 +104,6 @@ type DoctorScheduleResponse struct {
 }
 
 type VerrifyEmailTxParams struct {
-	EmailId    int64  `json:"email_id"`
 	SecretCode int64  `json:"secret_code"`
 	Username   string `json:"username"`
 }

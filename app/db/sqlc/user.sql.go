@@ -337,18 +337,13 @@ func (q *Queries) InsertDoctorSchedule(ctx context.Context, arg InsertDoctorSche
 
 const verifiedUser = `-- name: VerifiedUser :one
 UPDATE users
-SET is_verified_email = $2
+SET is_verified_email = true
 WHERE username = $1
 RETURNING id, username, hashed_password, full_name, email, phone_number, address, data_image, original_image, role, created_at, is_verified_email, removed_at
 `
 
-type VerifiedUserParams struct {
-	Username        string      `json:"username"`
-	IsVerifiedEmail pgtype.Bool `json:"is_verified_email"`
-}
-
-func (q *Queries) VerifiedUser(ctx context.Context, arg VerifiedUserParams) (User, error) {
-	row := q.db.QueryRow(ctx, verifiedUser, arg.Username, arg.IsVerifiedEmail)
+func (q *Queries) VerifiedUser(ctx context.Context, username string) (User, error) {
+	row := q.db.QueryRow(ctx, verifiedUser, username)
 	var i User
 	err := row.Scan(
 		&i.ID,

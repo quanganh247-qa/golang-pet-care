@@ -107,3 +107,32 @@ func (client *ClientType) RemoveCacheBySubString(stringPattern string) error {
 
 	return nil
 }
+
+func (client *ClientType) StoreOTPInRedis(userIdentifier string, otp int64) error {
+	const OTPExpiryTime = 5 * time.Minute
+	otpKey := fmt.Sprintf("OTP-%s", userIdentifier)
+	return client.SetWithBackground(otpKey, otp, OTPExpiryTime)
+}
+
+func (client *ClientType) ReadOTPFromRedis(userIdentifier string) (int64, error) {
+	otpKey := fmt.Sprintf("OTP-%s", userIdentifier)
+
+	var otp int64
+	err := client.GetWithBackground(otpKey, &otp)
+	if err != nil {
+
+		return 0, fmt.Errorf("failed to get OTP: %w", err)
+	}
+
+	if otp == 0 {
+		return 0, fmt.Errorf("invalid OTP value for %s", otpKey)
+	}
+
+	return otp, nil
+}
+
+// Delete OTP from Redis
+func (client *ClientType) DeleteOTPFromRedis(userIdentifier string) error {
+	otpKey := fmt.Sprintf("OTP-%s", userIdentifier)
+	return client.RemoveCacheByKey(otpKey)
+}

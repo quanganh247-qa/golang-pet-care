@@ -19,12 +19,12 @@ import (
 )
 
 type UserServiceInterface interface {
-	createUserService(ctx *gin.Context, req createUserRequest) error
+	createUserService(ctx *gin.Context, req createUserRequest) (*VerrifyEmailTxParams, error)
 	getUserDetailsService(ctx *gin.Context, username string) (*UserResponse, error)
 	getAllUsersService(ctx *gin.Context) ([]UserResponse, error)
 	loginUserService(ctx *gin.Context, req loginUserRequest) (*loginUSerResponse, error)
 	logoutUsersService(ctx *gin.Context, username string, token string) error
-	verifyEmailService(ctx *gin.Context, arg VerrifyEmailTxParams) (VerrifyEmailTxResult, error)
+	verifyEmailService(ctx *gin.Context, arg VerrifyEmailTxParams) error
 	createDoctorService(ctx *gin.Context, arg InsertDoctorRequest, username string) (*DoctorResponse, error)
 	createDoctorScheduleService(ctx *gin.Context, arg InsertDoctorScheduleRequest, username string) (*DoctorScheduleResponse, error)
 	getDoctorByID(ctx *gin.Context, userID int64) (*DoctorResponse, error)
@@ -32,16 +32,17 @@ type UserServiceInterface interface {
 	GetTimeslotsAvailable(ctx *gin.Context, doctorID int64, date string) ([]db.GetTimeslotsAvailableRow, error)
 	GetAllTimeslots(ctx *gin.Context, doctorID int64, date string) ([]db.GetTimeslotsAvailableRow, error)
 	UpdateDoctorAvailable(ctx *gin.Context, time_slot_id int64) error
-	// InsertTokenInfoService(ctx *gin.Context, arg InsertTokenInfoRequest, username string) (*db.TokenInfo, error)
+	resendOTPService(ctx *gin.Context, username string) (*VerrifyEmailTxParams, error)
 }
 
-func (server *UserService) createUserService(ctx *gin.Context, req createUserRequest) error {
+func (server *UserService) createUserService(ctx *gin.Context, req createUserRequest) (*VerrifyEmailTxParams, error) {
 	var userID int64
 	hashedPwd, err := util.HashPassword(req.Password)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, fmt.Sprintf("cannot hash password: %v", err))
-		return fmt.Errorf("cannot hash password: %v", err)
+		return nil, fmt.Errorf("cannot hash password: %v", err)
 	}
+	var otp int64
 
 	arg := db.CreateUserParams{
 		Username:       req.Username,
@@ -71,7 +72,7 @@ func (server *UserService) createUserService(ctx *gin.Context, req createUserReq
 			}
 		}
 
-		otp := util.RandomInt(1000000, 9999999)
+		otp = util.RandomInt(1000000, 9999999)
 		if err != nil {
 			return fmt.Errorf("generate otp error: %v", err)
 		}
@@ -84,7 +85,7 @@ func (server *UserService) createUserService(ctx *gin.Context, req createUserReq
 
 		go server.taskDistributor.DistributeTaskSendVerifyEmail(ctx, payload, asynq.Queue(worker.QueueDefault), asynq.MaxRetry(3))
 
-		err = server.storeOTPInRedis(ctx, payload.Username, payload.OTP)
+		err = server.redis.StoreOTPInRedis(payload.Username, payload.OTP)
 		if err != nil {
 			ctx.JSON(http.StatusInternalServerError, "failed to store otp in redis")
 			return fmt.Errorf("failed to store otp in redis: %v", err)
@@ -102,15 +103,18 @@ func (server *UserService) createUserService(ctx *gin.Context, req createUserReq
 			})
 			if deleteErr != nil {
 				ctx.JSON(http.StatusInternalServerError, fmt.Sprintf("failed to delete user after error: %v", deleteErr))
-				return fmt.Errorf("failed to delete user after error: %w", deleteErr)
+				return nil, fmt.Errorf("failed to delete user after error: %w", deleteErr)
 			}
 		}
 
 		ctx.JSON(http.StatusInternalServerError, fmt.Sprintf("failed to create user: %v", err))
-		return err
+		return nil, fmt.Errorf("failed to create user: %w", err)
 	}
 
-	return nil
+	return &VerrifyEmailTxParams{
+		Username:   req.Username,
+		SecretCode: otp,
+	}, nil
 
 }
 
@@ -170,6 +174,11 @@ func (service *UserService) loginUserService(ctx *gin.Context, req loginUserRequ
 		return nil, fmt.Errorf("Incorrect passward")
 	}
 
+	if !user.IsVerifiedEmail.Bool {
+		ctx.JSON(http.StatusForbidden, "email not verified")
+		return nil, fmt.Errorf("email not verified")
+	}
+
 	tokens, err := service.storeDB.InsertDeviceToken(ctx, db.InsertDeviceTokenParams{
 		Username:   req.Username,
 		Token:      req.Token,
@@ -206,47 +215,58 @@ func (service *UserService) logoutUsersService(ctx *gin.Context, username string
 	return nil
 }
 
-func (server *UserService) verifyEmailService(ctx *gin.Context, arg VerrifyEmailTxParams) (VerrifyEmailTxResult, error) {
-
-	var result VerrifyEmailTxResult
+func (server *UserService) verifyEmailService(ctx *gin.Context, arg VerrifyEmailTxParams) error {
 
 	err := server.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
-		var err error
 
-		err = server.readOTPFromRedis(ctx, arg.Username)
+		storedOTP, err := server.redis.ReadOTPFromRedis(arg.Username)
 		if err != nil {
-
-			return fmt.Errorf("incorrect otp")
-		}
-		result.VerifyEmail, err = q.UpdateVerifyEmail(ctx, db.UpdateVerifyEmailParams{
-			ID:         arg.EmailId,
-			SecretCode: arg.SecretCode,
-		})
-		if err != nil {
-
-			return err
+			return fmt.Errorf("failed to verify OTP: %w", err)
 		}
 
-		result.User, err = q.VerifiedUser(ctx, db.VerifiedUserParams{
-			Username: result.VerifyEmail.Username,
-			IsVerifiedEmail: pgtype.Bool{
-				Bool:  true,
-				Valid: true,
-			},
-		})
+		if storedOTP != arg.SecretCode {
+			return fmt.Errorf("invalid OTP")
+		}
 
+		// Delete OTP after successful verification
+		otpKey := fmt.Sprintf("OTP-%s", arg.Username)
+		if err := server.redis.DeleteOTPFromRedis(otpKey); err != nil {
+			return fmt.Errorf("failed to delete OTP: %w", err)
+		}
+		_, err = q.VerifiedUser(ctx, arg.Username)
 		if err != nil {
-
-			return err
+			ctx.JSON(http.StatusInternalServerError, "failed to verify user")
+			return fmt.Errorf("failed to verify user: %w", err)
 		}
 
 		return nil
 	})
 	if err != nil {
-		return VerrifyEmailTxResult{}, fmt.Errorf("failed to verify email: %w", err)
+		return fmt.Errorf("failed to verify email: %w", err)
 	}
 
-	return result, nil
+	return nil
+}
+
+func (service *UserService) resendOTPService(ctx *gin.Context, username string) (*VerrifyEmailTxParams, error) {
+	otp := util.RandomInt(1000000, 9999999)
+	if err := service.redis.StoreOTPInRedis(username, otp); err != nil {
+		ctx.JSON(http.StatusInternalServerError, "failed to store otp in redis")
+		return nil, fmt.Errorf("failed to store otp in redis: %w", err)
+	}
+
+	// Distribute the task to send a verification email
+	payload := &worker.PayloadSendVerifyEmail{
+		Username: username,
+		OTP:      otp,
+	}
+
+	go service.taskDistributor.DistributeTaskSendVerifyEmail(ctx, payload, asynq.Queue(worker.QueueDefault), asynq.MaxRetry(3))
+
+	return &VerrifyEmailTxParams{
+		Username:   username,
+		SecretCode: otp,
+	}, nil
 }
 
 func (server *UserService) createDoctorService(ctx *gin.Context, arg InsertDoctorRequest, username string) (*DoctorResponse, error) {
