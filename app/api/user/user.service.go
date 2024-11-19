@@ -70,6 +70,7 @@ type UserServiceInterface interface {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	createUserService(ctx *gin.Context, req createUserRequest) (*VerrifyEmailTxParams, error)
 =======
 	// createUserService(ctx *gin.Context, req createUserRequest) (*db.User, error)
@@ -86,6 +87,9 @@ type UserServiceInterface interface {
 >>>>>>> 272832d (redis cache)
 	createUserService(ctx *gin.Context, req createUserRequest) error
 >>>>>>> 0fb3f30 (user images)
+=======
+	createUserService(ctx *gin.Context, req createUserRequest) (*VerrifyEmailTxParams, error)
+>>>>>>> edfe5ad (OTP verifycation)
 	getUserDetailsService(ctx *gin.Context, username string) (*UserResponse, error)
 	getAllUsersService(ctx *gin.Context) ([]UserResponse, error)
 	loginUserService(ctx *gin.Context, req loginUserRequest) (*loginUSerResponse, error)
@@ -93,6 +97,7 @@ type UserServiceInterface interface {
 <<<<<<< HEAD
 <<<<<<< HEAD
 	logoutUsersService(ctx *gin.Context, username string, token string) error
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -124,6 +129,9 @@ type UserServiceInterface interface {
 =======
 	verifyEmailService(ctx *gin.Context, arg VerrifyEmailTxParams) (VerrifyEmailTxResult, error)
 >>>>>>> 6610455 (feat: redis queue)
+=======
+	verifyEmailService(ctx *gin.Context, arg VerrifyEmailTxParams) error
+>>>>>>> edfe5ad (OTP verifycation)
 	createDoctorService(ctx *gin.Context, arg InsertDoctorRequest, username string) (*DoctorResponse, error)
 	createDoctorScheduleService(ctx *gin.Context, arg InsertDoctorScheduleRequest, username string) (*DoctorScheduleResponse, error)
 	getDoctorByID(ctx *gin.Context, userID int64) (*DoctorResponse, error)
@@ -131,6 +139,7 @@ type UserServiceInterface interface {
 	GetTimeslotsAvailable(ctx *gin.Context, doctorID int64, date string) ([]db.GetTimeslotsAvailableRow, error)
 	GetAllTimeslots(ctx *gin.Context, doctorID int64, date string) ([]db.GetTimeslotsAvailableRow, error)
 	UpdateDoctorAvailable(ctx *gin.Context, time_slot_id int64) error
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 	// InsertTokenInfoService(ctx *gin.Context, arg InsertTokenInfoRequest, username string) (*db.TokenInfo, error)
@@ -159,6 +168,11 @@ func (server *UserService) createUserService(ctx *gin.Context, req createUserReq
 }
 
 >>>>>>> edfe5ad (OTP verifycation)
+=======
+	resendOTPService(ctx *gin.Context, username string) (*VerrifyEmailTxParams, error)
+}
+
+>>>>>>> edfe5ad (OTP verifycation)
 func (server *UserService) createUserService(ctx *gin.Context, req createUserRequest) (*VerrifyEmailTxParams, error) {
 	var userID int64
 =======
@@ -175,7 +189,7 @@ func (server *UserService) createUserService(ctx *gin.Context, req createUserReq
 	hashedPwd, err := util.HashPassword(req.Password)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, fmt.Sprintf("cannot hash password: %v", err))
-		return fmt.Errorf("cannot hash password: %v", err)
+		return nil, fmt.Errorf("cannot hash password: %v", err)
 	}
 	var otp int64
 
@@ -378,7 +392,7 @@ func (server *UserService) createUserService(ctx *gin.Context, req createUserReq
 			}
 		}
 
-		otp := util.RandomInt(1000000, 9999999)
+		otp = util.RandomInt(1000000, 9999999)
 		if err != nil {
 			return fmt.Errorf("generate otp error: %v", err)
 		}
@@ -391,7 +405,7 @@ func (server *UserService) createUserService(ctx *gin.Context, req createUserReq
 
 		go server.taskDistributor.DistributeTaskSendVerifyEmail(ctx, payload, asynq.Queue(worker.QueueDefault), asynq.MaxRetry(3))
 
-		err = server.storeOTPInRedis(ctx, payload.Username, payload.OTP)
+		err = server.redis.StoreOTPInRedis(payload.Username, payload.OTP)
 		if err != nil {
 <<<<<<< HEAD
 			ctx.JSON(http.StatusInternalServerError, "failed to enqueue task")
@@ -443,11 +457,12 @@ func (server *UserService) createUserService(ctx *gin.Context, req createUserReq
 			})
 			if deleteErr != nil {
 				ctx.JSON(http.StatusInternalServerError, fmt.Sprintf("failed to delete user after error: %v", deleteErr))
-				return fmt.Errorf("failed to delete user after error: %w", deleteErr)
+				return nil, fmt.Errorf("failed to delete user after error: %w", deleteErr)
 			}
 		}
 
 		ctx.JSON(http.StatusInternalServerError, fmt.Sprintf("failed to create user: %v", err))
+<<<<<<< HEAD
 		return err
 >>>>>>> 1f24c18 (feat: OTP with redis)
 	}
@@ -459,10 +474,16 @@ func (server *UserService) createUserService(ctx *gin.Context, req createUserReq
 	}
 
 >>>>>>> edfe5ad (OTP verifycation)
+=======
+		return nil, fmt.Errorf("failed to create user: %w", err)
+	}
+
+>>>>>>> edfe5ad (OTP verifycation)
 	return &VerrifyEmailTxParams{
 		Username:   req.Username,
 		SecretCode: otp,
 	}, nil
+<<<<<<< HEAD
 <<<<<<< HEAD
 
 }
@@ -497,6 +518,8 @@ func (server *UserService) getUserDetailsService(ctx *gin.Context, username stri
 =======
 >>>>>>> 9d28896 (image pet)
 	return nil
+=======
+>>>>>>> edfe5ad (OTP verifycation)
 
 }
 
@@ -654,6 +677,7 @@ func (service *UserService) loginUserService(ctx *gin.Context, req loginUserRequ
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 
 	err = util.CheckPassword(req.Password, user.HashedPassword)
@@ -679,17 +703,22 @@ func (service *UserService) loginUserService(ctx *gin.Context, req loginUserRequ
 =======
 >>>>>>> 6610455 (feat: redis queue)
 =======
+=======
+>>>>>>> edfe5ad (OTP verifycation)
 	if !user.IsVerifiedEmail.Bool {
 		ctx.JSON(http.StatusForbidden, "email not verified")
 		return nil, fmt.Errorf("email not verified")
 	}
 
+<<<<<<< HEAD
 >>>>>>> edfe5ad (OTP verifycation)
 =======
 
 >>>>>>> c3c833d (login api)
 =======
 >>>>>>> 6610455 (feat: redis queue)
+=======
+>>>>>>> edfe5ad (OTP verifycation)
 	tokens, err := service.storeDB.InsertDeviceToken(ctx, db.InsertDeviceTokenParams{
 		Username:   req.Username,
 		Token:      req.Token,
@@ -814,6 +843,7 @@ func (server *UserService) verifyEmailService(ctx *gin.Context, arg VerrifyEmail
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 		storedOTP, err := server.redis.ReadOTPFromRedis(arg.Username)
 =======
 =======
@@ -876,11 +906,32 @@ func (server *UserService) verifyEmailService(ctx *gin.Context, arg VerrifyEmail
 			ctx.JSON(http.StatusInternalServerError, "failed to verify user")
 			return fmt.Errorf("failed to verify user: %w", err)
 =======
-
+=======
+		storedOTP, err := server.redis.ReadOTPFromRedis(arg.Username)
 		if err != nil {
+			return fmt.Errorf("failed to verify OTP: %w", err)
+		}
+
+		if storedOTP != arg.SecretCode {
+			return fmt.Errorf("invalid OTP")
+		}
+>>>>>>> edfe5ad (OTP verifycation)
+
+		// Delete OTP after successful verification
+		otpKey := fmt.Sprintf("OTP-%s", arg.Username)
+		if err := server.redis.DeleteOTPFromRedis(otpKey); err != nil {
+			return fmt.Errorf("failed to delete OTP: %w", err)
+		}
+		_, err = q.VerifiedUser(ctx, arg.Username)
+		if err != nil {
+<<<<<<< HEAD
 
 			return err
 >>>>>>> 6610455 (feat: redis queue)
+=======
+			ctx.JSON(http.StatusInternalServerError, "failed to verify user")
+			return fmt.Errorf("failed to verify user: %w", err)
+>>>>>>> edfe5ad (OTP verifycation)
 		}
 
 		return nil
@@ -890,6 +941,30 @@ func (server *UserService) verifyEmailService(ctx *gin.Context, arg VerrifyEmail
 	}
 
 	return nil
+<<<<<<< HEAD
+=======
+}
+
+func (service *UserService) resendOTPService(ctx *gin.Context, username string) (*VerrifyEmailTxParams, error) {
+	otp := util.RandomInt(1000000, 9999999)
+	if err := service.redis.StoreOTPInRedis(username, otp); err != nil {
+		ctx.JSON(http.StatusInternalServerError, "failed to store otp in redis")
+		return nil, fmt.Errorf("failed to store otp in redis: %w", err)
+	}
+
+	// Distribute the task to send a verification email
+	payload := &worker.PayloadSendVerifyEmail{
+		Username: username,
+		OTP:      otp,
+	}
+
+	go service.taskDistributor.DistributeTaskSendVerifyEmail(ctx, payload, asynq.Queue(worker.QueueDefault), asynq.MaxRetry(3))
+
+	return &VerrifyEmailTxParams{
+		Username:   username,
+		SecretCode: otp,
+	}, nil
+>>>>>>> edfe5ad (OTP verifycation)
 }
 
 func (service *UserService) resendOTPService(ctx *gin.Context, username string) (*VerrifyEmailTxParams, error) {

@@ -253,6 +253,7 @@ type VerrifyEmailTxParams struct {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	SecretCode int64  `json:"secret_code"`
 	Username   string `json:"username"`
 }
@@ -272,6 +273,8 @@ type VerrifyInput struct {
 >>>>>>> 290baeb (fixed vaccine routes)
 =======
 	EmailId    int64  `json:"email_id"`
+=======
+>>>>>>> edfe5ad (OTP verifycation)
 	SecretCode int64  `json:"secret_code"`
 	Username   string `json:"username"`
 >>>>>>> 6610455 (feat: redis queue)

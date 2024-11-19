@@ -73,8 +73,12 @@ SET data_image = $2, original_image = $3
 =======
 -- name: VerifiedUser :one
 UPDATE users
+<<<<<<< HEAD
 SET is_verified_email = $2
 >>>>>>> 6610455 (feat: redis queue)
+=======
+SET is_verified_email = true
+>>>>>>> edfe5ad (OTP verifycation)
 WHERE username = $1
 RETURNING *;
 

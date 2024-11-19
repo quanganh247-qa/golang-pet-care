@@ -81,6 +81,7 @@ func Routes(routerGroup middleware.RouterGroup, taskDistributor worker.TaskDistr
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 		user.POST("/verify_email", userApi.controller.verifyEmail)
 		user.POST("/resend_otp/:username", userApi.controller.resendOTP)
 =======
@@ -93,6 +94,10 @@ func Routes(routerGroup middleware.RouterGroup, taskDistributor worker.TaskDistr
 =======
 		user.PUT("/verify_email", userApi.controller.verifyEmail)
 >>>>>>> 6610455 (feat: redis queue)
+=======
+		user.POST("/verify_email", userApi.controller.verifyEmail)
+		user.POST("/resend_otp/:username", userApi.controller.resendOTP)
+>>>>>>> edfe5ad (OTP verifycation)
 		authRoute.GET("/refresh_token", userApi.controller.getAccessToken)
 		authRoute.POST("/logout", userApi.controller.logoutUser)
 <<<<<<< HEAD
