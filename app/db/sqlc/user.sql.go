@@ -335,11 +335,16 @@ func (q *Queries) InsertDoctor(ctx context.Context, arg InsertDoctorParams) (Doc
 
 const updateAvatarUser = `-- name: UpdateAvatarUser :one
 UPDATE users
+<<<<<<< HEAD
 SET data_image = $2, original_image = $3
+=======
+SET is_verified_email = true
+>>>>>>> edfe5ad (OTP verifycation)
 WHERE username = $1
 RETURNING id, username, hashed_password, full_name, email, phone_number, address, data_image, original_image, role, status, created_at, is_verified_email, removed_at
 `
 
+<<<<<<< HEAD
 type UpdateAvatarUserParams struct {
 	Username      string      `json:"username"`
 	DataImage     []byte      `json:"data_image"`
@@ -348,6 +353,10 @@ type UpdateAvatarUserParams struct {
 
 func (q *Queries) UpdateAvatarUser(ctx context.Context, arg UpdateAvatarUserParams) (User, error) {
 	row := q.db.QueryRow(ctx, updateAvatarUser, arg.Username, arg.DataImage, arg.OriginalImage)
+=======
+func (q *Queries) VerifiedUser(ctx context.Context, username string) (User, error) {
+	row := q.db.QueryRow(ctx, verifiedUser, username)
+>>>>>>> edfe5ad (OTP verifycation)
 	var i User
 	err := row.Scan(
 		&i.ID,

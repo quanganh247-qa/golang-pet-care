@@ -42,13 +42,20 @@ type UserControllerInterface interface {
 	getTimeSlots(ctx *gin.Context)
 	getAllTimeSlots(ctx *gin.Context)
 	updateDoctorAvailableTime(ctx *gin.Context)
+<<<<<<< HEAD
 	// insertTokenInfo(ctx *gin.Context)
 >>>>>>> 79a3bcc (medicine api)
+=======
+	resendOTP(ctx *gin.Context)
+>>>>>>> edfe5ad (OTP verifycation)
 }
 
 func (controller *UserController) createUser(ctx *gin.Context) {
 	var req createUserRequest
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> edfe5ad (OTP verifycation)
 
 	// Parse the JSON data from the "data" form field
 	jsonData := ctx.PostForm("data")
@@ -56,6 +63,7 @@ func (controller *UserController) createUser(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid JSON data"})
 		return
 	}
+<<<<<<< HEAD
 
 	// Use the helper function to handle the image upload
 	dataImage, originalImageName, err := util.HandleImageUpload(ctx, "image")
@@ -76,6 +84,8 @@ func (controller *UserController) createUser(ctx *gin.Context) {
 	phoneNumber := ctx.PostForm("phone_number")
 	address := ctx.PostForm("address")
 	role := ctx.PostForm("role")
+=======
+>>>>>>> edfe5ad (OTP verifycation)
 
 	err := ctx.Request.ParseMultipartForm(10 << 20) // 10 MB max
 >>>>>>> 0fb3f30 (user images)
@@ -105,21 +115,14 @@ func (controller *UserController) createUser(ctx *gin.Context) {
 	// get original image
 
 	req.DataImage = dataImage
-	req.Username = username
-	req.Password = password
-	req.FullName = fullName
-	req.Email = email
-	req.PhoneNumber = phoneNumber
-	req.Address = address
-	req.Role = role
 	req.OriginalImage = originalImageName
 
-	err = controller.service.createUserService(ctx, req)
+	res, err := controller.service.createUserService(ctx, req)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
 		return
 	}
-	ctx.JSON(http.StatusCreated, util.SuccessResponse("Success", nil))
+	ctx.JSON(http.StatusCreated, util.SuccessResponse("Success", res))
 }
 
 func (controller *UserController) getUserDetails(ctx *gin.Context) {
@@ -280,15 +283,12 @@ func (controller *UserController) verifyEmail(ctx *gin.Context) {
 	err = controller.service.verifyEmailService(ctx, arg)
 =======
 	var req VerrifyEmailTxParams
-
-	emailID := ctx.Query("email_id")
-	secretCode := ctx.Query("secret_code")
-
-	if emailID == "" || secretCode == "" {
-		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(fmt.Errorf("missing email_id or secret_code in query parameters")))
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, util.ErrorValidator(err))
 		return
 	}
 
+<<<<<<< HEAD
 	// convert strign to int 64
 	emailIDInt, err := strconv.ParseInt(emailID, 10, 64)
 	if err != nil {
@@ -308,6 +308,9 @@ func (controller *UserController) verifyEmail(ctx *gin.Context) {
 
 	res, err := controller.service.verifyEmailService(ctx, req)
 >>>>>>> 9d28896 (image pet)
+=======
+	err := controller.service.verifyEmailService(ctx, req)
+>>>>>>> edfe5ad (OTP verifycation)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
 		return
@@ -330,6 +333,7 @@ func (controller *UserController) resendOTP(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, util.SuccessResponse("Resend OTP successfull", res))
 }
 
+<<<<<<< HEAD
 func (controller *UserController) updatetUser(ctx *gin.Context) {
 
 	var arg UpdateUserParams
@@ -394,6 +398,10 @@ func (controller *UserController) ForgotPassword(ctx *gin.Context) {
 
 func (controller *UserController) UpdatePassword(ctx *gin.Context) {
 	var req UpdatePasswordParams
+=======
+func (controller *UserController) createDoctor(ctx *gin.Context) {
+	var req InsertDoctorRequest
+>>>>>>> edfe5ad (OTP verifycation)
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, util.ErrorValidator(err))
 		return
