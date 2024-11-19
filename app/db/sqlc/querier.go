@@ -65,7 +65,7 @@ type Querier interface {
 	UpdateService(ctx context.Context, arg UpdateServiceParams) error
 	UpdateVaccination(ctx context.Context, arg UpdateVaccinationParams) error
 	UpdateVerifyEmail(ctx context.Context, arg UpdateVerifyEmailParams) (VerifyEmail, error)
-	VerifiedUser(ctx context.Context, arg VerifiedUserParams) (User, error)
+	VerifiedUser(ctx context.Context, username string) (User, error)
 }
 
 var _ Querier = (*Queries)(nil)
