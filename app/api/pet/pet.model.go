@@ -204,6 +204,7 @@ type PetProfileSummary struct {
 
 type PetLog struct {
 	PetID    int64  `json:"pet_id"`
+	LogID    int64  `json:"log_id"`
 	DateTime string `json:"date_time"`
 	Title    string `json:"title"`
 	Notes    string `json:"notes"`

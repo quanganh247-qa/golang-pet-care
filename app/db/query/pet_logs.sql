@@ -70,7 +70,7 @@ INSERT INTO pet_logs (petid, datetime, title, notes)
 VALUES ($1, $2, $3, $4) RETURNING *;
 
 -- name: GetPetLogsByPetID :many
-SELECT pet_logs.petid, pet_logs.datetime, pet_logs.title, pet_logs.notes
+SELECT pet_logs.petid, pet_logs.datetime, pet_logs.title, pet_logs.notes, pet_logs.log_id
 FROM pet_logs
 LEFT JOIN pet ON pet_logs.petid = pet.petid
 WHERE pet_logs.petid = $1 AND pet.is_active = true

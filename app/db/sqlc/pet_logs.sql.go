@@ -143,6 +143,7 @@ const getPetLogsByPetID = `-- name: GetPetLogsByPetID :many
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 SELECT log_id, petid, datetime, title, notes FROM pet_logs
 WHERE petid = $1
 ORDER BY datetime DESC LIMIT $2 OFFSET $3
@@ -154,6 +155,9 @@ SELECT pet_logs.petid, pet_logs.datetime, pet_logs.title, pet_logs.notes, pet_lo
 =======
 SELECT pet_logs.petid, pet_logs.datetime, pet_logs.title, pet_logs.notes
 >>>>>>> 7e616af (add pet log schema)
+=======
+SELECT pet_logs.petid, pet_logs.datetime, pet_logs.title, pet_logs.notes, pet_logs.log_id
+>>>>>>> eca0a51 (added log id for log struct)
 FROM pet_logs
 LEFT JOIN pet ON pet_logs.petid = pet.petid
 WHERE pet_logs.petid = $1 AND pet.is_active = true
@@ -189,6 +193,9 @@ type GetPetLogsByPetIDRow struct {
 	Title    pgtype.Text      `json:"title"`
 	Notes    pgtype.Text      `json:"notes"`
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> eca0a51 (added log id for log struct)
 	LogID    int64            `json:"log_id"`
 }
 
@@ -238,6 +245,7 @@ func (q *Queries) GetPetLogsByPetID(ctx context.Context, arg GetPetLogsByPetIDPa
 			&i.Datetime,
 			&i.Title,
 			&i.Notes,
+			&i.LogID,
 		); err != nil {
 			return nil, err
 		}
