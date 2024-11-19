@@ -220,14 +220,11 @@ func (s *PetService) GetPetLogsByPetIDService(ctx *gin.Context, pet_id int64, pa
 	for _, r := range res {
 		pets = append(pets, PetLog{
 			PetID:    r.Petid,
+			LogID:    r.LogID,
 			DateTime: r.Datetime.Time.Format(time.RFC3339),
 			Title:    r.Title.String,
 			Notes:    r.Notes.String,
 		})
-	}
-
-	if err != nil {
-		return nil, fmt.Errorf("transaction failed: %w", err)
 	}
 
 	return pets, nil
