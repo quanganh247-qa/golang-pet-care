@@ -90,6 +90,36 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (int64, 
 const deleteUser = `-- name: DeleteUser :exec
 DELETE FROM users
 WHERE id = $1
+<<<<<<< HEAD
+=======
+`
+
+func (q *Queries) DeleteUser(ctx context.Context, id int64) error {
+	_, err := q.db.Exec(ctx, deleteUser, id)
+	return err
+}
+
+const getActiveDoctors = `-- name: GetActiveDoctors :many
+SELECT 
+  d.id,
+  u.full_name AS name,
+  d.specialization,
+  d.years_of_experience,
+  d.consultation_fee
+FROM 
+  Doctors d
+JOIN 
+  users u ON d.user_id = u.id
+LEFT JOIN 
+  DoctorSchedules ds ON d.id = ds.doctor_id
+WHERE 
+  d.is_active = true
+  AND (ds.is_active = true OR ds.is_active IS NULL)
+  AND ($1::VARCHAR IS NULL OR d.specialization = $1)
+  AND ($2::INT IS NULL OR ds.day_of_week = $2)
+ORDER BY 
+  u.full_name
+>>>>>>> 1f24c18 (feat: OTP with redis)
 `
 
 func (q *Queries) DeleteUser(ctx context.Context, id int64) error {

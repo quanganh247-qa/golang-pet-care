@@ -6,7 +6,10 @@ const (
 	CONFIG_ENV_KEY redisKey = "CONFIG_ENV"
 	USER_INFO_KEY  redisKey = "USER_INFO"
 	OTP_KEY        redisKey = "OTP"
+<<<<<<< HEAD
 	PET_INFO_KEY   redisKey = "PET_INFO"
+=======
+>>>>>>> 1f24c18 (feat: OTP with redis)
 )
 
 // type keyType struct {

@@ -100,12 +100,17 @@ func (s *PetScheduleService) CreatePetScheduleService(ctx *gin.Context, req PetS
 	if err != nil {
 		log.Fatalf("invalid start date format: %v", err)
 	}
-	// Parse endDate based on your requirements
-	endDate, err := time.Parse("2006-01-02", req.EndDate)
-	if err != nil {
-		log.Fatalf("invalid end date format: %v", err)
-	}
 
+	var endDate pgtype.Date
+	if req.EndDate != "" {
+		parsedEndDate, err := time.Parse("2006-01-02", req.EndDate)
+		if err != nil {
+			log.Fatalf("invalid end date format: %v", err)
+		}
+		endDate = pgtype.Date{Time: parsedEndDate, Valid: true}
+	} else {
+		endDate = pgtype.Date{Valid: false}
+	}
 	// Implement logic to create a pet schedule
 	err = s.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
 		return q.CreatePetSchedule(ctx, db.CreatePetScheduleParams{
@@ -123,8 +128,7 @@ func (s *PetScheduleService) CreatePetScheduleService(ctx *gin.Context, req PetS
 			Title:            pgtype.Text{String: req.Title, Valid: true},
 			ReminderDatetime: pgtype.Timestamp{Time: reminderTime, Valid: true},
 			EventRepeat:      pgtype.Text{String: req.EventRepeat, Valid: true},
-			EndType:          pgtype.Text{String: req.EndType, Valid: true},
-			EndDate:          pgtype.Date{Time: endDate, Valid: true},
+			EndDate:          endDate,
 			Notes:            pgtype.Text{String: req.Notes, Valid: true},
 >>>>>>> 3835eb4 (update pet_schedule api)
 		})
@@ -370,7 +374,7 @@ func (s *PetScheduleService) GetAllSchedulesByPetService(ctx *gin.Context, petID
 			Title:            r.Title.String,
 			ReminderDateTime: r.ReminderDatetime.Time.Format(time.RFC3339),
 			EventRepeat:      r.EventRepeat.String,
-			EndType:          r.EndType.String,
+			EndType:          r.EndType.Bool,
 			EndDate:          r.EndDate.Time.Format(time.RFC3339),
 			Notes:            r.Notes.String,
 		})
@@ -402,7 +406,7 @@ func (s *PetScheduleService) ListPetSchedulesByUsernameService(ctx *gin.Context,
 			Title:            schedule.Title.String,
 			ReminderDateTime: schedule.ReminderDatetime.Time.Format(time.RFC3339),
 			EventRepeat:      schedule.EventRepeat.String,
-			EndType:          schedule.EndType.String,
+			EndType:          schedule.EndType.Bool,
 			EndDate:          schedule.EndDate.Time.Format(time.RFC3339),
 			Notes:            schedule.Notes.String,
 		})

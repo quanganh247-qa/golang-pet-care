@@ -830,7 +830,7 @@ CREATE TABLE pet_schedule (
     title VARCHAR(255),
     reminder_datetime timestamp,
     event_repeat VARCHAR(50),
-    end_type VARCHAR(50),
+    end_type bool DEFAULT false,
     end_date DATE,
     notes TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -937,7 +937,7 @@ CREATE TABLE DeviceTokens (
 );
 
 -- Create notifications table with necessary fields
-CREATE TABLE Notification (
+CREATE TABLE notifications (
   notificationID BIGSERIAL PRIMARY KEY,
   petID BIGINT,
   title VARCHAR(100) NOT NULL,
@@ -946,25 +946,6 @@ CREATE TABLE Notification (
   repeatInterval VARCHAR(50),
   isCompleted BOOLEAN DEFAULT false,
   notificationSent BOOLEAN DEFAULT false
-);
-
--- Modify notification_history table to include username
-CREATE TABLE NotificationHistory (
-    id BIGSERIAL PRIMARY KEY,
-    notification_id BIGINT NOT NULL,
-    user_id BIGINT NOT NULL,
-    device_token_id BIGINT,
-    title VARCHAR(255) NOT NULL,
-    body TEXT,
-    data JSONB,
-    sent_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
-    delivered_at TIMESTAMPTZ,
-    opened_at TIMESTAMPTZ,
-    error_message TEXT,
-    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (notification_id) REFERENCES Notification(notificationID) ON DELETE SET NULL,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    FOREIGN KEY (device_token_id) REFERENCES DeviceTokens(id) ON DELETE SET NULL
 );
 
 
@@ -1006,53 +987,6 @@ CREATE TABLE disease_medicines (
     PRIMARY KEY (disease_id, medicine_id)
 );
 
--- Create indexes
-CREATE INDEX idx_diseases_name ON diseases(name);
-CREATE INDEX idx_medicines_name ON medicines(name);
-
-ALTER TABLE Pet ADD CONSTRAINT pet_users_fk FOREIGN KEY (username) REFERENCES users (username);
-
-ALTER TABLE Vaccination ADD CONSTRAINT vaccination_pet_fk FOREIGN KEY (petID) REFERENCES Pet (petid);
-
-ALTER TABLE Notification ADD CONSTRAINT not_pet_fk FOREIGN KEY (petID) REFERENCES Pet (petid);
-
-ALTER TABLE Service ADD CONSTRAINT service_type_fk FOREIGN KEY (typeID) REFERENCES ServiceType (typeID);
-
-ALTER TABLE Appointment ADD CONSTRAINT appointment_pet_fk FOREIGN KEY (petid) REFERENCES Pet (petid);
-
-ALTER TABLE Appointment ADD CONSTRAINT appointment_service_fk FOREIGN KEY (service_id) REFERENCES Service (serviceID);
-
-ALTER TABLE CheckoutService ADD CONSTRAINT cs_checkout_fk FOREIGN KEY (checkoutID) REFERENCES Checkout (checkout_id);
-
-ALTER TABLE CheckoutService ADD CONSTRAINT cs_service_fk FOREIGN KEY (serviceID) REFERENCES Service (serviceID);
-
-ALTER TABLE Doctors ADD CONSTRAINT fk_doctor_user FOREIGN KEY (user_id) REFERENCES users (id);
-
-ALTER TABLE DoctorSchedules ADD CONSTRAINT fk_schedule_doctor FOREIGN KEY (doctor_id) REFERENCES Doctors (id);
-
-
-
-
-
-
-
--- -- 1. Query cơ bản để lấy thông tin bệnh và thuốc điều trị
--- SELECT 
---     d.id AS disease_id,
---     d.name AS disease_name,
---     d.description AS disease_description,
---     d.symptoms,
---     m.id AS medicine_id,
---     m.name AS medicine_name,
---     m.usage AS medicine_usage,
---     m.dosage,
---     m.frequency,
---     m.duration,
---     m.side_effects
--- FROM diseases d
--- LEFT JOIN disease_medicines dm ON d.id = dm.disease_id
--- LEFT JOIN medicines m ON dm.medicine_id = m.id
--- WHERE LOWER(d.name) LIKE LOWER('%nấm da%');
 
 -- 2. Query chi tiết hơn với thông tin phác đồ điều trị theo từng giai đoạn
 CREATE TABLE treatment_phases (
@@ -1075,6 +1009,149 @@ CREATE TABLE phase_medicines (
     notes TEXT,
     PRIMARY KEY (phase_id, medicine_id)
 );
+-- 4. Query để lấy lịch sử điều trị của một thú cưng
+CREATE TABLE pet_treatments (
+    id BIGSERIAL PRIMARY KEY,
+    pet_id BIGINT REFERENCES Pet(petid),
+    disease_id BIGINT REFERENCES diseases(id),
+    start_date DATE,
+    end_date DATE,
+    status VARCHAR(50),
+    notes TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE treatment_progress (
+    id BIGSERIAL PRIMARY KEY,
+    treatment_id BIGINT REFERENCES pet_treatments(id),
+    phase_id BIGINT REFERENCES treatment_phases(id),
+    start_date DATE,
+    end_date DATE,
+    status VARCHAR(50),
+    notes TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE pet_logs (
+    log_id BIGSERIAL PRIMARY KEY,
+	petid int8 NOT NULL,
+	datetime timestamp NULL,
+	title varchar NULL,
+	notes text NULL,
+	CONSTRAINT newtable_pet_fk FOREIGN KEY (petid) REFERENCES pet(petid)
+);
+
+
+
+ALTER TABLE Pet ADD CONSTRAINT pet_users_fk FOREIGN KEY (username) REFERENCES users (username);
+
+ALTER TABLE Vaccination ADD CONSTRAINT vaccination_pet_fk FOREIGN KEY (petID) REFERENCES Pet (petid);
+
+ALTER TABLE notifications ADD CONSTRAINT not_pet_fk FOREIGN KEY (petID) REFERENCES Pet (petid);
+
+ALTER TABLE Service ADD CONSTRAINT service_type_fk FOREIGN KEY (typeID) REFERENCES ServiceType (typeID);
+
+ALTER TABLE Appointment ADD CONSTRAINT appointment_pet_fk FOREIGN KEY (petid) REFERENCES Pet (petid);
+
+ALTER TABLE Appointment ADD CONSTRAINT appointment_service_fk FOREIGN KEY (service_id) REFERENCES Service (serviceID);
+
+ALTER TABLE CheckoutService ADD CONSTRAINT cs_checkout_fk FOREIGN KEY (checkoutID) REFERENCES Checkout (checkout_id);
+
+ALTER TABLE CheckoutService ADD CONSTRAINT cs_service_fk FOREIGN KEY (serviceID) REFERENCES Service (serviceID);
+
+ALTER TABLE Doctors ADD CONSTRAINT fk_doctor_user FOREIGN KEY (user_id) REFERENCES users (id);
+
+ALTER TABLE DoctorSchedules ADD CONSTRAINT fk_schedule_doctor FOREIGN KEY (doctor_id) REFERENCES Doctors (id);
+
+
+-- Index for users table
+CREATE INDEX idx_users_created_at ON users (created_at);
+
+-- Index for Pet table
+CREATE INDEX idx_pet_username ON Pet (username);
+CREATE INDEX idx_pet_is_active ON Pet (is_active);
+CREATE INDEX idx_pet_birth_date ON Pet (birth_date);
+
+-- Index for Vaccination table
+CREATE INDEX idx_vaccination_pet_id ON Vaccination (petID);
+CREATE INDEX idx_vaccination_date_administered ON Vaccination (dateAdministered);
+
+-- Index for pet_schedule table
+CREATE INDEX idx_pet_schedule_pet_id ON pet_schedule (pet_id);
+CREATE INDEX idx_pet_schedule_reminder_datetime ON pet_schedule (reminder_datetime);
+
+-- Index for Service table
+CREATE INDEX idx_service_type_id ON Service (typeID);
+CREATE INDEX idx_service_is_available ON Service (isAvailable);
+
+-- Index for Appointment table
+CREATE INDEX idx_appointment_pet_id ON Appointment (petid);
+CREATE INDEX idx_appointment_service_id ON Appointment (service_id);
+CREATE INDEX idx_appointment_doctor_id ON Appointment (doctor_id);
+CREATE INDEX idx_appointment_date ON Appointment (date);
+
+-- Index for Checkout table
+CREATE INDEX idx_checkout_pet_id ON Checkout (petid);
+CREATE INDEX idx_checkout_doctor_id ON Checkout (doctor_id);
+CREATE INDEX idx_checkout_date ON Checkout (date);
+
+-- Index for Doctors table
+CREATE INDEX idx_doctors_user_id ON Doctors (user_id);
+
+-- Index for TimeSlots table
+CREATE INDEX idx_timeslots_doctor_id ON TimeSlots (doctor_id);
+CREATE INDEX idx_timeslots_day ON TimeSlots (day);
+
+-- Index for Notification table
+CREATE INDEX idx_notification_pet_id ON notifications (petID);
+CREATE INDEX idx_notification_due_date ON notifications (dueDate);
+
+-- Index for diseases table
+CREATE INDEX idx_diseases_name ON diseases (name);
+
+-- Index for medicines table
+CREATE INDEX idx_medicines_name ON medicines (name);
+
+-- Index for pet_treatments table
+CREATE INDEX idx_pet_treatments_pet_id ON pet_treatments (pet_id);
+CREATE INDEX idx_pet_treatments_disease_id ON pet_treatments (disease_id);
+CREATE INDEX idx_pet_treatments_start_date ON pet_treatments (start_date);
+
+-- Index for treatment_phases table
+CREATE INDEX idx_treatment_phases_disease_id ON treatment_phases (disease_id);
+
+-- Index for phase_medicines table
+CREATE INDEX idx_phase_medicines_phase_id ON phase_medicines (phase_id);
+CREATE INDEX idx_phase_medicines_medicine_id ON phase_medicines (medicine_id);
+
+-- Index for treatment_progress table
+CREATE INDEX idx_treatment_progress_treatment_id ON treatment_progress (treatment_id);
+
+-- Index for pet_logs table
+CREATE INDEX idx_pet_logs_pet_id ON pet_logs (petid);
+CREATE INDEX idx_pet_logs_datetime ON pet_logs (datetime);
+
+
+
+
+
+-- -- 1. Query cơ bản để lấy thông tin bệnh và thuốc điều trị
+-- SELECT 
+--     d.id AS disease_id,
+--     d.name AS disease_name,
+--     d.description AS disease_description,
+--     d.symptoms,
+--     m.id AS medicine_id,
+--     m.name AS medicine_name,
+--     m.usage AS medicine_usage,
+--     m.dosage,
+--     m.frequency,
+--     m.duration,
+--     m.side_effects
+-- FROM diseases d
+-- LEFT JOIN disease_medicines dm ON d.id = dm.disease_id
+-- LEFT JOIN medicines m ON dm.medicine_id = m.id
+-- WHERE LOWER(d.name) LIKE LOWER('%nấm da%');
 
 
 
@@ -1133,28 +1210,8 @@ CREATE TABLE phase_medicines (
 -- WHERE LOWER(d.name) LIKE LOWER($1)
 -- GROUP BY d.id, d.name, d.description, d.symptoms;
 
--- 4. Query để lấy lịch sử điều trị của một thú cưng
-CREATE TABLE pet_treatments (
-    id BIGSERIAL PRIMARY KEY,
-    pet_id BIGINT REFERENCES Pet(petid),
-    disease_id BIGINT REFERENCES diseases(id),
-    start_date DATE,
-    end_date DATE,
-    status VARCHAR(50),
-    notes TEXT,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-);
 
-CREATE TABLE treatment_progress (
-    id BIGSERIAL PRIMARY KEY,
-    treatment_id BIGINT REFERENCES pet_treatments(id),
-    phase_id BIGINT REFERENCES treatment_phases(id),
-    start_date DATE,
-    end_date DATE,
-    status VARCHAR(50),
-    notes TEXT,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-);
+
 
 -- -- Query lấy lịch sử điều trị
 -- SELECT 
@@ -1224,7 +1281,7 @@ VALUES
 (1, '2023-10-12 09:00:00', '2023-10-12 09:30:00', true, '2023-10-12'),
 (2, '2023-10-15 14:00:00', '2023-10-15 14:15:00', true, '2023-10-15');
 
-INSERT INTO Notification (petID, title, body, dueDate, repeatInterval, isCompleted, notificationSent)
+INSERT INTO notifications (petID, title, body, dueDate, repeatInterval, isCompleted, notificationSent)
 VALUES 
 (1, 'Nhắc lịch uống thuốc', 'Milo cần uống thuốc đúng giờ để điều trị bệnh dị ứng', '2023-10-12 08:00:00', 'Hàng ngày', false, false),
 (2, 'Lịch tiêm phòng định kỳ', 'Luna cần tiêm phòng bạch cầu vào tháng tới', '2023-11-15 09:00:00', 'Hàng năm', false, false);
