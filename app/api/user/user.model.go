@@ -180,6 +180,7 @@ type DoctorScheduleResponse struct {
 
 type VerrifyEmailTxParams struct {
 <<<<<<< HEAD
+<<<<<<< HEAD
 	SecretCode int64  `json:"secret_code"`
 	Username   string `json:"username"`
 }
@@ -189,6 +190,8 @@ type VerrifyInput struct {
 	Username   string `json:"username"`
 =======
 	EmailId    int64  `json:"email_id"`
+=======
+>>>>>>> edfe5ad (OTP verifycation)
 	SecretCode int64  `json:"secret_code"`
 	Username   string `json:"username"`
 >>>>>>> 6610455 (feat: redis queue)

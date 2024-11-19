@@ -303,8 +303,12 @@ type Querier interface {
 	UpdateService(ctx context.Context, arg UpdateServiceParams) error
 	UpdateVaccination(ctx context.Context, arg UpdateVaccinationParams) error
 	UpdateVerifyEmail(ctx context.Context, arg UpdateVerifyEmailParams) (VerifyEmail, error)
+<<<<<<< HEAD
 	VerifiedUser(ctx context.Context, arg VerifiedUserParams) (User, error)
 >>>>>>> 6610455 (feat: redis queue)
+=======
+	VerifiedUser(ctx context.Context, username string) (User, error)
+>>>>>>> edfe5ad (OTP verifycation)
 }
 
 var _ Querier = (*Queries)(nil)
