@@ -4,6 +4,7 @@ type redisKey string
 
 const (
 <<<<<<< HEAD
+<<<<<<< HEAD
 	CONFIG_ENV_KEY redisKey = "CONFIG_ENV"
 	USER_INFO_KEY  redisKey = "USER_INFO"
 	OTP_KEY        redisKey = "OTP"
@@ -13,6 +14,11 @@ const (
 	USER_INFO_KEY       redisKey = "USER_INFO"
 	TOKEN_USER_INFO_KEY redisKey = "TOKEN_USER_INFO"
 >>>>>>> dff4498 (calendar api)
+=======
+	CONFIG_ENV_KEY redisKey = "CONFIG_ENV"
+	USER_INFO_KEY  redisKey = "USER_INFO"
+	OTP_KEY        redisKey = "OTP"
+>>>>>>> 1f24c18 (feat: OTP with redis)
 )
 
 // type keyType struct {

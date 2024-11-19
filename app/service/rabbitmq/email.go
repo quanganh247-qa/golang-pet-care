@@ -125,7 +125,6 @@ func (e *EmailQueue) ConsumeMessage(mailer mail.EmailSender) error {
 
 	go func() {
 		for d := range msgs {
-			log.Printf("Received a message: %s", d.Body)
 
 			var payload PayloadVerifyEmail
 			err := json.Unmarshal(d.Body, &payload)
@@ -135,7 +134,6 @@ func (e *EmailQueue) ConsumeMessage(mailer mail.EmailSender) error {
 				d.Nack(false, true)
 				continue
 			}
-			log.Printf("COntent a message: %s", payload.Username)
 
 			// Process the task (e.g., send verification email)
 			err = e.ProccessTaskSendVerifyEmail(e.client.ctx, payload, mailer)

@@ -38,6 +38,7 @@ SET is_verified_email = $2
 WHERE username = $1
 RETURNING *;
 
+<<<<<<< HEAD
 -- name: UpdateAvatarUser :one
 UPDATE users
 SET data_image = $2, original_image = $3
@@ -56,6 +57,8 @@ SET is_verified_email = true
 WHERE username = $1
 RETURNING *;
 
+=======
+>>>>>>> 1f24c18 (feat: OTP with redis)
 -- name: DeleteUser :exec
 DELETE FROM users
 WHERE id = $1;

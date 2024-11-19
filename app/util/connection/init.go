@@ -98,8 +98,12 @@ func Init(config util.Config) (*Connection, error) {
 
 func runTaskProcessor(config *util.Config, redisOpt asynq.RedisClientOpt, store db.Store) {
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 	log.Println("Starting task processor...")
+=======
+	// log.Println("Starting task processor...")
+>>>>>>> 1f24c18 (feat: OTP with redis)
 
 >>>>>>> 6610455 (feat: redis queue)
 	// Kiểm tra mailer
@@ -108,9 +112,13 @@ func runTaskProcessor(config *util.Config, redisOpt asynq.RedisClientOpt, store 
 		log.Fatal("Failed to create mailer")
 	}
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 	log.Println("Mailer initialized")
 >>>>>>> 6610455 (feat: redis queue)
+=======
+	// log.Println("Mailer initialized")
+>>>>>>> 1f24c18 (feat: OTP with redis)
 
 	// Khởi tạo task processor
 	taskProcessor := worker.NewRedisTaskProccessor(redisOpt, store, mailer)
@@ -118,9 +126,13 @@ func runTaskProcessor(config *util.Config, redisOpt asynq.RedisClientOpt, store 
 		log.Fatal("Failed to create task processor")
 	}
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 	log.Println("Task processor initialized")
 >>>>>>> 6610455 (feat: redis queue)
+=======
+	// log.Println("Task processor initialized")
+>>>>>>> 1f24c18 (feat: OTP with redis)
 
 	// Bắt đầu task processor
 	err := taskProcessor.Start()

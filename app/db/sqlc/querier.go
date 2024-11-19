@@ -92,7 +92,11 @@ type Querier interface {
 >>>>>>> 884b92e (update pet logs api)
 	DeleteService(ctx context.Context, serviceid int64) error
 	DeleteServiceType(ctx context.Context, typeid int64) error
+<<<<<<< HEAD
 >>>>>>> 7e616af (add pet log schema)
+=======
+	DeleteUser(ctx context.Context, id int64) error
+>>>>>>> 1f24c18 (feat: OTP with redis)
 	DeleteVaccination(ctx context.Context, vaccinationid int64) error
 <<<<<<< HEAD
 	GetActiveTreatments(ctx context.Context, arg GetActiveTreatmentsParams) ([]GetActiveTreatmentsRow, error)
