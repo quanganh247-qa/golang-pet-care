@@ -231,6 +231,7 @@ type Querier interface {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> 7e616af (add pet log schema)
 =======
 =======
@@ -241,6 +242,9 @@ type Querier interface {
 =======
 	DeleteService(ctx context.Context, id int64) error
 >>>>>>> b393bb9 (add service and add permission)
+	DeleteUser(ctx context.Context, id int64) error
+>>>>>>> 1f24c18 (feat: OTP with redis)
+=======
 	DeleteUser(ctx context.Context, id int64) error
 >>>>>>> 1f24c18 (feat: OTP with redis)
 	DeleteVaccination(ctx context.Context, vaccinationid int64) error

@@ -195,12 +195,17 @@ func (s *PetScheduleService) CreatePetScheduleService(ctx *gin.Context, req PetS
 	if err != nil {
 		log.Fatalf("invalid start date format: %v", err)
 	}
-	// Parse endDate based on your requirements
-	endDate, err := time.Parse("2006-01-02", req.EndDate)
-	if err != nil {
-		log.Fatalf("invalid end date format: %v", err)
-	}
 
+	var endDate pgtype.Date
+	if req.EndDate != "" {
+		parsedEndDate, err := time.Parse("2006-01-02", req.EndDate)
+		if err != nil {
+			log.Fatalf("invalid end date format: %v", err)
+		}
+		endDate = pgtype.Date{Time: parsedEndDate, Valid: true}
+	} else {
+		endDate = pgtype.Date{Valid: false}
+	}
 	// Implement logic to create a pet schedule
 	err = s.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
 		return q.CreatePetSchedule(ctx, db.CreatePetScheduleParams{
@@ -226,6 +231,7 @@ func (s *PetScheduleService) CreatePetScheduleService(ctx *gin.Context, req PetS
 			ReminderDatetime: pgtype.Timestamp{Time: reminderTime, Valid: true},
 			EventRepeat:      pgtype.Text{String: req.EventRepeat, Valid: true},
 <<<<<<< HEAD
+<<<<<<< HEAD
 			EndDate:          endDate,
 			Notes:            pgtype.Text{String: req.Notes, Valid: true},
 >>>>>>> 3835eb4 (update pet_schedule api)
@@ -234,6 +240,9 @@ func (s *PetScheduleService) CreatePetScheduleService(ctx *gin.Context, req PetS
 =======
 			EndType:          pgtype.Text{String: req.EndType, Valid: true},
 			EndDate:          pgtype.Date{Time: endDate, Valid: true},
+=======
+			EndDate:          endDate,
+>>>>>>> 1f24c18 (feat: OTP with redis)
 			Notes:            pgtype.Text{String: req.Notes, Valid: true},
 >>>>>>> 3835eb4 (update pet_schedule api)
 		})
@@ -277,6 +286,7 @@ func (s *PetScheduleService) GetAllSchedulesByPetService(ctx *gin.Context, petID
 			ReminderDateTime: r.ReminderDatetime.Time.Format(time.RFC3339),
 			EventRepeat:      r.EventRepeat.String,
 <<<<<<< HEAD
+<<<<<<< HEAD
 			EndType:          r.EndType.Bool,
 			EndDate:          r.EndDate.Time.Format(time.RFC3339),
 			Notes:            r.Notes.String,
@@ -293,6 +303,9 @@ func (s *PetScheduleService) GetAllSchedulesByPetService(ctx *gin.Context, petID
 >>>>>>> 21c69f8 (update pet_schedule and pet log schema)
 =======
 			EndType:          r.EndType.String,
+=======
+			EndType:          r.EndType.Bool,
+>>>>>>> 1f24c18 (feat: OTP with redis)
 			EndDate:          r.EndDate.Time.Format(time.RFC3339),
 			Notes:            r.Notes.String,
 >>>>>>> 3835eb4 (update pet_schedule api)
@@ -328,6 +341,7 @@ func (s *PetScheduleService) ListPetSchedulesByUsernameService(ctx *gin.Context,
 			ReminderDateTime: schedule.ReminderDatetime.Time.Format(time.RFC3339),
 			EventRepeat:      schedule.EventRepeat.String,
 <<<<<<< HEAD
+<<<<<<< HEAD
 			EndType:          schedule.EndType.Bool,
 			EndDate:          schedule.EndDate.Time.Format(time.RFC3339),
 			Notes:            schedule.Notes.String,
@@ -344,6 +358,9 @@ func (s *PetScheduleService) ListPetSchedulesByUsernameService(ctx *gin.Context,
 >>>>>>> 7e616af (add pet log schema)
 =======
 			EndType:          schedule.EndType.String,
+=======
+			EndType:          schedule.EndType.Bool,
+>>>>>>> 1f24c18 (feat: OTP with redis)
 			EndDate:          schedule.EndDate.Time.Format(time.RFC3339),
 			Notes:            schedule.Notes.String,
 >>>>>>> 3835eb4 (update pet_schedule api)

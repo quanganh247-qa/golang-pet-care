@@ -167,7 +167,10 @@ const deleteUser = `-- name: DeleteUser :exec
 DELETE FROM users
 WHERE id = $1
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> 1f24c18 (feat: OTP with redis)
 `
 
 func (q *Queries) DeleteUser(ctx context.Context, id int64) error {
@@ -179,6 +182,9 @@ func (q *Queries) DeleteUser(ctx context.Context, id int64) error {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 1f24c18 (feat: OTP with redis)
 const getActiveDoctors = `-- name: GetActiveDoctors :many
 SELECT 
   d.id,

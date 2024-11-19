@@ -78,6 +78,10 @@ SET is_verified_email = $2
 WHERE username = $1
 RETURNING *;
 
+-- name: DeleteUser :exec
+DELETE FROM users
+WHERE id = $1;
+
 
 =======
 -- name: UpdateUser :one

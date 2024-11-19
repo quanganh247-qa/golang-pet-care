@@ -136,14 +136,13 @@ func (c *ClientType) UserInfoLoadCache(username string) (*UserInfo, error) {
 	return &userInformation, nil
 }
 
-// func (c *ClientType) TokenUserInfoLoadCache(username string) (*calendar.TokenInfo, error) {
-// 	userKey := fmt.Sprintf("%s:%s", TOKEN_USER_INFO_KEY, username)
-// 	userInformation := calendar.TokenInfo{}
-// 	err := c.GetWithBackground(userKey, userInformation)
+// func (c *ClientType) OTPCache(username string) (*userInfo, error) {
+// 	otpKey := fmt.Sprintf("%s:%s", OTP_KEY, username)
+// 	var otp int64
+// 	err := c.GetWithBackground(otpKey, otp)
 // 	if err != nil {
 // 		log.Printf("Error when get cache for key %s: %v", userKey, err)
-// 		tokenInfo, err := db.StoreDB.GetTokenInfo(ctxRedis, username)
-
+// 		userData, err := db.StoreDB.GetUser(ctxRedis, username)
 // 		if err != nil {
 // 			if err == pgx.ErrNoRows {
 // 				return nil, fmt.Errorf("Không tìm thấy user với username = %s", username)
@@ -151,11 +150,16 @@ func (c *ClientType) UserInfoLoadCache(username string) (*UserInfo, error) {
 // 			return nil, err
 // 		}
 
-// 		userRes := calendar.TokenInfo{
-// 			AccessToken:  tokenInfo.AccessToken,
-// 			TokenType:    tokenInfo.TokenType,
-// 			RefreshToken: tokenInfo.RefreshToken.String,
-// 			Expiry:       tokenInfo.Expiry,
+// 		userRes := userInfo{
+// 			UserID:        userData.ID,
+// 			Username:      userData.Username,
+// 			Email:         userData.Email,
+// 			FullName:      userData.FullName,
+// 			DataImage:     string(userData.DataImage),
+// 			OriginalImage: userData.OriginalImage.String,
+// 			PhoneNumber:   userData.PhoneNumber.String,
+// 			Address:       userData.Address.String,
+// 			Role:          userData.Role.String,
 // 		}
 // 		err = c.SetWithBackground(userKey, &userRes, time.Hour*12)
 // 		if err != nil {
@@ -170,10 +174,6 @@ func (client *ClientType) RemoveUserInfoCache(username string) {
 	userInfoKey := fmt.Sprintf("%s:%s", USER_INFO_KEY, username)
 	client.RemoveCacheByKey(userInfoKey)
 }
-func (client *ClientType) RemoveTokenUserInfoCache(username string) {
-	tokenUserInfoKey := fmt.Sprintf("%s:%s", TOKEN_USER_INFO_KEY, username)
-	client.RemoveCacheByKey(tokenUserInfoKey)
-}
 
 func (client *ClientType) ClearUserInfoCache() {
 	iter := client.RedisClient.Scan(ctxRedis, 0, fmt.Sprintf("%s*", USER_INFO_KEY), 0).Iterator()
@@ -184,6 +184,7 @@ func (client *ClientType) ClearUserInfoCache() {
 		}
 	}
 }
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -285,3 +286,5 @@ func (client *ClientType) ClearTokenUserInfoCache() {
 >>>>>>> 98e9e45 (ratelimit and recovery function)
 =======
 >>>>>>> dff4498 (calendar api)
+=======
+>>>>>>> 1f24c18 (feat: OTP with redis)
