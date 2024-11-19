@@ -28,7 +28,7 @@ type CreatePetScheduleParams struct {
 	Title            pgtype.Text      `json:"title"`
 	ReminderDatetime pgtype.Timestamp `json:"reminder_datetime"`
 	EventRepeat      pgtype.Text      `json:"event_repeat"`
-	EndType          pgtype.Text      `json:"end_type"`
+	EndType          pgtype.Bool      `json:"end_type"`
 	EndDate          pgtype.Date      `json:"end_date"`
 	Notes            pgtype.Text      `json:"notes"`
 }
@@ -104,7 +104,7 @@ type ListPetSchedulesByUsernameRow struct {
 	Title            pgtype.Text      `json:"title"`
 	ReminderDatetime pgtype.Timestamp `json:"reminder_datetime"`
 	EventRepeat      pgtype.Text      `json:"event_repeat"`
-	EndType          pgtype.Text      `json:"end_type"`
+	EndType          pgtype.Bool      `json:"end_type"`
 	EndDate          pgtype.Date      `json:"end_date"`
 	Notes            pgtype.Text      `json:"notes"`
 	CreatedAt        pgtype.Timestamp `json:"created_at"`
