@@ -65,8 +65,6 @@ func (s *PetScheduleService) GetAllSchedulesByPetService(ctx *gin.Context, petID
 
 	offset := (pagination.Page - 1) * pagination.PageSize
 
-	fmt.Println(petID)
-
 	res, err := s.storeDB.GetAllSchedulesByPet(ctx, db.GetAllSchedulesByPetParams{
 		Limit:  int32(pagination.PageSize),
 		Offset: int32(offset),
