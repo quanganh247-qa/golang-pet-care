@@ -643,7 +643,11 @@ type Querier interface {
 =======
 	GetPetLogByID(ctx context.Context, arg GetPetLogByIDParams) (GetPetLogByIDRow, error)
 	GetPetLogsByPetID(ctx context.Context, arg GetPetLogsByPetIDParams) ([]GetPetLogsByPetIDRow, error)
+<<<<<<< HEAD
 >>>>>>> 7e616af (add pet log schema)
+=======
+	GetPetScheduleById(ctx context.Context, id int64) (PetSchedule, error)
+>>>>>>> 4c66ef3 (feat: update schedule API)
 	GetServiceByID(ctx context.Context, serviceid int64) (Service, error)
 	GetServiceType(ctx context.Context, typeid int64) (Servicetype, error)
 <<<<<<< HEAD
@@ -924,6 +928,7 @@ type Querier interface {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 	UpdatePetAllergy(ctx context.Context, arg UpdatePetAllergyParams) (PetAllergy, error)
 	UpdatePetAvatar(ctx context.Context, arg UpdatePetAvatarParams) error
@@ -937,6 +942,8 @@ type Querier interface {
 	UpdateTreatment(ctx context.Context, arg UpdateTreatmentParams) error
 	UpdateTreatmentPhaseStatus(ctx context.Context, arg UpdateTreatmentPhaseStatusParams) error
 =======
+=======
+>>>>>>> 4c66ef3 (feat: update schedule API)
 	UpdateService(ctx context.Context, arg UpdateServiceParams) error
 <<<<<<< HEAD
 <<<<<<< HEAD

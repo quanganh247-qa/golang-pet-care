@@ -46,6 +46,7 @@ type PetScheduleRequest struct {
 	EndDate          string `json:"end_date"`
 	Notes            string `json:"notes"`
 <<<<<<< HEAD
+<<<<<<< HEAD
 	IsActive         bool   `json:"is_active"`
 <<<<<<< HEAD
 }
@@ -143,6 +144,9 @@ type ScheduleSuggestion struct {
 >>>>>>> 272832d (redis cache)
 =======
 >>>>>>> 3835eb4 (update pet_schedule api)
+=======
+	IsActive         bool   `json:"is_active"`
+>>>>>>> 4c66ef3 (feat: update schedule API)
 }
 
 type PetScheduleResponse struct {

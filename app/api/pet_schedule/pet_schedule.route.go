@@ -115,6 +115,7 @@ func Routes(routerGroup middleware.RouterGroup) {
 >>>>>>> eb8d761 (updated pet schedule)
 		authRoute.GET("/", petScheduleApi.controller.listPetSchedulesByUsername)
 		authRoute.DELETE("/:schedule_id", petScheduleApi.controller.deletePetSchedule)
+		authRoute.PUT("/:schedule_id", petScheduleApi.controller.updatePetScheduleService)
 	}
 
 }

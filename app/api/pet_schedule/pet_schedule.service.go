@@ -27,6 +27,7 @@ import (
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 	"net/http"
 >>>>>>> 6610455 (feat: redis queue)
@@ -40,6 +41,8 @@ import (
 =======
 	"net/http"
 >>>>>>> 6610455 (feat: redis queue)
+=======
+>>>>>>> 4c66ef3 (feat: update schedule API)
 	"time"
 =======
 >>>>>>> 272832d (redis cache)
@@ -82,6 +85,7 @@ type PetScheduleServiceInterface interface {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	UpdatePetScheduleService(ctx *gin.Context, scheduleID int64, req PetScheduleRequest) error
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -95,6 +99,9 @@ type PetScheduleServiceInterface interface {
 =======
 	ProcessSuggestionGemini(ctx *gin.Context, description string) (*llm.BaseResponse, error)
 >>>>>>> e859654 (Elastic search)
+=======
+	UpdatePetScheduleService(ctx *gin.Context, scheduleID int64, req PetScheduleRequest) error
+>>>>>>> 4c66ef3 (feat: update schedule API)
 }
 
 func (s *PetScheduleService) CreatePetScheduleService(ctx *gin.Context, req PetScheduleRequest, petID int64) error {
@@ -422,6 +429,9 @@ func (s *PetScheduleService) DeletePetScheduleService(ctx *gin.Context, schedule
 	return nil
 }
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 4c66ef3 (feat: update schedule API)
 
 // Update Pet Schedule
 func (s *PetScheduleService) UpdatePetScheduleService(ctx *gin.Context, scheduleID int64, req PetScheduleRequest) error {
@@ -484,6 +494,7 @@ func (s *PetScheduleService) UpdatePetScheduleService(ctx *gin.Context, schedule
 	}
 	return nil
 }
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 
@@ -969,3 +980,5 @@ func (s *PetScheduleService) DeletePetScheduleService(ctx *gin.Context, schedule
 >>>>>>> 6610455 (feat: redis queue)
 =======
 >>>>>>> eb8d761 (updated pet schedule)
+=======
+>>>>>>> 4c66ef3 (feat: update schedule API)
