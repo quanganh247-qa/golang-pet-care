@@ -14,6 +14,7 @@ type Querier interface {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	ActiveReminder(ctx context.Context, arg ActiveReminderParams) error
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -122,6 +123,9 @@ type Querier interface {
 >>>>>>> ada3717 (Docker file)
 =======
 =======
+=======
+	ActiveReminder(ctx context.Context, arg ActiveReminderParams) error
+>>>>>>> eb8d761 (updated pet schedule)
 	CreateAppointment(ctx context.Context, arg CreateAppointmentParams) (Appointment, error)
 	CreatePet(ctx context.Context, arg CreatePetParams) (Pet, error)
 	CreatePetSchedule(ctx context.Context, arg CreatePetScheduleParams) error
@@ -139,6 +143,7 @@ type Querier interface {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	CreatetNotification(ctx context.Context, arg CreatetNotificationParams) (Notification, error)
 	DecreaseItemQuantity(ctx context.Context, arg DecreaseItemQuantityParams) error
 <<<<<<< HEAD
@@ -148,6 +153,10 @@ type Querier interface {
 >>>>>>> eb8d761 (updated pet schedule)
 =======
 >>>>>>> 4ccd381 (Update appointment flow)
+=======
+	// Delete all notifications
+	DeleteAllNotifications(ctx context.Context) error
+>>>>>>> eb8d761 (updated pet schedule)
 	DeleteDeviceToken(ctx context.Context, arg DeleteDeviceTokenParams) error
 	DeleteDoctor(ctx context.Context, id int64) error
 	DeleteMedicalHistory(ctx context.Context, id int64) error
@@ -195,6 +204,7 @@ type Querier interface {
 	DeletePetSchedule(ctx context.Context, id int64) error
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 	DeletePetAllergy(ctx context.Context, id int64) error
 	DeletePetLog(ctx context.Context, logID int64) error
@@ -226,6 +236,8 @@ type Querier interface {
 =======
 	DeletePetLog(ctx context.Context, logID int64) error
 >>>>>>> 884b92e (update pet logs api)
+=======
+>>>>>>> eb8d761 (updated pet schedule)
 	DeleteService(ctx context.Context, serviceid int64) error
 	DeleteServiceType(ctx context.Context, typeid int64) error
 <<<<<<< HEAD
@@ -464,6 +476,7 @@ type Querier interface {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	GetDoctorByUserId(ctx context.Context, userID int64) (Doctor, error)
 <<<<<<< HEAD
 	GetDoctorByUsername(ctx context.Context, username string) (GetDoctorByUsernameRow, error)
@@ -616,6 +629,9 @@ type Querier interface {
 	// Returning fields you may want to use
 	GetOrdersByUserId(ctx context.Context, userID int64) ([]Order, error)
 >>>>>>> b0fe977 (place order and make payment)
+=======
+	GetNotificationsByUsername(ctx context.Context, arg GetNotificationsByUsernameParams) ([]Notification, error)
+>>>>>>> eb8d761 (updated pet schedule)
 	GetPetByID(ctx context.Context, petid int64) (Pet, error)
 	GetPetLogByID(ctx context.Context, arg GetPetLogByIDParams) (GetPetLogByIDRow, error)
 	GetPetLogsByPetID(ctx context.Context, arg GetPetLogsByPetIDParams) ([]PetLog, error)
@@ -732,6 +748,8 @@ type Querier interface {
 >>>>>>> c8bec46 (feat: add chatbot, room management, and pet allergy features)
 =======
 	InsertDoctorSchedule(ctx context.Context, arg InsertDoctorScheduleParams) (Doctorschedule, error)
+	// Insert a notification
+	InsertNotification(ctx context.Context, arg InsertNotificationParams) (Notification, error)
 	InsertPetLog(ctx context.Context, arg InsertPetLogParams) (PetLog, error)
 	InsertTimeslot(ctx context.Context, arg InsertTimeslotParams) (Timeslot, error)
 >>>>>>> 7e616af (add pet log schema)

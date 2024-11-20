@@ -11,6 +11,7 @@ import (
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 	"log"
 >>>>>>> 3835eb4 (update pet_schedule api)
@@ -19,6 +20,8 @@ import (
 =======
 	"log"
 >>>>>>> 3835eb4 (update pet_schedule api)
+=======
+>>>>>>> eb8d761 (updated pet schedule)
 	"net/http"
 	"strconv"
 <<<<<<< HEAD
@@ -76,6 +79,7 @@ type PetScheduleServiceInterface interface {
 	ListPetSchedulesByUsernameService(ctx *gin.Context, username string) ([]PetSchedules, error)
 	ActivePetScheduleService(ctx *gin.Context, scheduleID int64, req ActiceRemider) error
 	DeletePetScheduleService(ctx *gin.Context, scheduleID int64) error
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 	UpdatePetScheduleService(ctx *gin.Context, scheduleID int64, req PetScheduleRequest) error
@@ -181,6 +185,8 @@ func (s *PetScheduleService) CreatePetScheduleService(ctx *gin.Context, req PetS
 	GetAllSchedulesByPetService(ctx *gin.Context, petID int64, pagination *util.Pagination) ([]PetScheduleResponse, error)
 	ListPetSchedulesByUsernameService(ctx *gin.Context, username string) ([]PetSchedules, error)
 >>>>>>> 6610455 (feat: redis queue)
+=======
+>>>>>>> eb8d761 (updated pet schedule)
 }
 
 func (s *PetScheduleService) CreatePetScheduleService(ctx *gin.Context, req PetScheduleRequest, petID int64) error {
@@ -193,14 +199,14 @@ func (s *PetScheduleService) CreatePetScheduleService(ctx *gin.Context, req PetS
 
 	reminderTime, err := time.Parse(iso8601Format, req.ReminderDateTime)
 	if err != nil {
-		log.Fatalf("invalid start date format: %v", err)
+		return fmt.Errorf("invalid reminder date time format: %v", err)
 	}
 
 	var endDate pgtype.Date
 	if req.EndDate != "" {
 		parsedEndDate, err := time.Parse("2006-01-02", req.EndDate)
 		if err != nil {
-			log.Fatalf("invalid end date format: %v", err)
+			return fmt.Errorf("invalid end date format: %v", err)
 		}
 		endDate = pgtype.Date{Time: parsedEndDate, Valid: true}
 	} else {
@@ -415,6 +421,7 @@ func (s *PetScheduleService) DeletePetScheduleService(ctx *gin.Context, schedule
 	}
 	return nil
 }
+<<<<<<< HEAD
 
 // Update Pet Schedule
 func (s *PetScheduleService) UpdatePetScheduleService(ctx *gin.Context, scheduleID int64, req PetScheduleRequest) error {
@@ -960,3 +967,5 @@ func (s *PetScheduleService) DeletePetScheduleService(ctx *gin.Context, schedule
 >>>>>>> e01abc5 (pet schedule api)
 =======
 >>>>>>> 6610455 (feat: redis queue)
+=======
+>>>>>>> eb8d761 (updated pet schedule)

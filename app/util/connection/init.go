@@ -190,6 +190,7 @@ func runTaskProcessor(config *util.Config, redisOpt asynq.RedisClientOpt, store 
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 	log.Println("Starting task processor...")
 =======
@@ -206,6 +207,8 @@ func runTaskProcessor(config *util.Config, redisOpt asynq.RedisClientOpt, store 
 >>>>>>> 1f24c18 (feat: OTP with redis)
 
 >>>>>>> 6610455 (feat: redis queue)
+=======
+>>>>>>> eb8d761 (updated pet schedule)
 	// Kiểm tra mailer
 	mailer := mail.NewGmailSender(config.EmailSenderName, config.EmailSenderAddress, config.EmailSenderPassword)
 	if mailer == nil {
@@ -216,6 +219,7 @@ func runTaskProcessor(config *util.Config, redisOpt asynq.RedisClientOpt, store 
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 	log.Println("Mailer initialized")
 >>>>>>> 6610455 (feat: redis queue)
@@ -230,6 +234,8 @@ func runTaskProcessor(config *util.Config, redisOpt asynq.RedisClientOpt, store 
 =======
 	// log.Println("Mailer initialized")
 >>>>>>> 1f24c18 (feat: OTP with redis)
+=======
+>>>>>>> eb8d761 (updated pet schedule)
 
 	// Khởi tạo task processor
 	taskProcessor := worker.NewRedisTaskProccessor(redisOpt, store, mailer)
@@ -241,6 +247,7 @@ func runTaskProcessor(config *util.Config, redisOpt asynq.RedisClientOpt, store 
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 	log.Println("Task processor initialized")
 >>>>>>> 6610455 (feat: redis queue)
@@ -255,6 +262,8 @@ func runTaskProcessor(config *util.Config, redisOpt asynq.RedisClientOpt, store 
 =======
 	// log.Println("Task processor initialized")
 >>>>>>> 1f24c18 (feat: OTP with redis)
+=======
+>>>>>>> eb8d761 (updated pet schedule)
 
 	// Bắt đầu task processor
 	err := taskProcessor.Start()

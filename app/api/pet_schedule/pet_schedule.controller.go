@@ -43,6 +43,7 @@ type PetScheduleControllerInterface interface {
 	deletePetSchedule(ctx *gin.Context)
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	updatePetScheduleService(ctx *gin.Context)
 	generateScheduleSuggestion(ctx *gin.Context)
 <<<<<<< HEAD
@@ -63,6 +64,8 @@ type PetScheduleControllerInterface interface {
 =======
 	listPetSchedulesByUsername(ctx *gin.Context)
 >>>>>>> 6610455 (feat: redis queue)
+=======
+>>>>>>> eb8d761 (updated pet schedule)
 }
 
 func (c *PetScheduleController) createPetSchedule(ctx *gin.Context) {
@@ -369,4 +372,45 @@ func (s *PetScheduleController) listPetSchedulesByUsername(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, util.SuccessResponse("Schedules", schedules))
+}
+
+func (s *PetScheduleController) activePetSchedule(ctx *gin.Context) {
+
+	var req ActiceRemider
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, util.ErrorValidator(err))
+		return
+	}
+
+	scheduleIDStr := ctx.Param("schedule_id")
+	scheduleID, err := strconv.ParseInt(scheduleIDStr, 10, 64)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid schedule_id"})
+		return
+	}
+
+	err = s.service.ActivePetScheduleService(ctx, scheduleID, req)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, util.ErrorValidator(err))
+		return
+	}
+
+	ctx.JSON(http.StatusOK, util.SuccessResponse("Active reminder", "Success"))
+}
+
+func (s *PetScheduleController) deletePetSchedule(ctx *gin.Context) {
+	scheduleIDStr := ctx.Param("schedule_id")
+	scheduleID, err := strconv.ParseInt(scheduleIDStr, 10, 64)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid schedule_id"})
+		return
+	}
+
+	err = s.service.DeletePetScheduleService(ctx, scheduleID)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, util.ErrorValidator(err))
+		return
+	}
+
+	ctx.JSON(http.StatusOK, util.SuccessResponse("Delete reminder", "Success"))
 }

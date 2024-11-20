@@ -166,3 +166,7 @@ type PetSchedules struct {
 	PetName   string                `json:"pet_name"`
 	Schedules []PetScheduleResponse `json:"schedules"`
 }
+
+type ActiceRemider struct {
+	IsActive bool `json:"is_active"`
+}
