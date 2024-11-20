@@ -214,13 +214,6 @@ func (c *PetController) InsertPetLog(ctx *gin.Context) {
 }
 
 func (c *PetController) DeletePetLog(ctx *gin.Context) {
-	// petidStr := ctx.Param("petid")
-	// petid, err := strconv.ParseInt(petidStr, 10, 64)
-	// if err != nil {
-	// 	ctx.JSON(400, gin.H{"error": "Invalid pet ID"})
-	// 	return
-	// }
-
 	logidStr := ctx.Param("logid")
 	logid, err := strconv.ParseInt(logidStr, 10, 64)
 	if err != nil {

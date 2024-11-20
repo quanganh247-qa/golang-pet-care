@@ -103,15 +103,6 @@ func (controller *UserController) getAllUsers(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, util.SuccessResponse("Success", res))
 }
 
-// LoginUser           	godoc
-// @Summary 			Login user
-// @Description 		Login user
-// @Tags 				users
-// @Accept  			json
-// @Produce  			json
-// @Param 				user body loginUserRequest true "User info"
-// @Success 			200 {object} loginUSerResponse
-// @Router 				/user/login [post]
 func (controller *UserController) loginUser(ctx *gin.Context) {
 	var req loginUserRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -359,22 +350,3 @@ func (controller *UserController) updateDoctorAvailableTime(ctx *gin.Context) {
 	}
 	ctx.JSON(http.StatusOK, util.SuccessResponse("Updated timeslot successfull", nil))
 }
-
-// func (controller *UserController) insertTokenInfo(ctx *gin.Context) {
-// 	var req InsertTokenInfoRequest
-// 	if err := ctx.ShouldBindJSON(&req); err != nil {
-// 		ctx.JSON(http.StatusBadRequest, util.ErrorValidator(err))
-// 		return
-// 	}
-// 	authPayload, err := middleware.GetAuthorizationPayload(ctx)
-// 	if err != nil {
-// 		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
-// 		return
-// 	}
-// 	res, err := controller.service.InsertTokenInfoService(ctx, req, authPayload.Username)
-// 	if err != nil {
-// 		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
-// 		return
-// 	}
-// 	ctx.JSON(http.StatusCreated, util.SuccessResponse("Inserted token info successfull", res))
-// }
