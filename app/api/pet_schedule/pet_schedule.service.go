@@ -2,7 +2,6 @@ package petschedule
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 	"time"
 
@@ -16,6 +15,8 @@ type PetScheduleServiceInterface interface {
 	CreatePetScheduleService(ctx *gin.Context, req PetScheduleRequest, petID int64) error
 	GetAllSchedulesByPetService(ctx *gin.Context, petID int64, pagination *util.Pagination) ([]PetScheduleResponse, error)
 	ListPetSchedulesByUsernameService(ctx *gin.Context, username string) ([]PetSchedules, error)
+	ActivePetScheduleService(ctx *gin.Context, scheduleID int64, req ActiceRemider) error
+	DeletePetScheduleService(ctx *gin.Context, scheduleID int64) error
 }
 
 func (s *PetScheduleService) CreatePetScheduleService(ctx *gin.Context, req PetScheduleRequest, petID int64) error {
@@ -28,14 +29,14 @@ func (s *PetScheduleService) CreatePetScheduleService(ctx *gin.Context, req PetS
 
 	reminderTime, err := time.Parse(iso8601Format, req.ReminderDateTime)
 	if err != nil {
-		log.Fatalf("invalid start date format: %v", err)
+		return fmt.Errorf("invalid reminder date time format: %v", err)
 	}
 
 	var endDate pgtype.Date
 	if req.EndDate != "" {
 		parsedEndDate, err := time.Parse("2006-01-02", req.EndDate)
 		if err != nil {
-			log.Fatalf("invalid end date format: %v", err)
+			return fmt.Errorf("invalid end date format: %v", err)
 		}
 		endDate = pgtype.Date{Time: parsedEndDate, Valid: true}
 	} else {
@@ -128,4 +129,39 @@ func (s *PetScheduleService) ListPetSchedulesByUsernameService(ctx *gin.Context,
 	}
 
 	return response, nil
+}
+
+// Active Pet Schedule
+func (s *PetScheduleService) ActivePetScheduleService(ctx *gin.Context, scheduleID int64, req ActiceRemider) error {
+
+	err := s.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
+		err := q.ActiveReminder(ctx, db.ActiveReminderParams{
+			ID:       scheduleID,
+			IsActive: pgtype.Bool{Bool: req.IsActive, Valid: true},
+		})
+		if err != nil {
+			return fmt.Errorf("error activating reminder: ", err)
+		}
+		return nil
+	})
+	if err != nil {
+		return fmt.Errorf("error activating reminder: ", err)
+	}
+	return nil
+}
+
+// Delete Pet Schedule
+func (s *PetScheduleService) DeletePetScheduleService(ctx *gin.Context, scheduleID int64) error {
+	err := s.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
+		err := q.DeletePetSchedule(ctx, scheduleID)
+
+		if err != nil {
+			return fmt.Errorf("error deleting reminder: ", err)
+		}
+		return nil
+	})
+	if err != nil {
+		return fmt.Errorf("error deleting reminder: ", err)
+	}
+	return nil
 }

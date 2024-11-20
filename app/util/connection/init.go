@@ -56,21 +56,17 @@ func Init(config util.Config) (*Connection, error) {
 }
 
 func runTaskProcessor(config *util.Config, redisOpt asynq.RedisClientOpt, store db.Store) {
-	// log.Println("Starting task processor...")
-
 	// Kiểm tra mailer
 	mailer := mail.NewGmailSender(config.EmailSenderName, config.EmailSenderAddress, config.EmailSenderPassword)
 	if mailer == nil {
 		log.Fatal("Failed to create mailer")
 	}
-	// log.Println("Mailer initialized")
 
 	// Khởi tạo task processor
 	taskProcessor := worker.NewRedisTaskProccessor(redisOpt, store, mailer)
 	if taskProcessor == nil {
 		log.Fatal("Failed to create task processor")
 	}
-	// log.Println("Task processor initialized")
 
 	// Bắt đầu task processor
 	err := taskProcessor.Start()
