@@ -162,15 +162,6 @@ func (controller *UserController) getAllUsers(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, util.SuccessResponse("Success", res))
 }
 
-// LoginUser           	godoc
-// @Summary 			Login user
-// @Description 		Login user
-// @Tags 				users
-// @Accept  			json
-// @Produce  			json
-// @Param 				user body loginUserRequest true "User info"
-// @Success 			200 {object} loginUSerResponse
-// @Router 				/user/login [post]
 func (controller *UserController) loginUser(ctx *gin.Context) {
 	var req loginUserRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -554,6 +545,7 @@ func (controller *UserController) updateDoctorAvailableTime(ctx *gin.Context) {
 	}
 	ctx.JSON(http.StatusOK, util.SuccessResponse("Updated timeslot successfull", nil))
 }
+<<<<<<< HEAD
 
 // func (controller *UserController) insertTokenInfo(ctx *gin.Context) {
 // 	var req InsertTokenInfoRequest
@@ -574,3 +566,5 @@ func (controller *UserController) updateDoctorAvailableTime(ctx *gin.Context) {
 // 	ctx.JSON(http.StatusCreated, util.SuccessResponse("Inserted token info successfull", res))
 // }
 >>>>>>> 79a3bcc (medicine api)
+=======
+>>>>>>> eb8d761 (updated pet schedule)
