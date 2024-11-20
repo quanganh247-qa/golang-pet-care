@@ -144,6 +144,7 @@ type Querier interface {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	CreatetNotification(ctx context.Context, arg CreatetNotificationParams) (Notification, error)
 	DecreaseItemQuantity(ctx context.Context, arg DecreaseItemQuantityParams) error
 <<<<<<< HEAD
@@ -193,6 +194,11 @@ type Querier interface {
 =======
 	DeleteDeviceToken(ctx context.Context, arg DeleteDeviceTokenParams) error
 >>>>>>> 272832d (redis cache)
+=======
+	DeleteAllNotificationsByUser(ctx context.Context, username string) error
+	DeleteDeviceToken(ctx context.Context, arg DeleteDeviceTokenParams) error
+	DeleteNotificationByID(ctx context.Context, notificationid int64) error
+>>>>>>> 9fd7fc8 (feat: validate notification schema and APIs)
 	DeletePet(ctx context.Context, petid int64) error
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -752,11 +758,14 @@ type Querier interface {
 >>>>>>> c8bec46 (feat: add chatbot, room management, and pet allergy features)
 =======
 	InsertDoctorSchedule(ctx context.Context, arg InsertDoctorScheduleParams) (Doctorschedule, error)
-	// Insert a notification
 	InsertNotification(ctx context.Context, arg InsertNotificationParams) (Notification, error)
 	InsertPetLog(ctx context.Context, arg InsertPetLogParams) (PetLog, error)
 	InsertTimeslot(ctx context.Context, arg InsertTimeslotParams) (Timeslot, error)
+<<<<<<< HEAD
 >>>>>>> 7e616af (add pet log schema)
+=======
+	IsReadNotification(ctx context.Context, notificationid int64) error
+>>>>>>> 9fd7fc8 (feat: validate notification schema and APIs)
 	ListPetSchedulesByUsername(ctx context.Context, username string) ([]ListPetSchedulesByUsernameRow, error)
 =======
 	InsertDoctorSchedule(ctx context.Context, arg InsertDoctorScheduleParams) (Doctorschedule, error)

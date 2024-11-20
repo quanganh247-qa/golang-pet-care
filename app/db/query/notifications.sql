@@ -2,6 +2,7 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> e859654 (Elastic search)
 -- name: CreatetNotification :one
@@ -49,19 +50,31 @@ DELETE FROM notifications
 WHERE notificationID = $1;
 =======
 -- Insert a notification
+=======
+>>>>>>> 9fd7fc8 (feat: validate notification schema and APIs)
 -- name: InsertNotification :one
-INSERT INTO notifications (petID, title, body, dueDate, repeatInterval, isCompleted, notificationSent)
-VALUES ($1, $2, $3, $4, $5, $6, $7)
+INSERT INTO notifications (username, title, description,datetime)
+VALUES ($1, $2, $3, $4)
 RETURNING *;
 
+<<<<<<< HEAD
 -- Delete all notifications
 -- name: DeleteAllNotifications :exec
 DELETE FROM notifications;
 >>>>>>> eb8d761 (updated pet schedule)
+=======
+-- name: DeleteAllNotificationsByUser :exec
+DELETE FROM notifications WHERE username = $1;
+
+-- name: DeleteNotificationByID :exec
+DELETE FROM notifications
+WHERE notificationID = $1;
+>>>>>>> 9fd7fc8 (feat: validate notification schema and APIs)
 
 -- name: GetNotificationsByUsername :many
 SELECT notifications.*
 FROM notifications
+<<<<<<< HEAD
 <<<<<<< HEAD
 JOIN users ON notifications.username = users.username
 WHERE users.username = $1
@@ -119,3 +132,14 @@ WHERE users.username = $1
 ORDER BY notifications.dueDate DESC
 LIMIT $2 OFFSET $3;
 >>>>>>> eb8d761 (updated pet schedule)
+=======
+JOIN users ON notifications.username = users.username
+WHERE users.username = $1
+ORDER BY notifications.datetime DESC
+LIMIT $2 OFFSET $3;
+
+-- name: IsReadNotification :exec
+UPDATE notifications
+SET is_read = true
+WHERE notificationID = $1 ;
+>>>>>>> 9fd7fc8 (feat: validate notification schema and APIs)

@@ -40,6 +40,7 @@ import (
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> 4ccd381 (Update appointment flow)
 	"github.com/quanganh247-qa/go-blog-be/app/api/doctor"
@@ -84,6 +85,9 @@ import (
 >>>>>>> 79a3bcc (medicine api)
 =======
 >>>>>>> 6c35562 (dicease and treatment plan)
+=======
+	"github.com/quanganh247-qa/go-blog-be/app/api/notification"
+>>>>>>> 9fd7fc8 (feat: validate notification schema and APIs)
 	"github.com/quanganh247-qa/go-blog-be/app/api/pet"
 	petschedule "github.com/quanganh247-qa/go-blog-be/app/api/pet_schedule"
 <<<<<<< HEAD
@@ -321,13 +325,13 @@ func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor) {
 >>>>>>> 0fb3f30 (user images)
 =======
 	appointment.Routes(routerGroup)
-	// medications.Routes(routerGroup)
 	device_token.Routes(routerGroup)
 	disease.Routes(routerGroup)
 <<<<<<< HEAD
 >>>>>>> 6c35562 (dicease and treatment plan)
 =======
 	petschedule.Routes(routerGroup)
+<<<<<<< HEAD
 <<<<<<< HEAD
 >>>>>>> e01abc5 (pet schedule api)
 =======
@@ -338,6 +342,9 @@ func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor) {
 =======
 	rooms.Routes(routerGroup)
 >>>>>>> c8bec46 (feat: add chatbot, room management, and pet allergy features)
+=======
+	notification.Routes(routerGroup)
+>>>>>>> 9fd7fc8 (feat: validate notification schema and APIs)
 
 	server.Router = routerDefault
 }
