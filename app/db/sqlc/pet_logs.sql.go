@@ -133,23 +133,17 @@ func (q *Queries) InsertPetLog(ctx context.Context, arg InsertPetLogParams) (Pet
 
 const updatePetLog = `-- name: UpdatePetLog :exec
 UPDATE pet_logs
-SET datetime = $2, title = $3, notes = $4
+SET title = $2, notes = $3
 WHERE log_id = $1
 `
 
 type UpdatePetLogParams struct {
-	LogID    int64            `json:"log_id"`
-	Datetime pgtype.Timestamp `json:"datetime"`
-	Title    pgtype.Text      `json:"title"`
-	Notes    pgtype.Text      `json:"notes"`
+	LogID int64       `json:"log_id"`
+	Title pgtype.Text `json:"title"`
+	Notes pgtype.Text `json:"notes"`
 }
 
 func (q *Queries) UpdatePetLog(ctx context.Context, arg UpdatePetLogParams) error {
-	_, err := q.db.Exec(ctx, updatePetLog,
-		arg.LogID,
-		arg.Datetime,
-		arg.Title,
-		arg.Notes,
-	)
+	_, err := q.db.Exec(ctx, updatePetLog, arg.LogID, arg.Title, arg.Notes)
 	return err
 }
