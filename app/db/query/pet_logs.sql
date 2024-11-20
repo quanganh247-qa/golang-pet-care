@@ -16,7 +16,7 @@ WHERE  log_id = $1;
 
 -- name: UpdatePetLog :exec
 UPDATE pet_logs
-SET datetime = $2, title = $3, notes = $4
+SET title = $2, notes = $3
 WHERE log_id = $1;
 
 -- name: GetPetLogByID :one

@@ -2,8 +2,8 @@ package petschedule
 
 import (
 	"fmt"
-	"log"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -16,6 +16,9 @@ type PetScheduleServiceInterface interface {
 	CreatePetScheduleService(ctx *gin.Context, req PetScheduleRequest, petID int64) error
 	GetAllSchedulesByPetService(ctx *gin.Context, petID int64, pagination *util.Pagination) ([]PetScheduleResponse, error)
 	ListPetSchedulesByUsernameService(ctx *gin.Context, username string) ([]PetSchedules, error)
+	ActivePetScheduleService(ctx *gin.Context, scheduleID int64, req ActiceRemider) error
+	DeletePetScheduleService(ctx *gin.Context, scheduleID int64) error
+	UpdatePetScheduleService(ctx *gin.Context, scheduleID int64, req PetScheduleRequest) error
 }
 
 func (s *PetScheduleService) CreatePetScheduleService(ctx *gin.Context, req PetScheduleRequest, petID int64) error {
@@ -28,14 +31,14 @@ func (s *PetScheduleService) CreatePetScheduleService(ctx *gin.Context, req PetS
 
 	reminderTime, err := time.Parse(iso8601Format, req.ReminderDateTime)
 	if err != nil {
-		log.Fatalf("invalid start date format: %v", err)
+		return fmt.Errorf("invalid reminder date time format: %v", err)
 	}
 
 	var endDate pgtype.Date
 	if req.EndDate != "" {
 		parsedEndDate, err := time.Parse("2006-01-02", req.EndDate)
 		if err != nil {
-			log.Fatalf("invalid end date format: %v", err)
+			return fmt.Errorf("invalid end date format: %v", err)
 		}
 		endDate = pgtype.Date{Time: parsedEndDate, Valid: true}
 	} else {
@@ -61,8 +64,6 @@ func (s *PetScheduleService) CreatePetScheduleService(ctx *gin.Context, req PetS
 func (s *PetScheduleService) GetAllSchedulesByPetService(ctx *gin.Context, petID int64, pagination *util.Pagination) ([]PetScheduleResponse, error) {
 
 	offset := (pagination.Page - 1) * pagination.PageSize
-
-	fmt.Println(petID)
 
 	res, err := s.storeDB.GetAllSchedulesByPet(ctx, db.GetAllSchedulesByPetParams{
 		Limit:  int32(pagination.PageSize),
@@ -128,4 +129,101 @@ func (s *PetScheduleService) ListPetSchedulesByUsernameService(ctx *gin.Context,
 	}
 
 	return response, nil
+}
+
+// Active Pet Schedule
+func (s *PetScheduleService) ActivePetScheduleService(ctx *gin.Context, scheduleID int64, req ActiceRemider) error {
+
+	err := s.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
+		err := q.ActiveReminder(ctx, db.ActiveReminderParams{
+			ID:       scheduleID,
+			IsActive: pgtype.Bool{Bool: req.IsActive, Valid: true},
+		})
+		if err != nil {
+			return fmt.Errorf("error activating reminder: ", err)
+		}
+		return nil
+	})
+	if err != nil {
+		return fmt.Errorf("error activating reminder: ", err)
+	}
+	return nil
+}
+
+// Delete Pet Schedule
+func (s *PetScheduleService) DeletePetScheduleService(ctx *gin.Context, scheduleID int64) error {
+	err := s.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
+		err := q.DeletePetSchedule(ctx, scheduleID)
+
+		if err != nil {
+			return fmt.Errorf("error deleting reminder: ", err)
+		}
+		return nil
+	})
+	if err != nil {
+		return fmt.Errorf("error deleting reminder: ", err)
+	}
+	return nil
+}
+
+// Update Pet Schedule
+func (s *PetScheduleService) UpdatePetScheduleService(ctx *gin.Context, scheduleID int64, req PetScheduleRequest) error {
+
+	var r db.UpdatePetScheduleParams
+
+	schedule, err := s.storeDB.GetPetScheduleById(ctx, scheduleID)
+	if err != nil {
+		return fmt.Errorf("error getting reminder: ", err)
+	}
+
+	// validate req data
+	if req.Title == "" {
+		r.Title = schedule.Title
+	} else {
+		r.Title = pgtype.Text{String: req.Title, Valid: true}
+	}
+
+	if req.ReminderDateTime == "" {
+		r.ReminderDatetime = schedule.ReminderDatetime
+	} else {
+		reminderTime, err := time.Parse("2006-01-02T15:04:05Z", req.ReminderDateTime)
+		if err != nil {
+			return fmt.Errorf("invalid reminder date time format: %v", err)
+		}
+		r.ReminderDatetime = pgtype.Timestamp{Time: reminderTime, Valid: true}
+	}
+
+	if req.EventRepeat == "" {
+		req.EventRepeat = schedule.EventRepeat.String
+	} else {
+		r.EventRepeat = pgtype.Text{String: req.EventRepeat, Valid: true}
+	}
+
+	if req.EndType == "" {
+		r.EndType = schedule.EndType
+	} else {
+		endType, err := strconv.ParseBool(req.EndType)
+		if err != nil {
+			return fmt.Errorf("invalid end type format: %v", err)
+		}
+		r.EndType = pgtype.Bool{Bool: endType, Valid: true}
+	}
+
+	if req.Notes == "" {
+		r.Notes = schedule.Notes
+	} else {
+		r.Notes = pgtype.Text{String: req.Notes, Valid: true}
+	}
+
+	err = s.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
+		err := q.UpdatePetSchedule(ctx, r)
+		if err != nil {
+			return fmt.Errorf("error updating reminder: ", err)
+		}
+		return nil
+	})
+	if err != nil {
+		return fmt.Errorf("error updating reminder: ", err)
+	}
+	return nil
 }

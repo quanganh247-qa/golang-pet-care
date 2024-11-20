@@ -22,6 +22,7 @@ type PetScheduleRequest struct {
 	EndType          string `json:"end_type"`
 	EndDate          string `json:"end_date"`
 	Notes            string `json:"notes"`
+	IsActive         bool   `json:"is_active"`
 }
 
 type PetScheduleResponse struct {
@@ -44,4 +45,8 @@ type PetSchedules struct {
 	PetID     int64                 `json:"pet_id"`
 	PetName   string                `json:"pet_name"`
 	Schedules []PetScheduleResponse `json:"schedules"`
+}
+
+type ActiceRemider struct {
+	IsActive bool `json:"is_active"`
 }
