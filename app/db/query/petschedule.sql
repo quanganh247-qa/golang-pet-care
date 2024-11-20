@@ -14,7 +14,7 @@ INSERT INTO pet_schedule (
    end_date,
    notes,
    is_active
-) VALUES ($1, $2, $3, $4, $5, $6, $7, false);
+) VALUES ($1, $2, $3, $4, $5, $6, $7, true);
 
 -- name: ListPetSchedulesByUsername :many
 SELECT pet_schedule.*, pet.name
