@@ -25,6 +25,7 @@ func Routes(routerGroup middleware.RouterGroup) {
 		authRoute.PUT("/active/:schedule_id", petScheduleApi.controller.activePetSchedule)
 		authRoute.GET("/", petScheduleApi.controller.listPetSchedulesByUsername)
 		authRoute.DELETE("/:schedule_id", petScheduleApi.controller.deletePetSchedule)
+		authRoute.PUT("/:schedule_id", petScheduleApi.controller.updatePetScheduleService)
 	}
 
 }
