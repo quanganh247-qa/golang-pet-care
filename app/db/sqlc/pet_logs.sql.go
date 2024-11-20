@@ -333,18 +333,18 @@ func (q *Queries) UpdatePetLog(ctx context.Context, arg UpdatePetLogParams) erro
 =======
 const updatePetLog = `-- name: UpdatePetLog :exec
 UPDATE pet_logs
-SET datetime = $2, title = $3, notes = $4
+SET title = $2, notes = $3
 WHERE log_id = $1
 `
 
 type UpdatePetLogParams struct {
-	LogID    int64            `json:"log_id"`
-	Datetime pgtype.Timestamp `json:"datetime"`
-	Title    pgtype.Text      `json:"title"`
-	Notes    pgtype.Text      `json:"notes"`
+	LogID int64       `json:"log_id"`
+	Title pgtype.Text `json:"title"`
+	Notes pgtype.Text `json:"notes"`
 }
 
 func (q *Queries) UpdatePetLog(ctx context.Context, arg UpdatePetLogParams) error {
+<<<<<<< HEAD
 	_, err := q.db.Exec(ctx, updatePetLog,
 <<<<<<< HEAD
 		arg.Petid,
@@ -363,5 +363,8 @@ func (q *Queries) UpdatePetLog(ctx context.Context, arg UpdatePetLogParams) erro
 >>>>>>> b13e1cd (feat: logs  API)
 =======
 >>>>>>> 7e616af (add pet log schema)
+=======
+	_, err := q.db.Exec(ctx, updatePetLog, arg.LogID, arg.Title, arg.Notes)
+>>>>>>> b13e1cd (feat: logs  API)
 	return err
 }
