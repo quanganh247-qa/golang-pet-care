@@ -295,6 +295,7 @@ func (c *PetController) InsertPetLog(ctx *gin.Context) {
 func (c *PetController) DeletePetLog(ctx *gin.Context) {
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	logidStr := ctx.Param("log_id")
 =======
 	petidStr := ctx.Param("petid")
@@ -312,6 +313,8 @@ func (c *PetController) DeletePetLog(ctx *gin.Context) {
 	// }
 >>>>>>> 884b92e (update pet logs api)
 
+=======
+>>>>>>> eb8d761 (updated pet schedule)
 	logidStr := ctx.Param("logid")
 >>>>>>> 3835eb4 (update pet_schedule api)
 	logid, err := strconv.ParseInt(logidStr, 10, 64)

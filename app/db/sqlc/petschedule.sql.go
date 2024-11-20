@@ -11,6 +11,22 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+const activeReminder = `-- name: ActiveReminder :exec
+UPDATE pet_schedule
+SET is_active = $2
+WHERE id = $1
+`
+
+type ActiveReminderParams struct {
+	ID       int64       `json:"id"`
+	IsActive pgtype.Bool `json:"is_active"`
+}
+
+func (q *Queries) ActiveReminder(ctx context.Context, arg ActiveReminderParams) error {
+	_, err := q.db.Exec(ctx, activeReminder, arg.ID, arg.IsActive)
+	return err
+}
+
 const createPetSchedule = `-- name: CreatePetSchedule :exec
 INSERT INTO pet_schedule (
    pet_id,
@@ -19,8 +35,9 @@ INSERT INTO pet_schedule (
    event_repeat,
    end_type,
    end_date,
-   notes
-) VALUES ($1, $2, $3, $4, $5, $6, $7)
+   notes,
+   is_active
+) VALUES ($1, $2, $3, $4, $5, $6, $7, false)
 `
 
 type CreatePetScheduleParams struct {
@@ -46,9 +63,20 @@ func (q *Queries) CreatePetSchedule(ctx context.Context, arg CreatePetSchedulePa
 	return err
 }
 
+const deletePetSchedule = `-- name: DeletePetSchedule :exec
+Update pet_schedule
+SET removedat = now()
+WHERE id = $1
+`
+
+func (q *Queries) DeletePetSchedule(ctx context.Context, id int64) error {
+	_, err := q.db.Exec(ctx, deletePetSchedule, id)
+	return err
+}
+
 const getAllSchedulesByPet = `-- name: GetAllSchedulesByPet :many
-SELECT id, pet_id, title, reminder_datetime, event_repeat, end_type, end_date, notes, created_at FROM pet_schedule 
-WHERE pet_id = $1
+SELECT id, pet_id, title, reminder_datetime, event_repeat, end_type, end_date, notes, created_at, is_active, removedat FROM pet_schedule 
+WHERE pet_id = $1 and removedat is null
 ORDER BY reminder_datetime 
 LIMIT $2 OFFSET $3
 `
@@ -78,6 +106,8 @@ func (q *Queries) GetAllSchedulesByPet(ctx context.Context, arg GetAllSchedulesB
 			&i.EndDate,
 			&i.Notes,
 			&i.CreatedAt,
+			&i.IsActive,
+			&i.Removedat,
 		); err != nil {
 			return nil, err
 		}
@@ -90,11 +120,11 @@ func (q *Queries) GetAllSchedulesByPet(ctx context.Context, arg GetAllSchedulesB
 }
 
 const listPetSchedulesByUsername = `-- name: ListPetSchedulesByUsername :many
-SELECT pet_schedule.id, pet_schedule.pet_id, pet_schedule.title, pet_schedule.reminder_datetime, pet_schedule.event_repeat, pet_schedule.end_type, pet_schedule.end_date, pet_schedule.notes, pet_schedule.created_at, pet.name
+SELECT pet_schedule.id, pet_schedule.pet_id, pet_schedule.title, pet_schedule.reminder_datetime, pet_schedule.event_repeat, pet_schedule.end_type, pet_schedule.end_date, pet_schedule.notes, pet_schedule.created_at, pet_schedule.is_active, pet_schedule.removedat, pet.name
 FROM pet_schedule
 LEFT JOIN pet ON pet_schedule.pet_id = pet.petid
 LEFT JOIN users ON pet.username = users.username
-WHERE users.username = $1
+WHERE users.username = $1 and pet_schedule.removedat is null
 ORDER BY pet.petid, pet_schedule.reminder_datetime
 `
 
@@ -108,6 +138,8 @@ type ListPetSchedulesByUsernameRow struct {
 	EndDate          pgtype.Date      `json:"end_date"`
 	Notes            pgtype.Text      `json:"notes"`
 	CreatedAt        pgtype.Timestamp `json:"created_at"`
+	IsActive         pgtype.Bool      `json:"is_active"`
+	Removedat        pgtype.Timestamp `json:"removedat"`
 	Name             pgtype.Text      `json:"name"`
 }
 
@@ -130,6 +162,8 @@ func (q *Queries) ListPetSchedulesByUsername(ctx context.Context, username strin
 			&i.EndDate,
 			&i.Notes,
 			&i.CreatedAt,
+			&i.IsActive,
+			&i.Removedat,
 			&i.Name,
 		); err != nil {
 			return nil, err

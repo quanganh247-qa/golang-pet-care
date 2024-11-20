@@ -11,6 +11,7 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+<<<<<<< HEAD
 const createtNotification = `-- name: CreatetNotification :one
 INSERT INTO notifications (
     username,
@@ -75,13 +76,41 @@ LIMIT $2 OFFSET $3
 `
 
 type ListNotificationsByUsernameParams struct {
+=======
+const deleteAllNotifications = `-- name: DeleteAllNotifications :exec
+DELETE FROM notifications
+`
+
+// Delete all notifications
+func (q *Queries) DeleteAllNotifications(ctx context.Context) error {
+	_, err := q.db.Exec(ctx, deleteAllNotifications)
+	return err
+}
+
+const getNotificationsByUsername = `-- name: GetNotificationsByUsername :many
+SELECT notifications.notificationid, notifications.petid, notifications.title, notifications.body, notifications.duedate, notifications.repeatinterval, notifications.iscompleted, notifications.notificationsent
+FROM notifications
+JOIN pet ON notifications.petID = pet.petid
+JOIN users ON pet.username = users.username
+WHERE users.username = $1
+ORDER BY notifications.dueDate DESC
+LIMIT $2 OFFSET $3
+`
+
+type GetNotificationsByUsernameParams struct {
+>>>>>>> eb8d761 (updated pet schedule)
 	Username string `json:"username"`
 	Limit    int32  `json:"limit"`
 	Offset   int32  `json:"offset"`
 }
 
+<<<<<<< HEAD
 func (q *Queries) ListNotificationsByUsername(ctx context.Context, arg ListNotificationsByUsernameParams) ([]Notification, error) {
 	rows, err := q.db.Query(ctx, listNotificationsByUsername, arg.Username, arg.Limit, arg.Offset)
+=======
+func (q *Queries) GetNotificationsByUsername(ctx context.Context, arg GetNotificationsByUsernameParams) ([]Notification, error) {
+	rows, err := q.db.Query(ctx, getNotificationsByUsername, arg.Username, arg.Limit, arg.Offset)
+>>>>>>> eb8d761 (updated pet schedule)
 	if err != nil {
 		return nil, err
 	}
@@ -90,6 +119,7 @@ func (q *Queries) ListNotificationsByUsername(ctx context.Context, arg ListNotif
 	for rows.Next() {
 		var i Notification
 		if err := rows.Scan(
+<<<<<<< HEAD
 			&i.ID,
 			&i.Username,
 			&i.Title,
@@ -99,6 +129,16 @@ func (q *Queries) ListNotificationsByUsername(ctx context.Context, arg ListNotif
 			&i.RelatedType,
 			&i.Datetime,
 			&i.NotifyType,
+=======
+			&i.Notificationid,
+			&i.Petid,
+			&i.Title,
+			&i.Body,
+			&i.Duedate,
+			&i.Repeatinterval,
+			&i.Iscompleted,
+			&i.Notificationsent,
+>>>>>>> eb8d761 (updated pet schedule)
 		); err != nil {
 			return nil, err
 		}
@@ -110,6 +150,7 @@ func (q *Queries) ListNotificationsByUsername(ctx context.Context, arg ListNotif
 	return items, nil
 }
 
+<<<<<<< HEAD
 const markNotificationAsRead = `-- name: MarkNotificationAsRead :exec
 UPDATE notifications
 SET is_read = true
@@ -119,4 +160,45 @@ WHERE id = $1
 func (q *Queries) MarkNotificationAsRead(ctx context.Context, id int64) error {
 	_, err := q.db.Exec(ctx, markNotificationAsRead, id)
 	return err
+=======
+const insertNotification = `-- name: InsertNotification :one
+INSERT INTO notifications (petID, title, body, dueDate, repeatInterval, isCompleted, notificationSent)
+VALUES ($1, $2, $3, $4, $5, $6, $7)
+RETURNING notificationid, petid, title, body, duedate, repeatinterval, iscompleted, notificationsent
+`
+
+type InsertNotificationParams struct {
+	Petid            pgtype.Int8      `json:"petid"`
+	Title            string           `json:"title"`
+	Body             pgtype.Text      `json:"body"`
+	Duedate          pgtype.Timestamp `json:"duedate"`
+	Repeatinterval   pgtype.Text      `json:"repeatinterval"`
+	Iscompleted      pgtype.Bool      `json:"iscompleted"`
+	Notificationsent pgtype.Bool      `json:"notificationsent"`
+}
+
+// Insert a notification
+func (q *Queries) InsertNotification(ctx context.Context, arg InsertNotificationParams) (Notification, error) {
+	row := q.db.QueryRow(ctx, insertNotification,
+		arg.Petid,
+		arg.Title,
+		arg.Body,
+		arg.Duedate,
+		arg.Repeatinterval,
+		arg.Iscompleted,
+		arg.Notificationsent,
+	)
+	var i Notification
+	err := row.Scan(
+		&i.Notificationid,
+		&i.Petid,
+		&i.Title,
+		&i.Body,
+		&i.Duedate,
+		&i.Repeatinterval,
+		&i.Iscompleted,
+		&i.Notificationsent,
+	)
+	return i, err
+>>>>>>> eb8d761 (updated pet schedule)
 }

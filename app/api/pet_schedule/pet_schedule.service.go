@@ -6,9 +6,12 @@ import (
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 	"log"
 >>>>>>> 3835eb4 (update pet_schedule api)
+=======
+>>>>>>> eb8d761 (updated pet schedule)
 	"net/http"
 	"strconv"
 =======
@@ -39,6 +42,7 @@ type PetScheduleServiceInterface interface {
 	ListPetSchedulesByUsernameService(ctx *gin.Context, username string) ([]PetSchedules, error)
 	ActivePetScheduleService(ctx *gin.Context, scheduleID int64, req ActiceRemider) error
 	DeletePetScheduleService(ctx *gin.Context, scheduleID int64) error
+<<<<<<< HEAD
 	UpdatePetScheduleService(ctx *gin.Context, scheduleID int64, req PetScheduleRequest) error
 	ProcessSuggestionGemini(ctx *gin.Context, description string) (*llm.BaseResponse, error)
 }
@@ -86,6 +90,8 @@ func (s *PetScheduleService) CreatePetScheduleService(ctx *gin.Context, req PetS
 	GetAllSchedulesByPetService(ctx *gin.Context, petID int64, pagination *util.Pagination) ([]PetScheduleResponse, error)
 	ListPetSchedulesByUsernameService(ctx *gin.Context, username string) ([]PetSchedules, error)
 >>>>>>> 6610455 (feat: redis queue)
+=======
+>>>>>>> eb8d761 (updated pet schedule)
 }
 
 func (s *PetScheduleService) CreatePetScheduleService(ctx *gin.Context, req PetScheduleRequest, petID int64) error {
@@ -98,14 +104,14 @@ func (s *PetScheduleService) CreatePetScheduleService(ctx *gin.Context, req PetS
 
 	reminderTime, err := time.Parse(iso8601Format, req.ReminderDateTime)
 	if err != nil {
-		log.Fatalf("invalid start date format: %v", err)
+		return fmt.Errorf("invalid reminder date time format: %v", err)
 	}
 
 	var endDate pgtype.Date
 	if req.EndDate != "" {
 		parsedEndDate, err := time.Parse("2006-01-02", req.EndDate)
 		if err != nil {
-			log.Fatalf("invalid end date format: %v", err)
+			return fmt.Errorf("invalid end date format: %v", err)
 		}
 		endDate = pgtype.Date{Time: parsedEndDate, Valid: true}
 	} else {
@@ -425,4 +431,42 @@ func (s *PetScheduleService) ListPetSchedulesByUsernameService(ctx *gin.Context,
 
 	return response, nil
 }
+<<<<<<< HEAD
 >>>>>>> 6610455 (feat: redis queue)
+=======
+
+// Active Pet Schedule
+func (s *PetScheduleService) ActivePetScheduleService(ctx *gin.Context, scheduleID int64, req ActiceRemider) error {
+
+	err := s.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
+		err := q.ActiveReminder(ctx, db.ActiveReminderParams{
+			ID:       scheduleID,
+			IsActive: pgtype.Bool{Bool: req.IsActive, Valid: true},
+		})
+		if err != nil {
+			return fmt.Errorf("error activating reminder: ", err)
+		}
+		return nil
+	})
+	if err != nil {
+		return fmt.Errorf("error activating reminder: ", err)
+	}
+	return nil
+}
+
+// Delete Pet Schedule
+func (s *PetScheduleService) DeletePetScheduleService(ctx *gin.Context, scheduleID int64) error {
+	err := s.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
+		err := q.DeletePetSchedule(ctx, scheduleID)
+
+		if err != nil {
+			return fmt.Errorf("error deleting reminder: ", err)
+		}
+		return nil
+	})
+	if err != nil {
+		return fmt.Errorf("error deleting reminder: ", err)
+	}
+	return nil
+}
+>>>>>>> eb8d761 (updated pet schedule)

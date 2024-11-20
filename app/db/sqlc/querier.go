@@ -12,6 +12,7 @@ import (
 
 type Querier interface {
 <<<<<<< HEAD
+<<<<<<< HEAD
 	ActiveReminder(ctx context.Context, arg ActiveReminderParams) error
 	AddItemToCart(ctx context.Context, arg AddItemToCartParams) (CartItem, error)
 	// Assign Carprofen to the Initial Phase
@@ -46,6 +47,9 @@ type Querier interface {
 	CreateUser(ctx context.Context, arg CreateUserParams) (User, error)
 =======
 =======
+=======
+	ActiveReminder(ctx context.Context, arg ActiveReminderParams) error
+>>>>>>> eb8d761 (updated pet schedule)
 	CreateAppointment(ctx context.Context, arg CreateAppointmentParams) (Appointment, error)
 	CreatePet(ctx context.Context, arg CreatePetParams) (Pet, error)
 	CreatePetSchedule(ctx context.Context, arg CreatePetScheduleParams) error
@@ -58,8 +62,13 @@ type Querier interface {
 	CreateVerifyEmail(ctx context.Context, arg CreateVerifyEmailParams) (VerifyEmail, error)
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	CreatetNotification(ctx context.Context, arg CreatetNotificationParams) (Notification, error)
 	DecreaseItemQuantity(ctx context.Context, arg DecreaseItemQuantityParams) error
+=======
+	// Delete all notifications
+	DeleteAllNotifications(ctx context.Context) error
+>>>>>>> eb8d761 (updated pet schedule)
 	DeleteDeviceToken(ctx context.Context, arg DeleteDeviceTokenParams) error
 	DeleteDoctor(ctx context.Context, id int64) error
 	DeleteMedicalHistory(ctx context.Context, id int64) error
@@ -79,6 +88,7 @@ type Querier interface {
 	DeletePetAllergy(ctx context.Context, id int64) error
 	DeletePetLog(ctx context.Context, logID int64) error
 	DeletePetSchedule(ctx context.Context, id int64) error
+<<<<<<< HEAD
 	DeleteRoom(ctx context.Context, id int64) error
 	DeleteService(ctx context.Context, id int64) error
 	DeleteShiftsByDate(ctx context.Context, arg DeleteShiftsByDateParams) error
@@ -90,6 +100,8 @@ type Querier interface {
 =======
 	DeletePetLog(ctx context.Context, logID int64) error
 >>>>>>> 884b92e (update pet logs api)
+=======
+>>>>>>> eb8d761 (updated pet schedule)
 	DeleteService(ctx context.Context, serviceid int64) error
 	DeleteServiceType(ctx context.Context, typeid int64) error
 <<<<<<< HEAD
@@ -150,6 +162,7 @@ type Querier interface {
 	GetDoctor(ctx context.Context, id int64) (GetDoctorRow, error)
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	GetDoctorByUserId(ctx context.Context, userID int64) (Doctor, error)
 	GetDoctorByUsername(ctx context.Context, username string) (GetDoctorByUsernameRow, error)
 	GetDoctors(ctx context.Context) ([]GetDoctorsRow, error)
@@ -199,6 +212,9 @@ type Querier interface {
 	GetFeedingScheduleByPetID(ctx context.Context, petid pgtype.Int8) ([]Feedingschedule, error)
 =======
 >>>>>>> 272832d (redis cache)
+=======
+	GetNotificationsByUsername(ctx context.Context, arg GetNotificationsByUsernameParams) ([]Notification, error)
+>>>>>>> eb8d761 (updated pet schedule)
 	GetPetByID(ctx context.Context, petid int64) (Pet, error)
 	GetPetLogByID(ctx context.Context, arg GetPetLogByIDParams) (GetPetLogByIDRow, error)
 	GetPetLogsByPetID(ctx context.Context, arg GetPetLogsByPetIDParams) ([]GetPetLogsByPetIDRow, error)
@@ -227,6 +243,8 @@ type Querier interface {
 	ListPetSchedulesByUsername(ctx context.Context, username string) ([]ListPetSchedulesByUsernameRow, error)
 =======
 	InsertDoctorSchedule(ctx context.Context, arg InsertDoctorScheduleParams) (Doctorschedule, error)
+	// Insert a notification
+	InsertNotification(ctx context.Context, arg InsertNotificationParams) (Notification, error)
 	InsertPetLog(ctx context.Context, arg InsertPetLogParams) (PetLog, error)
 	InsertTimeslot(ctx context.Context, arg InsertTimeslotParams) (Timeslot, error)
 <<<<<<< HEAD
