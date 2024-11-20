@@ -13,9 +13,13 @@ SELECT * FROM users ;
 
 -- name: VerifiedUser :one
 UPDATE users
-SET is_verified_email = $2
+SET is_verified_email = true
 WHERE username = $1
 RETURNING *;
+
+-- name: DeleteUser :exec
+DELETE FROM users
+WHERE id = $1;
 
 
 -- name: InsertDoctor :one

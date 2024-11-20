@@ -110,21 +110,6 @@ type Notification struct {
 	Notificationsent pgtype.Bool      `json:"notificationsent"`
 }
 
-type Notificationhistory struct {
-	ID             int64              `json:"id"`
-	NotificationID int64              `json:"notification_id"`
-	UserID         int64              `json:"user_id"`
-	DeviceTokenID  pgtype.Int8        `json:"device_token_id"`
-	Title          string             `json:"title"`
-	Body           pgtype.Text        `json:"body"`
-	Data           []byte             `json:"data"`
-	SentAt         pgtype.Timestamptz `json:"sent_at"`
-	DeliveredAt    pgtype.Timestamptz `json:"delivered_at"`
-	OpenedAt       pgtype.Timestamptz `json:"opened_at"`
-	ErrorMessage   pgtype.Text        `json:"error_message"`
-	CreatedAt      pgtype.Timestamptz `json:"created_at"`
-}
-
 type Pet struct {
 	Petid           int64         `json:"petid"`
 	Name            string        `json:"name"`
@@ -157,7 +142,7 @@ type PetSchedule struct {
 	Title            pgtype.Text      `json:"title"`
 	ReminderDatetime pgtype.Timestamp `json:"reminder_datetime"`
 	EventRepeat      pgtype.Text      `json:"event_repeat"`
-	EndType          pgtype.Text      `json:"end_type"`
+	EndType          pgtype.Bool      `json:"end_type"`
 	EndDate          pgtype.Date      `json:"end_date"`
 	Notes            pgtype.Text      `json:"notes"`
 	CreatedAt        pgtype.Timestamp `json:"created_at"`

@@ -29,7 +29,8 @@ func Routes(routerGroup middleware.RouterGroup, taskDistributor worker.TaskDistr
 		user.GET("/all", userApi.controller.getAllUsers)
 		authRoute.GET("/", userApi.controller.getUserDetails)
 		user.POST("/login", userApi.controller.loginUser)
-		user.PUT("/verify_email", userApi.controller.verifyEmail)
+		user.POST("/verify_email", userApi.controller.verifyEmail)
+		user.POST("/resend_otp/:username", userApi.controller.resendOTP)
 		authRoute.GET("/refresh_token", userApi.controller.getAccessToken)
 		authRoute.POST("/logout", userApi.controller.logoutUser)
 

@@ -30,7 +30,7 @@ type PetScheduleResponse struct {
 	Title            string `json:"title"`
 	ReminderDateTime string `json:"reminder_datetime"`
 	EventRepeat      string `json:"event_repeat"`
-	EndType          string `json:"end_type"`
+	EndType          bool   `json:"end_type"`
 	EndDate          string `json:"end_date"`
 	Notes            string `json:"notes"`
 	CreatedAt        string `json:"created_at"`
