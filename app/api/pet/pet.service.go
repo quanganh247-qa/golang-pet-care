@@ -658,10 +658,9 @@ func (s *PetService) UpdatePetLogService(ctx context.Context, req PetLog, log_id
 
 	err = s.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
 		err := q.UpdatePetLog(ctx, db.UpdatePetLogParams{
-			LogID:    log_id,
-			Datetime: pgtype.Timestamp{Time: time.Now(), Valid: true},
-			Title:    pgtype.Text{String: req.Title, Valid: true},
-			Notes:    pgtype.Text{String: req.Notes, Valid: true},
+			LogID: log_id,
+			Title: pgtype.Text{String: req.Title, Valid: true},
+			Notes: pgtype.Text{String: req.Notes, Valid: true},
 		})
 		if err != nil {
 			return fmt.Errorf("failed to update pet log: %w", err)

@@ -43,11 +43,15 @@ WHERE  log_id = $1;
 
 -- name: UpdatePetLog :exec
 UPDATE pet_logs
+<<<<<<< HEAD
 SET datetime = $2, title = $3, notes = $4
 <<<<<<< HEAD
 WHERE petid = $1;
 >>>>>>> 7e616af (add pet log schema)
 =======
+=======
+SET title = $2, notes = $3
+>>>>>>> b13e1cd (feat: logs  API)
 WHERE log_id = $1;
 >>>>>>> 884b92e (update pet logs api)
 
