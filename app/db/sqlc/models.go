@@ -251,14 +251,12 @@ type Medicine struct {
 }
 
 type Notification struct {
-	Notificationid   int64            `json:"notificationid"`
-	Petid            pgtype.Int8      `json:"petid"`
-	Title            string           `json:"title"`
-	Body             pgtype.Text      `json:"body"`
-	Duedate          pgtype.Timestamp `json:"duedate"`
-	Repeatinterval   pgtype.Text      `json:"repeatinterval"`
-	Iscompleted      pgtype.Bool      `json:"iscompleted"`
-	Notificationsent pgtype.Bool      `json:"notificationsent"`
+	Notificationid int64            `json:"notificationid"`
+	Username       string           `json:"username"`
+	Title          string           `json:"title"`
+	Description    pgtype.Text      `json:"description"`
+	Datetime       pgtype.Timestamp `json:"datetime"`
+	IsRead         pgtype.Bool      `json:"is_read"`
 }
 
 type Pet struct {
@@ -351,9 +349,12 @@ type PetSchedule struct {
 	IsActive         pgtype.Bool      `json:"is_active"`
 	CreatedAt        pgtype.Timestamp `json:"created_at"`
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 	IsActive         pgtype.Bool      `json:"is_active"`
 >>>>>>> eb8d761 (updated pet schedule)
+=======
+>>>>>>> 9fd7fc8 (feat: validate notification schema and APIs)
 	Removedat        pgtype.Timestamp `json:"removedat"`
 }
 
