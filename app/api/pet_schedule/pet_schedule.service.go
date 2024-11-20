@@ -14,9 +14,12 @@ import (
 >>>>>>> eb8d761 (updated pet schedule)
 	"net/http"
 	"strconv"
+<<<<<<< HEAD
 =======
 	"net/http"
 >>>>>>> 6610455 (feat: redis queue)
+=======
+>>>>>>> 4c66ef3 (feat: update schedule API)
 	"time"
 =======
 >>>>>>> 272832d (redis cache)
@@ -43,8 +46,12 @@ type PetScheduleServiceInterface interface {
 	ActivePetScheduleService(ctx *gin.Context, scheduleID int64, req ActiceRemider) error
 	DeletePetScheduleService(ctx *gin.Context, scheduleID int64) error
 <<<<<<< HEAD
+<<<<<<< HEAD
 	UpdatePetScheduleService(ctx *gin.Context, scheduleID int64, req PetScheduleRequest) error
 	ProcessSuggestionGemini(ctx *gin.Context, description string) (*llm.BaseResponse, error)
+=======
+	UpdatePetScheduleService(ctx *gin.Context, scheduleID int64, req PetScheduleRequest) error
+>>>>>>> 4c66ef3 (feat: update schedule API)
 }
 
 func (s *PetScheduleService) CreatePetScheduleService(ctx *gin.Context, req PetScheduleRequest, petID int64) error {
@@ -315,6 +322,7 @@ func (s *PetScheduleService) UpdatePetScheduleService(ctx *gin.Context, schedule
 	}
 	return nil
 }
+<<<<<<< HEAD
 
 func (s *PetScheduleService) ProcessSuggestionGemini(ctx *gin.Context, description string) (*llm.BaseResponse, error) {
 	actionResponse, err := llm.DetermineActionGemini(ctx, s.config, description)
@@ -470,3 +478,5 @@ func (s *PetScheduleService) DeletePetScheduleService(ctx *gin.Context, schedule
 	return nil
 }
 >>>>>>> eb8d761 (updated pet schedule)
+=======
+>>>>>>> 4c66ef3 (feat: update schedule API)
