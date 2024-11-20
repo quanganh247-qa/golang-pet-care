@@ -33,3 +33,18 @@ WHERE id = $1;
 Update pet_schedule
 SET removedat = now()
 WHERE id = $1;
+
+-- name: UpdatePetSchedule :exec
+UPDATE pet_schedule
+SET title = $2,
+    reminder_datetime = $3,
+    event_repeat = $4,
+    end_type = $5,
+    end_date = $6,
+    notes = $7,
+    is_active = $8
+WHERE id = $1;
+
+-- name: GetPetScheduleById :one
+SELECT * FROM pet_schedule
+WHERE id = $1;
