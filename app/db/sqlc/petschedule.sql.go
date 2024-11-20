@@ -75,7 +75,7 @@ func (q *Queries) DeletePetSchedule(ctx context.Context, id int64) error {
 }
 
 const getAllSchedulesByPet = `-- name: GetAllSchedulesByPet :many
-SELECT id, pet_id, title, reminder_datetime, event_repeat, end_type, end_date, notes, created_at, is_active, removedat FROM pet_schedule 
+SELECT id, pet_id, title, reminder_datetime, event_repeat, end_type, end_date, notes, is_active, created_at, removedat FROM pet_schedule 
 WHERE pet_id = $1 and removedat is null
 ORDER BY reminder_datetime 
 LIMIT $2 OFFSET $3
@@ -105,8 +105,8 @@ func (q *Queries) GetAllSchedulesByPet(ctx context.Context, arg GetAllSchedulesB
 			&i.EndType,
 			&i.EndDate,
 			&i.Notes,
-			&i.CreatedAt,
 			&i.IsActive,
+			&i.CreatedAt,
 			&i.Removedat,
 		); err != nil {
 			return nil, err
@@ -120,7 +120,7 @@ func (q *Queries) GetAllSchedulesByPet(ctx context.Context, arg GetAllSchedulesB
 }
 
 const getPetScheduleById = `-- name: GetPetScheduleById :one
-SELECT id, pet_id, title, reminder_datetime, event_repeat, end_type, end_date, notes, created_at, is_active, removedat FROM pet_schedule
+SELECT id, pet_id, title, reminder_datetime, event_repeat, end_type, end_date, notes, is_active, created_at, removedat FROM pet_schedule
 WHERE id = $1
 `
 
@@ -136,15 +136,15 @@ func (q *Queries) GetPetScheduleById(ctx context.Context, id int64) (PetSchedule
 		&i.EndType,
 		&i.EndDate,
 		&i.Notes,
-		&i.CreatedAt,
 		&i.IsActive,
+		&i.CreatedAt,
 		&i.Removedat,
 	)
 	return i, err
 }
 
 const listPetSchedulesByUsername = `-- name: ListPetSchedulesByUsername :many
-SELECT pet_schedule.id, pet_schedule.pet_id, pet_schedule.title, pet_schedule.reminder_datetime, pet_schedule.event_repeat, pet_schedule.end_type, pet_schedule.end_date, pet_schedule.notes, pet_schedule.created_at, pet_schedule.is_active, pet_schedule.removedat, pet.name
+SELECT pet_schedule.id, pet_schedule.pet_id, pet_schedule.title, pet_schedule.reminder_datetime, pet_schedule.event_repeat, pet_schedule.end_type, pet_schedule.end_date, pet_schedule.notes, pet_schedule.is_active, pet_schedule.created_at, pet_schedule.removedat, pet.name
 FROM pet_schedule
 LEFT JOIN pet ON pet_schedule.pet_id = pet.petid
 LEFT JOIN users ON pet.username = users.username
@@ -161,8 +161,8 @@ type ListPetSchedulesByUsernameRow struct {
 	EndType          pgtype.Bool      `json:"end_type"`
 	EndDate          pgtype.Date      `json:"end_date"`
 	Notes            pgtype.Text      `json:"notes"`
-	CreatedAt        pgtype.Timestamp `json:"created_at"`
 	IsActive         pgtype.Bool      `json:"is_active"`
+	CreatedAt        pgtype.Timestamp `json:"created_at"`
 	Removedat        pgtype.Timestamp `json:"removedat"`
 	Name             pgtype.Text      `json:"name"`
 }
@@ -185,8 +185,8 @@ func (q *Queries) ListPetSchedulesByUsername(ctx context.Context, username strin
 			&i.EndType,
 			&i.EndDate,
 			&i.Notes,
-			&i.CreatedAt,
 			&i.IsActive,
+			&i.CreatedAt,
 			&i.Removedat,
 			&i.Name,
 		); err != nil {

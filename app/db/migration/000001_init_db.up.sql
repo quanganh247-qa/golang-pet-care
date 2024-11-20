@@ -800,7 +800,7 @@ CREATE TABLE verify_emails (
   id BIGSERIAL NOT NULL,
   username varchar NOT NULL,
   email varchar NOT NULL,
-  secret_code varchar NOT NULL,
+  secret_code int8 NOT NULL,
   is_used bool NOT NULL DEFAULT false,
   created_at timestamp DEFAULT (now()),
   expired_at timestamp DEFAULT (now()+'00:15:00'::interval),
@@ -847,7 +847,9 @@ CREATE TABLE pet_schedule (
     end_type bool DEFAULT false,
     end_date DATE,
     notes TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    is_active BOOLEAN DEFAULT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    removedat TIMESTAMP DEFAULT NULL
 );
 
 
@@ -953,13 +955,11 @@ CREATE TABLE DeviceTokens (
 -- Create notifications table with necessary fields
 CREATE TABLE notifications (
   notificationID BIGSERIAL PRIMARY KEY,
-  petID BIGINT,
+  username varchar NOT NULL,
   title VARCHAR(100) NOT NULL,
-  body TEXT,
-  dueDate TIMESTAMP NOT NULL,
-  repeatInterval VARCHAR(50),
-  isCompleted BOOLEAN DEFAULT false,
-  notificationSent BOOLEAN DEFAULT false
+  description TEXT,
+  datetime TIMESTAMP NOT NULL,
+  is_read BOOLEAN DEFAULT false
 );
 
 
@@ -1061,8 +1061,6 @@ ALTER TABLE Pet ADD CONSTRAINT pet_users_fk FOREIGN KEY (username) REFERENCES us
 
 ALTER TABLE Vaccination ADD CONSTRAINT vaccination_pet_fk FOREIGN KEY (petID) REFERENCES Pet (petid);
 
-ALTER TABLE notifications ADD CONSTRAINT not_pet_fk FOREIGN KEY (petID) REFERENCES Pet (petid);
-
 ALTER TABLE Service ADD CONSTRAINT service_type_fk FOREIGN KEY (typeID) REFERENCES ServiceType (typeID);
 
 ALTER TABLE Appointment ADD CONSTRAINT appointment_pet_fk FOREIGN KEY (petid) REFERENCES Pet (petid);
@@ -1116,9 +1114,7 @@ CREATE INDEX idx_doctors_user_id ON Doctors (user_id);
 CREATE INDEX idx_timeslots_doctor_id ON TimeSlots (doctor_id);
 CREATE INDEX idx_timeslots_day ON TimeSlots (day);
 
--- Index for Notification table
-CREATE INDEX idx_notification_pet_id ON notifications (petID);
-CREATE INDEX idx_notification_due_date ON notifications (dueDate);
+
 
 -- Index for diseases table
 CREATE INDEX idx_diseases_name ON diseases (name);
@@ -1144,113 +1140,6 @@ CREATE INDEX idx_treatment_progress_treatment_id ON treatment_progress (treatmen
 -- Index for pet_logs table
 CREATE INDEX idx_pet_logs_pet_id ON pet_logs (petid);
 CREATE INDEX idx_pet_logs_datetime ON pet_logs (datetime);
-
-
-
-
-
--- -- 1. Query cơ bản để lấy thông tin bệnh và thuốc điều trị
--- SELECT 
---     d.id AS disease_id,
---     d.name AS disease_name,
---     d.description AS disease_description,
---     d.symptoms,
---     m.id AS medicine_id,
---     m.name AS medicine_name,
---     m.usage AS medicine_usage,
---     m.dosage,
---     m.frequency,
---     m.duration,
---     m.side_effects
--- FROM diseases d
--- LEFT JOIN disease_medicines dm ON d.id = dm.disease_id
--- LEFT JOIN medicines m ON dm.medicine_id = m.id
--- WHERE LOWER(d.name) LIKE LOWER('%nấm da%');
-
-
-
--- -- Query lấy phác đồ điều trị đầy đủ
--- SELECT 
---     d.name AS disease_name,
---     d.description AS disease_description,
---     d.symptoms,
---     tp.phase_number,
---     tp.phase_name,
---     tp.description AS phase_description,
---     tp.duration AS phase_duration,
---     tp.notes AS phase_notes,
---     m.name AS medicine_name,
---     m.description AS medicine_description,
---     COALESCE(pm.dosage, m.dosage) AS dosage,
---     COALESCE(pm.frequency, m.frequency) AS frequency,
---     COALESCE(pm.duration, m.duration) AS duration,
---     m.side_effects,
---     pm.notes AS medicine_notes
--- FROM diseases d
--- JOIN treatment_phases tp ON d.id = tp.disease_id
--- JOIN phase_medicines pm ON tp.id = pm.phase_id
--- JOIN medicines m ON pm.medicine_id = m.id
--- WHERE LOWER(d.name) LIKE LOWER($1)
--- ORDER BY tp.phase_number, m.name;
-
--- -- 3. Query để lấy tổng quan điều trị
--- SELECT 
---     d.name AS disease_name,
---     d.description,
---     d.symptoms,
---     json_agg(
---         json_build_object(
---             'phase_number', tp.phase_number,
---             'phase_name', tp.phase_name,
---             'duration', tp.duration,
---             'medicines', (
---                 SELECT json_agg(
---                     json_build_object(
---                         'name', m.name,
---                         'dosage', COALESCE(pm.dosage, m.dosage),
---                         'frequency', COALESCE(pm.frequency, m.frequency),
---                         'duration', COALESCE(pm.duration, m.duration),
---                         'notes', pm.notes
---                     )
---                 )
---                 FROM phase_medicines pm
---                 JOIN medicines m ON pm.medicine_id = m.id
---                 WHERE pm.phase_id = tp.id
---             )
---         )
---     ) AS treatment_phases
--- FROM diseases d
--- JOIN treatment_phases tp ON d.id = tp.disease_id
--- WHERE LOWER(d.name) LIKE LOWER($1)
--- GROUP BY d.id, d.name, d.description, d.symptoms;
-
-
-
-
--- -- Query lấy lịch sử điều trị
--- SELECT 
---     p.name AS pet_name,
---     d.name AS disease_name,
---     pt.start_date,
---     pt.end_date,
---     pt.status,
---     json_agg(
---         json_build_object(
---             'phase_name', tp.phase_name,
---             'start_date', tpr.start_date,
---             'end_date', tpr.end_date,
---             'status', tpr.status,
---             'notes', tpr.notes
---         )
---     ) AS progress
--- FROM pet_treatments pt
--- JOIN Pets p ON pt.pet_id = p.id
--- JOIN diseases d ON pt.disease_id = d.id
--- JOIN treatment_progress tpr ON pt.id = tpr.treatment_id
--- JOIN treatment_phases tp ON tpr.phase_id = tp.id
--- WHERE p.id = $1
--- GROUP BY p.id, p.name, d.name, pt.start_date, pt.end_date, pt.status
--- ORDER BY pt.start_date DESC;
 
 
 INSERT INTO users (username, hashed_password, full_name, email, phone_number, address, original_image, role, is_verified_email)
@@ -1295,10 +1184,11 @@ VALUES
 (1, '2023-10-12 09:00:00', '2023-10-12 09:30:00', true, '2023-10-12'),
 (2, '2023-10-15 14:00:00', '2023-10-15 14:15:00', true, '2023-10-15');
 
-INSERT INTO notifications (petID, title, body, dueDate, repeatInterval, isCompleted, notificationSent)
+INSERT INTO notifications (
+  username, title, description,datetime)
 VALUES 
-(1, 'Nhắc lịch uống thuốc', 'Milo cần uống thuốc đúng giờ để điều trị bệnh dị ứng', '2023-10-12 08:00:00', 'Hàng ngày', false, false),
-(2, 'Lịch tiêm phòng định kỳ', 'Luna cần tiêm phòng bạch cầu vào tháng tới', '2023-11-15 09:00:00', 'Hàng năm', false, false);
+('nguyenhoa', 'Nhắc lịch uống thuốc', 'Milo cần uống thuốc đúng giờ để điều trị bệnh dị ứng', '2023-10-12 08:00:00'),
+( 'nguyenhoa','Lịch tiêm phòng định kỳ', 'Luna cần tiêm phòng bạch cầu vào tháng tới', '2023-11-15 09:00:00');
 
 
 -- Sample data

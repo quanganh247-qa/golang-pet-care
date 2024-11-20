@@ -63,6 +63,7 @@ type Querier interface {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	CreatetNotification(ctx context.Context, arg CreatetNotificationParams) (Notification, error)
 	DecreaseItemQuantity(ctx context.Context, arg DecreaseItemQuantityParams) error
 =======
@@ -82,6 +83,11 @@ type Querier interface {
 =======
 	DeleteDeviceToken(ctx context.Context, arg DeleteDeviceTokenParams) error
 >>>>>>> 272832d (redis cache)
+=======
+	DeleteAllNotificationsByUser(ctx context.Context, username string) error
+	DeleteDeviceToken(ctx context.Context, arg DeleteDeviceTokenParams) error
+	DeleteNotificationByID(ctx context.Context, notificationid int64) error
+>>>>>>> 9fd7fc8 (feat: validate notification schema and APIs)
 	DeletePet(ctx context.Context, petid int64) error
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -244,10 +250,10 @@ type Querier interface {
 	ListPetSchedulesByUsername(ctx context.Context, username string) ([]ListPetSchedulesByUsernameRow, error)
 =======
 	InsertDoctorSchedule(ctx context.Context, arg InsertDoctorScheduleParams) (Doctorschedule, error)
-	// Insert a notification
 	InsertNotification(ctx context.Context, arg InsertNotificationParams) (Notification, error)
 	InsertPetLog(ctx context.Context, arg InsertPetLogParams) (PetLog, error)
 	InsertTimeslot(ctx context.Context, arg InsertTimeslotParams) (Timeslot, error)
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 	ListActiveFeedingSchedules(ctx context.Context) ([]Feedingschedule, error)
@@ -264,6 +270,9 @@ type Querier interface {
 	UpdateAppointmentByID(ctx context.Context, arg UpdateAppointmentByIDParams) error
 =======
 =======
+=======
+	IsReadNotification(ctx context.Context, notificationid int64) error
+>>>>>>> 9fd7fc8 (feat: validate notification schema and APIs)
 	ListPetSchedulesByUsername(ctx context.Context, username string) ([]ListPetSchedulesByUsernameRow, error)
 >>>>>>> 6610455 (feat: redis queue)
 	ListPets(ctx context.Context, arg ListPetsParams) ([]Pet, error)

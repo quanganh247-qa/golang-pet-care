@@ -12,6 +12,7 @@ import (
 )
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 const createtNotification = `-- name: CreatetNotification :one
 INSERT INTO notifications (
     username,
@@ -79,21 +80,33 @@ type ListNotificationsByUsernameParams struct {
 =======
 const deleteAllNotifications = `-- name: DeleteAllNotifications :exec
 DELETE FROM notifications
+=======
+const deleteAllNotificationsByUser = `-- name: DeleteAllNotificationsByUser :exec
+DELETE FROM notifications WHERE username = $1
+>>>>>>> 9fd7fc8 (feat: validate notification schema and APIs)
 `
 
-// Delete all notifications
-func (q *Queries) DeleteAllNotifications(ctx context.Context) error {
-	_, err := q.db.Exec(ctx, deleteAllNotifications)
+func (q *Queries) DeleteAllNotificationsByUser(ctx context.Context, username string) error {
+	_, err := q.db.Exec(ctx, deleteAllNotificationsByUser, username)
+	return err
+}
+
+const deleteNotificationByID = `-- name: DeleteNotificationByID :exec
+DELETE FROM notifications
+WHERE notificationID = $1
+`
+
+func (q *Queries) DeleteNotificationByID(ctx context.Context, notificationid int64) error {
+	_, err := q.db.Exec(ctx, deleteNotificationByID, notificationid)
 	return err
 }
 
 const getNotificationsByUsername = `-- name: GetNotificationsByUsername :many
-SELECT notifications.notificationid, notifications.petid, notifications.title, notifications.body, notifications.duedate, notifications.repeatinterval, notifications.iscompleted, notifications.notificationsent
+SELECT notifications.notificationid, notifications.username, notifications.title, notifications.description, notifications.datetime, notifications.is_read
 FROM notifications
-JOIN pet ON notifications.petID = pet.petid
-JOIN users ON pet.username = users.username
+JOIN users ON notifications.username = users.username
 WHERE users.username = $1
-ORDER BY notifications.dueDate DESC
+ORDER BY notifications.datetime DESC
 LIMIT $2 OFFSET $3
 `
 
@@ -131,14 +144,20 @@ func (q *Queries) GetNotificationsByUsername(ctx context.Context, arg GetNotific
 			&i.NotifyType,
 =======
 			&i.Notificationid,
-			&i.Petid,
+			&i.Username,
 			&i.Title,
+<<<<<<< HEAD
 			&i.Body,
 			&i.Duedate,
 			&i.Repeatinterval,
 			&i.Iscompleted,
 			&i.Notificationsent,
 >>>>>>> eb8d761 (updated pet schedule)
+=======
+			&i.Description,
+			&i.Datetime,
+			&i.IsRead,
+>>>>>>> 9fd7fc8 (feat: validate notification schema and APIs)
 		); err != nil {
 			return nil, err
 		}
@@ -162,43 +181,45 @@ func (q *Queries) MarkNotificationAsRead(ctx context.Context, id int64) error {
 	return err
 =======
 const insertNotification = `-- name: InsertNotification :one
-INSERT INTO notifications (petID, title, body, dueDate, repeatInterval, isCompleted, notificationSent)
-VALUES ($1, $2, $3, $4, $5, $6, $7)
-RETURNING notificationid, petid, title, body, duedate, repeatinterval, iscompleted, notificationsent
+INSERT INTO notifications (username, title, description,datetime)
+VALUES ($1, $2, $3, $4)
+RETURNING notificationid, username, title, description, datetime, is_read
 `
 
 type InsertNotificationParams struct {
-	Petid            pgtype.Int8      `json:"petid"`
-	Title            string           `json:"title"`
-	Body             pgtype.Text      `json:"body"`
-	Duedate          pgtype.Timestamp `json:"duedate"`
-	Repeatinterval   pgtype.Text      `json:"repeatinterval"`
-	Iscompleted      pgtype.Bool      `json:"iscompleted"`
-	Notificationsent pgtype.Bool      `json:"notificationsent"`
+	Username    string           `json:"username"`
+	Title       string           `json:"title"`
+	Description pgtype.Text      `json:"description"`
+	Datetime    pgtype.Timestamp `json:"datetime"`
 }
 
-// Insert a notification
 func (q *Queries) InsertNotification(ctx context.Context, arg InsertNotificationParams) (Notification, error) {
 	row := q.db.QueryRow(ctx, insertNotification,
-		arg.Petid,
+		arg.Username,
 		arg.Title,
-		arg.Body,
-		arg.Duedate,
-		arg.Repeatinterval,
-		arg.Iscompleted,
-		arg.Notificationsent,
+		arg.Description,
+		arg.Datetime,
 	)
 	var i Notification
 	err := row.Scan(
 		&i.Notificationid,
-		&i.Petid,
+		&i.Username,
 		&i.Title,
-		&i.Body,
-		&i.Duedate,
-		&i.Repeatinterval,
-		&i.Iscompleted,
-		&i.Notificationsent,
+		&i.Description,
+		&i.Datetime,
+		&i.IsRead,
 	)
 	return i, err
 >>>>>>> eb8d761 (updated pet schedule)
+}
+
+const isReadNotification = `-- name: IsReadNotification :exec
+UPDATE notifications
+SET is_read = true
+WHERE notificationID = $1
+`
+
+func (q *Queries) IsReadNotification(ctx context.Context, notificationid int64) error {
+	_, err := q.db.Exec(ctx, isReadNotification, notificationid)
+	return err
 }

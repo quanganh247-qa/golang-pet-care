@@ -19,21 +19,16 @@ type NotService struct {
 }
 
 type NotificationRequest struct {
-	PetID            int64     `json:"pet_id"`
-	Title            string    `json:"title"`
-	Body             string    `json:"body"`
-	DueDate          time.Time `json:"due_date"`
-	RepeatInterval   string    `json:"repeat_interval"`
-	NotificationSent bool      `json:"notification_sent"`
+	Title       string `json:"title"`
+	Description string `json:"description"`
+	DateTime    string `json:"date_time"`
 }
 
 type NotificationResponse struct {
-	NotificationID   int64     `json:"notification_id"`
-	PetID            int64     `json:"pet_id"`
-	Title            string    `json:"title"`
-	Body             string    `json:"body"`
-	DueDate          time.Time `json:"due_date"`
-	RepeatInterval   string    `json:"repeat_interval"`
-	IsCompleted      bool      `json:"is_completed"`
-	NotificationSent bool      `json:"notification_sent"`
+	NotificationID int64     `json:"notification_id"`
+	Username       string    `json:"username"`
+	Title          string    `json:"title"`
+	Description    string    `json:"description"`
+	DateTime       time.Time `json:"date_time"`
+	IsRead         bool      `json:"is_read"`
 }

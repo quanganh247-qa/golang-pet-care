@@ -11,6 +11,7 @@ import (
 	"github.com/quanganh247-qa/go-blog-be/app/api/device_token"
 	"github.com/quanganh247-qa/go-blog-be/app/api/disease"
 <<<<<<< HEAD
+<<<<<<< HEAD
 	"github.com/quanganh247-qa/go-blog-be/app/api/doctor"
 	"github.com/quanganh247-qa/go-blog-be/app/api/location"
 	"github.com/quanganh247-qa/go-blog-be/app/api/medical_records"
@@ -24,6 +25,9 @@ import (
 >>>>>>> 79a3bcc (medicine api)
 =======
 >>>>>>> 6c35562 (dicease and treatment plan)
+=======
+	"github.com/quanganh247-qa/go-blog-be/app/api/notification"
+>>>>>>> 9fd7fc8 (feat: validate notification schema and APIs)
 	"github.com/quanganh247-qa/go-blog-be/app/api/pet"
 	petschedule "github.com/quanganh247-qa/go-blog-be/app/api/pet_schedule"
 <<<<<<< HEAD
@@ -102,10 +106,10 @@ func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor) {
 	rooms.Routes(routerGroup)
 =======
 	appointment.Routes(routerGroup)
-	// medications.Routes(routerGroup)
 	device_token.Routes(routerGroup)
 	disease.Routes(routerGroup)
 	petschedule.Routes(routerGroup)
+	notification.Routes(routerGroup)
 
 	server.Router = routerDefault
 >>>>>>> 79a3bcc (medicine api)
