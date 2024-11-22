@@ -3,6 +3,7 @@ INSERT INTO users (username, hashed_password, full_name, email, phone_number, ad
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, NOW(), false)
 RETURNING *;
 <<<<<<< HEAD
@@ -17,6 +18,9 @@ RETURNING id;
 >>>>>>> ada3717 (Docker file)
 =======
 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, NOW(), $10)
+=======
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, NOW(), false)
+>>>>>>> eefcc96 (date time in log)
 RETURNING id;
 >>>>>>> 0fb3f30 (user images)
 

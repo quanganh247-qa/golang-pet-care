@@ -16,6 +16,7 @@ INSERT INTO users (username, hashed_password, full_name, email, phone_number, ad
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, NOW(), false)
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -50,10 +51,14 @@ type CreateUserParams struct {
 <<<<<<< HEAD
 =======
 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, NOW(), $10)
+=======
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, NOW(), false)
+>>>>>>> eefcc96 (date time in log)
 RETURNING id
 `
 
 type CreateUserParams struct {
+<<<<<<< HEAD
 >>>>>>> 0fb3f30 (user images)
 	Username        string      `json:"username"`
 	HashedPassword  string      `json:"hashed_password"`
@@ -69,6 +74,8 @@ type CreateUserParams struct {
 	IsVerifiedEmail pgtype.Bool `json:"is_verified_email"`
 >>>>>>> 0fb3f30 (user images)
 =======
+=======
+>>>>>>> eefcc96 (date time in log)
 	Username       string      `json:"username"`
 	HashedPassword string      `json:"hashed_password"`
 	FullName       string      `json:"full_name"`
@@ -78,6 +85,7 @@ type CreateUserParams struct {
 	DataImage      []byte      `json:"data_image"`
 	OriginalImage  pgtype.Text `json:"original_image"`
 	Role           pgtype.Text `json:"role"`
+<<<<<<< HEAD
 >>>>>>> eefcc96 (date time in log)
 =======
 	OriginalImage   string      `json:"original_image"`
@@ -87,6 +95,8 @@ type CreateUserParams struct {
 	Role            pgtype.Text `json:"role"`
 	IsVerifiedEmail pgtype.Bool `json:"is_verified_email"`
 >>>>>>> 0fb3f30 (user images)
+=======
+>>>>>>> eefcc96 (date time in log)
 }
 
 func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (int64, error) {
@@ -100,6 +110,7 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (int64, 
 		arg.DataImage,
 		arg.OriginalImage,
 		arg.Role,
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -156,6 +167,8 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (int64, 
 >>>>>>> ada3717 (Docker file)
 =======
 		arg.IsVerifiedEmail,
+=======
+>>>>>>> eefcc96 (date time in log)
 	)
 	var id int64
 	err := row.Scan(&id)

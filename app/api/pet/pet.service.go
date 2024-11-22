@@ -943,13 +943,24 @@ func (s *PetService) GetPetLogsByPetIDService(ctx *gin.Context, pet_id int64, pa
 
 // Add log for pet
 func (s *PetService) InsertPetLogService(ctx context.Context, req PetLog) error {
+
+	log := db.InsertPetLogParams{
+		Petid: req.PetID,
+		Title: pgtype.Text{String: req.Title, Valid: true},
+		Notes: pgtype.Text{String: req.Notes, Valid: true},
+	}
+	if req.DateTime == "" {
+		log.Datetime = pgtype.Timestamp{Time: time.Now(), Valid: true}
+	} else {
+		datetime, err := time.Parse(time.RFC3339, req.DateTime)
+		if err != nil {
+			return fmt.Errorf("failed to parse DateTime: %w", err)
+		}
+		log.Datetime = pgtype.Timestamp{Time: datetime, Valid: true}
+	}
+
 	err := s.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
-		_, err := q.InsertPetLog(ctx, db.InsertPetLogParams{
-			Petid:    req.PetID,
-			Datetime: pgtype.Timestamp{Time: time.Now(), Valid: true},
-			Title:    pgtype.Text{String: req.Title, Valid: true},
-			Notes:    pgtype.Text{String: req.Notes, Valid: true},
-		})
+		_, err := q.InsertPetLog(ctx, log)
 		if err != nil {
 			return fmt.Errorf("failed to insert pet log: %w", err)
 		}
