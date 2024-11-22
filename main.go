@@ -3,8 +3,6 @@ package main
 import (
 	"fmt"
 	"log"
-	"os"
-	"syscall"
 
 <<<<<<< HEAD
 	"github.com/fatih/color"
@@ -20,17 +18,27 @@ import (
 	"go.uber.org/zap"
 )
 
-var interruptSignals = []os.Signal{
-	os.Interrupt,
-	syscall.SIGTERM,
-	syscall.SIGINT,
-}
-
-// @title Pet Care Management System
+// @title 1View Blog Portal
 // @version 1.0
-// @description Pet care management system APIs built with Go using Gin framework
+// @description 1View Blog Portal Rest API documentation
+// @termsOfService https://swagger.io/terms/
+
+// @contact.name Vivek Singh
+// @contact.url https://github.com/san-data-systems
+// @contact.email vbhadauriya@redcloudcomputing.com
+
+// @license.name MIT License
+// @license.url https://opensource.org/licenses/MIT
+
 // @host localhost:8088
-// @BasePath /api/v1
+// @BasePath /
+// @securityDefinitions.apikey ApiKeyAuth
+// @in header
+// @name Authorization
+// @description JWT Authorization header using the Bearer scheme.
+// @schemes http https
+
+// main is the entry point for the 1View portal API server.
 func main() {
 	config, err := util.LoadConfig(".")
 	if err != nil {
