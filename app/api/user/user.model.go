@@ -49,6 +49,20 @@ type UserResponse struct {
 	RemovedAt     time.Time `json:"removed_at"`
 }
 
+type UpdateUserParams struct {
+	Username      string `json:"username"`
+	FullName      string `json:"full_name"`
+	Email         string `json:"email"`
+	PhoneNumber   string `json:"phone_number"`
+	Address       string `json:"address"`
+	DataImage     []byte `json:"data_image"`
+	OriginalImage string `json:"original_image"`
+}
+type UpdateUserImageParams struct {
+	DataImage     []byte `json:"data_image"`
+	OriginalImage string `json:"original_image"`
+}
+
 type loginUserRequest struct {
 	Username string `json:"username" binding:"required,alphanum"`
 	Password string `json:"password" binding:"required,min=6,max=25"`

@@ -72,6 +72,8 @@ type Querier interface {
 	UpdatePetLog(ctx context.Context, arg UpdatePetLogParams) error
 	UpdatePetSchedule(ctx context.Context, arg UpdatePetScheduleParams) error
 	UpdateService(ctx context.Context, arg UpdateServiceParams) error
+	UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error)
+	UpdateUserPassword(ctx context.Context, arg UpdateUserPasswordParams) (User, error)
 	UpdateVaccination(ctx context.Context, arg UpdateVaccinationParams) error
 	UpdateVerifyEmail(ctx context.Context, arg UpdateVerifyEmailParams) (VerifyEmail, error)
 	VerifiedUser(ctx context.Context, username string) (User, error)

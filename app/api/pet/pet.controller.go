@@ -2,8 +2,6 @@ package pet
 
 import (
 	"encoding/json"
-	"fmt"
-	"io/ioutil"
 	"net/http"
 	"strconv"
 
@@ -35,38 +33,20 @@ func (c *PetController) CreatePet(ctx *gin.Context) {
 		return
 	}
 
-	err := ctx.Request.ParseMultipartForm(10 << 20) // 10 MB max
+	dataImage, originalImageName, err := util.HandleImageUpload(ctx, "image")
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
 		return
 	}
-
-	// Handle image file
-	file, header, err := ctx.Request.FormFile("image")
-
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(fmt.Errorf("image is required")))
-		return
-	}
-	defer file.Close()
-
-	// Read the file content into a byte array
-	dataImage, err := ioutil.ReadAll(file)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to read data image"})
-		return
-	}
-	// get original image
 
 	authPayload, err := middleware.GetAuthorizationPayload(ctx)
 	if err != nil {
 		ctx.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
-	req.OriginalImage = header.Filename
-	req.DataImage = dataImage
 
-	fmt.Println(req.BOD)
+	req.OriginalImage = originalImageName
+	req.DataImage = dataImage
 
 	res, err := c.service.CreatePet(ctx, authPayload.Username, req)
 	if err != nil {
