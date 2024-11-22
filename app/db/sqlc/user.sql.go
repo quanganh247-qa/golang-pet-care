@@ -501,6 +501,84 @@ func (q *Queries) UpdateUserPassword(ctx context.Context, arg UpdateUserPassword
 	return i, err
 }
 
+const updateUser = `-- name: UpdateUser :one
+UPDATE users
+SET full_name = $2, email = $3, phone_number = $4, address = $5, data_image = $6, original_image = $7
+WHERE username = $1
+RETURNING id, username, hashed_password, full_name, email, phone_number, address, data_image, original_image, role, created_at, is_verified_email, removed_at
+`
+
+type UpdateUserParams struct {
+	Username      string      `json:"username"`
+	FullName      string      `json:"full_name"`
+	Email         string      `json:"email"`
+	PhoneNumber   pgtype.Text `json:"phone_number"`
+	Address       pgtype.Text `json:"address"`
+	DataImage     []byte      `json:"data_image"`
+	OriginalImage pgtype.Text `json:"original_image"`
+}
+
+func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error) {
+	row := q.db.QueryRow(ctx, updateUser,
+		arg.Username,
+		arg.FullName,
+		arg.Email,
+		arg.PhoneNumber,
+		arg.Address,
+		arg.DataImage,
+		arg.OriginalImage,
+	)
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.Username,
+		&i.HashedPassword,
+		&i.FullName,
+		&i.Email,
+		&i.PhoneNumber,
+		&i.Address,
+		&i.DataImage,
+		&i.OriginalImage,
+		&i.Role,
+		&i.CreatedAt,
+		&i.IsVerifiedEmail,
+		&i.RemovedAt,
+	)
+	return i, err
+}
+
+const updateUserPassword = `-- name: UpdateUserPassword :one
+UPDATE users
+SET hashed_password = $2
+WHERE username = $1 RETURNING id, username, hashed_password, full_name, email, phone_number, address, data_image, original_image, role, created_at, is_verified_email, removed_at
+`
+
+type UpdateUserPasswordParams struct {
+	Username       string `json:"username"`
+	HashedPassword string `json:"hashed_password"`
+}
+
+func (q *Queries) UpdateUserPassword(ctx context.Context, arg UpdateUserPasswordParams) (User, error) {
+	row := q.db.QueryRow(ctx, updateUserPassword, arg.Username, arg.HashedPassword)
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.Username,
+		&i.HashedPassword,
+		&i.FullName,
+		&i.Email,
+		&i.PhoneNumber,
+		&i.Address,
+		&i.DataImage,
+		&i.OriginalImage,
+		&i.Role,
+		&i.CreatedAt,
+		&i.IsVerifiedEmail,
+		&i.RemovedAt,
+	)
+	return i, err
+}
+
 const verifiedUser = `-- name: VerifiedUser :one
 UPDATE users
 SET is_verified_email = true
