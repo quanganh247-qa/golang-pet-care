@@ -14,6 +14,7 @@ import (
 const createUser = `-- name: CreateUser :one
 INSERT INTO users (username, hashed_password, full_name, email, phone_number, address, data_image, original_image, role, created_at, is_verified_email)
 <<<<<<< HEAD
+<<<<<<< HEAD
 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, NOW(), false)
 RETURNING id, username, hashed_password, full_name, email, phone_number, address, data_image, original_image, role, status, created_at, is_verified_email, removed_at
 `
@@ -30,10 +31,14 @@ type CreateUserParams struct {
 	Role           pgtype.Text `json:"role"`
 =======
 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, NOW(), $10)
+=======
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, NOW(), false)
+>>>>>>> eefcc96 (date time in log)
 RETURNING id
 `
 
 type CreateUserParams struct {
+<<<<<<< HEAD
 	Username        string      `json:"username"`
 	HashedPassword  string      `json:"hashed_password"`
 	FullName        string      `json:"full_name"`
@@ -45,6 +50,17 @@ type CreateUserParams struct {
 	Role            pgtype.Text `json:"role"`
 	IsVerifiedEmail pgtype.Bool `json:"is_verified_email"`
 >>>>>>> 0fb3f30 (user images)
+=======
+	Username       string      `json:"username"`
+	HashedPassword string      `json:"hashed_password"`
+	FullName       string      `json:"full_name"`
+	Email          string      `json:"email"`
+	PhoneNumber    pgtype.Text `json:"phone_number"`
+	Address        pgtype.Text `json:"address"`
+	DataImage      []byte      `json:"data_image"`
+	OriginalImage  pgtype.Text `json:"original_image"`
+	Role           pgtype.Text `json:"role"`
+>>>>>>> eefcc96 (date time in log)
 }
 
 func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (int64, error) {
@@ -58,6 +74,7 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (int64, 
 		arg.DataImage,
 		arg.OriginalImage,
 		arg.Role,
+<<<<<<< HEAD
 <<<<<<< HEAD
 	)
 	var i User
@@ -80,6 +97,8 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (int64, 
 	return i, err
 =======
 		arg.IsVerifiedEmail,
+=======
+>>>>>>> eefcc96 (date time in log)
 	)
 	var id int64
 	err := row.Scan(&id)

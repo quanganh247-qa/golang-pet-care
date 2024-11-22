@@ -1,10 +1,14 @@
 -- name: CreateUser :one
 INSERT INTO users (username, hashed_password, full_name, email, phone_number, address, data_image, original_image, role, created_at, is_verified_email)
 <<<<<<< HEAD
+<<<<<<< HEAD
 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, NOW(), false)
 RETURNING *;
 =======
 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, NOW(), $10)
+=======
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, NOW(), false)
+>>>>>>> eefcc96 (date time in log)
 RETURNING id;
 >>>>>>> 0fb3f30 (user images)
 
