@@ -183,6 +183,7 @@ type UpdateUserImageParams struct {
 type loginUserRequest struct {
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	Username   string `json:"username" binding:"required,alphanum"`
 	Password   string `json:"password" binding:"required,min=6,max=25"`
 =======
@@ -197,6 +198,10 @@ type loginUserRequest struct {
 >>>>>>> 290baeb (fixed vaccine routes)
 =======
 >>>>>>> c3c833d (login api)
+=======
+	Username   string `json:"username" binding:"required,alphanum"`
+	Password   string `json:"password" binding:"required,min=6,max=25"`
+>>>>>>> 290baeb (fixed vaccine routes)
 	Token      string `json:"token"`
 	DeviceType string `json:"device_type"`
 }
@@ -276,6 +281,7 @@ type VerrifyInput struct {
 	SecretCode string `json:"secret_code"`
 	Username   string `json:"username"`
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 	EmailId    int64  `json:"email_id"`
 =======
@@ -292,6 +298,8 @@ type VerrifyInput struct {
 	SecretCode int64  `json:"secret_code"`
 	Username   string `json:"username"`
 >>>>>>> 6610455 (feat: redis queue)
+=======
+>>>>>>> 290baeb (fixed vaccine routes)
 }
 
 type VerrifyEmailTxResult struct {

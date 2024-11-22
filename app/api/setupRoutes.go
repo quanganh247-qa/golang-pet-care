@@ -344,7 +344,11 @@ func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor) {
 >>>>>>> c8bec46 (feat: add chatbot, room management, and pet allergy features)
 =======
 	notification.Routes(routerGroup)
+<<<<<<< HEAD
 >>>>>>> 9fd7fc8 (feat: validate notification schema and APIs)
+=======
+	vaccination.Routes(routerGroup)
+>>>>>>> 290baeb (fixed vaccine routes)
 
 	server.Router = routerDefault
 }

@@ -345,6 +345,7 @@ func (controller *UserController) verifyEmail(ctx *gin.Context) {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	var req VerrifyInput
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, util.ErrorValidator(err))
@@ -377,11 +378,15 @@ func (controller *UserController) verifyEmail(ctx *gin.Context) {
 <<<<<<< HEAD
 =======
 	var req VerrifyEmailTxParams
+=======
+	var req VerrifyInput
+>>>>>>> 290baeb (fixed vaccine routes)
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, util.ErrorValidator(err))
 		return
 	}
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 >>>>>>> 9d28896 (image pet)
 	// convert strign to int 64
@@ -424,6 +429,8 @@ func (controller *UserController) verifyEmail(ctx *gin.Context) {
 	err := controller.service.verifyEmailService(ctx, req)
 >>>>>>> edfe5ad (OTP verifycation)
 =======
+=======
+>>>>>>> 290baeb (fixed vaccine routes)
 	otpInt, err := strconv.ParseInt(req.SecretCode, 10, 64)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, util.ErrorValidator(err))
@@ -436,10 +443,13 @@ func (controller *UserController) verifyEmail(ctx *gin.Context) {
 	}
 
 	err = controller.service.verifyEmailService(ctx, arg)
+<<<<<<< HEAD
 >>>>>>> 290baeb (fixed vaccine routes)
 =======
 	err := controller.service.verifyEmailService(ctx, req)
 >>>>>>> edfe5ad (OTP verifycation)
+=======
+>>>>>>> 290baeb (fixed vaccine routes)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
 		return

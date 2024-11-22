@@ -394,7 +394,7 @@ func (server *UserService) createUserService(ctx *gin.Context, req createUserReq
 			}
 		}
 
-		otp = util.RandomInt(1000000, 9999999)
+		otp = util.RandomInt(100000, 999999)
 		if err != nil {
 			return fmt.Errorf("generate otp error: %v", err)
 		}
@@ -546,6 +546,9 @@ func (server *UserService) getUserDetailsService(ctx *gin.Context, username stri
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 290baeb (fixed vaccine routes)
 =======
 >>>>>>> 290baeb (fixed vaccine routes)
 		Role:          user.Role,
