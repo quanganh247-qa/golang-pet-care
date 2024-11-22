@@ -65,12 +65,17 @@ func Routes(routerGroup middleware.RouterGroup, taskDistributor worker.TaskDistr
 		authRoute.GET("/refresh_token", userApi.controller.getAccessToken)
 		authRoute.POST("/logout", userApi.controller.logoutUser)
 <<<<<<< HEAD
+<<<<<<< HEAD
 		authRoute.PUT("/", userApi.controller.updatetUser)
 		authRoute.PUT("/avatar", userApi.controller.updatetUserAvatar)
 		user.PUT("/reset-password", userApi.controller.ForgotPassword)
 		authRoute.PUT("/change-password", userApi.controller.UpdatePassword)
 =======
 >>>>>>> bed48f6 (route logout)
+=======
+		authRoute.PUT("/", userApi.controller.updatetUser)
+		authRoute.PUT("/avatar", userApi.controller.updatetUserAvatar)
+>>>>>>> 473cd1d (uplaod image method)
 
 <<<<<<< HEAD
 		user.GET("/sessioninfo", userApi.controller.sessioninfo)
