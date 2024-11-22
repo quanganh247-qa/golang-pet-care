@@ -110,6 +110,7 @@ func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor) {
 	disease.Routes(routerGroup)
 	petschedule.Routes(routerGroup)
 	notification.Routes(routerGroup)
+	vaccination.Routes(routerGroup)
 
 	server.Router = routerDefault
 >>>>>>> 79a3bcc (medicine api)

@@ -255,6 +255,7 @@ func (controller *UserController) getAccessToken(ctx *gin.Context) {
 
 func (controller *UserController) verifyEmail(ctx *gin.Context) {
 <<<<<<< HEAD
+<<<<<<< HEAD
 	var req VerrifyInput
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, util.ErrorValidator(err))
@@ -275,11 +276,15 @@ func (controller *UserController) verifyEmail(ctx *gin.Context) {
 	err = controller.service.verifyEmailService(ctx, arg)
 =======
 	var req VerrifyEmailTxParams
+=======
+	var req VerrifyInput
+>>>>>>> 290baeb (fixed vaccine routes)
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, util.ErrorValidator(err))
 		return
 	}
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 	// convert strign to int 64
 	emailIDInt, err := strconv.ParseInt(emailID, 10, 64)
@@ -303,6 +308,20 @@ func (controller *UserController) verifyEmail(ctx *gin.Context) {
 =======
 	err := controller.service.verifyEmailService(ctx, req)
 >>>>>>> edfe5ad (OTP verifycation)
+=======
+	otpInt, err := strconv.ParseInt(req.SecretCode, 10, 64)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, util.ErrorValidator(err))
+		return
+	}
+
+	arg := VerrifyEmailTxParams{
+		SecretCode: otpInt,
+		Username:   req.Username,
+	}
+
+	err = controller.service.verifyEmailService(ctx, arg)
+>>>>>>> 290baeb (fixed vaccine routes)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
 		return

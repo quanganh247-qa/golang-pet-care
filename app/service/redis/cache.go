@@ -100,6 +100,7 @@ func (c *ClientType) UserInfoLoadCache(username string) (*UserInfo, error) {
 <<<<<<< HEAD
 =======
 
+<<<<<<< HEAD
 // func (c *ClientType) OTPCache(username string) (*userInfo, error) {
 // 	otpKey := fmt.Sprintf("%s:%s", OTP_KEY, username)
 // 	var otp int64
@@ -135,6 +136,8 @@ func (c *ClientType) UserInfoLoadCache(username string) (*UserInfo, error) {
 // }
 >>>>>>> 79a3bcc (medicine api)
 
+=======
+>>>>>>> 290baeb (fixed vaccine routes)
 func (client *ClientType) RemoveUserInfoCache(username string) {
 	userInfoKey := fmt.Sprintf("%s:%s", USER_INFO_KEY, username)
 	client.RemoveCacheByKey(userInfoKey)
