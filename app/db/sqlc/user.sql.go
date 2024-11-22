@@ -13,21 +13,20 @@ import (
 
 const createUser = `-- name: CreateUser :one
 INSERT INTO users (username, hashed_password, full_name, email, phone_number, address, data_image, original_image, role, created_at, is_verified_email)
-VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, NOW(), $10)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, NOW(), false)
 RETURNING id
 `
 
 type CreateUserParams struct {
-	Username        string      `json:"username"`
-	HashedPassword  string      `json:"hashed_password"`
-	FullName        string      `json:"full_name"`
-	Email           string      `json:"email"`
-	PhoneNumber     pgtype.Text `json:"phone_number"`
-	Address         pgtype.Text `json:"address"`
-	DataImage       []byte      `json:"data_image"`
-	OriginalImage   pgtype.Text `json:"original_image"`
-	Role            pgtype.Text `json:"role"`
-	IsVerifiedEmail pgtype.Bool `json:"is_verified_email"`
+	Username       string      `json:"username"`
+	HashedPassword string      `json:"hashed_password"`
+	FullName       string      `json:"full_name"`
+	Email          string      `json:"email"`
+	PhoneNumber    pgtype.Text `json:"phone_number"`
+	Address        pgtype.Text `json:"address"`
+	DataImage      []byte      `json:"data_image"`
+	OriginalImage  pgtype.Text `json:"original_image"`
+	Role           pgtype.Text `json:"role"`
 }
 
 func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (int64, error) {
@@ -41,7 +40,6 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (int64, 
 		arg.DataImage,
 		arg.OriginalImage,
 		arg.Role,
-		arg.IsVerifiedEmail,
 	)
 	var id int64
 	err := row.Scan(&id)

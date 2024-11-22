@@ -33,6 +33,19 @@ type UserControllerInterface interface {
 	resendOTP(ctx *gin.Context)
 }
 
+// createUser godoc
+// @Summary Create a new user
+// @Description Create a new user with the input payload
+// @Tags user
+// @Accept  json
+// @Produce  json
+// @Param data formData string true "User data"
+// @Param image formData file true "User image"
+// @Success 201 {object} VerrifyEmailTxParams
+// @Router /user [post]
+// @Security ApiKeyAuth
+// @in header
+// @name Authorization
 func (controller *UserController) createUser(ctx *gin.Context) {
 	var req createUserRequest
 
