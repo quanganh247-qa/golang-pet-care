@@ -33,6 +33,8 @@ func Routes(routerGroup middleware.RouterGroup, taskDistributor worker.TaskDistr
 		user.POST("/resend_otp/:username", userApi.controller.resendOTP)
 		authRoute.GET("/refresh_token", userApi.controller.getAccessToken)
 		authRoute.POST("/logout", userApi.controller.logoutUser)
+		authRoute.PUT("/", userApi.controller.updatetUser)
+		authRoute.PUT("/avatar", userApi.controller.updatetUserAvatar)
 
 		// Doctor
 		authRoute.POST("/create-doctor", userApi.controller.createDoctor)

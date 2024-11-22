@@ -3,8 +3,6 @@ package user
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
-	"io/ioutil"
 	"net/http"
 	"strconv"
 
@@ -31,6 +29,8 @@ type UserControllerInterface interface {
 	getAllTimeSlots(ctx *gin.Context)
 	updateDoctorAvailableTime(ctx *gin.Context)
 	resendOTP(ctx *gin.Context)
+	updatetUser(ctx *gin.Context)
+	updatetUserAvatar(ctx *gin.Context)
 }
 
 // createUser godoc
@@ -56,31 +56,12 @@ func (controller *UserController) createUser(ctx *gin.Context) {
 		return
 	}
 
-	err := ctx.Request.ParseMultipartForm(10 << 20) // 10 MB max
+	// Use the helper function to handle the image upload
+	dataImage, originalImageName, err := util.HandleImageUpload(ctx, "image")
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
 		return
 	}
-
-	// Handle image file
-	file, header, err := ctx.Request.FormFile("image")
-
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(fmt.Errorf("image is required")))
-		return
-	}
-	defer file.Close()
-
-	// Get the original image name
-	originalImageName := header.Filename
-
-	// Read the file content into a byte array
-	dataImage, err := ioutil.ReadAll(file)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to read data image"})
-		return
-	}
-	// get original image
 
 	req.DataImage = dataImage
 	req.OriginalImage = originalImageName
@@ -362,4 +343,52 @@ func (controller *UserController) updateDoctorAvailableTime(ctx *gin.Context) {
 		return
 	}
 	ctx.JSON(http.StatusOK, util.SuccessResponse("Updated timeslot successfull", nil))
+}
+
+func (controller *UserController) updatetUser(ctx *gin.Context) {
+
+	var arg UpdateUserParams
+	if err := ctx.ShouldBindJSON(&arg); err != nil {
+		ctx.JSON(http.StatusBadRequest, util.ErrorValidator(err))
+		return
+	}
+
+	authPayload, err := middleware.GetAuthorizationPayload(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
+		return
+	}
+	res, err := controller.service.updateUserService(ctx, authPayload.Username, arg)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
+		return
+	}
+	ctx.JSON(http.StatusOK, util.SuccessResponse("Resend OTP successfull", res))
+}
+
+func (controller *UserController) updatetUserAvatar(ctx *gin.Context) {
+
+	// Use the helper function to handle the image upload
+	dataImage, originalImageName, err := util.HandleImageUpload(ctx, "image")
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
+		return
+	}
+
+	req := UpdateUserImageParams{
+		DataImage:     dataImage,
+		OriginalImage: originalImageName,
+	}
+
+	authPayload, err := middleware.GetAuthorizationPayload(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
+		return
+	}
+	res, err := controller.service.updateUserImageService(ctx, authPayload.Username, req)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
+		return
+	}
+	ctx.JSON(http.StatusOK, util.SuccessResponse("Success", res))
 }
