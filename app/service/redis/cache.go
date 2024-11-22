@@ -91,40 +91,6 @@ func (c *ClientType) UserInfoLoadCache(username string) (*UserInfo, error) {
 	return &userInformation, nil
 }
 
-// func (c *ClientType) OTPCache(username string) (*userInfo, error) {
-// 	otpKey := fmt.Sprintf("%s:%s", OTP_KEY, username)
-// 	var otp int64
-// 	err := c.GetWithBackground(otpKey, otp)
-// 	if err != nil {
-// 		log.Printf("Error when get cache for key %s: %v", userKey, err)
-// 		userData, err := db.StoreDB.GetUser(ctxRedis, username)
-// 		if err != nil {
-// 			if err == pgx.ErrNoRows {
-// 				return nil, fmt.Errorf("Không tìm thấy user với username = %s", username)
-// 			}
-// 			return nil, err
-// 		}
-
-// 		userRes := userInfo{
-// 			UserID:        userData.ID,
-// 			Username:      userData.Username,
-// 			Email:         userData.Email,
-// 			FullName:      userData.FullName,
-// 			DataImage:     string(userData.DataImage),
-// 			OriginalImage: userData.OriginalImage.String,
-// 			PhoneNumber:   userData.PhoneNumber.String,
-// 			Address:       userData.Address.String,
-// 			Role:          userData.Role.String,
-// 		}
-// 		err = c.SetWithBackground(userKey, &userRes, time.Hour*12)
-// 		if err != nil {
-// 			log.Printf("Error when set cache for key %s: %v", userKey, err)
-// 		}
-// 		return &userRes, nil
-// 	}
-// 	return &userInformation, nil
-// }
-
 func (client *ClientType) RemoveUserInfoCache(username string) {
 	userInfoKey := fmt.Sprintf("%s:%s", USER_INFO_KEY, username)
 	client.RemoveCacheByKey(userInfoKey)
