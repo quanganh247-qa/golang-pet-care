@@ -74,7 +74,7 @@ func (server *UserService) createUserService(ctx *gin.Context, req createUserReq
 			}
 		}
 
-		otp = util.RandomInt(1000000, 9999999)
+		otp = util.RandomInt(100000, 999999)
 		if err != nil {
 			return fmt.Errorf("generate otp error: %v", err)
 		}
@@ -133,6 +133,7 @@ func (server *UserService) getUserDetailsService(ctx *gin.Context, username stri
 	return &UserResponse{
 		Username:      user.Username,
 		FullName:      user.FullName,
+		Role:          user.Role,
 		Email:         user.Email,
 		PhoneNumber:   user.PhoneNumber,
 		Address:       user.Address,
@@ -251,7 +252,7 @@ func (server *UserService) verifyEmailService(ctx *gin.Context, arg VerrifyEmail
 }
 
 func (service *UserService) resendOTPService(ctx *gin.Context, username string) (*VerrifyEmailTxParams, error) {
-	otp := util.RandomInt(1000000, 9999999)
+	otp := util.RandomInt(100000, 999999)
 	if err := service.redis.StoreOTPInRedis(username, otp); err != nil {
 		ctx.JSON(http.StatusInternalServerError, "failed to store otp in redis")
 		return nil, fmt.Errorf("failed to store otp in redis: %w", err)

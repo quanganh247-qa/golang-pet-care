@@ -1,23 +1,25 @@
 package vaccination
 
 import (
-	"github.com/gin-gonic/gin"
 	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
+	"github.com/quanganh247-qa/go-blog-be/app/middleware"
 )
 
-func Routes(router *gin.Engine, store db.Store) {
+func Routes(routerGroup middleware.RouterGroup) {
+
+	vaccination := routerGroup.RouterDefault.Group("/vaccination")
+	authRoute := routerGroup.RouterAuth(vaccination)
+
 	vaccinationController := &VaccinationController{
 		service: &VaccinationService{
-			storeDB: store,
+			storeDB: db.StoreDB,
 		},
 	}
-
-	vaccination := router.Group("/vaccination")
 	{
-		vaccination.POST("/create", vaccinationController.CreateVaccination)
-		vaccination.GET("/:vaccination_id", vaccinationController.GetVaccinationByID)
-		vaccination.GET("/pet/:pet_id", vaccinationController.ListVaccinationsByPetID)
-		vaccination.PUT("/:vaccination_id", vaccinationController.UpdateVaccination)
-		vaccination.DELETE("/:vaccination_id", vaccinationController.DeleteVaccination)
+		authRoute.POST("/create", vaccinationController.CreateVaccination)
+		authRoute.GET("/:vaccination_id", vaccinationController.GetVaccinationByID)
+		authRoute.GET("/pet/:pet_id", vaccinationController.ListVaccinationsByPetID)
+		authRoute.PUT("/:vaccination_id", vaccinationController.UpdateVaccination)
+		authRoute.DELETE("/:vaccination_id", vaccinationController.DeleteVaccination)
 	}
 }

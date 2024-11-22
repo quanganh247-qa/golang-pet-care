@@ -64,9 +64,8 @@ type UpdateUserImageParams struct {
 }
 
 type loginUserRequest struct {
-	Username string `json:"username" binding:"required,alphanum"`
-	Password string `json:"password" binding:"required,min=6,max=25"`
-	// Token      string `json:"token" binding:"required"`
+	Username   string `json:"username" binding:"required,alphanum"`
+	Password   string `json:"password" binding:"required,min=6,max=25"`
 	Token      string `json:"token"`
 	DeviceType string `json:"device_type"`
 }
@@ -119,6 +118,11 @@ type DoctorScheduleResponse struct {
 
 type VerrifyEmailTxParams struct {
 	SecretCode int64  `json:"secret_code"`
+	Username   string `json:"username"`
+}
+
+type VerrifyInput struct {
+	SecretCode string `json:"secret_code"`
 	Username   string `json:"username"`
 }
 

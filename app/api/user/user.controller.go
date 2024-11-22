@@ -174,13 +174,24 @@ func (controller *UserController) getAccessToken(ctx *gin.Context) {
 }
 
 func (controller *UserController) verifyEmail(ctx *gin.Context) {
-	var req VerrifyEmailTxParams
+	var req VerrifyInput
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, util.ErrorValidator(err))
 		return
 	}
 
-	err := controller.service.verifyEmailService(ctx, req)
+	otpInt, err := strconv.ParseInt(req.SecretCode, 10, 64)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, util.ErrorValidator(err))
+		return
+	}
+
+	arg := VerrifyEmailTxParams{
+		SecretCode: otpInt,
+		Username:   req.Username,
+	}
+
+	err = controller.service.verifyEmailService(ctx, arg)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
 		return
