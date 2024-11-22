@@ -170,6 +170,8 @@ func (server *UserService) createUserService(ctx *gin.Context, req createUserReq
 >>>>>>> edfe5ad (OTP verifycation)
 =======
 	resendOTPService(ctx *gin.Context, username string) (*VerrifyEmailTxParams, error)
+	updateUserService(ctx *gin.Context, username string, arg UpdateUserParams) (*UserResponse, error)
+	updateUserImageService(ctx *gin.Context, username string, arg UpdateUserImageParams) (*UserResponse, error)
 }
 
 >>>>>>> edfe5ad (OTP verifycation)
@@ -1129,6 +1131,123 @@ func (service *UserService) resendOTPService(ctx *gin.Context, username string) 
 }
 
 func (service *UserService) updateUserService(ctx *gin.Context, username string, arg UpdateUserParams) (*UserResponse, error) {
+<<<<<<< HEAD
+=======
+
+	var res db.User
+
+	user, err := service.storeDB.GetUser(ctx, username)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			ctx.JSON(http.StatusNotFound, "user not found")
+			return nil, fmt.Errorf("user not found")
+		}
+		ctx.JSON(http.StatusInternalServerError, "internal server error")
+		return nil, fmt.Errorf("internal server error: %v", err)
+	}
+
+	if arg.Username != "" {
+		user.Username = arg.Username
+	}
+	if arg.FullName != "" {
+		user.FullName = arg.FullName
+	}
+	if arg.Email != "" {
+		user.Email = arg.Email
+	}
+	if arg.PhoneNumber != "" {
+		user.PhoneNumber = pgtype.Text{String: arg.PhoneNumber, Valid: true}
+	}
+	if arg.Address != "" {
+		user.Address = pgtype.Text{String: arg.Address, Valid: true}
+	}
+	if arg.DataImage != nil {
+		user.DataImage = arg.DataImage
+	}
+	if arg.OriginalImage != "" {
+		user.OriginalImage = pgtype.Text{String: arg.OriginalImage, Valid: true}
+	}
+
+	req := db.UpdateUserParams{
+		Username:      user.Username,
+		FullName:      user.FullName,
+		Email:         user.Email,
+		PhoneNumber:   pgtype.Text{String: user.PhoneNumber.String, Valid: true},
+		Address:       pgtype.Text{String: user.Address.String, Valid: true},
+		DataImage:     user.DataImage,
+		OriginalImage: pgtype.Text{String: user.OriginalImage.String, Valid: true},
+	}
+
+	err = service.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
+		res, err = q.UpdateUser(ctx, req)
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, "internal server error")
+			return fmt.Errorf("internal server error: %v", err)
+		}
+		return nil
+	})
+
+	go service.redis.RemoveUserInfoCache(username)
+
+	return &UserResponse{
+		Username:      res.Username,
+		FullName:      res.FullName,
+		Email:         res.Email,
+		PhoneNumber:   res.PhoneNumber.String,
+		Address:       res.Address.String,
+		DataImage:     res.DataImage,
+		OriginalImage: res.OriginalImage.String,
+	}, nil
+}
+
+func (service *UserService) updateUserImageService(ctx *gin.Context, username string, arg UpdateUserImageParams) (*UserResponse, error) {
+	var res db.User
+
+	user, err := service.storeDB.GetUser(ctx, username)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			ctx.JSON(http.StatusNotFound, "user not found")
+			return nil, fmt.Errorf("user not found")
+		}
+		ctx.JSON(http.StatusInternalServerError, "internal server error")
+		return nil, fmt.Errorf("internal server error: %v", err)
+	}
+
+	req := db.UpdateUserParams{
+		Username:      user.Username,
+		FullName:      user.FullName,
+		Email:         user.Email,
+		PhoneNumber:   pgtype.Text{String: user.PhoneNumber.String, Valid: true},
+		Address:       pgtype.Text{String: user.Address.String, Valid: true},
+		DataImage:     arg.DataImage,
+		OriginalImage: pgtype.Text{String: arg.OriginalImage, Valid: true},
+	}
+
+	err = service.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
+		res, err = q.UpdateUser(ctx, req)
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, "internal server error")
+			return fmt.Errorf("internal server error: %v", err)
+		}
+		return nil
+	})
+
+	// remove cache
+	go service.redis.RemoveUserInfoCache(username)
+
+	return &UserResponse{
+		Username:      res.Username,
+		FullName:      res.FullName,
+		Email:         res.Email,
+		PhoneNumber:   res.PhoneNumber.String,
+		Address:       res.Address.String,
+		DataImage:     res.DataImage,
+		OriginalImage: res.OriginalImage.String,
+	}, nil
+}
+
+func (server *UserService) createDoctorService(ctx *gin.Context, arg InsertDoctorRequest, username string) (*DoctorResponse, error) {
+>>>>>>> 473cd1d (uplaod image method)
 
 	var res db.User
 	var req db.UpdateUserParams

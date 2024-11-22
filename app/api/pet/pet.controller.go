@@ -7,6 +7,7 @@ import (
 <<<<<<< HEAD
 	"encoding/json"
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 =======
 	"encoding/json"
@@ -29,6 +30,8 @@ import (
 =======
 	"io/ioutil"
 >>>>>>> 9d28896 (image pet)
+=======
+>>>>>>> 473cd1d (uplaod image method)
 	"net/http"
 	"strconv"
 
@@ -137,12 +140,13 @@ func (c *PetController) CreatePet(ctx *gin.Context) {
 =======
 >>>>>>> 67140c6 (updated create pet)
 
-	err := ctx.Request.ParseMultipartForm(10 << 20) // 10 MB max
+	dataImage, originalImageName, err := util.HandleImageUpload(ctx, "image")
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
 		return
 	}
 
+<<<<<<< HEAD
 >>>>>>> 9d28896 (image pet)
 	// Handle image file
 	file, header, err := ctx.Request.FormFile("image")
@@ -168,11 +172,14 @@ func (c *PetController) CreatePet(ctx *gin.Context) {
 =======
 
 >>>>>>> 9d28896 (image pet)
+=======
+>>>>>>> 473cd1d (uplaod image method)
 	authPayload, err := middleware.GetAuthorizationPayload(ctx)
 	if err != nil {
 		ctx.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -215,8 +222,11 @@ func (c *PetController) CreatePet(ctx *gin.Context) {
 >>>>>>> 67140c6 (updated create pet)
 	req.OriginalImage = header.Filename
 	req.DataImage = dataImage
+=======
+>>>>>>> 473cd1d (uplaod image method)
 
-	fmt.Println(req.BOD)
+	req.OriginalImage = originalImageName
+	req.DataImage = dataImage
 
 	res, err := c.service.CreatePet(ctx, authPayload.Username, req)
 	if err != nil {

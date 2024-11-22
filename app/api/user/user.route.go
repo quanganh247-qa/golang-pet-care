@@ -103,6 +103,7 @@ func Routes(routerGroup middleware.RouterGroup, taskDistributor worker.TaskDistr
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 		authRoute.PUT("/", userApi.controller.updatetUser)
 		authRoute.PUT("/avatar", userApi.controller.updatetUserAvatar)
 <<<<<<< HEAD
@@ -124,6 +125,10 @@ func Routes(routerGroup middleware.RouterGroup, taskDistributor worker.TaskDistr
 >>>>>>> a2c21c8 (update pass)
 =======
 >>>>>>> bed48f6 (route logout)
+=======
+		authRoute.PUT("/", userApi.controller.updatetUser)
+		authRoute.PUT("/avatar", userApi.controller.updatetUserAvatar)
+>>>>>>> 473cd1d (uplaod image method)
 
 <<<<<<< HEAD
 <<<<<<< HEAD

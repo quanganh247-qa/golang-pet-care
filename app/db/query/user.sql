@@ -55,10 +55,24 @@ SELECT * FROM users ;
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 -- name: UpdateUser :one
 UPDATE users
 SET full_name = $2, email = $3, phone_number = $4, address = $5
 =======
+=======
+-- name: UpdateUser :one
+UPDATE users
+SET full_name = $2, email = $3, phone_number = $4, address = $5, data_image = $6, original_image = $7
+WHERE username = $1
+RETURNING *;
+
+-- name: UpdateUserPassword :one
+UPDATE users
+SET hashed_password = $2
+WHERE username = $1 RETURNING *;
+
+>>>>>>> 473cd1d (uplaod image method)
 -- name: VerifiedUser :one
 UPDATE users
 <<<<<<< HEAD
