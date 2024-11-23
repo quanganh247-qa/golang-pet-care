@@ -13,6 +13,7 @@ import (
 
 const listMedicinesByPet = `-- name: ListMedicinesByPet :many
 SELECT 
+    m.usage AS medicine_usage,
     m.name AS medicine_name,
     m.description AS medicine_description,
     pm.dosage,
@@ -44,6 +45,7 @@ type ListMedicinesByPetParams struct {
 }
 
 type ListMedicinesByPetRow struct {
+	MedicineUsage       pgtype.Text `json:"medicine_usage"`
 	MedicineName        string      `json:"medicine_name"`
 	MedicineDescription pgtype.Text `json:"medicine_description"`
 	Dosage              pgtype.Text `json:"dosage"`
@@ -70,6 +72,7 @@ func (q *Queries) ListMedicinesByPet(ctx context.Context, arg ListMedicinesByPet
 	for rows.Next() {
 		var i ListMedicinesByPetRow
 		if err := rows.Scan(
+			&i.MedicineUsage,
 			&i.MedicineName,
 			&i.MedicineDescription,
 			&i.Dosage,
