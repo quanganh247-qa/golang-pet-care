@@ -1,5 +1,6 @@
 -- name: ListMedicinesByPet :many
 SELECT 
+    m.usage AS medicine_usage,
     m.name AS medicine_name,
     m.description AS medicine_description,
     pm.dosage,

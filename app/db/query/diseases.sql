@@ -29,6 +29,8 @@ SELECT
     tp.description AS phase_description,
     tp.duration AS phase_duration,
     tp.notes AS phase_notes,
+    m.id AS medicine_id,
+    m.usage AS medicine_usage,
     m.name AS medicine_name,
     m.description AS medicine_description,
     COALESCE(pm.dosage, m.dosage) AS dosage,
