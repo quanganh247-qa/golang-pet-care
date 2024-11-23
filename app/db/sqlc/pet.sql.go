@@ -528,7 +528,7 @@ type UpdatePetParams struct {
 	LastCheckupDate pgtype.Date   `json:"last_checkup_date"`
 =======
 UPDATE Pet
-SET Name = $2, Type = $3, Breed = $4, Age = $5, Weight = $6, Gender = $7, HealthNotes = $8, data_image = $9, is_active = $10
+SET Name = $2, Type = $3, Breed = $4, Age = $5, Weight = $6, Gender = $7, HealthNotes = $8, birth_date = $9
 WHERE PetID = $1
 `
 
@@ -541,9 +541,13 @@ type UpdatePetParams struct {
 	Weight      pgtype.Float8 `json:"weight"`
 	Gender      pgtype.Text   `json:"gender"`
 	Healthnotes pgtype.Text   `json:"healthnotes"`
+<<<<<<< HEAD
 	DataImage   []byte        `json:"data_image"`
 	IsActive    pgtype.Bool   `json:"is_active"`
 >>>>>>> 0fb3f30 (user images)
+=======
+	BirthDate   pgtype.Date   `json:"birth_date"`
+>>>>>>> 5ea33aa (PUT pet info)
 }
 
 func (q *Queries) UpdatePet(ctx context.Context, arg UpdatePetParams) error {
@@ -556,6 +560,7 @@ func (q *Queries) UpdatePet(ctx context.Context, arg UpdatePetParams) error {
 		arg.Gender,
 		arg.Healthnotes,
 <<<<<<< HEAD
+<<<<<<< HEAD
 		arg.Weight,
 		arg.BirthDate,
 		arg.MicrochipNumber,
@@ -564,16 +569,23 @@ func (q *Queries) UpdatePet(ctx context.Context, arg UpdatePetParams) error {
 		arg.DataImage,
 		arg.IsActive,
 >>>>>>> 0fb3f30 (user images)
+=======
+		arg.BirthDate,
+>>>>>>> 5ea33aa (PUT pet info)
 	)
 	return err
 }
 
 const updatePetAvatar = `-- name: UpdatePetAvatar :exec
+<<<<<<< HEAD
 UPDATE pets
 SET 
     data_image = $2,
     original_image = $3
 WHERE petid = $1
+=======
+UPDATE Pet SET data_image = $2, original_image = $3 WHERE PetID = $1 and is_active is true
+>>>>>>> 5ea33aa (PUT pet info)
 `
 
 type UpdatePetAvatarParams struct {
