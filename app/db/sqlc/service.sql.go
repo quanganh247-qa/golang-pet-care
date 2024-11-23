@@ -104,7 +104,8 @@ func (q *Queries) GetAllServices(ctx context.Context, arg GetAllServicesParams) 
 }
 
 const getServiceByID = `-- name: GetServiceByID :one
-SELECT serviceid, typeid, name, price, duration, description, isavailable, removed_at FROM Service WHERE serviceID = $1 LIMIT 1
+SELECT serviceid, typeid, name, price, duration, description, isavailable, removed_at FROM Service 
+WHERE serviceID = $1 LIMIT 1
 `
 
 func (q *Queries) GetServiceByID(ctx context.Context, serviceid int64) (Service, error) {

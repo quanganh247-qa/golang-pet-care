@@ -24,7 +24,7 @@ func Routes(routerGroup middleware.RouterGroup) {
 		authRoute.GET("/:petid", petApi.controller.GetPetByID)
 		authRoute.GET("/list", petApi.controller.ListPets)
 		authRoute.GET("/", petApi.controller.ListPetsByUsername)
-		authRoute.PUT("/update/:petid", petApi.controller.UpdatePet)
+		authRoute.PUT("/:petid", petApi.controller.UpdatePet)
 		authRoute.DELETE("/delete/:petid", petApi.controller.DeletePet)
 
 		// Pet logs
