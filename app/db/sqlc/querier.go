@@ -6,8 +6,6 @@ package db
 
 import (
 	"context"
-
-	"github.com/jackc/pgx/v5/pgtype"
 )
 
 type Querier interface {
@@ -801,6 +799,7 @@ type Querier interface {
 >>>>>>> 6610455 (feat: redis queue)
 	ListPets(ctx context.Context, arg ListPetsParams) ([]Pet, error)
 	ListPetsByUsername(ctx context.Context, arg ListPetsByUsernameParams) ([]Pet, error)
+<<<<<<< HEAD
 	ListTreatmentsByPet(ctx context.Context, arg ListTreatmentsByPetParams) ([]PetTreatment, error)
 	ListVaccinationsByPetID(ctx context.Context, arg ListVaccinationsByPetIDParams) ([]Vaccination, error)
 	MarkNotificationAsRead(ctx context.Context, id int64) error
@@ -837,6 +836,9 @@ type Querier interface {
 	ReleaseRoom(ctx context.Context, arg ReleaseRoomParams) error
 	RemoveItemFromCart(ctx context.Context, arg RemoveItemFromCartParams) error
 <<<<<<< HEAD
+=======
+	ListVaccinationsByPetID(ctx context.Context, arg ListVaccinationsByPetIDParams) ([]Vaccination, error)
+>>>>>>> 23e695e (updated pagination for vaccine)
 	SetPetInactive(ctx context.Context, arg SetPetInactiveParams) error
 <<<<<<< HEAD
 <<<<<<< HEAD

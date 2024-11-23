@@ -302,6 +302,7 @@ func (s *PetScheduleService) GetAllSchedulesByPetService(ctx *gin.Context, petID
 			EndDate:          r.EndDate.Time.Format(time.RFC3339),
 			Notes:            r.Notes.String,
 			IsActive:         r.IsActive.Bool,
+<<<<<<< HEAD
 =======
 			ID:           r.ID,
 			PetID:        r.PetID.Int64,
@@ -320,6 +321,8 @@ func (s *PetScheduleService) GetAllSchedulesByPetService(ctx *gin.Context, petID
 			EndDate:          r.EndDate.Time.Format(time.RFC3339),
 			Notes:            r.Notes.String,
 >>>>>>> 3835eb4 (update pet_schedule api)
+=======
+>>>>>>> 23e695e (updated pagination for vaccine)
 		})
 	}
 
@@ -357,6 +360,7 @@ func (s *PetScheduleService) ListPetSchedulesByUsernameService(ctx *gin.Context,
 			EndDate:          schedule.EndDate.Time.Format(time.RFC3339),
 			Notes:            schedule.Notes.String,
 			IsActive:         schedule.IsActive.Bool,
+<<<<<<< HEAD
 =======
 			ID:           schedule.ID,
 			PetID:        schedule.PetID.Int64,
@@ -375,6 +379,8 @@ func (s *PetScheduleService) ListPetSchedulesByUsernameService(ctx *gin.Context,
 			EndDate:          schedule.EndDate.Time.Format(time.RFC3339),
 			Notes:            schedule.Notes.String,
 >>>>>>> 3835eb4 (update pet_schedule api)
+=======
+>>>>>>> 23e695e (updated pagination for vaccine)
 		})
 
 	}
