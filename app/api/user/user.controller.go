@@ -755,10 +755,14 @@ func (controller *UserController) updatetUser(ctx *gin.Context) {
 		return
 	}
 <<<<<<< HEAD
+<<<<<<< HEAD
 	ctx.JSON(http.StatusOK, util.SuccessResponse("Update user succesfully", res))
 =======
 	ctx.JSON(http.StatusOK, util.SuccessResponse("Resend OTP successfull", res))
 >>>>>>> 473cd1d (uplaod image method)
+=======
+	ctx.JSON(http.StatusOK, util.SuccessResponse("Update user succesfully", res))
+>>>>>>> a415f25 (new data)
 }
 
 func (controller *UserController) updatetUserAvatar(ctx *gin.Context) {

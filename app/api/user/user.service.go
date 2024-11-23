@@ -1138,6 +1138,7 @@ func (service *UserService) updateUserService(ctx *gin.Context, username string,
 =======
 
 	var res db.User
+	var req db.UpdateUserParams
 
 	user, err := service.storeDB.GetUser(ctx, username)
 	if err != nil {
@@ -1149,37 +1150,33 @@ func (service *UserService) updateUserService(ctx *gin.Context, username string,
 		return nil, fmt.Errorf("internal server error: %v", err)
 	}
 
-	if arg.Username != "" {
-		user.Username = arg.Username
-	}
-	if arg.FullName != "" {
-		user.FullName = arg.FullName
-	}
-	if arg.Email != "" {
-		user.Email = arg.Email
-	}
-	if arg.PhoneNumber != "" {
-		user.PhoneNumber = pgtype.Text{String: arg.PhoneNumber, Valid: true}
-	}
-	if arg.Address != "" {
-		user.Address = pgtype.Text{String: arg.Address, Valid: true}
-	}
-	if arg.DataImage != nil {
-		user.DataImage = arg.DataImage
-	}
-	if arg.OriginalImage != "" {
-		user.OriginalImage = pgtype.Text{String: arg.OriginalImage, Valid: true}
+	fmt.Println(arg)
+
+	if arg.FullName == "" {
+		req.FullName = user.FullName
+	} else {
+		req.FullName = arg.FullName
 	}
 
-	req := db.UpdateUserParams{
-		Username:      user.Username,
-		FullName:      user.FullName,
-		Email:         user.Email,
-		PhoneNumber:   pgtype.Text{String: user.PhoneNumber.String, Valid: true},
-		Address:       pgtype.Text{String: user.Address.String, Valid: true},
-		DataImage:     user.DataImage,
-		OriginalImage: pgtype.Text{String: user.OriginalImage.String, Valid: true},
+	if arg.Email == "" {
+		req.Email = user.Email
+	} else {
+		req.Email = arg.Email
 	}
+
+	if arg.PhoneNumber == "" {
+		req.PhoneNumber = user.PhoneNumber
+	} else {
+		req.PhoneNumber = pgtype.Text{String: arg.PhoneNumber, Valid: true}
+	}
+
+	if arg.Address == "" {
+		req.Address = user.Address
+	} else {
+		req.Address = pgtype.Text{String: arg.Address, Valid: true}
+	}
+
+	req.Username = username
 
 	err = service.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
 		res, err = q.UpdateUser(ctx, req)
@@ -1198,7 +1195,6 @@ func (service *UserService) updateUserService(ctx *gin.Context, username string,
 		Email:         res.Email,
 		PhoneNumber:   res.PhoneNumber.String,
 		Address:       res.Address.String,
-		DataImage:     res.DataImage,
 		OriginalImage: res.OriginalImage.String,
 	}, nil
 }
@@ -1206,7 +1202,7 @@ func (service *UserService) updateUserService(ctx *gin.Context, username string,
 func (service *UserService) updateUserImageService(ctx *gin.Context, username string, arg UpdateUserImageParams) (*UserResponse, error) {
 	var res db.User
 
-	user, err := service.storeDB.GetUser(ctx, username)
+	_, err := service.storeDB.GetUser(ctx, username)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			ctx.JSON(http.StatusNotFound, "user not found")
@@ -1216,18 +1212,11 @@ func (service *UserService) updateUserImageService(ctx *gin.Context, username st
 		return nil, fmt.Errorf("internal server error: %v", err)
 	}
 
-	req := db.UpdateUserParams{
-		Username:      user.Username,
-		FullName:      user.FullName,
-		Email:         user.Email,
-		PhoneNumber:   pgtype.Text{String: user.PhoneNumber.String, Valid: true},
-		Address:       pgtype.Text{String: user.Address.String, Valid: true},
-		DataImage:     arg.DataImage,
-		OriginalImage: pgtype.Text{String: arg.OriginalImage, Valid: true},
-	}
-
 	err = service.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
-		res, err = q.UpdateUser(ctx, req)
+		res, err = q.UpdateAvatarUser(ctx, db.UpdateAvatarUserParams{
+			DataImage:     arg.DataImage,
+			OriginalImage: pgtype.Text{String: arg.OriginalImage, Valid: true},
+		})
 		if err != nil {
 			ctx.JSON(http.StatusInternalServerError, "internal server error")
 			return fmt.Errorf("internal server error: %v", err)
@@ -1244,7 +1233,6 @@ func (service *UserService) updateUserImageService(ctx *gin.Context, username st
 		Email:         res.Email,
 		PhoneNumber:   res.PhoneNumber.String,
 		Address:       res.Address.String,
-		DataImage:     res.DataImage,
 		OriginalImage: res.OriginalImage.String,
 	}, nil
 }

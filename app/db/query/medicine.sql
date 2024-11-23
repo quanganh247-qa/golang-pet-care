@@ -1,5 +1,6 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 -- name: CreateMedicine :one
 INSERT INTO medicines (name, description, usage, dosage, frequency, duration, side_effects, expiration_date, quantity)
@@ -27,6 +28,10 @@ SELECT
 >>>>>>> a415f25 (new data)
 =======
 >>>>>>> 2a87fca (medicine id and usage in treatment)
+=======
+-- name: ListMedicinesByPet :many
+SELECT 
+>>>>>>> a415f25 (new data)
     m.name AS medicine_name,
     m.description AS medicine_description,
     pm.dosage,
@@ -47,6 +52,7 @@ JOIN
 WHERE 
     pt.pet_id = $1 and pt.status = $2 -- Replace with the specific pet_id
 ORDER BY 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
     tp.start_date, pm.medicine_id LIMIT $3 OFFSET $4;
@@ -71,3 +77,6 @@ WHERE id = $1 LIMIT 1;
 SELECT * FROM medicines
 WHERE id = $1 LIMIT 1;
 >>>>>>> e859654 (Elastic search)
+=======
+    tp.phase_number, pm.medicine_id LIMIT $3 OFFSET $4;
+>>>>>>> a415f25 (new data)

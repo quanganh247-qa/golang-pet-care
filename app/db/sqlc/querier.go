@@ -763,7 +763,11 @@ type Querier interface {
 >>>>>>> 7e616af (add pet log schema)
 =======
 	IsReadNotification(ctx context.Context, notificationid int64) error
+<<<<<<< HEAD
 >>>>>>> 9fd7fc8 (feat: validate notification schema and APIs)
+=======
+	ListMedicinesByPet(ctx context.Context, arg ListMedicinesByPetParams) ([]ListMedicinesByPetRow, error)
+>>>>>>> a415f25 (new data)
 	ListPetSchedulesByUsername(ctx context.Context, username string) ([]ListPetSchedulesByUsernameRow, error)
 =======
 	InsertDoctorSchedule(ctx context.Context, arg InsertDoctorScheduleParams) (Doctorschedule, error)
@@ -861,6 +865,7 @@ type Querier interface {
 	UpdateAppointmentStatus(ctx context.Context, arg UpdateAppointmentStatusParams) error
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	UpdateAvatarUser(ctx context.Context, arg UpdateAvatarUserParams) (User, error)
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -882,6 +887,9 @@ type Querier interface {
 	UpdateMedicalHistory(ctx context.Context, arg UpdateMedicalHistoryParams) error
 	UpdateMedicalRecord(ctx context.Context, id int64) error
 =======
+=======
+	UpdateAvatarUser(ctx context.Context, arg UpdateAvatarUserParams) (User, error)
+>>>>>>> a415f25 (new data)
 =======
 	UpdateAvatarUser(ctx context.Context, arg UpdateAvatarUserParams) (User, error)
 >>>>>>> a415f25 (new data)

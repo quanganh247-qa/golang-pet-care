@@ -1,15 +1,18 @@
 package medications
 
-// type MedicineServiceInterface interface {
-// 	CreateMedicine(ctx *gin.Context, username string, req createMedicineRequest) (*createMedicineResponse, error)
-// 	GetMedicineByID(ctx *gin.Context, medicineid int64) (*createMedicineResponse, error)
-// 	ListMedicines(ctx *gin.Context, pagination *util.Pagination, petID int64) ([]createMedicineResponse, error)
-// 	UpdateMedicine(ctx *gin.Context, medicineid int64, req createMedicineRequest) error
-// }
+import (
+	"github.com/gin-gonic/gin"
+	"github.com/quanganh247-qa/go-blog-be/app/util"
+)
 
-// func (s *MedicineService) CreateMedicine(ctx *gin.Context, username string, req createMedicineRequest) (*createMedicineResponse, error) {
-// 	var medicine createMedicineResponse
+type MedicineServiceInterface interface {
+	CreateMedicine(ctx *gin.Context, username string, req createMedicineRequest) (*createMedicineResponse, error)
+	GetMedicineByID(ctx *gin.Context, medicineid int64) (*createMedicineResponse, error)
+	ListMedicines(ctx *gin.Context, pagination *util.Pagination, petID int64) ([]createMedicineResponse, error)
+	UpdateMedicine(ctx *gin.Context, medicineid int64, req createMedicineRequest) error
+}
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 type MedicineServiceInterface interface {
 	CreateMedicine(ctx *gin.Context, username string, req createMedicineRequest) (*createMedicineResponse, error)
@@ -404,59 +407,48 @@ func (s *MedicineService) UpdateMedicine(ctx *gin.Context, medicineid int64, req
 // 			Notes:        res.Notes.String,
 // 		}
 // 		return nil
+=======
+func (s *MedicineService) CreateMedicine(ctx *gin.Context, username string, req createMedicineRequest) (*createMedicineResponse, error) {
+>>>>>>> a415f25 (new data)
 
-// 	})
-// 	if err != nil {
-// 		return nil, fmt.Errorf("transaction failed: %w", err)
-// 	}
-// 	return &medicine, nil
-// }
+	return nil, nil
+}
 
-// func (s *MedicineService) GetMedicineByID(ctx *gin.Context, medicineid int64) (*createMedicineResponse, error) {
-// 	var medicine createMedicineResponse
-// 	res, err := s.storeDB.GetMedicinesByID(ctx, medicineid)
-// 	if err != nil {
-// 		return nil, fmt.Errorf("failed to get Medicine: %w", err)
-// 	}
-// 	medicine = createMedicineResponse{
-// 		MedicineName: res.MedicationName,
-// 		Dosage:       res.Dosage,
-// 		Frequency:    res.Frequency,
-// 		StartDate:    res.StartDate.Time.Format("2006-01-02 15:04:05"),
-// 		EndDate:      res.EndDate.Time.Format("2006-01-02 15:04:05"),
-// 		Notes:        res.Notes.String,
-// 	}
+func (s *MedicineService) GetMedicineByID(ctx *gin.Context, medicineid int64) (*createMedicineResponse, error) {
+	return nil, nil
+}
 
-// 	return &medicine, nil
-// }
+func (s *MedicineService) ListMedicines(ctx *gin.Context, pagination *util.Pagination, petID int64) ([]createMedicineResponse, error) {
+	// var medicines []createMedicineResponse
+	// offset := (pagination.Page - 1) * pagination.PageSize
 
-// func (s *MedicineService) ListMedicines(ctx *gin.Context, pagination *util.Pagination, petID int64) ([]createMedicineResponse, error) {
-// 	var medicines []createMedicineResponse
-// 	offset := (pagination.Page - 1) * pagination.PageSize
+	// res, err := s.storeDB.ListMedicinesByPet(ctx, db.ListMedicinesByPetParams{
+	// 	Limit:  int32(pagination.PageSize),
+	// 	Offset: int32(offset),
+	// })
+	// if err != nil {
+	// 	return nil, fmt.Errorf("failed to list Medicines: %w", err)
+	// }
 
-// 	res, err := s.storeDB.GetAllMedicinesByPet(ctx, db.GetAllMedicinesByPetParams{
-// 		Limit:  int32(pagination.PageSize),
-// 		Offset: int32(offset),
-// 		PetID:  petID,
-// 	})
-// 	if err != nil {
-// 		return nil, fmt.Errorf("failed to list Medicines: %w", err)
-// 	}
+	// for _, r := range res {
+	// 	medicines = append(medicines, createMedicineResponse{
+	// 		MedicineName: r.Name,
+	// 		Dosage:       r.Dosage.String,
+	// 		Frequency:    r.Frequency.String,
+	// 		Duration:     r.Duration.String,
+	// 		SideEffects:  r.SideEffects.String,
+	// 		Description:  r.Description.String,
+	// 		Usage:        r.Usage.String,
+	// 	})
+	// }
 
-// 	for _, r := range res {
-// 		medicines = append(medicines, createMedicineResponse{
-// 			MedicineName: r.MedicationName,
-// 			Dosage:       r.Dosage,
-// 			Frequency:    r.Frequency,
-// 			StartDate:    r.StartDate.Time.Format("2006-01-02 15:04:05"),
-// 			EndDate:      r.EndDate.Time.Format("2006-01-02 15:04:05"),
-// 			Notes:        r.Notes.String,
-// 		})
-// 	}
+	// return medicines, nil
+	return nil, nil
+}
 
-// 	return medicines, nil
-// }
+func (s *MedicineService) UpdateMedicine(ctx *gin.Context, medicineid int64, req createMedicineRequest) error {
 
+<<<<<<< HEAD
 // func (s *MedicineService) UpdateMedicine(ctx *gin.Context, medicineid int64, req createMedicineRequest) error {
 // 	fmt.Println(req)
 // 	var err error
@@ -489,3 +481,7 @@ func (s *MedicineService) UpdateMedicine(ctx *gin.Context, medicineid int64, req
 // 	return nil
 // }
 >>>>>>> 79a3bcc (medicine api)
+=======
+	return nil
+}
+>>>>>>> a415f25 (new data)

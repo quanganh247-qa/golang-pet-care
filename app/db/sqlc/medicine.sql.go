@@ -14,6 +14,7 @@ import (
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 const createMedicine = `-- name: CreateMedicine :one
 INSERT INTO medicines (name, description, usage, dosage, frequency, duration, side_effects, expiration_date, quantity)
 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
@@ -275,6 +276,10 @@ SELECT
 >>>>>>> a415f25 (new data)
 =======
 >>>>>>> 2a87fca (medicine id and usage in treatment)
+=======
+const listMedicinesByPet = `-- name: ListMedicinesByPet :many
+SELECT 
+>>>>>>> a415f25 (new data)
     m.name AS medicine_name,
     m.description AS medicine_description,
     pm.dosage,
@@ -297,6 +302,7 @@ WHERE
 ORDER BY 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     tp.start_date, pm.medicine_id LIMIT $3 OFFSET $4
 =======
     tp.phase_number, pm.medicine_id LIMIT $3 OFFSET $4
@@ -304,6 +310,9 @@ ORDER BY
 =======
     tp.start_date, pm.medicine_id LIMIT $3 OFFSET $4
 >>>>>>> 3bf345d (happy new year)
+=======
+    tp.phase_number, pm.medicine_id LIMIT $3 OFFSET $4
+>>>>>>> a415f25 (new data)
 `
 
 type ListMedicinesByPetParams struct {
@@ -316,12 +325,15 @@ type ListMedicinesByPetParams struct {
 type ListMedicinesByPetRow struct {
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	MedicineUsage       pgtype.Text `json:"medicine_usage"`
 =======
 >>>>>>> a415f25 (new data)
 =======
 	MedicineUsage       pgtype.Text `json:"medicine_usage"`
 >>>>>>> 2a87fca (medicine id and usage in treatment)
+=======
+>>>>>>> a415f25 (new data)
 	MedicineName        string      `json:"medicine_name"`
 	MedicineDescription pgtype.Text `json:"medicine_description"`
 	Dosage              pgtype.Text `json:"dosage"`
@@ -350,12 +362,15 @@ func (q *Queries) ListMedicinesByPet(ctx context.Context, arg ListMedicinesByPet
 		if err := rows.Scan(
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 			&i.MedicineUsage,
 =======
 >>>>>>> a415f25 (new data)
 =======
 			&i.MedicineUsage,
 >>>>>>> 2a87fca (medicine id and usage in treatment)
+=======
+>>>>>>> a415f25 (new data)
 			&i.MedicineName,
 			&i.MedicineDescription,
 			&i.Dosage,
