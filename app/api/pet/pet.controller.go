@@ -104,7 +104,7 @@ func (c *PetController) UpdatePet(ctx *gin.Context) {
 		return
 	}
 
-	var req createPetRequest
+	var req updatePetRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return

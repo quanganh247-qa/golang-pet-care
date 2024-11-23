@@ -15,7 +15,7 @@ type PetServiceInterface interface {
 	CreatePet(ctx *gin.Context, username string, req createPetRequest) (*createPetResponse, error)
 	GetPetByID(ctx *gin.Context, petid int64) (*createPetResponse, error)
 	ListPets(ctx *gin.Context, req listPetsRequest, pagination *util.Pagination) ([]createPetResponse, error)
-	UpdatePet(ctx *gin.Context, petid int64, req createPetRequest) error
+	UpdatePet(ctx *gin.Context, petid int64, req updatePetRequest) error
 	DeletePet(ctx context.Context, petid int64) error
 	ListPetsByUsername(ctx *gin.Context, username string, pagination *util.Pagination) ([]createPetResponse, error)
 	SetPetInactive(ctx context.Context, petid int64) error
@@ -23,6 +23,7 @@ type PetServiceInterface interface {
 	InsertPetLogService(ctx context.Context, req PetLog) error
 	DeletePetLogService(ctx context.Context, logID int64) error
 	UpdatePetLogService(ctx context.Context, req PetLog, log_id int64) error
+	UpdatePetAvatar(ctx *gin.Context, petid int64, req updatePetAvatarRequest) error
 }
 
 func (s *PetService) CreatePet(ctx *gin.Context, username string, req createPetRequest) (*createPetResponse, error) {
@@ -134,19 +135,97 @@ func (s *PetService) ListPets(ctx *gin.Context, req listPetsRequest, pagination 
 	return pets, nil
 }
 
-func (s *PetService) UpdatePet(ctx *gin.Context, petid int64, req createPetRequest) error {
-	params := db.UpdatePetParams{
-		Petid:       petid,
-		Name:        req.Name,
-		Type:        req.Type,
-		Breed:       pgtype.Text{String: req.Breed, Valid: true},
-		Age:         pgtype.Int4{Int32: int32(req.Age), Valid: true},
-		Weight:      pgtype.Float8{Float64: req.Weight, Valid: true},
-		Gender:      pgtype.Text{String: req.Gender, Valid: true},
-		Healthnotes: pgtype.Text{String: req.Healthnotes, Valid: true},
+func (s *PetService) UpdatePet(ctx *gin.Context, petid int64, req updatePetRequest) error {
+
+	var params db.UpdatePetParams
+
+	pet, err := s.storeDB.GetPetByID(ctx, petid)
+	if err != nil {
+		return fmt.Errorf("failed to get pet: %w", err)
 	}
 
-	return s.storeDB.UpdatePet(ctx, params)
+	if req.BOD != "" {
+		bod, err := time.Parse("2006-01-02", req.BOD)
+		if err != nil {
+			return fmt.Errorf("failed to parse BOD: %w", err)
+		}
+		params.BirthDate = pgtype.Date{Time: bod, Valid: true}
+	} else {
+		params.BirthDate = pet.BirthDate
+
+	}
+	if req.Name != "" {
+		params.Name = req.Name
+	} else {
+		params.Name = pet.Name
+	}
+	if req.Gender != "" {
+		params.Gender = pgtype.Text{String: req.Gender, Valid: true}
+	} else {
+		params.Name = pet.Name
+	}
+
+	if req.Type != "" {
+		params.Type = req.Type
+	} else {
+		params.Type = pet.Type
+	}
+
+	if req.Breed != "" {
+		params.Breed = pgtype.Text{String: req.Breed, Valid: true}
+	} else {
+		params.Breed = pet.Breed
+	}
+
+	if req.Age != 0 {
+		params.Age = pgtype.Int4{Int32: int32(req.Age), Valid: true}
+	} else {
+		params.Age = pet.Age
+	}
+
+	if req.Weight != 0 {
+		params.Weight = pgtype.Float8{Float64: req.Weight, Valid: true}
+	} else {
+		params.Weight = pet.Weight
+	}
+
+	if req.Healthnotes != "" {
+		params.Healthnotes = pgtype.Text{String: req.Healthnotes, Valid: true}
+	} else {
+		params.Healthnotes = pet.Healthnotes
+	}
+
+	params.Petid = petid
+
+	err = s.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
+		err := q.UpdatePet(ctx, params)
+		if err != nil {
+			return fmt.Errorf("failed to update pet: %w", err)
+		}
+		return nil
+	})
+
+	if err != nil {
+		return fmt.Errorf("transaction failed: %w", err)
+	}
+	return nil
+}
+
+func (s *PetService) UpdatePetAvatar(ctx *gin.Context, petid int64, req updatePetAvatarRequest) error {
+	err := s.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
+		err := q.UpdatePetAvatar(ctx, db.UpdatePetAvatarParams{
+			Petid:     petid,
+			DataImage: req.DataImage,
+		})
+		if err != nil {
+			return fmt.Errorf("failed to update pet avatar: %w", err)
+		}
+		return nil
+	})
+	if err != nil {
+		return fmt.Errorf("transaction failed: %w", err)
+	}
+	return nil
 }
 
 func (s *PetService) DeletePet(ctx context.Context, petid int64) error {

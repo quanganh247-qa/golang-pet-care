@@ -211,7 +211,7 @@ func (q *Queries) SetPetInactive(ctx context.Context, arg SetPetInactiveParams) 
 
 const updatePet = `-- name: UpdatePet :exec
 UPDATE Pet
-SET Name = $2, Type = $3, Breed = $4, Age = $5, Weight = $6, Gender = $7, HealthNotes = $8, data_image = $9, is_active = $10
+SET Name = $2, Type = $3, Breed = $4, Age = $5, Weight = $6, Gender = $7, HealthNotes = $8, birth_date = $9
 WHERE PetID = $1
 `
 
@@ -224,8 +224,7 @@ type UpdatePetParams struct {
 	Weight      pgtype.Float8 `json:"weight"`
 	Gender      pgtype.Text   `json:"gender"`
 	Healthnotes pgtype.Text   `json:"healthnotes"`
-	DataImage   []byte        `json:"data_image"`
-	IsActive    pgtype.Bool   `json:"is_active"`
+	BirthDate   pgtype.Date   `json:"birth_date"`
 }
 
 func (q *Queries) UpdatePet(ctx context.Context, arg UpdatePetParams) error {
@@ -238,8 +237,22 @@ func (q *Queries) UpdatePet(ctx context.Context, arg UpdatePetParams) error {
 		arg.Weight,
 		arg.Gender,
 		arg.Healthnotes,
-		arg.DataImage,
-		arg.IsActive,
+		arg.BirthDate,
 	)
+	return err
+}
+
+const updatePetAvatar = `-- name: UpdatePetAvatar :exec
+UPDATE Pet SET data_image = $2, original_image = $3 WHERE PetID = $1 and is_active is true
+`
+
+type UpdatePetAvatarParams struct {
+	Petid         int64       `json:"petid"`
+	DataImage     []byte      `json:"data_image"`
+	OriginalImage pgtype.Text `json:"original_image"`
+}
+
+func (q *Queries) UpdatePetAvatar(ctx context.Context, arg UpdatePetAvatarParams) error {
+	_, err := q.db.Exec(ctx, updatePetAvatar, arg.Petid, arg.DataImage, arg.OriginalImage)
 	return err
 }
