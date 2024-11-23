@@ -1194,6 +1194,7 @@ VALUES
 
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 INSERT INTO phase_medicines (phase_id, medicine_id, dosage, frequency, duration, notes)
 VALUES 
 (1, 1, '10mg/kg', '2 lần/ngày', '1 tuần', 'Uống sau bữa ăn'),
@@ -1310,3 +1311,54 @@ ORDER BY pt.start_date DESC;
 >>>>>>> 50f041a (update database design)
 =======
 >>>>>>> a415f25 (new data)
+=======
+INSERT INTO medicines (name, description, usage, dosage, frequency, duration, side_effects)
+VALUES
+    ('Rabies Vaccine', 'Vaccine để phòng bệnh dại', 'Tiêm bắp', '1 liều tiêu chuẩn', 'Một lần', '1 năm', 'Phản ứng dị ứng nhẹ'),
+    ('Parvovirus Vaccine', 'Vaccine để phòng bệnh Parvo', 'Tiêm bắp', '1 liều tiêu chuẩn', 'Một lần', '3 năm', 'Không phổ biến'),
+    ('Amoxicillin', 'Kháng sinh phổ rộng để điều trị nhiễm khuẩn đường hô hấp.', 'Uống sau ăn', '10mg/kg', '2 lần/ngày', '1 tuần', 'Có thể gây tiêu chảy hoặc chán ăn'),
+    ('Meloxicam', 'Thuốc giảm đau và kháng viêm, thường dùng cho bệnh viêm khớp.', 'Uống sau ăn', '0.1mg/kg', '1 lần/ngày', '7-14 ngày', 'Có thể gây buồn nôn, loét dạ dày');
+
+  
+   INSERT INTO treatment_phases (disease_id, phase_number, phase_name, description, duration, notes)
+VALUES
+    -- Giai đoạn cho Bệnh dại
+    (5, 1, 'Giai đoạn phòng bệnh', 'Tiêm vaccine phòng bệnh dại định kỳ', 'Hằng năm', 'Theo dõi sau tiêm để phát hiện phản ứng dị ứng'),
+
+    -- Giai đoạn cho Bệnh Parvo
+    (6, 1, 'Điều trị cấp tính', 'Điều trị triệu chứng và bổ sung nước điện giải', '1 tuần', 'Cách ly để tránh lây nhiễm cho thú cưng khác'),
+
+    -- Giai đoạn cho Nhiễm khuẩn đường hô hấp
+    (7, 1, 'Giai đoạn cấp tính', 'Điều trị kháng sinh và hỗ trợ miễn dịch', '7 ngày', 'Sử dụng kháng sinh phổ rộng để giảm viêm nhiễm'),
+    (7, 2, 'Giai đoạn phục hồi', 'Tiếp tục điều trị để tăng cường miễn dịch và phục hồi chức năng hô hấp', '1-2 tuần', 'Sử dụng bổ sung vitamin nếu cần'),
+
+    -- Giai đoạn cho Viêm khớp
+    (8, 1, 'Giai đoạn giảm đau', 'Sử dụng thuốc giảm đau và kháng viêm để cải thiện vận động', '1-2 tuần', 'Theo dõi tình trạng đau khi di chuyển'),
+    (8, 2, 'Giai đoạn duy trì', 'Điều trị lâu dài để cải thiện chất lượng cuộc sống', 'Hằng năm', 'Duy trì tập luyện nhẹ nhàng và chế độ ăn phù hợp');
+
+  INSERT INTO pet_treatments (pet_id, disease_id, start_date, end_date, status, notes)
+VALUES
+    (1, 1, '2024-10-01', '2024-10-15', 'Completed', 'Điều trị viêm da dị ứng thành công'),
+    (2, 2, '2024-11-01', '2024-11-20', 'In Progress', 'Điều trị nấm da giai đoạn đầu'),
+    (3, 3, '2024-09-01', NULL, 'Ongoing', 'Phòng ngừa bệnh dại với vaccine định kỳ');
+
+   
+INSERT INTO phase_medicines (phase_id, medicine_id, dosage, frequency, duration, notes)
+VALUES
+    -- Giai đoạn điều trị cho Viêm da dị ứng
+    (1, 1, '5-10mg/kg thể trọng', '1 lần/ngày', '2-4 tuần', 'Dùng Ketoconazole để giảm triệu chứng nấm'),
+    (1, 2, 'Bôi một lớp mỏng', '2 lần/ngày', '2-4 tuần', 'Dùng Miconazole tại chỗ để kiểm soát triệu chứng'),
+
+    -- Giai đoạn điều trị cho Nấm da
+    (2, 1, '5-10mg/kg thể trọng', '1 lần/ngày', '2-4 tuần', 'Dùng Ketoconazole để tiêu diệt nấm'),
+    (2, 2, 'Bôi một lớp mỏng', '2 lần/ngày', '2-4 tuần', 'Dùng Miconazole để ngăn tái phát'),
+
+    -- Giai đoạn điều trị cho Bệnh dại
+    (3, 3, '1 liều tiêu chuẩn', 'Một lần', 'Hằng năm', 'Tiêm vaccine Rabies để phòng bệnh dại'),
+
+    -- Giai đoạn điều trị cho Bệnh Parvo
+    (4, 4, '10mg/kg', '2 lần/ngày', '1 tuần', 'Dùng Amoxicillin để kiểm soát nhiễm khuẩn đường ruột'),
+
+    -- Giai đoạn điều trị cho Viêm khớp
+    (5, 5, '0.1mg/kg', '1 lần/ngày', '7-14 ngày', 'Dùng Meloxicam để giảm đau và viêm khớp');
+>>>>>>> 7af4c7a (new data)
