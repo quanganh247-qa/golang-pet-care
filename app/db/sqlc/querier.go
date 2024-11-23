@@ -481,6 +481,7 @@ type Querier interface {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	GetDoctorByUserId(ctx context.Context, userID int64) (Doctor, error)
 <<<<<<< HEAD
 	GetDoctorByUsername(ctx context.Context, username string) (GetDoctorByUsernameRow, error)
@@ -522,6 +523,9 @@ type Querier interface {
 =======
 	GetMedicationsByPhase(ctx context.Context, arg GetMedicationsByPhaseParams) ([]GetMedicationsByPhaseRow, error)
 >>>>>>> 883d5b3 (update treatment)
+=======
+	GetDoctorById(ctx context.Context, id int64) (Doctor, error)
+>>>>>>> cfbe865 (updated service response)
 	GetNotificationsByUsername(ctx context.Context, arg GetNotificationsByUsernameParams) ([]Notification, error)
 >>>>>>> 6f3ea8a (update sqlc)
 =======

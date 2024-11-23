@@ -115,6 +115,7 @@ type CreateAppointmentParams struct {
 	ServiceID  pgtype.Int8      `json:"service_id"`
 	TimeSlotID pgtype.Int8      `json:"time_slot_id"`
 	Date       pgtype.Timestamp `json:"date"`
+<<<<<<< HEAD
 >>>>>>> cfbe865 (updated service response)
 =======
 INSERT INTO Appointment
@@ -209,6 +210,8 @@ type CreateAppointmentParams struct {
 	RoomID            pgtype.Int8      `json:"room_id"`
 	ConfirmationSent  pgtype.Bool      `json:"confirmation_sent"`
 >>>>>>> 4ccd381 (Update appointment flow)
+=======
+>>>>>>> cfbe865 (updated service response)
 }
 
 func (q *Queries) CreateAppointment(ctx context.Context, arg CreateAppointmentParams) (Appointment, error) {
@@ -222,6 +225,7 @@ func (q *Queries) CreateAppointment(ctx context.Context, arg CreateAppointmentPa
 		arg.Date,
 		arg.ReminderSend,
 		arg.TimeSlotID,
+<<<<<<< HEAD
 <<<<<<< HEAD
 		arg.AppointmentReason,
 		arg.Priority,
@@ -257,6 +261,9 @@ func (q *Queries) CreateAppointment(ctx context.Context, arg CreateAppointmentPa
 		arg.RoomID,
 		arg.ConfirmationSent,
 >>>>>>> 4ccd381 (Update appointment flow)
+=======
+		arg.Date,
+>>>>>>> cfbe865 (updated service response)
 	)
 	var i Appointment
 	err := row.Scan(

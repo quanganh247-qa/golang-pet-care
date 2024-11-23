@@ -24,9 +24,12 @@ SELECT * FROM services where removed_at is NULL ORDER BY name LIMIT $1 OFFSET $2
 -- name: GetServiceByID :one
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 SELECT * FROM services
 WHERE id = $1;
 =======
+=======
+>>>>>>> cfbe865 (updated service response)
 SELECT * FROM Service 
 WHERE serviceID = $1 LIMIT 1;
 

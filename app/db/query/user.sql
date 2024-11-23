@@ -227,6 +227,7 @@ WHERE
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 <<<<<<< HEAD
 -- -- name: GetDoctor :one
@@ -251,6 +252,11 @@ WHERE
 -- select * from Doctors where id = $1;
 
 <<<<<<< HEAD
+=======
+-- name: GetDoctorById :one
+select * from Doctors where id = $1;
+
+>>>>>>> cfbe865 (updated service response)
 -- name: GetActiveDoctors :many
 SELECT 
   d.id,

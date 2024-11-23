@@ -31,6 +31,7 @@ INSERT INTO Appointment (
     status
 ) VALUES (
     $1, $2, $3, $4, $5,'pending'
+<<<<<<< HEAD
 >>>>>>> cfbe865 (updated service response)
 =======
 INSERT INTO Appointment
@@ -80,6 +81,8 @@ INSERT INTO public.appointments (
     confirmation_sent
 ) VALUES (
     $1, $2, $3, $4, $5, $6, $7, NOW(), (SELECT id FROM public.states WHERE state = 'Scheduled' LIMIT 1), $8, $9, $10, $11, $12
+=======
+>>>>>>> cfbe865 (updated service response)
 ) RETURNING *;
 
 

@@ -41,7 +41,7 @@ func (s *ServiceService) CreateService(ctx *gin.Context, req CreateServiceReques
 =======
 	createServiceService(ctx *gin.Context, req createServiceRequest) (*db.Service, error)
 	deleteServiceService(ctx *gin.Context, serviceID int64) error
-	getAllServicesService(ctx *gin.Context, pagination *util.Pagination) ([]db.Service, error)
+	getAllServicesService(ctx *gin.Context, pagination *util.Pagination) ([]GroupedServiceResponse, error)
 	updateServiceService(ctx *gin.Context, serviceid int64, req updateServiceRequest) error
 	getServiceByIDService(ctx *gin.Context, serviceid int64) (*createServiceResponse, error)
 }
@@ -98,6 +98,7 @@ func (server *ServiceService) createServiceService(ctx *gin.Context, req createS
 		Duration:    pgtype.Interval{Microseconds: int64(req.Duration), Valid: true},
 		Description: pgtype.Text{String: req.Description, Valid: true},
 		Isavailable: pgtype.Bool{Bool: req.Isavailable, Valid: true},
+<<<<<<< HEAD
 =======
 >>>>>>> b393bb9 (add service and add permission)
 	})
@@ -106,6 +107,13 @@ func (server *ServiceService) createServiceService(ctx *gin.Context, req createS
 		return nil, fmt.Errorf("failed to create service: %w", err)
 	}
 <<<<<<< HEAD
+=======
+	})
+
+	if err != nil {
+		return nil, err
+	}
+>>>>>>> cfbe865 (updated service response)
 
 	return &result, nil
 }
@@ -131,6 +139,7 @@ func (server *ServiceService) deleteServiceService(ctx *gin.Context, serviceID i
 	}, nil
 }
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -171,6 +180,11 @@ func (s *ServiceService) GetAllServices(ctx *gin.Context, pagination *util.Pagin
 >>>>>>> b393bb9 (add service and add permission)
 =======
 func (server *ServiceService) getAllServicesService(ctx *gin.Context, pagination *util.Pagination) ([]db.Service, error) {
+=======
+// return all services with format ServiceResponse
+
+func (server *ServiceService) getAllServicesService(ctx *gin.Context, pagination *util.Pagination) ([]GroupedServiceResponse, error) {
+>>>>>>> cfbe865 (updated service response)
 
 	offset := (pagination.Page - 1) * pagination.PageSize
 
@@ -213,12 +227,41 @@ func (server *ServiceService) getAllServicesService(ctx *gin.Context, pagination
 		serviceMap[serviceTypeKey] = append(serviceMap[serviceTypeKey], serviceResponse)
 	}
 
+<<<<<<< HEAD
+=======
+	serviceMap := make(map[ServiceTypeKey][]createServiceResponse)
+
+	for _, service := range services {
+
+		serviceType, err := server.storeDB.GetServiceType(ctx, service.Typeid.Int64)
+		if err != nil {
+			return nil, fmt.Errorf("failed to get service type: %w", err)
+		}
+
+		serviceTypeKey := ServiceTypeKey{
+			ID:       serviceType.Typeid,
+			TypeName: serviceType.Servicetypename,
+		}
+		serviceResponse := createServiceResponse{
+			ServiceID:   service.Serviceid,
+			TypeID:      serviceType.Typeid,
+			Name:        service.Name,
+			Price:       service.Price.Float64,
+			Duration:    service.Duration.Microseconds,
+			Description: service.Description.String,
+			Isavailable: service.Isavailable.Bool,
+		}
+		serviceMap[serviceTypeKey] = append(serviceMap[serviceTypeKey], serviceResponse)
+	}
+
+>>>>>>> cfbe865 (updated service response)
 	var result []GroupedServiceResponse
 	for serviceType, services := range serviceMap {
 		result = append(result, GroupedServiceResponse{
 			ID:       serviceType.ID,
 			TypeName: serviceType.TypeName,
 			Services: services,
+<<<<<<< HEAD
 >>>>>>> cfbe865 (updated service response)
 =======
 			Duration:    int(service.Duration.Int16),
@@ -228,6 +271,8 @@ func (server *ServiceService) getAllServicesService(ctx *gin.Context, pagination
 >>>>>>> b393bb9 (add service and add permission)
 =======
 >>>>>>> ada3717 (Docker file)
+=======
+>>>>>>> cfbe865 (updated service response)
 		})
 	}
 	return serviceResponses, nil

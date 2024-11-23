@@ -14,6 +14,7 @@ import (
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	"sync"
 =======
 	"strconv"
@@ -24,6 +25,9 @@ import (
 >>>>>>> dc47646 (Optimize SQL query)
 	"sync"
 >>>>>>> 685da65 (latest update)
+=======
+	"strconv"
+>>>>>>> cfbe865 (updated service response)
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -175,18 +179,32 @@ func (s *AppointmentService) CreateAppointment(ctx *gin.Context, req createAppoi
 
 <<<<<<< HEAD
 func (s *AppointmentService) CreateAppointment(ctx *gin.Context, req createAppointmentRequest) (*createAppointmentResponse, error) {
+<<<<<<< HEAD
 	// Validate input
 	if req.DoctorID == 0 || req.PetID == 0 || req.ServiceID == 0 || req.TimeSlotID == 0 || req.Date == "" {
 		return nil, fmt.Errorf("missing required fields: doctor_id, pet_id, service_id, time_slot_id, or date")
 >>>>>>> 685da65 (latest update)
+=======
+
+	var arg db.CreateAppointmentParams
+
+	// convert string to int64
+	doctorID, err := strconv.ParseInt(req.DoctorID, 10, 64)
+	if err != nil {
+		return nil, fmt.Errorf("error while converting doctor id: %w", err)
+>>>>>>> cfbe865 (updated service response)
 	}
 =======
 func (s *AppointmentService) CreateAppointment(ctx *gin.Context, req createAppointmentRequest, username string) (*createAppointmentResponse, error) {
 >>>>>>> b393bb9 (add service and add permission)
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 	// Fetch doctor details
 	doctor, err := s.storeDB.GetDoctor(ctx, req.DoctorID)
+=======
+	doctor, err := s.storeDB.GetDoctor(ctx, doctorID)
+>>>>>>> cfbe865 (updated service response)
 	if err != nil {
 <<<<<<< HEAD
 		return nil, fmt.Errorf("error while getting doctor: %w", err)
@@ -201,6 +219,7 @@ func (s *AppointmentService) CreateAppointment(ctx *gin.Context, req createAppoi
 	var service db.Service
 	var wg sync.WaitGroup
 
+<<<<<<< HEAD
 	errChan := make(chan error, 3)
 	wg.Add(3)
 
@@ -256,6 +275,21 @@ func (s *AppointmentService) CreateAppointment(ctx *gin.Context, req createAppoi
 >>>>>>> dc47646 (Optimize SQL query)
 	}
 	dateTime, err := time.Parse("2006-01-02", req.Date)
+=======
+	if req.Date != "" {
+		//convert string to time.TIme
+		dateTime, err := time.Parse("2006-01-02 15:04:05", req.Date)
+		if err != nil {
+			return nil, fmt.Errorf("error while converting date: %w", err)
+		}
+		arg.Date = pgtype.Timestamp{Time: dateTime, Valid: true}
+	}
+	arg.DoctorID = pgtype.Int8{Int64: doctor.ID, Valid: true}
+	arg.Petid = pgtype.Int8{Int64: req.PetID, Valid: true}
+	arg.ServiceID = pgtype.Int8{Int64: req.ServiceID, Valid: true}
+
+	appointment, err := s.storeDB.CreateAppointment(ctx, arg)
+>>>>>>> cfbe865 (updated service response)
 	if err != nil {
 		return nil, fmt.Errorf("invalid date format: %w", err)
 	}
@@ -413,6 +447,7 @@ func (s *AppointmentService) CreateAppointment(ctx *gin.Context, req createAppoi
 		return nil, fmt.Errorf("failed to fetch pet: %w", err)
 	}
 
+<<<<<<< HEAD
 	state, err := s.storeDB.GetState(ctx, int64(appointment.StateID.Int32))
 	if err != nil {
 		return nil, fmt.Errorf("failed to fetch state: %w", err)
@@ -432,6 +467,8 @@ func (s *AppointmentService) CreateAppointment(ctx *gin.Context, req createAppoi
 	}
 
 	// Prepare the response
+=======
+>>>>>>> cfbe865 (updated service response)
 	return &createAppointmentResponse{
 		ID:          appointment.AppointmentID,
 		DoctorName:  doctor.Name,
@@ -442,6 +479,9 @@ func (s *AppointmentService) CreateAppointment(ctx *gin.Context, req createAppoi
 <<<<<<< HEAD
 		ServiceName: service.Name,
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> cfbe865 (updated service response)
 		Note:        req.Note,
 >>>>>>> cfbe865 (updated service response)
 =======
