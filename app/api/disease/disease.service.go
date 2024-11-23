@@ -1689,8 +1689,10 @@ func (s *DiceaseService) GetDiseaseTreatmentPlanWithPhasesService(ctx *gin.Conte
 
 		// Add medicine to phase
 		medicine := MedicineInfo{
+			MedicineID:   int(row.MedicineID),
 			MedicineName: row.MedicineName,
 			Dosage:       &row.Dosage.String,
+			Usage:        &row.MedicineUsage.String,
 			Frequency:    &row.Frequency.String,
 			Duration:     &row.Duration.String,
 			SideEffects:  &row.SideEffects.String,

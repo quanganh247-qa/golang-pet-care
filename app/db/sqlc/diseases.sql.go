@@ -194,6 +194,8 @@ SELECT
     tp.description AS phase_description,
     tp.duration AS phase_duration,
     tp.notes AS phase_notes,
+    m.id AS medicine_id,
+    m.usage AS medicine_usage,
     m.name AS medicine_name,
     m.description AS medicine_description,
 >>>>>>> 6c35562 (dicease and treatment plan)
@@ -261,6 +263,8 @@ type GetDiseaseTreatmentPlanWithPhasesRow struct {
 	PhaseDescription    pgtype.Text `json:"phase_description"`
 	PhaseDuration       pgtype.Text `json:"phase_duration"`
 	PhaseNotes          pgtype.Text `json:"phase_notes"`
+	MedicineID          int64       `json:"medicine_id"`
+	MedicineUsage       pgtype.Text `json:"medicine_usage"`
 	MedicineName        string      `json:"medicine_name"`
 	MedicineDescription pgtype.Text `json:"medicine_description"`
 >>>>>>> 6c35562 (dicease and treatment plan)
@@ -325,6 +329,8 @@ func (q *Queries) GetDiseaseTreatmentPlanWithPhases(ctx context.Context, lower s
 			&i.PhaseDescription,
 			&i.PhaseDuration,
 			&i.PhaseNotes,
+			&i.MedicineID,
+			&i.MedicineUsage,
 			&i.MedicineName,
 			&i.MedicineDescription,
 >>>>>>> 6c35562 (dicease and treatment plan)

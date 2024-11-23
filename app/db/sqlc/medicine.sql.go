@@ -270,6 +270,7 @@ const listMedicinesByPet = `-- name: ListMedicinesByPet :many
 SELECT 
     m.usage AS medicine_usage,
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 const listMedicinesByPet = `-- name: ListMedicinesByPet :many
 SELECT 
@@ -280,6 +281,8 @@ SELECT
 const listMedicinesByPet = `-- name: ListMedicinesByPet :many
 SELECT 
 >>>>>>> a415f25 (new data)
+=======
+>>>>>>> 2a87fca (medicine id and usage in treatment)
     m.name AS medicine_name,
     m.description AS medicine_description,
     pm.dosage,
@@ -326,6 +329,7 @@ type ListMedicinesByPetRow struct {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	MedicineUsage       pgtype.Text `json:"medicine_usage"`
 =======
 >>>>>>> a415f25 (new data)
@@ -334,6 +338,9 @@ type ListMedicinesByPetRow struct {
 >>>>>>> 2a87fca (medicine id and usage in treatment)
 =======
 >>>>>>> a415f25 (new data)
+=======
+	MedicineUsage       pgtype.Text `json:"medicine_usage"`
+>>>>>>> 2a87fca (medicine id and usage in treatment)
 	MedicineName        string      `json:"medicine_name"`
 	MedicineDescription pgtype.Text `json:"medicine_description"`
 	Dosage              pgtype.Text `json:"dosage"`
@@ -363,6 +370,7 @@ func (q *Queries) ListMedicinesByPet(ctx context.Context, arg ListMedicinesByPet
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 			&i.MedicineUsage,
 =======
 >>>>>>> a415f25 (new data)
@@ -371,6 +379,9 @@ func (q *Queries) ListMedicinesByPet(ctx context.Context, arg ListMedicinesByPet
 >>>>>>> 2a87fca (medicine id and usage in treatment)
 =======
 >>>>>>> a415f25 (new data)
+=======
+			&i.MedicineUsage,
+>>>>>>> 2a87fca (medicine id and usage in treatment)
 			&i.MedicineName,
 			&i.MedicineDescription,
 			&i.Dosage,
