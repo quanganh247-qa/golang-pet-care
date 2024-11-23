@@ -209,3 +209,20 @@ type PetLog struct {
 	Title    string `json:"title"`
 	Notes    string `json:"notes"`
 }
+
+type updatePetRequest struct {
+	Name            string  `json:"name"`
+	Type            string  `json:"type"`
+	Breed           string  `json:"breed"`
+	Age             int     `json:"age"`
+	Weight          float64 `json:"weight"`
+	Gender          string  `json:"gender"`
+	Healthnotes     string  `json:"healthnotes"`
+	BOD             string  `json:"birth_date"`
+	MicrochipNumber string  `json:"microchip_number"`
+}
+
+type updatePetAvatarRequest struct {
+	DataImage     []byte `json:"-"`
+	OriginalImage string `json:"original_name"`
+}

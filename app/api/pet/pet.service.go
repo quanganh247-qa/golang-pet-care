@@ -36,6 +36,7 @@ type PetServiceInterface interface {
 	GetPetByID(ctx *gin.Context, petid int64) (*createPetResponse, error)
 	ListPets(ctx *gin.Context, req listPetsRequest, pagination *util.Pagination) ([]createPetResponse, error)
 <<<<<<< HEAD
+<<<<<<< HEAD
 	UpdatePet(ctx *gin.Context, petid int64, req updatePetRequest) error
 	DeletePet(ctx context.Context, petid int64) error
 	ListPetsByUsername(ctx *gin.Context, username string, pagination *util.Pagination) ([]createPetResponse, error)
@@ -50,6 +51,9 @@ type PetServiceInterface interface {
 >>>>>>> 98e9e45 (ratelimit and recovery function)
 =======
 	UpdatePet(ctx *gin.Context, petid int64, req createPetRequest) error
+=======
+	UpdatePet(ctx *gin.Context, petid int64, req updatePetRequest) error
+>>>>>>> 5ea33aa (PUT pet info)
 	DeletePet(ctx context.Context, petid int64) error
 	ListPetsByUsername(ctx *gin.Context, username string, pagination *util.Pagination) ([]createPetResponse, error)
 >>>>>>> c73e2dc (pagination function)
@@ -65,6 +69,7 @@ type PetServiceInterface interface {
 	DeletePetLogService(ctx context.Context, logID int64) error
 	UpdatePetLogService(ctx context.Context, req PetLog, log_id int64) error
 	UpdatePetAvatar(ctx *gin.Context, petid int64, req updatePetAvatarRequest) error
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -93,6 +98,8 @@ type PetServiceInterface interface {
 >>>>>>> 884b92e (update pet logs api)
 	UpdatePetLogService(ctx context.Context, req PetLog, log_id int64) error
 >>>>>>> 3835eb4 (update pet_schedule api)
+=======
+>>>>>>> 5ea33aa (PUT pet info)
 }
 
 <<<<<<< HEAD
@@ -416,6 +423,9 @@ func (s *PetService) ListPets(ctx *gin.Context, req listPetsRequest, pagination 
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 5ea33aa (PUT pet info)
 =======
 >>>>>>> 5ea33aa (PUT pet info)
 func (s *PetService) UpdatePet(ctx *gin.Context, petid int64, req updatePetRequest) error {
@@ -425,6 +435,7 @@ func (s *PetService) UpdatePet(ctx *gin.Context, petid int64, req updatePetReque
 	pet, err := s.storeDB.GetPetByID(ctx, petid)
 	if err != nil {
 		return fmt.Errorf("failed to get pet: %w", err)
+<<<<<<< HEAD
 <<<<<<< HEAD
 =======
 func (s *PetService) UpdatePet(ctx *gin.Context, petid int64, req createPetRequest) error {
@@ -443,6 +454,8 @@ func (s *PetService) UpdatePet(ctx *gin.Context, petid int64, req createPetReque
 >>>>>>> 5ea33aa (PUT pet info)
 =======
 >>>>>>> 0fb3f30 (user images)
+=======
+>>>>>>> 5ea33aa (PUT pet info)
 	}
 
 	if req.BOD != "" {
@@ -511,12 +524,15 @@ func (s *PetService) UpdatePet(ctx *gin.Context, petid int64, req createPetReque
 	}
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	go s.redis.RemovePetInfoCache(petid)
 =======
 >>>>>>> 5ea33aa (PUT pet info)
 =======
 	go s.redis.RemovePetInfoCache(petid)
 >>>>>>> 98e9e45 (ratelimit and recovery function)
+=======
+>>>>>>> 5ea33aa (PUT pet info)
 	return nil
 }
 
@@ -536,12 +552,15 @@ func (s *PetService) UpdatePetAvatar(ctx *gin.Context, petid int64, req updatePe
 	}
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	go s.redis.RemovePetInfoCache(petid)
 =======
 >>>>>>> 5ea33aa (PUT pet info)
 =======
 	go s.redis.RemovePetInfoCache(petid)
 >>>>>>> 98e9e45 (ratelimit and recovery function)
+=======
+>>>>>>> 5ea33aa (PUT pet info)
 	return nil
 }
 

@@ -38,6 +38,7 @@ func Routes(routerGroup middleware.RouterGroup) {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 		authRoute.PUT("/:pet_id", petApi.controller.UpdatePet)
 		authRoute.DELETE("/delete/:pet_id", petApi.controller.DeletePet)
 		authRoute.PUT("/avatar/:pet_id", petApi.controller.UpdatePetAvatar)
@@ -54,6 +55,9 @@ func Routes(routerGroup middleware.RouterGroup) {
 =======
 >>>>>>> c73e2dc (pagination function)
 		authRoute.PUT("/update/:petid", petApi.controller.UpdatePet)
+=======
+		authRoute.PUT("/:petid", petApi.controller.UpdatePet)
+>>>>>>> 5ea33aa (PUT pet info)
 =======
 		authRoute.PUT("/:petid", petApi.controller.UpdatePet)
 >>>>>>> 5ea33aa (PUT pet info)

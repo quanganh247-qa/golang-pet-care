@@ -941,7 +941,10 @@ type Querier interface {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	UpdatePetAllergy(ctx context.Context, arg UpdatePetAllergyParams) (PetAllergy, error)
+=======
+>>>>>>> 5ea33aa (PUT pet info)
 =======
 >>>>>>> 5ea33aa (PUT pet info)
 	UpdatePetAvatar(ctx context.Context, arg UpdatePetAvatarParams) error
