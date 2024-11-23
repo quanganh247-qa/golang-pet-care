@@ -17,17 +17,19 @@ INSERT INTO Appointment (
     petid,
     service_id,
     time_slot_id,
+    date,
     status
 ) VALUES (
-    $1, $2, $3, $4, 'pending'
+    $1, $2, $3, $4, $5,'pending'
 ) RETURNING appointment_id, petid, doctor_id, service_id, date, status, notes, reminder_send, time_slot_id, created_at
 `
 
 type CreateAppointmentParams struct {
-	DoctorID   pgtype.Int8 `json:"doctor_id"`
-	Petid      pgtype.Int8 `json:"petid"`
-	ServiceID  pgtype.Int8 `json:"service_id"`
-	TimeSlotID pgtype.Int8 `json:"time_slot_id"`
+	DoctorID   pgtype.Int8      `json:"doctor_id"`
+	Petid      pgtype.Int8      `json:"petid"`
+	ServiceID  pgtype.Int8      `json:"service_id"`
+	TimeSlotID pgtype.Int8      `json:"time_slot_id"`
+	Date       pgtype.Timestamp `json:"date"`
 }
 
 func (q *Queries) CreateAppointment(ctx context.Context, arg CreateAppointmentParams) (Appointment, error) {
@@ -36,6 +38,7 @@ func (q *Queries) CreateAppointment(ctx context.Context, arg CreateAppointmentPa
 		arg.Petid,
 		arg.ServiceID,
 		arg.TimeSlotID,
+		arg.Date,
 	)
 	var i Appointment
 	err := row.Scan(

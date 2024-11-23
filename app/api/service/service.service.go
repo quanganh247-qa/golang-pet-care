@@ -12,7 +12,7 @@ import (
 type ServiceServiceInterface interface {
 	createServiceService(ctx *gin.Context, req createServiceRequest) (*db.Service, error)
 	deleteServiceService(ctx *gin.Context, serviceID int64) error
-	getAllServicesService(ctx *gin.Context, pagination *util.Pagination) ([]db.Service, error)
+	getAllServicesService(ctx *gin.Context, pagination *util.Pagination) ([]GroupedServiceResponse, error)
 	updateServiceService(ctx *gin.Context, serviceid int64, req updateServiceRequest) error
 	getServiceByIDService(ctx *gin.Context, serviceid int64) (*createServiceResponse, error)
 }
@@ -28,20 +28,21 @@ func (server *ServiceService) createServiceService(ctx *gin.Context, req createS
 
 	if err != nil {
 		return nil, fmt.Errorf("service type not found")
-	} else {
-		result, err = server.storeDB.CreateService(ctx, db.CreateServiceParams{
-			Typeid:      pgtype.Int8{Int64: int64(req.TypeID), Valid: true},
-			Name:        req.Name,
-			Price:       pgtype.Float8{Float64: req.Price, Valid: true},
-			Duration:    pgtype.Interval{Microseconds: int64(req.Duration), Valid: true},
-			Description: pgtype.Text{String: req.Description, Valid: true},
-			Isavailable: pgtype.Bool{Bool: req.Isavailable, Valid: true},
-		})
-
-		if err != nil {
-			return nil, err
-		}
 	}
+
+	result, err = server.storeDB.CreateService(ctx, db.CreateServiceParams{
+		Typeid:      pgtype.Int8{Int64: int64(req.TypeID), Valid: true},
+		Name:        req.Name,
+		Price:       pgtype.Float8{Float64: req.Price, Valid: true},
+		Duration:    pgtype.Interval{Microseconds: int64(req.Duration), Valid: true},
+		Description: pgtype.Text{String: req.Description, Valid: true},
+		Isavailable: pgtype.Bool{Bool: req.Isavailable, Valid: true},
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
 	return &result, nil
 }
 func (server *ServiceService) deleteServiceService(ctx *gin.Context, serviceID int64) error {
@@ -52,7 +53,9 @@ func (server *ServiceService) deleteServiceService(ctx *gin.Context, serviceID i
 	return nil
 }
 
-func (server *ServiceService) getAllServicesService(ctx *gin.Context, pagination *util.Pagination) ([]db.Service, error) {
+// return all services with format ServiceResponse
+
+func (server *ServiceService) getAllServicesService(ctx *gin.Context, pagination *util.Pagination) ([]GroupedServiceResponse, error) {
 
 	offset := (pagination.Page - 1) * pagination.PageSize
 
@@ -66,17 +69,37 @@ func (server *ServiceService) getAllServicesService(ctx *gin.Context, pagination
 		return nil, err
 	}
 
-	// Convert db.Service to models.Service
-	var result []db.Service
+	serviceMap := make(map[ServiceTypeKey][]createServiceResponse)
+
 	for _, service := range services {
-		result = append(result, db.Service{
-			Serviceid:   service.Serviceid,
-			Typeid:      service.Typeid,
+
+		serviceType, err := server.storeDB.GetServiceType(ctx, service.Typeid.Int64)
+		if err != nil {
+			return nil, fmt.Errorf("failed to get service type: %w", err)
+		}
+
+		serviceTypeKey := ServiceTypeKey{
+			ID:       serviceType.Typeid,
+			TypeName: serviceType.Servicetypename,
+		}
+		serviceResponse := createServiceResponse{
+			ServiceID:   service.Serviceid,
+			TypeID:      serviceType.Typeid,
 			Name:        service.Name,
-			Price:       service.Price,
-			Duration:    service.Duration,
-			Description: service.Description,
-			Isavailable: service.Isavailable,
+			Price:       service.Price.Float64,
+			Duration:    service.Duration.Microseconds,
+			Description: service.Description.String,
+			Isavailable: service.Isavailable.Bool,
+		}
+		serviceMap[serviceTypeKey] = append(serviceMap[serviceTypeKey], serviceResponse)
+	}
+
+	var result []GroupedServiceResponse
+	for serviceType, services := range serviceMap {
+		result = append(result, GroupedServiceResponse{
+			ID:       serviceType.ID,
+			TypeName: serviceType.TypeName,
+			Services: services,
 		})
 	}
 

@@ -42,3 +42,20 @@ type ServiceController struct {
 type ServiceApi struct {
 	controller ServiceControllerInterface
 }
+
+type ServiceResponse struct {
+	ServiceTypeID string               `json:"service_type_id"`
+	ServiceName   string               `json:"service_name"`
+	Service       createServiceRequest `json:"service"`
+}
+
+type ServiceTypeKey struct {
+	ID       int64  `json:"id"`
+	TypeName string `json:"type_name"`
+}
+
+type GroupedServiceResponse struct {
+	ID       int64                   `json:"id"`
+	TypeName string                  `json:"type_name"`
+	Services []createServiceResponse `json:"services"`
+}

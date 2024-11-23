@@ -11,7 +11,8 @@ INSERT INTO Service (
 ) RETURNING *;
 
 -- name: GetServiceByID :one
-SELECT * FROM Service WHERE serviceID = $1 LIMIT 1;
+SELECT * FROM Service 
+WHERE serviceID = $1 LIMIT 1;
 
 -- name: GetAllServices :many
 SELECT * FROM Service ORDER BY serviceID LIMIT $1 OFFSET $2;
