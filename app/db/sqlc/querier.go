@@ -6,8 +6,6 @@ package db
 
 import (
 	"context"
-
-	"github.com/jackc/pgx/v5/pgtype"
 )
 
 type Querier interface {
@@ -277,7 +275,7 @@ type Querier interface {
 >>>>>>> 6610455 (feat: redis queue)
 	ListPets(ctx context.Context, arg ListPetsParams) ([]Pet, error)
 	ListPetsByUsername(ctx context.Context, arg ListPetsByUsernameParams) ([]Pet, error)
-	ListVaccinationsByPetID(ctx context.Context, petid pgtype.Int8) ([]Vaccination, error)
+	ListVaccinationsByPetID(ctx context.Context, arg ListVaccinationsByPetIDParams) ([]Vaccination, error)
 	SetPetInactive(ctx context.Context, arg SetPetInactiveParams) error
 >>>>>>> 272832d (redis cache)
 	UpdateAppointmentStatus(ctx context.Context, arg UpdateAppointmentStatusParams) error
