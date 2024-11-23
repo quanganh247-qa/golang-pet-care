@@ -2,6 +2,8 @@ package appointment
 
 import (
 	"fmt"
+	"strconv"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5/pgtype"
@@ -17,23 +19,32 @@ type AppointmentServiceInterface interface {
 // creating an appointment by time slot available of doctor
 func (s *AppointmentService) CreateAppointment(ctx *gin.Context, req createAppointmentRequest) (*createAppointmentResponse, error) {
 
-	println("CreateAppointment", req.TimeSlotID)
-	timeSlot, err := s.storeDB.GetTimeSlotByID(ctx, req.TimeSlotID)
+	var arg db.CreateAppointmentParams
+
+	// convert string to int64
+	doctorID, err := strconv.ParseInt(req.DoctorID, 10, 64)
 	if err != nil {
-		return nil, fmt.Errorf("error while getting time slot: %w", err)
+		return nil, fmt.Errorf("error while converting doctor id: %w", err)
 	}
 
-	doctor, err := s.storeDB.GetDoctor(ctx, timeSlot.DoctorID)
+	doctor, err := s.storeDB.GetDoctor(ctx, doctorID)
 	if err != nil {
 		return nil, fmt.Errorf("error while getting doctor: %w", err)
 	}
 
-	appointment, err := s.storeDB.CreateAppointment(ctx, db.CreateAppointmentParams{
-		DoctorID:   pgtype.Int8{Int64: doctor.ID, Valid: true},
-		Petid:      pgtype.Int8{Int64: req.PetID, Valid: true},
-		ServiceID:  pgtype.Int8{Int64: req.ServiceID, Valid: true},
-		TimeSlotID: pgtype.Int8{Int64: req.TimeSlotID, Valid: true},
-	})
+	if req.Date != "" {
+		//convert string to time.TIme
+		dateTime, err := time.Parse("2006-01-02 15:04:05", req.Date)
+		if err != nil {
+			return nil, fmt.Errorf("error while converting date: %w", err)
+		}
+		arg.Date = pgtype.Timestamp{Time: dateTime, Valid: true}
+	}
+	arg.DoctorID = pgtype.Int8{Int64: doctor.ID, Valid: true}
+	arg.Petid = pgtype.Int8{Int64: req.PetID, Valid: true}
+	arg.ServiceID = pgtype.Int8{Int64: req.ServiceID, Valid: true}
+
+	appointment, err := s.storeDB.CreateAppointment(ctx, arg)
 	if err != nil {
 		return nil, fmt.Errorf("error while creating appointment: %w", err)
 	}
@@ -48,17 +59,11 @@ func (s *AppointmentService) CreateAppointment(ctx *gin.Context, req createAppoi
 		return nil, fmt.Errorf("error while getting pet: %w", err)
 	}
 
-	resTimeSlot := timeslot{
-		StartTime: timeSlot.StartTime.Time.Format("2006-01-02 15:04:05"),
-		EndTime:   timeSlot.EndTime.Time.Format("2006-01-02 15:04:05"),
-	}
-
 	return &createAppointmentResponse{
 		ID:          appointment.AppointmentID,
 		DoctorName:  doctor.Name,
 		PetName:     pet.Name,
 		ServiceName: service.Name,
-		TimeSlot:    resTimeSlot,
 		Note:        req.Note,
 	}, nil
 

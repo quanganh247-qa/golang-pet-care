@@ -200,6 +200,26 @@ func (q *Queries) GetDoctor(ctx context.Context, id int64) (GetDoctorRow, error)
 	return i, err
 }
 
+const getDoctorById = `-- name: GetDoctorById :one
+select id, user_id, specialization, years_of_experience, education, certificate_number, bio, consultation_fee from Doctors where id = $1
+`
+
+func (q *Queries) GetDoctorById(ctx context.Context, id int64) (Doctor, error) {
+	row := q.db.QueryRow(ctx, getDoctorById, id)
+	var i Doctor
+	err := row.Scan(
+		&i.ID,
+		&i.UserID,
+		&i.Specialization,
+		&i.YearsOfExperience,
+		&i.Education,
+		&i.CertificateNumber,
+		&i.Bio,
+		&i.ConsultationFee,
+	)
+	return i, err
+}
+
 const getUser = `-- name: GetUser :one
 SELECT id, username, hashed_password, full_name, email, phone_number, address, data_image, original_image, role, created_at, is_verified_email
 FROM users

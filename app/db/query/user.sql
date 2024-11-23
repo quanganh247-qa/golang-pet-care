@@ -82,6 +82,9 @@ JOIN
 WHERE
   d.id = $1;
 
+-- name: GetDoctorById :one
+select * from Doctors where id = $1;
+
 -- name: GetActiveDoctors :many
 SELECT 
   d.id,

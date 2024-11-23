@@ -16,7 +16,7 @@ type AppointmentApi struct {
 
 type createAppointmentRequest struct {
 	PetID      int64  `json:"pet_id"`
-	DoctorID   int64  `json:"doctor_id"`
+	DoctorID   string `json:"doctor_id"`
 	Date       string `json:"date"`
 	TimeSlotID int64  `json:"time_slot_id"`
 	ServiceID  int64  `json:"service_id"`
@@ -30,12 +30,11 @@ type timeslot struct {
 }
 
 type createAppointmentResponse struct {
-	ID          int64    `json:"id"`
-	ServiceName string   `json:"service_name"`
-	PetName     string   `json:"pet_name"`
-	TimeSlot    timeslot `json:"time_slot"`
-	DoctorName  string   `json:"doctor_name"`
-	Note        string   `json:"note"`
+	ID          int64  `json:"id"`
+	ServiceName string `json:"service_name"`
+	PetName     string `json:"pet_name"`
+	DoctorName  string `json:"doctor_name"`
+	Note        string `json:"note"`
 }
 
 type AppointmentWithDetails struct {
