@@ -58,7 +58,7 @@ type Appointment struct {
 
 type createAppointmentRequest struct {
 	PetID      int64  `json:"pet_id"`
-	DoctorID   int64  `json:"doctor_id"`
+	DoctorID   string `json:"doctor_id"`
 	Date       string `json:"date"`
 	TimeSlotID int64  `json:"time_slot_id"`
 	ServiceID  int64  `json:"service_id"`
@@ -83,6 +83,7 @@ type historyAppointmentResponse struct {
 }
 
 type createAppointmentResponse struct {
+<<<<<<< HEAD
 	ID           int64    `json:"id"`
 	DoctorName   string   `json:"doctor_name"`
 	PetName      string   `json:"pet_name"`
@@ -100,6 +101,13 @@ type timeSlotResponse struct {
 	StartTime string `json:"start_time"`
 	EndTime   string `json:"end_time"`
 	Status    string `json:"status"`
+=======
+	ID          int64  `json:"id"`
+	ServiceName string `json:"service_name"`
+	PetName     string `json:"pet_name"`
+	DoctorName  string `json:"doctor_name"`
+	Note        string `json:"note"`
+>>>>>>> cfbe865 (updated service response)
 }
 
 type updateAppointmentRequest struct {

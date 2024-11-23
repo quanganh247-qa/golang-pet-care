@@ -14,6 +14,7 @@ type ServiceApi struct {
 	controller ServiceControllerInterface
 }
 
+<<<<<<< HEAD
 type CreateServiceRequest struct {
 	Name        string  `json:"name" binding:"required"`
 	Description string  `json:"description" binding:"required"`
@@ -40,4 +41,21 @@ type UpdateServiceRequest struct {
 	Cost        float64 `json:"cost"`
 	Category    string  `json:"category"`
 	Notes       string  `json:"notes"`
+=======
+type ServiceResponse struct {
+	ServiceTypeID string               `json:"service_type_id"`
+	ServiceName   string               `json:"service_name"`
+	Service       createServiceRequest `json:"service"`
+}
+
+type ServiceTypeKey struct {
+	ID       int64  `json:"id"`
+	TypeName string `json:"type_name"`
+}
+
+type GroupedServiceResponse struct {
+	ID       int64                   `json:"id"`
+	TypeName string                  `json:"type_name"`
+	Services []createServiceResponse `json:"services"`
+>>>>>>> cfbe865 (updated service response)
 }

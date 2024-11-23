@@ -24,6 +24,7 @@ func Routes(routerGroup middleware.RouterGroup) {
 	}
 
 	{
+<<<<<<< HEAD
 		// authRoute.POST("/", SVApi.controller.CreateServiceController)
 		// authRoute.DELETE("/:id", SVApi.controller.DeleteService)
 		authRoute.GET("/", SVApi.controller.GetAllServices)
@@ -36,6 +37,14 @@ func Routes(routerGroup middleware.RouterGroup) {
 		perRoute([]perms.Permission{perms.ManageServices}).POST("/", SVApi.controller.CreateServiceController)
 		perRoute([]perms.Permission{perms.ManageServices}).DELETE("/:id", SVApi.controller.DeleteService)
 		perRoute([]perms.Permission{perms.ManageServices}).PUT("/:id", SVApi.controller.UpdateService)
+=======
+		authRoute.POST("/create", SVApi.controller.CreateService)
+		authRoute.POST("/delete", SVApi.controller.DeleteService)
+		authRoute.GET("/list", SVApi.controller.GetAllServices)
+		authRoute.PUT("/update/:serviceid", SVApi.controller.UpdateService)
+		authRoute.GET("/getbyid/:serviceid", SVApi.controller.GetServiceByID)
+		// authRoute.POST("/create", userApi.controller.createUser)
+>>>>>>> cfbe865 (updated service response)
 
 	}
 

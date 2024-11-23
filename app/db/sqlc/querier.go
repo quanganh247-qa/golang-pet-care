@@ -167,6 +167,7 @@ type Querier interface {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	GetDoctorByUserId(ctx context.Context, userID int64) (Doctor, error)
 	GetDoctorByUsername(ctx context.Context, username string) (GetDoctorByUsernameRow, error)
 	GetDoctors(ctx context.Context) ([]GetDoctorsRow, error)
@@ -217,6 +218,9 @@ type Querier interface {
 =======
 >>>>>>> 272832d (redis cache)
 =======
+=======
+	GetDoctorById(ctx context.Context, id int64) (Doctor, error)
+>>>>>>> cfbe865 (updated service response)
 	GetNotificationsByUsername(ctx context.Context, arg GetNotificationsByUsernameParams) ([]Notification, error)
 >>>>>>> eb8d761 (updated pet schedule)
 	GetPetByID(ctx context.Context, petid int64) (Pet, error)

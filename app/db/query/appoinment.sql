@@ -1,4 +1,5 @@
 -- name: CreateAppointment :one
+<<<<<<< HEAD
 INSERT INTO public.appointments (
     petid, 
     username, 
@@ -16,6 +17,17 @@ INSERT INTO public.appointments (
     confirmation_sent
 ) VALUES (
     $1, $2, $3, $4, $5, $6, $7, NOW(), (SELECT id FROM public.states WHERE state = 'Scheduled' LIMIT 1), $8, $9, $10, $11, $12
+=======
+INSERT INTO Appointment (
+    doctor_id,
+    petid,
+    service_id,
+    time_slot_id,
+    date,
+    status
+) VALUES (
+    $1, $2, $3, $4, $5,'pending'
+>>>>>>> cfbe865 (updated service response)
 ) RETURNING *;
 
 

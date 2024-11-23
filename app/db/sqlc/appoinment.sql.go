@@ -41,6 +41,7 @@ func (q *Queries) CountAppointmentsByDateAndTimeSlot(ctx context.Context, arg Co
 }
 
 const createAppointment = `-- name: CreateAppointment :one
+<<<<<<< HEAD
 INSERT INTO public.appointments (
     petid, 
     username, 
@@ -74,6 +75,26 @@ type CreateAppointmentParams struct {
 	ArrivalTime       pgtype.Timestamp `json:"arrival_time"`
 	RoomID            pgtype.Int8      `json:"room_id"`
 	ConfirmationSent  pgtype.Bool      `json:"confirmation_sent"`
+=======
+INSERT INTO Appointment (
+    doctor_id,
+    petid,
+    service_id,
+    time_slot_id,
+    date,
+    status
+) VALUES (
+    $1, $2, $3, $4, $5,'pending'
+) RETURNING appointment_id, petid, doctor_id, service_id, date, status, notes, reminder_send, time_slot_id, created_at
+`
+
+type CreateAppointmentParams struct {
+	DoctorID   pgtype.Int8      `json:"doctor_id"`
+	Petid      pgtype.Int8      `json:"petid"`
+	ServiceID  pgtype.Int8      `json:"service_id"`
+	TimeSlotID pgtype.Int8      `json:"time_slot_id"`
+	Date       pgtype.Timestamp `json:"date"`
+>>>>>>> cfbe865 (updated service response)
 }
 
 func (q *Queries) CreateAppointment(ctx context.Context, arg CreateAppointmentParams) (Appointment, error) {
@@ -85,11 +106,15 @@ func (q *Queries) CreateAppointment(ctx context.Context, arg CreateAppointmentPa
 		arg.Date,
 		arg.ReminderSend,
 		arg.TimeSlotID,
+<<<<<<< HEAD
 		arg.AppointmentReason,
 		arg.Priority,
 		arg.ArrivalTime,
 		arg.RoomID,
 		arg.ConfirmationSent,
+=======
+		arg.Date,
+>>>>>>> cfbe865 (updated service response)
 	)
 	var i Appointment
 	err := row.Scan(

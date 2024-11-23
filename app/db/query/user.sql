@@ -103,6 +103,49 @@ INSERT INTO Doctors (
     $1, $2, $3, $4, $5, $6
 ) RETURNING *;
 
+<<<<<<< HEAD
+=======
+-- name: GetDoctor :one
+SELECT 
+  d.id,
+  u.full_name AS name,
+  d.specialization,
+  d.years_of_experience,
+  d.education,
+  d.certificate_number,
+  d.bio,
+  d.consultation_fee
+FROM
+  Doctors d
+JOIN
+  users u ON d.user_id = u.id
+WHERE
+  d.id = $1;
+
+-- name: GetDoctorById :one
+select * from Doctors where id = $1;
+
+-- name: GetActiveDoctors :many
+SELECT 
+  d.id,
+  u.full_name AS name,
+  d.specialization,
+  d.years_of_experience,
+  d.consultation_fee
+FROM 
+  Doctors d
+JOIN 
+  users u ON d.user_id = u.id
+LEFT JOIN 
+  DoctorSchedules ds ON d.id = ds.doctor_id
+WHERE 
+  d.is_active = true
+  AND (ds.is_active = true OR ds.is_active IS NULL)
+  AND ($1::VARCHAR IS NULL OR d.specialization = $1)
+  AND ($2::INT IS NULL OR ds.day_of_week = $2)
+ORDER BY 
+  u.full_name;
+>>>>>>> cfbe865 (updated service response)
 
 -- name: GetAllRole :many
 SELECT distinct (role) FROM users;
