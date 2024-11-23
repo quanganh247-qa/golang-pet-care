@@ -1,26 +1,31 @@
 package medications
 
-// func Routes(routerGroup middleware.RouterGroup) {
-// 	medicine := routerGroup.RouterDefault.Group("/medicine")
-// 	authRoute := routerGroup.RouterAuth(medicine)
-// 	// Medicine.Use(middleware.IPbasedRateLimitingMiddleware())
+import (
+	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
+	"github.com/quanganh247-qa/go-blog-be/app/middleware"
+)
 
-// 	// Khoi tao api
-// 	MedicineApi := &MedicineApi{
-// 		&MedicineController{
-// 			service: &MedicineService{
-// 				storeDB: db.StoreDB, // This should refer to the actual instance
-// 			},
-// 		},
-// 	}
+func Routes(routerGroup middleware.RouterGroup) {
+	medicine := routerGroup.RouterDefault.Group("/medicine")
+	authRoute := routerGroup.RouterAuth(medicine)
+	// Medicine.Use(middleware.IPbasedRateLimitingMiddleware())
 
-// 	{
-// 		authRoute.POST("/create", MedicineApi.controller.CreateMedicine)
-// 		authRoute.GET("/:medicine_id", MedicineApi.controller.GetMedicineByID)
-// 		authRoute.GET("/list/:pet_id", MedicineApi.controller.ListMedicines)
-// 		// authRoute.GET("/", MedicineApi.controller.ListMedicinesByUsername)
-// 		authRoute.PUT("/:medicine_id", MedicineApi.controller.UpdateMedicine)
-// 		// authRoute.DELETE("/delete/:Medicineid", MedicineApi.controller.DeleteMedicine)
-// 	}
+	// Khoi tao api
+	MedicineApi := &MedicineApi{
+		&MedicineController{
+			service: &MedicineService{
+				storeDB: db.StoreDB, // This should refer to the actual instance
+			},
+		},
+	}
 
-// }
+	{
+		authRoute.POST("/", MedicineApi.controller.CreateMedicine)
+		authRoute.GET("/:medicine_id", MedicineApi.controller.GetMedicineByID)
+		authRoute.GET("/medicines/:pet_id", MedicineApi.controller.ListMedicines)
+		// authRoute.GET("/", MedicineApi.controller.ListMedicinesByUsername)
+		authRoute.PUT("/:medicine_id", MedicineApi.controller.UpdateMedicine)
+		// authRoute.DELETE("/delete/:Medicineid", MedicineApi.controller.DeleteMedicine)
+	}
+
+}

@@ -13,9 +13,16 @@ SELECT * FROM users ;
 
 -- name: UpdateUser :one
 UPDATE users
-SET full_name = $2, email = $3, phone_number = $4, address = $5, data_image = $6, original_image = $7
+SET full_name = $2, email = $3, phone_number = $4, address = $5
 WHERE username = $1
 RETURNING *;
+
+-- name: UpdateAvatarUser :one
+UPDATE users
+SET data_image = $2, original_image = $3
+WHERE username = $1
+RETURNING *;
+
 
 -- name: UpdateUserPassword :one
 UPDATE users
