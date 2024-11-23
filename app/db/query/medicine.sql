@@ -8,10 +8,13 @@ RETURNING *;
 -- name: ListMedicinesByPet :many
 SELECT 
     m.usage AS medicine_usage,
+<<<<<<< HEAD
 =======
 -- name: ListMedicinesByPet :many
 SELECT 
 >>>>>>> a415f25 (new data)
+=======
+>>>>>>> 2a87fca (medicine id and usage in treatment)
     m.name AS medicine_name,
     m.description AS medicine_description,
     pm.dosage,
