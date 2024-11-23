@@ -1,31 +1,24 @@
 package medications
 
-// type MedicineControllerInterface interface {
-// 	CreateMedicine(ctx *gin.Context)
-// 	GetMedicineByID(ctx *gin.Context)
-// 	ListMedicines(ctx *gin.Context)
-// 	// ListMedicinesByUsername(ctx *gin.Context)
-// 	UpdateMedicine(ctx *gin.Context)
-// 	// DeleteMedicine(ctx *gin.Context)
-// }
+import (
+	"fmt"
+	"net/http"
+	"strconv"
 
-// func (c *MedicineController) CreateMedicine(ctx *gin.Context) {
-// 	var req createMedicineRequest
-// 	if err := ctx.ShouldBindJSON(&req); err != nil {
-// 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-// 		return
-// 	}
-// 	authPayload, err := middleware.GetAuthorizationPayload(ctx)
-// 	if err != nil {
-// 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-// 		return
-// 	}
+	"github.com/gin-gonic/gin"
+	"github.com/quanganh247-qa/go-blog-be/app/middleware"
+	"github.com/quanganh247-qa/go-blog-be/app/util"
+)
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> a415f25 (new data)
 type MedicineControllerInterface interface {
 	CreateMedicine(ctx *gin.Context)
 	GetMedicineByID(ctx *gin.Context)
 	ListMedicines(ctx *gin.Context)
+<<<<<<< HEAD
 <<<<<<< HEAD
 =======
 	// ListMedicinesByUsername(ctx *gin.Context)
@@ -40,74 +33,90 @@ type MedicineControllerInterface interface {
 // 		return
 // 	}
 >>>>>>> 6c35562 (dicease and treatment plan)
+=======
+	// ListMedicinesByUsername(ctx *gin.Context)
+	UpdateMedicine(ctx *gin.Context)
+	// DeleteMedicine(ctx *gin.Context)
+}
+>>>>>>> a415f25 (new data)
 
-// 	ctx.JSON(http.StatusOK, res)
-// }
+func (c *MedicineController) CreateMedicine(ctx *gin.Context) {
+	var req createMedicineRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	authPayload, err := middleware.GetAuthorizationPayload(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
 
-// func (c *MedicineController) GetMedicineByID(ctx *gin.Context) {
-// 	medicineidStr := ctx.Param("medicine_id")
-// 	medicineid, err := strconv.ParseInt(medicineidStr, 10, 64)
-// 	if err != nil {
-// 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid Medicine ID"})
-// 		return
-// 	}
+	res, err := c.service.CreateMedicine(ctx, authPayload.Username, req)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
 
-// 	res, err := c.service.GetMedicineByID(ctx, medicineid)
-// 	if err != nil {
-// 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-// 		return
-// 	}
+	ctx.JSON(http.StatusOK, res)
+}
 
-// 	ctx.JSON(http.StatusOK, res)
-// }
+func (c *MedicineController) GetMedicineByID(ctx *gin.Context) {
+	medicineidStr := ctx.Param("medicine_id")
+	medicineid, err := strconv.ParseInt(medicineidStr, 10, 64)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid Medicine ID"})
+		return
+	}
 
-// func (c *MedicineController) ListMedicines(ctx *gin.Context) {
+	res, err := c.service.GetMedicineByID(ctx, medicineid)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
 
-// 	petID := ctx.Param("pet_id")
-// 	petIDInt, err := strconv.ParseInt(petID, 10, 64)
-// 	if err != nil {
-// 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid Pet ID"})
-// 		return
-// 	}
+	ctx.JSON(http.StatusOK, res)
+}
 
-// 	pagination, err := util.GetPageInQuery(ctx.Request.URL.Query())
-// 	if err != nil {
-// 		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
-// 		return
-// 	}
+func (c *MedicineController) ListMedicines(ctx *gin.Context) {
 
-// 	Medicines, err := c.service.ListMedicines(ctx, pagination, petIDInt)
-// 	if err != nil {
-// 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-// 		return
-// 	}
+	petID := ctx.Param("pet_id")
+	petIDInt, err := strconv.ParseInt(petID, 10, 64)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid Pet ID"})
+		return
+	}
 
-// 	ctx.JSON(http.StatusOK, Medicines)
-// }
+	pagination, err := util.GetPageInQuery(ctx.Request.URL.Query())
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
+		return
+	}
 
-// func (c *MedicineController) UpdateMedicine(ctx *gin.Context) {
-// 	medicineid, err := strconv.ParseInt(ctx.Param("medicine_id"), 10, 64)
-// 	if err != nil {
-// 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid Medicine ID"})
-// 		return
-// 	}
+	Medicines, err := c.service.ListMedicines(ctx, pagination, petIDInt)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
 
-// 	var req createMedicineRequest
-// 	if err := ctx.ShouldBindJSON(&req); err != nil {
-// 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-// 		return
-// 	}
-// 	fmt.Println(req)
+	ctx.JSON(http.StatusOK, Medicines)
+}
 
-// 	err = c.service.UpdateMedicine(ctx, medicineid, req)
-// 	if err != nil {
-// 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-// 		return
-// 	}
+func (c *MedicineController) UpdateMedicine(ctx *gin.Context) {
+	medicineid, err := strconv.ParseInt(ctx.Param("medicine_id"), 10, 64)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid Medicine ID"})
+		return
+	}
 
-// 	ctx.JSON(http.StatusOK, gin.H{"message": "Medicine updated successfully"})
-// }
+	var req createMedicineRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	fmt.Println(req)
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 =======
 // func (c *MedicineController) DeleteMedicine(ctx *gin.Context) {
@@ -116,15 +125,16 @@ type MedicineControllerInterface interface {
 // 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid Medicine ID"})
 // 		return
 // 	}
+=======
+	err = c.service.UpdateMedicine(ctx, medicineid, req)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+>>>>>>> a415f25 (new data)
 
-// 	err = c.service.SetMedicineInactive(ctx, Medicineid)
-// 	if err != nil {
-// 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-// 		return
-// 	}
-
-// 	ctx.JSON(http.StatusOK, gin.H{"message": "Medicine set to inactive successfully"})
-// }
+	ctx.JSON(http.StatusOK, gin.H{"message": "Medicine updated successfully"})
+}
 
 >>>>>>> 79a3bcc (medicine api)
 // func (c *MedicineController) ListMedicinesByUsername(ctx *gin.Context) {

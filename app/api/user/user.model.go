@@ -112,13 +112,11 @@ type UpdateUserImageParams struct {
 }
 
 type UpdateUserParams struct {
-	Username      string `json:"username"`
-	FullName      string `json:"full_name"`
-	Email         string `json:"email"`
-	PhoneNumber   string `json:"phone_number"`
-	Address       string `json:"address"`
-	DataImage     []byte `json:"data_image"`
-	OriginalImage string `json:"original_image"`
+	Username    string `json:"username"`
+	FullName    string `json:"full_name"`
+	Email       string `json:"email"`
+	PhoneNumber string `json:"phone_number"`
+	Address     string `json:"address"`
 }
 type UpdateUserImageParams struct {
 	DataImage     []byte `json:"data_image"`

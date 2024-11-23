@@ -58,11 +58,21 @@ RETURNING *;
 =======
 -- name: UpdateUser :one
 UPDATE users
-SET full_name = $2, email = $3, phone_number = $4, address = $5, data_image = $6, original_image = $7
+SET full_name = $2, email = $3, phone_number = $4, address = $5
 WHERE username = $1
 RETURNING *;
 
+<<<<<<< HEAD
 >>>>>>> 473cd1d (uplaod image method)
+=======
+-- name: UpdateAvatarUser :one
+UPDATE users
+SET data_image = $2, original_image = $3
+WHERE username = $1
+RETURNING *;
+
+
+>>>>>>> a415f25 (new data)
 -- name: UpdateUserPassword :one
 UPDATE users
 SET hashed_password = $2

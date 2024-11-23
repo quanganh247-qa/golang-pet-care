@@ -11,6 +11,7 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+<<<<<<< HEAD
 const createMedicine = `-- name: CreateMedicine :one
 INSERT INTO medicines (name, description, usage, dosage, frequency, duration, side_effects, expiration_date, quantity)
 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
@@ -91,6 +92,10 @@ func (q *Queries) GetMedicineByID(ctx context.Context, id int64) (Medicine, erro
 const listMedicinesByPet = `-- name: ListMedicinesByPet :many
 SELECT 
     m.usage AS medicine_usage,
+=======
+const listMedicinesByPet = `-- name: ListMedicinesByPet :many
+SELECT 
+>>>>>>> a415f25 (new data)
     m.name AS medicine_name,
     m.description AS medicine_description,
     pm.dosage,
@@ -111,7 +116,11 @@ JOIN
 WHERE 
     pt.pet_id = $1 and pt.status = $2 -- Replace with the specific pet_id
 ORDER BY 
+<<<<<<< HEAD
     tp.start_date, pm.medicine_id LIMIT $3 OFFSET $4
+=======
+    tp.phase_number, pm.medicine_id LIMIT $3 OFFSET $4
+>>>>>>> a415f25 (new data)
 `
 
 type ListMedicinesByPetParams struct {
@@ -122,7 +131,10 @@ type ListMedicinesByPetParams struct {
 }
 
 type ListMedicinesByPetRow struct {
+<<<<<<< HEAD
 	MedicineUsage       pgtype.Text `json:"medicine_usage"`
+=======
+>>>>>>> a415f25 (new data)
 	MedicineName        string      `json:"medicine_name"`
 	MedicineDescription pgtype.Text `json:"medicine_description"`
 	Dosage              pgtype.Text `json:"dosage"`
@@ -149,7 +161,10 @@ func (q *Queries) ListMedicinesByPet(ctx context.Context, arg ListMedicinesByPet
 	for rows.Next() {
 		var i ListMedicinesByPetRow
 		if err := rows.Scan(
+<<<<<<< HEAD
 			&i.MedicineUsage,
+=======
+>>>>>>> a415f25 (new data)
 			&i.MedicineName,
 			&i.MedicineDescription,
 			&i.Dosage,

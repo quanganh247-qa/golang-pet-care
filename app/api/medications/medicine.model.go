@@ -1,6 +1,7 @@
 package medications
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 import (
 	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
 <<<<<<< HEAD
@@ -13,15 +14,19 @@ import (
 // 	controller MedicineControllerInterface
 // }
 >>>>>>> 6c35562 (dicease and treatment plan)
+=======
+import db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
+>>>>>>> a415f25 (new data)
 
-// type MedicineController struct {
-// 	service MedicineServiceInterface
-// }
+type MedicineApi struct {
+	controller MedicineControllerInterface
+}
 
-// type MedicineService struct {
-// 	storeDB db.Store
-// }
+type MedicineController struct {
+	service MedicineServiceInterface
+}
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 type MedicineService struct {
 	storeDB db.Store
@@ -93,3 +98,28 @@ type createMedicineResponse struct {
 // 	Notes        string `json:"notes"`
 // }
 >>>>>>> 6c35562 (dicease and treatment plan)
+=======
+type MedicineService struct {
+	storeDB db.Store
+}
+
+type createMedicineRequest struct {
+	PetID        int64  `json:"pet_id"`
+	MedicineName string `json:"medicine_name" validate:"required"`
+	Dosage       string `json:"dosage" validate:"required"`
+	Frequency    string `json:"frequency"`
+	StartDate    string `json:"start_date"`
+	EndDate      string `json:"end_date"`
+	Notes        string `json:"notes"`
+}
+
+type createMedicineResponse struct {
+	MedicineName string `json:"medicine_name"`
+	Description  string `json:"description"`
+	Usage        string `json:"usage"`
+	Dosage       string `json:"dosage"`
+	Frequency    string `json:"frequency"`
+	Duration     string `json:"duration"`
+	SideEffects  string `json:"side_effects"`
+}
+>>>>>>> a415f25 (new data)
