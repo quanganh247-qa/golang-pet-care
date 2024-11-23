@@ -4,7 +4,11 @@ import (
 	"context"
 	"errors"
 	"fmt"
+<<<<<<< HEAD
 	"sync"
+=======
+	"strconv"
+>>>>>>> cfbe865 (updated service response)
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -35,6 +39,7 @@ type AppointmentServiceInterface interface {
 
 func (s *AppointmentService) CreateAppointment(ctx *gin.Context, req createAppointmentRequest, username string) (*createAppointmentResponse, error) {
 
+<<<<<<< HEAD
 	var err error
 	var timeSlot db.TimeSlot
 	var doctor user.DoctorResponse
@@ -97,6 +102,19 @@ func (s *AppointmentService) CreateAppointment(ctx *gin.Context, req createAppoi
 
 	if timeSlot.BookedPatients.Int32 >= timeSlot.MaxPatients.Int32 {
 		return nil, fmt.Errorf("time slot is fully booked")
+=======
+	var arg db.CreateAppointmentParams
+
+	// convert string to int64
+	doctorID, err := strconv.ParseInt(req.DoctorID, 10, 64)
+	if err != nil {
+		return nil, fmt.Errorf("error while converting doctor id: %w", err)
+	}
+
+	doctor, err := s.storeDB.GetDoctor(ctx, doctorID)
+	if err != nil {
+		return nil, fmt.Errorf("error while getting doctor: %w", err)
+>>>>>>> cfbe865 (updated service response)
 	}
 	dateTime, err := time.Parse("2006-01-02", req.Date)
 	if err != nil {
@@ -105,6 +123,7 @@ func (s *AppointmentService) CreateAppointment(ctx *gin.Context, req createAppoi
 	var startTimeFormatted string
 	var endTimeFormatted string
 
+<<<<<<< HEAD
 	// Create the appointment within a transaction
 	var appointment db.Appointment
 	err = s.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
@@ -127,6 +146,21 @@ func (s *AppointmentService) CreateAppointment(ctx *gin.Context, req createAppoi
 
 		return nil
 	})
+=======
+	if req.Date != "" {
+		//convert string to time.TIme
+		dateTime, err := time.Parse("2006-01-02 15:04:05", req.Date)
+		if err != nil {
+			return nil, fmt.Errorf("error while converting date: %w", err)
+		}
+		arg.Date = pgtype.Timestamp{Time: dateTime, Valid: true}
+	}
+	arg.DoctorID = pgtype.Int8{Int64: doctor.ID, Valid: true}
+	arg.Petid = pgtype.Int8{Int64: req.PetID, Valid: true}
+	arg.ServiceID = pgtype.Int8{Int64: req.ServiceID, Valid: true}
+
+	appointment, err := s.storeDB.CreateAppointment(ctx, arg)
+>>>>>>> cfbe865 (updated service response)
 	if err != nil {
 		return nil, fmt.Errorf("transaction failed: %w", err)
 	}
@@ -134,6 +168,7 @@ func (s *AppointmentService) CreateAppointment(ctx *gin.Context, req createAppoi
 	detail, err := s.storeDB.GetAppointmentDetailByAppointmentID(ctx, appointment.AppointmentID)
 
 	if err != nil {
+<<<<<<< HEAD
 		return nil, fmt.Errorf("failed to get appointment detail: %w", err)
 	}
 
@@ -153,6 +188,22 @@ func (s *AppointmentService) CreateAppointment(ctx *gin.Context, req createAppoi
 		ReminderSend: appointment.ReminderSend.Bool,
 		CreatedAt:    appointment.CreatedAt.Time.Format("2006-01-02 15:04:05"),
 		RoomType:     service.Category.String,
+=======
+		return nil, fmt.Errorf("error while getting service: %w", err)
+	}
+
+	pet, err := s.storeDB.GetPetByID(ctx, appointment.Petid.Int64)
+	if err != nil {
+		return nil, fmt.Errorf("error while getting pet: %w", err)
+	}
+
+	return &createAppointmentResponse{
+		ID:          appointment.AppointmentID,
+		DoctorName:  doctor.Name,
+		PetName:     pet.Name,
+		ServiceName: service.Name,
+		Note:        req.Note,
+>>>>>>> cfbe865 (updated service response)
 	}, nil
 }
 func (s *AppointmentService) ConfirmPayment(ctx context.Context, appointmentID int64) error {

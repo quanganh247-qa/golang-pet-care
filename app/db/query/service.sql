@@ -10,8 +10,16 @@ RETURNING *;
 SELECT * FROM services where removed_at is NULL ORDER BY name LIMIT $1 OFFSET $2;
 
 -- name: GetServiceByID :one
+<<<<<<< HEAD
 SELECT * FROM services
 WHERE id = $1;
+=======
+SELECT * FROM Service 
+WHERE serviceID = $1 LIMIT 1;
+
+-- name: GetAllServices :many
+SELECT * FROM Service ORDER BY serviceID LIMIT $1 OFFSET $2;
+>>>>>>> cfbe865 (updated service response)
 
 -- name: DeleteService :exec
 UPDATE services
