@@ -1115,7 +1115,6 @@ CREATE INDEX idx_timeslots_doctor_id ON TimeSlots (doctor_id);
 CREATE INDEX idx_timeslots_day ON TimeSlots (day);
 
 
-
 -- Index for diseases table
 CREATE INDEX idx_diseases_name ON diseases (name);
 
@@ -1142,96 +1141,73 @@ CREATE INDEX idx_pet_logs_pet_id ON pet_logs (petid);
 CREATE INDEX idx_pet_logs_datetime ON pet_logs (datetime);
 
 
+--------
 INSERT INTO users (username, hashed_password, full_name, email, phone_number, address, original_image, role, is_verified_email)
-VALUES 
-('nguyenhoa', '$2a$10$tLnDg/6/QNu/nD3bIcoR2OtUqNUci4jkzlswN6cHRxhJ4QuEOvXHW', 'Nguyễn Văn Hòa', 'hoa.nguyen@example.com', '0123456789', '123 Đường ABC, Hà Nội', 'hoa_avatar.png', 'user', true),
-('trangnguyen', 'hashed_password_example', 'Trần Thị Trang', 'trang.nguyen@example.com', '0987654321', '456 Đường XYZ, TP HCM',  'trang_avatar.png', 'admin', false);
+VALUES
+    ('hoangduong', '$2a$10$somehashedpassword1234567890', 'Hoàng Dương', 'hoang.duong@example.com', '0912345678', '789 Đường DEF, Hà Nội', 'hoangduong_avatar.png', 'user', true),
+    ('linhtran', '$2a$10$anotherhashedpassword0987654321', 'Linh Trần', 'linh.tran@example.com', '0981234567', '321 Đường GHI, TP HCM', 'linhtran_avatar.png', 'user', true),
+    ('nguyenhoa', '$2a$10$tLnDg/6/QNu/nD3bIcoR2OtUqNUci4jkzlswN6cHRxhJ4QuEOvXHW', 'Nguyễn Văn Hòa', 'hoa.nguyen@example.com', '0123456789', '123 Đường ABC, Hà Nội', 'hoa_avatar.png', 'admin', true);
 
-INSERT INTO Pet (name, type, breed, age, gender, healthnotes, weight, birth_date, username, microchip_number, last_checkup_date,original_image)
-VALUES 
-('Milo', 'Chó', 'Poodle', 3, 'Đực', 'Dị ứng nhẹ với phấn hoa', 5.2, '2020-04-15', 'nguyenhoa', 'MICRO123456', '2023-10-01',  'milo.png'),
-('Luna', 'Mèo', 'Anh lông ngắn', 2, 'Cái', 'Không có vấn đề sức khỏe nghiêm trọng', 3.8, '2021-06-10', 'trangnguyen', 'MICRO654321', '2023-09-20','luna.png');
+-- Insert sample pets
+INSERT INTO Pet (name, type, breed, age, gender, healthnotes, weight, birth_date, username, microchip_number, last_checkup_date, original_image)
+VALUES
+    ('Milo', 'Chó', 'Poodle', 3, 'Đực', 'Dị ứng nhẹ với phấn hoa', 5.2, '2020-04-15', 'nguyenhoa', 'MICRO123456', '2023-10-01', 'milo.png'),
+    ('Luna', 'Mèo', 'Anh lông ngắn', 2, 'Cái', 'Không có vấn đề sức khỏe nghiêm trọng', 3.8, '2021-06-10', 'hoangduong', 'MICRO654321', '2023-09-20', 'luna.png'),
+    ('Rocky', 'Chó', 'Golden Retriever', 5, 'Đực', 'Khỏe mạnh, không có vấn đề sức khỏe', 28.0, '2018-08-05', 'hoangduong', 'MICRO112233', '2023-11-15', 'rocky.png'),
+    ('Bella', 'Mèo', 'Maine Coon', 4, 'Cái', 'Viêm da dị ứng nhẹ', 6.5, '2019-12-25', 'linhtran', 'MICRO445566', '2023-11-10', 'bella.png');
 
-INSERT INTO Vaccination (petID, vaccineName, dateAdministered, nextDueDate, vaccineProvider, batchNumber, notes)
-VALUES 
-(1, 'Rabies Vaccine', '2023-01-15', '2024-01-15', 'Trung tâm thú y Hà Nội', 'BATCH001', 'Tiêm phòng bệnh dại định kỳ cho chó'),
-(2, 'Feline Leukemia Vaccine', '2023-05-10', '2024-05-10', 'Trung tâm thú y TP HCM', 'BATCH002', 'Tiêm phòng bệnh bạch cầu cho mèo');
-
-
-
+-- Insert sample services
 INSERT INTO ServiceType (serviceTypeName, description, iconURL)
-VALUES 
-('Khám sức khỏe', 'Dịch vụ khám sức khỏe định kỳ cho thú cưng', 'icon_health_check.png'),
-('Tiêm phòng', 'Dịch vụ tiêm phòng cho thú cưng', 'icon_vaccination.png');
+VALUES
+    ('Khám bệnh', 'Khám và chẩn đoán tình trạng sức khỏe của thú cưng', 'https://example.com/icon/khambenh.png'),
+    ('Tiêm phòng', 'Tiêm phòng các bệnh truyền nhiễm cho thú cưng', 'https://example.com/icon/tiemphong.png');
 
-INSERT INTO Service (typeID, name, price, duration, description)
-VALUES 
-(1, 'Khám sức khỏe tổng quát', 300000, '00:30:00', 'Khám sức khỏe và kiểm tra tổng quát tình trạng của thú cưng'),
-(2, 'Tiêm phòng bệnh dại', 150000, '00:15:00', 'Tiêm phòng bệnh dại cho thú cưng');
+-- Insert sample services
+INSERT INTO Service (typeID, name, price, duration, description, isAvailable)
+VALUES
+    (1, 'Khám tổng quát', 300000, '00:30:00', 'Khám sức khỏe tổng quát cho thú cưng', true),
+    (2, 'Tiêm phòng dại', 150000, '00:15:00', 'Tiêm phòng dại cho chó', true),
+    (2, 'Tiêm phòng Parvo', 200000, '00:15:00', 'Tiêm phòng bệnh Parvovirus cho chó', true);
 
-INSERT INTO Appointment (petid, doctor_id, service_id, date, status, notes, reminder_send, time_slot_id)
-VALUES 
-(1, 1, 1, '2023-10-12 09:00:00', 'Scheduled', 'Lần khám sức khỏe định kỳ', false, 1),
-(2, 2, 2, '2023-10-15 14:00:00', 'Completed', 'Tiêm phòng bệnh bạch cầu cho mèo Luna', true, 2);
+-- Insert sample appointments
+INSERT INTO Appointment (petid, doctor_id, service_id, status, notes)
+VALUES
+    (1, 1, 1, 'Scheduled', 'Khám tổng quát cho Milo'),
+    (2, 2, 2, 'Completed', 'Tiêm phòng dại cho Luna');
 
-INSERT INTO Doctors (user_id, specialization, years_of_experience, education, certificate_number, bio, consultation_fee)
-VALUES 
-(1, 'Bác sĩ thú y chuyên khoa da liễu', 10, 'Đại học Nông Lâm Hà Nội', 'CERT12345', 'Chuyên gia chăm sóc da và điều trị nấm da cho thú cưng', 500000),
-(2, 'Bác sĩ thú y chuyên khoa nội tiết', 8, 'Đại học Y Dược TP HCM', 'CERT67890', 'Chuyên gia điều trị các bệnh về nội tiết cho thú cưng', 450000);
+-- Insert sample vaccinations
+INSERT INTO Vaccination (petID, vaccineName, dateAdministered, nextDueDate, vaccineProvider, batchNumber, notes)
+VALUES
+    (1, 'Tiêm phòng dại', '2023-08-10', '2024-08-10', 'VaccineCo', 'BATCH123', 'Không có phản ứng phụ'),
+    (2, 'Tiêm phòng Parvo', '2023-05-20', '2024-05-20', 'VaccineCo', 'BATCH456', 'Thú cưng khỏe mạnh');
 
-INSERT INTO TimeSlots (doctor_id, start_time, end_time, is_active, day)
-VALUES 
-(1, '2023-10-12 09:00:00', '2023-10-12 09:30:00', true, '2023-10-12'),
-(2, '2023-10-15 14:00:00', '2023-10-15 14:15:00', true, '2023-10-15');
-
-INSERT INTO notifications (
-  username, title, description,datetime)
-VALUES 
-('nguyenhoa', 'Nhắc lịch uống thuốc', 'Milo cần uống thuốc đúng giờ để điều trị bệnh dị ứng', '2023-10-12 08:00:00'),
-( 'nguyenhoa','Lịch tiêm phòng định kỳ', 'Luna cần tiêm phòng bạch cầu vào tháng tới', '2023-11-15 09:00:00');
-
-
--- Sample data
+   -- Insert sample diseases
 INSERT INTO diseases (name, description, symptoms)
-VALUES (
-    'Nấm da',
-    'Bệnh nấm da là một bệnh phổ biến ở thú cưng, đặc biệt là chó và mèo',
-    '["Ngứa nhiều", "Da đỏ", "Rụng lông từng mảng", "Vảy da"]'
-);
+VALUES 
+    ('Viêm da dị ứng', 'Bệnh viêm da dị ứng thường xảy ra khi thú cưng tiếp xúc với các chất gây dị ứng.', '["Ngứa dữ dội", "Mẩn đỏ", "Rụng lông", "Da khô"]'),
+    ('Nấm da', 'Bệnh nấm da là một bệnh phổ biến ở thú cưng, đặc biệt là chó và mèo', '["Ngứa nhiều", "Da đỏ", "Rụng lông từng mảng", "Vảy da"]'),
+    ('Bệnh dại', 'Bệnh dại là một căn bệnh do virus gây ra, ảnh hưởng đến hệ thần kinh của thú cưng, có thể gây tử vong.', '["Thay đổi hành vi", "Sốt cao", "Bại liệt", "Khó thở", "Chảy dãi"]'),
+    ('Bệnh Parvo (Chó con)', 'Bệnh Parvo là một bệnh viêm ruột cấp tính do virus gây ra, thường gặp ở chó con.', '["Nôn mửa", "Tiêu chảy có máu", "Mệt mỏi", "Không muốn ăn uống", "Sốt"]'),
+    ('Tiêu chảy', 'Tiêu chảy thường do nhiễm khuẩn hoặc thức ăn không phù hợp.', '["Phân lỏng", "Mất nước", "Nôn mửa", "Chán ăn"]'),
+    ('Nhiễm khuẩn đường hô hấp', 'Nhiễm khuẩn đường hô hấp là bệnh thường gặp ở thú cưng khi hệ miễn dịch yếu.', '["Ho", "Hắt hơi", "Sốt", "Khó thở"]'),
+    ('Viêm khớp', 'Bệnh viêm khớp thường gặp ở thú cưng lớn tuổi, gây đau đớn và khó di chuyển.', '["Khó di chuyển", "Lè lưỡi", "Lưng cong", "Cứng khớp", "Kêu rên khi di chuyển"]'),
+    ('Sán lá gan', 'Sán lá gan là một loại ký sinh trùng có thể ảnh hưởng đến gan của thú cưng.', '["Nôn mửa", "Tiêu chảy", "Suy giảm cân", "Vàng da"]'),
+    ('Sốt rét', 'Sốt rét ở thú cưng thường do ký sinh trùng Plasmodium hoặc các loại kí sinh trùng khác gây ra.', '["Sốt cao", "Mệt mỏi", "Chán ăn", "Vàng mắt"]');
 
+-- Insert sample medicines
 INSERT INTO medicines (name, description, usage, dosage, frequency, duration, side_effects)
 VALUES
-(
-    'Ketoconazole',
-    'Thuốc kháng nấm dạng uống',
-    'Uống sau khi ăn',
-    '5-10mg/kg thể trọng',
-    '1 lần/ngày',
-    '2-4 tuần',
-    'Có thể gây buồn nôn, chán ăn'
-),
-(
-    'Miconazole',
-    'Thuốc kháng nấm dạng bôi',
-    'Bôi trực tiếp lên vùng da bị nấm',
-    'Bôi một lớp mỏng',
-    '2 lần/ngày',
-    '2-4 tuần',
-    'Có thể gây kích ứng da nhẹ'
-);
+    ('Ketoconazole', 'Thuốc kháng nấm dạng uống', 'Uống sau khi ăn', '5-10mg/kg thể trọng', '1 lần/ngày', '2-4 tuần', 'Có thể gây buồn nôn, chán ăn'),
+    ('Miconazole', 'Thuốc kháng nấm dạng bôi', 'Bôi trực tiếp lên vùng da bị nấm', 'Bôi một lớp mỏng', '2 lần/ngày', '2-4 tuần', 'Có thể gây kích ứng da nhẹ');
 
--- Link diseases with medicines
-INSERT INTO disease_medicines (disease_id, medicine_id)
-VALUES
-(1, 1),
-(1, 2);
-
--- Insert sample data
+-- Insert sample treatment phases
 INSERT INTO treatment_phases (disease_id, phase_number, phase_name, description, duration, notes)
-VALUES 
-(1, 1, 'Giai đoạn cấp tính', 'Điều trị ban đầu để kiểm soát các triệu chứng', '1-2 tuần', 'Cần theo dõi sát trong giai đoạn này'),
-(1, 2, 'Giai đoạn duy trì', 'Tiếp tục điều trị để ngăn ngừa tái phát', '2-4 tuần', 'Có thể điều chỉnh liều dựa trên đáp ứng');
+VALUES
+    (1, 1, 'Giai đoạn cấp tính', 'Điều trị ban đầu để kiểm soát các triệu chứng', '1-2 tuần', 'Cần theo dõi sát trong giai đoạn này'),
+    (2, 2, 'Giai đoạn duy trì', 'Tiếp tục điều trị để ngăn ngừa tái phát', '2-4 tuần', 'Có thể điều chỉnh liều dựa trên đáp ứng');
 
+
+<<<<<<< HEAD
 INSERT INTO phase_medicines (phase_id, medicine_id, dosage, frequency, duration, notes)
 VALUES 
 (1, 1, '10mg/kg', '2 lần/ngày', '1 tuần', 'Uống sau bữa ăn'),
@@ -1346,3 +1322,5 @@ ORDER BY pt.start_date DESC;
 =======
 (2, 2, 'Bôi lớp mỏng', '2 lần/ngày', '3 tuần', 'Tiếp tục theo dõi phản ứng của da');
 >>>>>>> 50f041a (update database design)
+=======
+>>>>>>> a415f25 (new data)

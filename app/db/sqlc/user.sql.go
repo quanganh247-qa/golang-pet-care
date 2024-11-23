@@ -501,21 +501,53 @@ func (q *Queries) UpdateUserPassword(ctx context.Context, arg UpdateUserPassword
 	return i, err
 }
 
+const updateAvatarUser = `-- name: UpdateAvatarUser :one
+UPDATE users
+SET data_image = $2, original_image = $3
+WHERE username = $1
+RETURNING id, username, hashed_password, full_name, email, phone_number, address, data_image, original_image, role, created_at, is_verified_email, removed_at
+`
+
+type UpdateAvatarUserParams struct {
+	Username      string      `json:"username"`
+	DataImage     []byte      `json:"data_image"`
+	OriginalImage pgtype.Text `json:"original_image"`
+}
+
+func (q *Queries) UpdateAvatarUser(ctx context.Context, arg UpdateAvatarUserParams) (User, error) {
+	row := q.db.QueryRow(ctx, updateAvatarUser, arg.Username, arg.DataImage, arg.OriginalImage)
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.Username,
+		&i.HashedPassword,
+		&i.FullName,
+		&i.Email,
+		&i.PhoneNumber,
+		&i.Address,
+		&i.DataImage,
+		&i.OriginalImage,
+		&i.Role,
+		&i.CreatedAt,
+		&i.IsVerifiedEmail,
+		&i.RemovedAt,
+	)
+	return i, err
+}
+
 const updateUser = `-- name: UpdateUser :one
 UPDATE users
-SET full_name = $2, email = $3, phone_number = $4, address = $5, data_image = $6, original_image = $7
+SET full_name = $2, email = $3, phone_number = $4, address = $5
 WHERE username = $1
 RETURNING id, username, hashed_password, full_name, email, phone_number, address, data_image, original_image, role, created_at, is_verified_email, removed_at
 `
 
 type UpdateUserParams struct {
-	Username      string      `json:"username"`
-	FullName      string      `json:"full_name"`
-	Email         string      `json:"email"`
-	PhoneNumber   pgtype.Text `json:"phone_number"`
-	Address       pgtype.Text `json:"address"`
-	DataImage     []byte      `json:"data_image"`
-	OriginalImage pgtype.Text `json:"original_image"`
+	Username    string      `json:"username"`
+	FullName    string      `json:"full_name"`
+	Email       string      `json:"email"`
+	PhoneNumber pgtype.Text `json:"phone_number"`
+	Address     pgtype.Text `json:"address"`
 }
 
 func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error) {
@@ -525,8 +557,6 @@ func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, e
 		arg.Email,
 		arg.PhoneNumber,
 		arg.Address,
-		arg.DataImage,
-		arg.OriginalImage,
 	)
 	var i User
 	err := row.Scan(
