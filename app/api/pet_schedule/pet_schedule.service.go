@@ -85,6 +85,7 @@ func (s *PetScheduleService) GetAllSchedulesByPetService(ctx *gin.Context, petID
 			EndType:          r.EndType.Bool,
 			EndDate:          r.EndDate.Time.Format(time.RFC3339),
 			Notes:            r.Notes.String,
+			IsActive:         r.IsActive.Bool,
 		})
 	}
 
@@ -114,6 +115,7 @@ func (s *PetScheduleService) ListPetSchedulesByUsernameService(ctx *gin.Context,
 			EndType:          schedule.EndType.Bool,
 			EndDate:          schedule.EndDate.Time.Format(time.RFC3339),
 			Notes:            schedule.Notes.String,
+			IsActive:         schedule.IsActive.Bool,
 		})
 
 	}

@@ -35,6 +35,7 @@ type PetScheduleResponse struct {
 	EndDate          string `json:"end_date"`
 	Notes            string `json:"notes"`
 	CreatedAt        string `json:"created_at"`
+	IsActive         bool   `json:"is_active"`
 }
 type PetKey struct {
 	PetID   int64  `json:"pet_id"`

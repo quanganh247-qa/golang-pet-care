@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"github.com/quanganh247-qa/go-blog-be/app/util"
 )
 
 type VaccinationController struct {
@@ -42,13 +43,20 @@ func (c *VaccinationController) GetVaccinationByID(ctx *gin.Context) {
 }
 
 func (c *VaccinationController) ListVaccinationsByPetID(ctx *gin.Context) {
+
 	petID, err := strconv.ParseInt(ctx.Param("pet_id"), 10, 64)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid pet ID"})
 		return
 	}
 
-	res, err := c.service.ListVaccinationsByPetID(ctx, petID)
+	pagination, err := util.GetPageInQuery(ctx.Request.URL.Query())
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, util.ErrorValidator(err))
+		return
+	}
+
+	res, err := c.service.ListVaccinationsByPetID(ctx, petID, pagination)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

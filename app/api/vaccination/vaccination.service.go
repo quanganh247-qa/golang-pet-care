@@ -7,12 +7,13 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5/pgtype"
 	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
+	"github.com/quanganh247-qa/go-blog-be/app/util"
 )
 
 type VaccinationServiceInterface interface {
 	CreateVaccination(ctx *gin.Context, req createVaccinationRequest) (*VaccinationResponse, error)
 	GetVaccinationByID(ctx *gin.Context, vaccinationID int64) (*VaccinationResponse, error)
-	ListVaccinationsByPetID(ctx *gin.Context, petID int64) ([]VaccinationResponse, error)
+	ListVaccinationsByPetID(ctx *gin.Context, petID int64, pagination *util.Pagination) ([]VaccinationResponse, error)
 	UpdateVaccination(ctx *gin.Context, req updateVaccinationRequest) error
 	DeleteVaccination(ctx context.Context, vaccinationID int64) error
 }
@@ -65,8 +66,15 @@ func (s *VaccinationService) GetVaccinationByID(ctx *gin.Context, vaccinationID 
 	}, nil
 }
 
-func (s *VaccinationService) ListVaccinationsByPetID(ctx *gin.Context, petID int64) ([]VaccinationResponse, error) {
-	res, err := s.storeDB.ListVaccinationsByPetID(ctx, pgtype.Int8{Int64: petID, Valid: true})
+func (s *VaccinationService) ListVaccinationsByPetID(ctx *gin.Context, petID int64, pagination *util.Pagination) ([]VaccinationResponse, error) {
+
+	offset := (pagination.Page - 1) * pagination.PageSize
+
+	res, err := s.storeDB.ListVaccinationsByPetID(ctx, db.ListVaccinationsByPetIDParams{
+		Limit:  int32(pagination.PageSize),
+		Offset: int32(offset),
+		Petid:  pgtype.Int8{Int64: petID, Valid: true},
+	})
 	if err != nil {
 		return nil, fmt.Errorf("failed to list vaccinations for pet: %w", err)
 	}
