@@ -12,7 +12,7 @@ WHERE vaccinationID = $1;
 SELECT vaccinationID, petID, vaccineName, dateAdministered, nextDueDate, vaccineProvider, batchNumber, notes
 FROM Vaccination
 WHERE petID = $1
-ORDER BY dateAdministered DESC;
+ORDER BY dateAdministered DESC LIMIT $2 OFFSET $3;
 
 -- name: UpdateVaccination :exec
 UPDATE Vaccination

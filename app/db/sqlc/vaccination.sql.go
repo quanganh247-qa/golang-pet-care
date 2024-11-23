@@ -87,11 +87,17 @@ const listVaccinationsByPetID = `-- name: ListVaccinationsByPetID :many
 SELECT vaccinationID, petID, vaccineName, dateAdministered, nextDueDate, vaccineProvider, batchNumber, notes
 FROM Vaccination
 WHERE petID = $1
-ORDER BY dateAdministered DESC
+ORDER BY dateAdministered DESC LIMIT $2 OFFSET $3
 `
 
-func (q *Queries) ListVaccinationsByPetID(ctx context.Context, petid pgtype.Int8) ([]Vaccination, error) {
-	rows, err := q.db.Query(ctx, listVaccinationsByPetID, petid)
+type ListVaccinationsByPetIDParams struct {
+	Petid  pgtype.Int8 `json:"petid"`
+	Limit  int32       `json:"limit"`
+	Offset int32       `json:"offset"`
+}
+
+func (q *Queries) ListVaccinationsByPetID(ctx context.Context, arg ListVaccinationsByPetIDParams) ([]Vaccination, error) {
+	rows, err := q.db.Query(ctx, listVaccinationsByPetID, arg.Petid, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
