@@ -37,7 +37,7 @@ SELECT * FROM Pet WHERE PetID = $1 AND is_active is true;
 
 -- name: UpdatePet :exec
 UPDATE Pet
-SET Name = $2, Type = $3, Breed = $4, Age = $5, Weight = $6, Gender = $7, HealthNotes = $8, data_image = $9, is_active = $10
+SET Name = $2, Type = $3, Breed = $4, Age = $5, Weight = $6, Gender = $7, HealthNotes = $8, birth_date = $9
 WHERE PetID = $1;
 
 -- name: DeletePet :exec
@@ -108,4 +108,10 @@ LEFT JOIN users AS u ON p.username = u.username
 WHERE p.is_active = TRUE AND p.username = $1 AND p.name = $2;
 =======
 UPDATE Pet SET is_active = $2 WHERE PetID = $1 AND is_active is true;
+<<<<<<< HEAD
 >>>>>>> 3fdf0ad (updated pet status)
+=======
+
+-- name: UpdatePetAvatar :exec
+UPDATE Pet SET data_image = $2, original_image = $3 WHERE PetID = $1 and is_active is true;
+>>>>>>> 5ea33aa (PUT pet info)

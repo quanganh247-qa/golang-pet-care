@@ -120,6 +120,7 @@ func (q *Queries) GetServices(ctx context.Context, arg GetServicesParams) ([]Ser
 	return items, nil
 }
 
+<<<<<<< HEAD
 const updateService = `-- name: UpdateService :one
 UPDATE services
 SET 
@@ -131,6 +132,38 @@ SET
     updated_at = NOW()
 WHERE id = $1
 RETURNING id, name, description, duration, cost, category, priority, created_at
+=======
+const getServiceByID = `-- name: GetServiceByID :one
+SELECT serviceid, typeid, name, price, duration, description, isavailable, removed_at FROM Service 
+WHERE serviceID = $1 LIMIT 1
+`
+
+func (q *Queries) GetServiceByID(ctx context.Context, serviceid int64) (Service, error) {
+	row := q.db.QueryRow(ctx, getServiceByID, serviceid)
+	var i Service
+	err := row.Scan(
+		&i.Serviceid,
+		&i.Typeid,
+		&i.Name,
+		&i.Price,
+		&i.Duration,
+		&i.Description,
+		&i.Isavailable,
+		&i.RemovedAt,
+	)
+	return i, err
+}
+
+const updateService = `-- name: UpdateService :exec
+UPDATE Service Set
+  typeID = $2,
+  name = $3,
+  price = $4,
+  duration = $5,
+  description = $6,
+  isAvailable = $7
+WHERE serviceID = $1
+>>>>>>> 5ea33aa (PUT pet info)
 `
 
 type UpdateServiceParams struct {
