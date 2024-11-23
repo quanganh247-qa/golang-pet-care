@@ -374,7 +374,7 @@ func (controller *UserController) updatetUser(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
 		return
 	}
-	ctx.JSON(http.StatusOK, util.SuccessResponse("Resend OTP successfull", res))
+	ctx.JSON(http.StatusOK, util.SuccessResponse("Update user succesfully", res))
 }
 
 func (controller *UserController) updatetUserAvatar(ctx *gin.Context) {

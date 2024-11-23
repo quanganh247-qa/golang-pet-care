@@ -6,7 +6,7 @@ import (
 )
 
 func Routes(routerGroup middleware.RouterGroup) {
-	dicease := routerGroup.RouterDefault.Group("/dicease")
+	dicease := routerGroup.RouterDefault.Group("/disease")
 	authRoute := routerGroup.RouterAuth(dicease)
 
 	// Khoi tao api
