@@ -139,11 +139,14 @@ INSERT INTO diseases (name, description, symptoms, created_at, updated_at) VALUE
 =======
 ORDER BY tp.phase_number, m.name;
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> 6c35562 (dicease and treatment plan)
 =======
 =======
 ORDER BY tp.start_date, m.name;
 >>>>>>> 3bf345d (happy new year)
+=======
+>>>>>>> 6a85052 (get treatment by disease)
 
 
 
@@ -154,6 +157,7 @@ SELECT
     d.description AS disease_description,
     d.symptoms,
     tp.id AS phase_id,
+<<<<<<< HEAD
     tp.phase_name AS phase_name,
     tp.description AS phase_description,
     m.id AS medicine_id,
@@ -188,3 +192,13 @@ INSERT INTO diseases (name, description, symptoms, created_at, updated_at) VALUE
 =======
 ORDER BY tp.phase_number, m.name;
 >>>>>>> 6c35562 (dicease and treatment plan)
+=======
+    tp.phase_number AS phase_number,
+    tp.phase_name AS phase_name,
+    tp.description AS phase_description,
+    tp.duration AS phase_duration,
+    tp.notes AS phase_notes
+FROM diseases d
+JOIN treatment_phases tp ON d.id = tp.disease_id
+WHERE d.id = $1  LIMIT $2 OFFSET $3;
+>>>>>>> 6a85052 (get treatment by disease)

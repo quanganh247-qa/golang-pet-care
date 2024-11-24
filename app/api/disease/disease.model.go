@@ -260,7 +260,11 @@ type TreatmentPlan struct {
 }
 
 type TreatmentPlan struct {
+<<<<<<< HEAD
 >>>>>>> 6c35562 (dicease and treatment plan)
+=======
+	DiseaseID       int           `json:"disease_id"`
+>>>>>>> 6a85052 (get treatment by disease)
 	DiseaseName     string        `json:"disease_name"`
 	Description     string        `json:"description"`
 	Symptoms        []string      `json:"symptoms"`
@@ -268,6 +272,7 @@ type TreatmentPlan struct {
 }
 
 type PhaseDetail struct {
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 =======
@@ -279,6 +284,8 @@ type PhaseDetail struct {
 <<<<<<< HEAD
 >>>>>>> 6c35562 (dicease and treatment plan)
 =======
+=======
+>>>>>>> 6a85052 (get treatment by disease)
 	PhaseID          int            `json:"phase_id"`
 	PhaseNumber      int            `json:"phase_number"`
 	PhaseName        string         `json:"phase_name"`
@@ -286,6 +293,7 @@ type PhaseDetail struct {
 	PhaseDescription string         `json:"phase_description"`
 	PhaseNotes       string         `json:"phase_notes"`
 	Medicines        []MedicineInfo `json:"medicines"`
+<<<<<<< HEAD
 >>>>>>> 6a85052 (get treatment by disease)
 }
 
@@ -391,4 +399,8 @@ type CreateAllergyRequest struct {
 	Detail string `json:"detail"`
 =======
 >>>>>>> 6c35562 (dicease and treatment plan)
+=======
+>>>>>>> 6a85052 (get treatment by disease)
 }
+
+// DiseaseMedicineInfo holds the disease and associated medicine information.

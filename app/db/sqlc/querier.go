@@ -670,6 +670,7 @@ type Querier interface {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> 79a3bcc (medicine api)
 	GetUser(ctx context.Context, username string) (User, error)
@@ -739,6 +740,9 @@ type Querier interface {
 	InsertDeviceToken(ctx context.Context, arg InsertDeviceTokenParams) (DeviceToken, error)
 >>>>>>> 33fcf96 (Big update)
 =======
+=======
+	GetTreatmentByDiseaseId(ctx context.Context, arg GetTreatmentByDiseaseIdParams) ([]GetTreatmentByDiseaseIdRow, error)
+>>>>>>> 6a85052 (get treatment by disease)
 	GetUser(ctx context.Context, username string) (GetUserRow, error)
 	GetVaccinationByID(ctx context.Context, vaccinationid int64) (Vaccination, error)
 	InsertDeviceToken(ctx context.Context, arg InsertDeviceTokenParams) (Devicetoken, error)
