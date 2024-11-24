@@ -290,10 +290,23 @@ JOIN medicines m ON pm.medicine_id = m.id
     tp.phase_name AS phase_name,
     tp.description AS phase_description,
     tp.duration AS phase_duration,
-    tp.notes AS phase_notes
+    tp.notes AS phase_notes,
+    m.id AS medicine_id,
+    m.usage AS medicine_usage,
+    m.name AS medicine_name,
+    m.description AS medicine_description,
+    COALESCE(pm.dosage, m.dosage) AS dosage,
+    COALESCE(pm.frequency, m.frequency) AS frequency,
+    COALESCE(pm.duration, m.duration) AS duration,
+    m.side_effects
 FROM diseases d
 JOIN treatment_phases tp ON d.id = tp.disease_id
+<<<<<<< HEAD
 >>>>>>> 6a85052 (get treatment by disease)
+=======
+JOIN phase_medicines pm ON tp.id = pm.phase_id
+JOIN medicines m ON pm.medicine_id = m.id
+>>>>>>> 169d7f8 (get treatment by disease)
 WHERE d.id = $1  LIMIT $2 OFFSET $3
 `
 
@@ -305,13 +318,24 @@ type GetTreatmentByDiseaseIdParams struct {
 
 type GetTreatmentByDiseaseIdRow struct {
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 169d7f8 (get treatment by disease)
 	DiseaseID           int64       `json:"disease_id"`
 	DiseaseName         string      `json:"disease_name"`
 	DiseaseDescription  pgtype.Text `json:"disease_description"`
 	Symptoms            []byte      `json:"symptoms"`
 	PhaseID             int64       `json:"phase_id"`
+<<<<<<< HEAD
 	PhaseName           pgtype.Text `json:"phase_name"`
 	PhaseDescription    pgtype.Text `json:"phase_description"`
+=======
+	PhaseNumber         pgtype.Int4 `json:"phase_number"`
+	PhaseName           pgtype.Text `json:"phase_name"`
+	PhaseDescription    pgtype.Text `json:"phase_description"`
+	PhaseDuration       pgtype.Text `json:"phase_duration"`
+	PhaseNotes          pgtype.Text `json:"phase_notes"`
+>>>>>>> 169d7f8 (get treatment by disease)
 	MedicineID          int64       `json:"medicine_id"`
 	MedicineUsage       pgtype.Text `json:"medicine_usage"`
 	MedicineName        string      `json:"medicine_name"`
@@ -320,6 +344,7 @@ type GetTreatmentByDiseaseIdRow struct {
 	Frequency           pgtype.Text `json:"frequency"`
 	Duration            pgtype.Text `json:"duration"`
 	SideEffects         pgtype.Text `json:"side_effects"`
+<<<<<<< HEAD
 =======
 	DiseaseID          int64       `json:"disease_id"`
 	DiseaseName        string      `json:"disease_name"`
@@ -332,6 +357,8 @@ type GetTreatmentByDiseaseIdRow struct {
 	PhaseDuration      pgtype.Text `json:"phase_duration"`
 	PhaseNotes         pgtype.Text `json:"phase_notes"`
 >>>>>>> 6a85052 (get treatment by disease)
+=======
+>>>>>>> 169d7f8 (get treatment by disease)
 }
 
 func (q *Queries) GetTreatmentByDiseaseId(ctx context.Context, arg GetTreatmentByDiseaseIdParams) ([]GetTreatmentByDiseaseIdRow, error) {
@@ -366,7 +393,18 @@ func (q *Queries) GetTreatmentByDiseaseId(ctx context.Context, arg GetTreatmentB
 			&i.PhaseDescription,
 			&i.PhaseDuration,
 			&i.PhaseNotes,
+<<<<<<< HEAD
 >>>>>>> 6a85052 (get treatment by disease)
+=======
+			&i.MedicineID,
+			&i.MedicineUsage,
+			&i.MedicineName,
+			&i.MedicineDescription,
+			&i.Dosage,
+			&i.Frequency,
+			&i.Duration,
+			&i.SideEffects,
+>>>>>>> 169d7f8 (get treatment by disease)
 		); err != nil {
 			return nil, err
 		}
