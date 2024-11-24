@@ -131,12 +131,16 @@ type Querier interface {
 	GetAllTimeSlots(ctx context.Context, arg GetAllTimeSlotsParams) ([]GetAllTimeSlotsRow, error)
 >>>>>>> 79a3bcc (medicine api)
 	GetAllUsers(ctx context.Context) ([]User, error)
+<<<<<<< HEAD
 	GetAppointmentByStateId(ctx context.Context, stateID pgtype.Int4) ([]Appointment, error)
 	GetAppointmentDetail(ctx context.Context, arg GetAppointmentDetailParams) (GetAppointmentDetailRow, error)
 	GetAppointmentDetailByAppointmentID(ctx context.Context, appointmentID int64) (GetAppointmentDetailByAppointmentIDRow, error)
 	GetAppointmentsByDoctor(ctx context.Context, doctorID pgtype.Int8) ([]GetAppointmentsByDoctorRow, error)
 	GetAppointmentsByTimeSlot(ctx context.Context, timeSlotID pgtype.Int8) ([]GetAppointmentsByTimeSlotRow, error)
 	GetAppointmentsByUser(ctx context.Context, username pgtype.Text) ([]GetAppointmentsByUserRow, error)
+=======
+	GetAppointmentDetailById(ctx context.Context, appointmentID int64) (Appointment, error)
+>>>>>>> 7e35c2e (get appointment detail)
 	GetAppointmentsOfDoctorWithDetails(ctx context.Context, id int64) ([]GetAppointmentsOfDoctorWithDetailsRow, error)
 <<<<<<< HEAD
 	GetAppointmentsQueue(ctx context.Context, doctorID pgtype.Int8) ([]Appointment, error)

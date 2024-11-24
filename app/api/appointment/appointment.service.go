@@ -19,6 +19,7 @@ import (
 )
 
 type AppointmentServiceInterface interface {
+<<<<<<< HEAD
 	CreateSOAPService(ctx *gin.Context, soap CreateSOAPRequest, appointmentID int64) (*SOAPResponse, error)
 	UpdateSOAPService(ctx *gin.Context, soap UpdateSOAPRequest, appointmentID int64) (*SOAPResponse, error)
 	CreateAppointment(ctx *gin.Context, req createAppointmentRequest, username string) (*createAppointmentResponse, error)
@@ -35,6 +36,12 @@ type AppointmentServiceInterface interface {
 	GetQueueService(ctx *gin.Context, username string) ([]QueueItem, error)
 	GetHistoryAppointmentsByPetID(ctx *gin.Context, petID int64) ([]historyAppointmentResponse, error)
 	GetSOAPByAppointmentID(ctx *gin.Context, appointmentID int64) (*SOAPResponse, error)
+=======
+	CreateAppointment(ctx *gin.Context, req createAppointmentRequest) (*createAppointmentResponse, error)
+	UpdateAppointmentStatus(ctx *gin.Context, req updateAppointmentStatusRequest, id int64) error
+	GetAppointmentsOfDoctorService(ctx *gin.Context, doctorID int64) ([]AppointmentWithDetails, error)
+	GetAppointmentByID(ctx *gin.Context, id int64) (*db.Appointment, error)
+>>>>>>> 7e35c2e (get appointment detail)
 }
 
 func (s *AppointmentService) CreateAppointment(ctx *gin.Context, req createAppointmentRequest, username string) (*createAppointmentResponse, error) {
@@ -760,6 +767,7 @@ func (s *AppointmentService) GetSOAPByAppointmentID(ctx *gin.Context, appointmen
 	}, nil
 }
 
+<<<<<<< HEAD
 func (s *AppointmentService) GetHistoryAppointmentsByPetID(ctx *gin.Context, petID int64) ([]historyAppointmentResponse, error) {
 
 	appointments, err := s.storeDB.GetHistoryAppointmentsByPetID(ctx, pgtype.Int8{Int64: petID, Valid: true})
@@ -784,4 +792,13 @@ func (s *AppointmentService) GetHistoryAppointmentsByPetID(ctx *gin.Context, pet
 		})
 	}
 	return a, nil
+=======
+// get by id
+func (s *AppointmentService) GetAppointmentByID(ctx *gin.Context, id int64) (*db.Appointment, error) {
+	appointment, err := s.storeDB.GetAppointmentDetailById(ctx, id)
+	if err != nil {
+		return nil, fmt.Errorf("error while getting appointment by id: %w", err)
+	}
+	return &appointment, nil
+>>>>>>> 7e35c2e (get appointment detail)
 }
