@@ -21,6 +21,7 @@ func Routes(routerGroup middleware.RouterGroup, taskDistributor worker.TaskDistr
 	}
 
 	{
+<<<<<<< HEAD
 		authRoute.POST("appointment/", appointmentApi.controller.createAppointment)
 		authRoute.POST("appointment/confirm/:id", appointmentApi.controller.confirmAppointment)
 		authRoute.POST("appointment/check-in/:id", appointmentApi.controller.checkinAppointment)
@@ -33,6 +34,12 @@ func Routes(routerGroup middleware.RouterGroup, taskDistributor worker.TaskDistr
 		authRoute.GET("appointments/pet/:pet_id/history", appointmentApi.controller.getHistoryAppointmentsByPetID)
 		authRoute.GET("appointments/queue", appointmentApi.controller.getQueue)
 		authRoute.PUT("appointments/queue/:id/status", appointmentApi.controller.updateQueueItemStatus)
+=======
+		authRoute.POST("/create", appointmentApi.controller.createAppointment)
+		authRoute.PUT("/:appointment_id", appointmentApi.controller.updateAppointmentStatus)
+		authRoute.GET("/doctor/:doctor_id", appointmentApi.controller.getAppointmentsOfDoctor)
+		authRoute.GET("/:appointment_id", appointmentApi.controller.getAppointmentByID)
+>>>>>>> 7e35c2e (get appointment detail)
 
 		// soap
 		authRoute.POST("appointment/:id/soap", appointmentApi.controller.createSOAP)

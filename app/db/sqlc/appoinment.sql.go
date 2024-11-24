@@ -139,6 +139,7 @@ func (q *Queries) CreateAppointment(ctx context.Context, arg CreateAppointmentPa
 	return i, err
 }
 
+<<<<<<< HEAD
 const getAllAppointments = `-- name: GetAllAppointments :many
 SELECT 
     a.appointment_id,
@@ -530,10 +531,31 @@ func (q *Queries) GetAppointmentDetailByAppointmentID(ctx context.Context, appoi
 		&i.OwnerPhone,
 		&i.OwnerEmail,
 		&i.OwnerAddress,
+=======
+const getAppointmentDetailById = `-- name: GetAppointmentDetailById :one
+SELECT appointment_id, petid, doctor_id, service_id, date, status, notes, reminder_send, time_slot_id, created_at from Appointment WHERE appointment_id = $1
+`
+
+func (q *Queries) GetAppointmentDetailById(ctx context.Context, appointmentID int64) (Appointment, error) {
+	row := q.db.QueryRow(ctx, getAppointmentDetailById, appointmentID)
+	var i Appointment
+	err := row.Scan(
+		&i.AppointmentID,
+		&i.Petid,
+		&i.DoctorID,
+		&i.ServiceID,
+		&i.Date,
+		&i.Status,
+		&i.Notes,
+		&i.ReminderSend,
+		&i.TimeSlotID,
+		&i.CreatedAt,
+>>>>>>> 7e35c2e (get appointment detail)
 	)
 	return i, err
 }
 
+<<<<<<< HEAD
 const getAppointmentsByDoctor = `-- name: GetAppointmentsByDoctor :many
 SELECT 
     a.appointment_id,
@@ -672,6 +694,8 @@ func (q *Queries) GetAppointmentsByUser(ctx context.Context, username pgtype.Tex
 	return items, nil
 }
 
+=======
+>>>>>>> 7e35c2e (get appointment detail)
 const getAppointmentsOfDoctorWithDetails = `-- name: GetAppointmentsOfDoctorWithDetails :many
 SELECT 
     a.appointment_id as appointment_id,
