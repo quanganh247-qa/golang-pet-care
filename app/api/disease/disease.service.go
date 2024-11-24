@@ -168,6 +168,7 @@ func (s *DiceaseService) GetTreatmentByDiseaseID(ctx *gin.Context, diseaseID int
 	if err != nil {
 		return nil, fmt.Errorf("error while getting treatment by disease id: %w", err)
 	}
+	// / Group medicines by disease
 	diseaseMap := make(map[string]*TreatmentPlan)
 	phaseMap := make(map[string]map[int]*PhaseDetail) // diseaseID_phaseNumber -> PhaseDetail
 
@@ -200,11 +201,27 @@ func (s *DiceaseService) GetTreatmentByDiseaseID(ctx *gin.Context, diseaseID int
 				PhaseID:          int(row.PhaseID),
 				PhaseNumber:      int(row.PhaseNumber.Int32),
 				PhaseName:        row.PhaseName.String,
-				Duration:         row.PhaseDuration.String,
 				PhaseDescription: row.PhaseDescription.String,
+				Duration:         row.PhaseDuration.String,
 				PhaseNotes:       row.PhaseNotes.String,
+				Medicines:        []MedicineInfo{},
 			}
 		}
+
+		// Add medicine to phase
+		medicine := MedicineInfo{
+			MedicineID:   int(row.MedicineID),
+			MedicineName: row.MedicineName,
+			Dosage:       &row.Dosage.String,
+			Usage:        &row.MedicineUsage.String,
+			Frequency:    &row.Frequency.String,
+			Duration:     &row.Duration.String,
+			SideEffects:  &row.SideEffects.String,
+		}
+		phaseMap[diseaseKey][int(row.PhaseNumber.Int32)].Medicines = append(
+			phaseMap[diseaseKey][int(row.PhaseNumber.Int32)].Medicines,
+			medicine,
+		)
 	}
 
 	// Convert maps to slice and organize phases
