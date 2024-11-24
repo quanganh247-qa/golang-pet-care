@@ -22,6 +22,7 @@ func Routes(routerGroup middleware.RouterGroup) {
 		authRoute.GET("/", diceaseApi.controller.getDiceaseAnhMedicinesInfo)
 		authRoute.GET("/treatment-plan", diceaseApi.controller.getDiseaseTreatmentPlanWithPhases)
 
+		authRoute.GET("/treatment/:disease_id", diceaseApi.controller.getTreatmentByDiseaseId)
 	}
 
 }
