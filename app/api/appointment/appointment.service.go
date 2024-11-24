@@ -14,6 +14,7 @@ type AppointmentServiceInterface interface {
 	CreateAppointment(ctx *gin.Context, req createAppointmentRequest) (*createAppointmentResponse, error)
 	UpdateAppointmentStatus(ctx *gin.Context, req updateAppointmentStatusRequest, id int64) error
 	GetAppointmentsOfDoctorService(ctx *gin.Context, doctorID int64) ([]AppointmentWithDetails, error)
+	GetAppointmentByID(ctx *gin.Context, id int64) (*db.Appointment, error)
 }
 
 // creating an appointment by time slot available of doctor
@@ -113,12 +114,11 @@ func (s *AppointmentService) GetAppointmentsOfDoctorService(ctx *gin.Context, do
 
 }
 
-// func (s *AppointmentService) UpdateAppointmentNotificationService(ctx *gin.Context, id int64) error {
-// 	err := s.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
-// 		return q.UpdateAppointmentNotification(ctx, id)
-// 	})
-// 	if err != nil {
-// 		return fmt.Errorf("error while updating appointment notification: %w", err)
-// 	}
-// 	return nil
-// }
+// get by id
+func (s *AppointmentService) GetAppointmentByID(ctx *gin.Context, id int64) (*db.Appointment, error) {
+	appointment, err := s.storeDB.GetAppointmentDetailById(ctx, id)
+	if err != nil {
+		return nil, fmt.Errorf("error while getting appointment by id: %w", err)
+	}
+	return &appointment, nil
+}

@@ -35,3 +35,6 @@ FROM Appointment a
 WHERE d.id = $1
 AND LOWER(a.status) <> 'completed'
 ORDER BY ts.start_time ASC;
+
+-- name: GetAppointmentDetailById :one
+SELECT * from Appointment WHERE appointment_id = $1;
