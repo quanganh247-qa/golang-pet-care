@@ -337,6 +337,7 @@ type Querier interface {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> 4ccd381 (Update appointment flow)
 	GetAppointmentByStateId(ctx context.Context, stateID pgtype.Int4) ([]Appointment, error)
@@ -384,6 +385,9 @@ type Querier interface {
 >>>>>>> b393bb9 (add service and add permission)
 	GetAppointmentsByUser(ctx context.Context, username pgtype.Text) ([]GetAppointmentsByUserRow, error)
 >>>>>>> 685da65 (latest update)
+=======
+	GetAppointmentDetailById(ctx context.Context, appointmentID int64) (Appointment, error)
+>>>>>>> 7e35c2e (get appointment detail)
 	GetAppointmentsOfDoctorWithDetails(ctx context.Context, id int64) ([]GetAppointmentsOfDoctorWithDetailsRow, error)
 <<<<<<< HEAD
 <<<<<<< HEAD

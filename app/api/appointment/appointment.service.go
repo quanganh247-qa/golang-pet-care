@@ -71,6 +71,7 @@ type AppointmentServiceInterface interface {
 	GetAppointmentsOfDoctorService(ctx *gin.Context, doctorID int64) ([]AppointmentWithDetails, error)
 	GetAppointmentByID(ctx *gin.Context, id int64) (*db.Appointment, error)
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> 7e35c2e (get appointment detail)
 =======
 	GetAppointmentsByPetOfUser(ctx *gin.Context, username string) ([]AppointmentWithDetails, error)
@@ -91,6 +92,8 @@ type AppointmentServiceInterface interface {
 	GetHistoryAppointmentsByPetID(ctx *gin.Context, petID int64) ([]historyAppointmentResponse, error)
 	GetSOAPByAppointmentID(ctx *gin.Context, appointmentID int64) (*SOAPResponse, error)
 >>>>>>> c8bec46 (feat: add chatbot, room management, and pet allergy features)
+=======
+>>>>>>> 7e35c2e (get appointment detail)
 }
 
 func (s *AppointmentService) CreateAppointment(ctx *gin.Context, req createAppointmentRequest, username string) (*createAppointmentResponse, error) {
@@ -1747,6 +1750,7 @@ func (s *AppointmentService) GetSOAPByAppointmentID(ctx *gin.Context, appointmen
 	}, nil
 }
 
+<<<<<<< HEAD
 func (s *AppointmentService) GetHistoryAppointmentsByPetID(ctx *gin.Context, petID int64) ([]historyAppointmentResponse, error) {
 
 	appointments, err := s.storeDB.GetHistoryAppointmentsByPetID(ctx, pgtype.Int8{Int64: petID, Valid: true})
@@ -1771,4 +1775,13 @@ func (s *AppointmentService) GetHistoryAppointmentsByPetID(ctx *gin.Context, pet
 		})
 	}
 	return a, nil
+=======
+// get by id
+func (s *AppointmentService) GetAppointmentByID(ctx *gin.Context, id int64) (*db.Appointment, error) {
+	appointment, err := s.storeDB.GetAppointmentDetailById(ctx, id)
+	if err != nil {
+		return nil, fmt.Errorf("error while getting appointment by id: %w", err)
+	}
+	return &appointment, nil
+>>>>>>> 7e35c2e (get appointment detail)
 }

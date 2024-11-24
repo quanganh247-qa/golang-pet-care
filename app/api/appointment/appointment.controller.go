@@ -34,6 +34,7 @@ type AppointmentControllerInterface interface {
 	getSOAPByAppointmentID(ctx *gin.Context)
 =======
 	updateAppointmentStatus(ctx *gin.Context)
+<<<<<<< HEAD
 	getAppointmentByID(ctx *gin.Context)
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -71,6 +72,10 @@ type AppointmentControllerInterface interface {
 =======
 	getSOAPByAppointmentID(ctx *gin.Context)
 >>>>>>> c8bec46 (feat: add chatbot, room management, and pet allergy features)
+=======
+	getAppointmentsOfDoctor(ctx *gin.Context)
+	getAppointmentByID(ctx *gin.Context)
+>>>>>>> 7e35c2e (get appointment detail)
 }
 
 func (c *AppointmentController) createAppointment(ctx *gin.Context) {
@@ -728,4 +733,24 @@ func (c *AppointmentController) getSOAPByAppointmentID(ctx *gin.Context) {
 		return
 	}
 	ctx.JSON(http.StatusOK, soap)
+}
+
+func (c *AppointmentController) getAppointmentByID(ctx *gin.Context) {
+	appointmentID := ctx.Param("appointment_id")
+	if appointmentID == "" {
+		ctx.JSON(http.StatusBadRequest, nil)
+		return
+	}
+	// convert string to int64
+	id, err := strconv.ParseInt(appointmentID, 10, 64)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
+		return
+	}
+	res, err := c.service.GetAppointmentByID(ctx, id)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
+		return
+	}
+	ctx.JSON(http.StatusOK, util.SuccessResponse("get appointment by id successful", res))
 }

@@ -197,6 +197,7 @@ ORDER BY ts.start_time ASC;
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 -- name: CountAppointmentsByDateAndTimeSlot :one
 SELECT COUNT(*) 
@@ -672,3 +673,7 @@ LEFT JOIN rooms r ON appointments.room_id = r.id
 WHERE petid = $1 AND state_id = (SELECT id FROM states WHERE state = 'Completed' LIMIT 1)
 ORDER BY date DESC;
 >>>>>>> c8bec46 (feat: add chatbot, room management, and pet allergy features)
+=======
+-- name: GetAppointmentDetailById :one
+SELECT * from Appointment WHERE appointment_id = $1;
+>>>>>>> 7e35c2e (get appointment detail)
