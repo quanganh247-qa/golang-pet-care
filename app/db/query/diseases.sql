@@ -96,4 +96,25 @@ SELECT * FROM diseases WHERE id = $1 LIMIT 1;
 INSERT INTO diseases (name, description, symptoms, created_at, updated_at) VALUES ($1, $2, $3, now(), now()) RETURNING *;
 =======
 ORDER BY tp.phase_number, m.name;
+<<<<<<< HEAD
 >>>>>>> 6c35562 (dicease and treatment plan)
+=======
+
+
+
+-- name: GetTreatmentByDiseaseId :many
+SELECT 
+    d.id AS disease_id,
+    d.name AS disease_name,
+    d.description AS disease_description,
+    d.symptoms,
+    tp.id AS phase_id,
+    tp.phase_number AS phase_number,
+    tp.phase_name AS phase_name,
+    tp.description AS phase_description,
+    tp.duration AS phase_duration,
+    tp.notes AS phase_notes
+FROM diseases d
+JOIN treatment_phases tp ON d.id = tp.disease_id
+WHERE d.id = $1  LIMIT $2 OFFSET $3;
+>>>>>>> 6a85052 (get treatment by disease)

@@ -61,11 +61,14 @@ func (s *DiseaseService) CreateDisease(ctx context.Context, arg CreateDiseaseReq
 	"sort"
 
 	"github.com/gin-gonic/gin"
+	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
+	"github.com/quanganh247-qa/go-blog-be/app/util"
 )
 
 type DiceaseServiceInterface interface {
 	GetDiceaseAnhMedicinesInfoService(ctx *gin.Context, disease string) ([]DiseaseMedicineInfo, error)
 	GetDiseaseTreatmentPlanWithPhasesService(ctx *gin.Context, disease string) ([]TreatmentPlan, error)
+	GetTreatmentByDiseaseID(ctx *gin.Context, diseaseID int64, pagination *util.Pagination) ([]TreatmentPlan, error)
 }
 
 // -- Query lấy phác đồ điều trị đầy đủ
@@ -731,4 +734,87 @@ func (s *DiceaseService) GetDiseaseTreatmentPlanWithPhasesService(ctx *gin.Conte
 
 	return result, nil
 }
+<<<<<<< HEAD
 >>>>>>> 6c35562 (dicease and treatment plan)
+=======
+
+// get treatment by disease id
+func (s *DiceaseService) GetTreatmentByDiseaseID(ctx *gin.Context, diseaseID int64, pagination *util.Pagination) ([]TreatmentPlan, error) {
+
+	offset := (pagination.Page - 1) * pagination.PageSize
+
+	treatments, err := s.storeDB.GetTreatmentByDiseaseId(ctx, db.GetTreatmentByDiseaseIdParams{
+		ID:     diseaseID,
+		Limit:  int32(pagination.PageSize),
+		Offset: int32(offset),
+	})
+	if err != nil {
+		return nil, fmt.Errorf("error while getting treatment by disease id: %w", err)
+	}
+	diseaseMap := make(map[string]*TreatmentPlan)
+	phaseMap := make(map[string]map[int]*PhaseDetail) // diseaseID_phaseNumber -> PhaseDetail
+
+	for _, row := range treatments {
+		var symptoms []string
+		if err := json.Unmarshal(row.Symptoms, &symptoms); err != nil {
+			return nil, fmt.Errorf("failed to unmarshal symptoms: %w", err)
+		}
+
+		// Create or get disease entry
+		if _, exists := diseaseMap[row.DiseaseName]; !exists {
+			diseaseMap[row.DiseaseName] = &TreatmentPlan{
+				DiseaseID:       int(row.DiseaseID),
+				DiseaseName:     row.DiseaseName,
+				Description:     row.DiseaseDescription.String,
+				Symptoms:        symptoms,
+				TreatmentPhases: []PhaseDetail{},
+			}
+		}
+
+		// Create phase map for disease if it doesn't exist
+		diseaseKey := fmt.Sprintf("%s", row.DiseaseName)
+		if _, exists := phaseMap[diseaseKey]; !exists {
+			phaseMap[diseaseKey] = make(map[int]*PhaseDetail)
+		}
+
+		// Create or get phase entry
+		if _, exists := phaseMap[diseaseKey][int(row.PhaseNumber.Int32)]; !exists {
+			phaseMap[diseaseKey][int(row.PhaseNumber.Int32)] = &PhaseDetail{
+				PhaseID:          int(row.PhaseID),
+				PhaseNumber:      int(row.PhaseNumber.Int32),
+				PhaseName:        row.PhaseName.String,
+				Duration:         row.PhaseDuration.String,
+				PhaseDescription: row.PhaseDescription.String,
+				PhaseNotes:       row.PhaseNotes.String,
+			}
+		}
+	}
+
+	// Convert maps to slice and organize phases
+	result := make([]TreatmentPlan, 0, len(diseaseMap))
+	for diseaseName, plan := range diseaseMap {
+		diseaseKey := fmt.Sprintf("%s", diseaseName)
+
+		// Get all phases for this disease
+		phases := make([]PhaseDetail, 0, len(phaseMap[diseaseKey]))
+		for _, phase := range phaseMap[diseaseKey] {
+			phases = append(phases, *phase)
+		}
+
+		// Sort phases by phase number
+		sort.Slice(phases, func(i, j int) bool {
+			return phases[i].PhaseNumber < phases[j].PhaseNumber
+		})
+
+		plan.TreatmentPhases = phases
+		result = append(result, *plan)
+	}
+
+	// Sort results by disease name for consistency
+	sort.Slice(result, func(i, j int) bool {
+		return result[i].DiseaseName < result[j].DiseaseName
+	})
+
+	return result, nil
+}
+>>>>>>> 6a85052 (get treatment by disease)
