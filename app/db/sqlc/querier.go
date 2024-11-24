@@ -33,6 +33,7 @@ type Querier interface {
 	GetAllServices(ctx context.Context, arg GetAllServicesParams) ([]Service, error)
 	GetAllTimeSlots(ctx context.Context, arg GetAllTimeSlotsParams) ([]GetAllTimeSlotsRow, error)
 	GetAllUsers(ctx context.Context) ([]User, error)
+	GetAppointmentDetailById(ctx context.Context, appointmentID int64) (Appointment, error)
 	GetAppointmentsOfDoctorWithDetails(ctx context.Context, id int64) ([]GetAppointmentsOfDoctorWithDetailsRow, error)
 	GetDeviceTokenByUsername(ctx context.Context, username string) ([]Devicetoken, error)
 	// 1. Query cơ bản để lấy thông tin bệnh và thuốc điều trị

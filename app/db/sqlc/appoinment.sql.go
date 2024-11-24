@@ -56,6 +56,28 @@ func (q *Queries) CreateAppointment(ctx context.Context, arg CreateAppointmentPa
 	return i, err
 }
 
+const getAppointmentDetailById = `-- name: GetAppointmentDetailById :one
+SELECT appointment_id, petid, doctor_id, service_id, date, status, notes, reminder_send, time_slot_id, created_at from Appointment WHERE appointment_id = $1
+`
+
+func (q *Queries) GetAppointmentDetailById(ctx context.Context, appointmentID int64) (Appointment, error) {
+	row := q.db.QueryRow(ctx, getAppointmentDetailById, appointmentID)
+	var i Appointment
+	err := row.Scan(
+		&i.AppointmentID,
+		&i.Petid,
+		&i.DoctorID,
+		&i.ServiceID,
+		&i.Date,
+		&i.Status,
+		&i.Notes,
+		&i.ReminderSend,
+		&i.TimeSlotID,
+		&i.CreatedAt,
+	)
+	return i, err
+}
+
 const getAppointmentsOfDoctorWithDetails = `-- name: GetAppointmentsOfDoctorWithDetails :many
 SELECT 
     a.appointment_id as appointment_id,
