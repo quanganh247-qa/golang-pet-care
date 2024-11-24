@@ -38,6 +38,7 @@ type MedicineInfo struct {
 }
 
 type TreatmentPlan struct {
+	DiseaseID       int           `json:"disease_id"`
 	DiseaseName     string        `json:"disease_name"`
 	Description     string        `json:"description"`
 	Symptoms        []string      `json:"symptoms"`
@@ -45,8 +46,13 @@ type TreatmentPlan struct {
 }
 
 type PhaseDetail struct {
-	PhaseNumber int            `json:"phase_number"`
-	PhaseName   string         `json:"phase_name"`
-	Duration    string         `json:"duration"`
-	Medicines   []MedicineInfo `json:"medicines"`
+	PhaseID          int            `json:"phase_id"`
+	PhaseNumber      int            `json:"phase_number"`
+	PhaseName        string         `json:"phase_name"`
+	Duration         string         `json:"duration"`
+	PhaseDescription string         `json:"phase_description"`
+	PhaseNotes       string         `json:"phase_notes"`
+	Medicines        []MedicineInfo `json:"medicines"`
 }
+
+// DiseaseMedicineInfo holds the disease and associated medicine information.

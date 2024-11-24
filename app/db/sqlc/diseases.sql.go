@@ -161,3 +161,70 @@ func (q *Queries) GetDiseaseTreatmentPlanWithPhases(ctx context.Context, lower s
 	}
 	return items, nil
 }
+
+const getTreatmentByDiseaseId = `-- name: GetTreatmentByDiseaseId :many
+SELECT 
+    d.id AS disease_id,
+    d.name AS disease_name,
+    d.description AS disease_description,
+    d.symptoms,
+    tp.id AS phase_id,
+    tp.phase_number AS phase_number,
+    tp.phase_name AS phase_name,
+    tp.description AS phase_description,
+    tp.duration AS phase_duration,
+    tp.notes AS phase_notes
+FROM diseases d
+JOIN treatment_phases tp ON d.id = tp.disease_id
+WHERE d.id = $1  LIMIT $2 OFFSET $3
+`
+
+type GetTreatmentByDiseaseIdParams struct {
+	ID     int64 `json:"id"`
+	Limit  int32 `json:"limit"`
+	Offset int32 `json:"offset"`
+}
+
+type GetTreatmentByDiseaseIdRow struct {
+	DiseaseID          int64       `json:"disease_id"`
+	DiseaseName        string      `json:"disease_name"`
+	DiseaseDescription pgtype.Text `json:"disease_description"`
+	Symptoms           []byte      `json:"symptoms"`
+	PhaseID            int64       `json:"phase_id"`
+	PhaseNumber        pgtype.Int4 `json:"phase_number"`
+	PhaseName          pgtype.Text `json:"phase_name"`
+	PhaseDescription   pgtype.Text `json:"phase_description"`
+	PhaseDuration      pgtype.Text `json:"phase_duration"`
+	PhaseNotes         pgtype.Text `json:"phase_notes"`
+}
+
+func (q *Queries) GetTreatmentByDiseaseId(ctx context.Context, arg GetTreatmentByDiseaseIdParams) ([]GetTreatmentByDiseaseIdRow, error) {
+	rows, err := q.db.Query(ctx, getTreatmentByDiseaseId, arg.ID, arg.Limit, arg.Offset)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetTreatmentByDiseaseIdRow{}
+	for rows.Next() {
+		var i GetTreatmentByDiseaseIdRow
+		if err := rows.Scan(
+			&i.DiseaseID,
+			&i.DiseaseName,
+			&i.DiseaseDescription,
+			&i.Symptoms,
+			&i.PhaseID,
+			&i.PhaseNumber,
+			&i.PhaseName,
+			&i.PhaseDescription,
+			&i.PhaseDuration,
+			&i.PhaseNotes,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}

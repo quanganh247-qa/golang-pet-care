@@ -50,6 +50,7 @@ type Querier interface {
 	GetServiceType(ctx context.Context, typeid int64) (Servicetype, error)
 	GetTimeSlotByID(ctx context.Context, id int64) (GetTimeSlotByIDRow, error)
 	GetTimeslotsAvailable(ctx context.Context, arg GetTimeslotsAvailableParams) ([]GetTimeslotsAvailableRow, error)
+	GetTreatmentByDiseaseId(ctx context.Context, arg GetTreatmentByDiseaseIdParams) ([]GetTreatmentByDiseaseIdRow, error)
 	GetUser(ctx context.Context, username string) (GetUserRow, error)
 	GetVaccinationByID(ctx context.Context, vaccinationid int64) (Vaccination, error)
 	InsertDeviceToken(ctx context.Context, arg InsertDeviceTokenParams) (Devicetoken, error)
