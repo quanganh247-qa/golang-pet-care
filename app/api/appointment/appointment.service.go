@@ -479,11 +479,16 @@ func (s *AppointmentService) CreateAppointment(ctx *gin.Context, req createAppoi
 	return &createAppointmentResponse{
 		ID:          appointment.AppointmentID,
 		DoctorName:  doctor.Name,
+<<<<<<< HEAD
 		PetName:     detail.PetName.String,
 		Reason:      detail.AppointmentReason.String,
 		Date:        appointment.Date.Time.Format(time.RFC3339),
 <<<<<<< HEAD
 <<<<<<< HEAD
+=======
+		PetName:     pet.Name,
+		Date:        appointment.Date.Time.Format(time.RFC3339),
+>>>>>>> 403647b (time of appointment)
 		ServiceName: service.Name,
 <<<<<<< HEAD
 <<<<<<< HEAD
