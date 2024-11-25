@@ -15,6 +15,7 @@ type AppointmentServiceInterface interface {
 	UpdateAppointmentStatus(ctx *gin.Context, req updateAppointmentStatusRequest, id int64) error
 	GetAppointmentsOfDoctorService(ctx *gin.Context, doctorID int64) ([]AppointmentWithDetails, error)
 	GetAppointmentByID(ctx *gin.Context, id int64) (*db.Appointment, error)
+	GetAppointmentsByPetOfUser(ctx *gin.Context, username string) ([]AppointmentWithDetails, error)
 }
 
 // creating an appointment by time slot available of doctor
@@ -121,4 +122,32 @@ func (s *AppointmentService) GetAppointmentByID(ctx *gin.Context, id int64) (*db
 		return nil, fmt.Errorf("error while getting appointment by id: %w", err)
 	}
 	return &appointment, nil
+}
+
+// get by id
+func (s *AppointmentService) GetAppointmentsByPetOfUser(ctx *gin.Context, username string) ([]AppointmentWithDetails, error) {
+	rows, err := s.storeDB.GetAppointmentsByPetOfUser(ctx, username)
+	if err != nil {
+		return nil, err
+	}
+	var a []AppointmentWithDetails
+	for _, row := range rows {
+		service, err := s.storeDB.GetServiceByID(ctx, row.ServiceID.Int64)
+		if err != nil {
+			return nil, err
+		}
+		pet, err := s.storeDB.GetPetByID(ctx, row.Petid.Int64)
+		if err != nil {
+			return nil, err
+		}
+		a = append(a, AppointmentWithDetails{
+			AppointmentID: row.AppointmentID,
+			PetName:       pet.Name,
+			ServiceName:   service.Name,
+			Date:          row.Date.Time.Format(time.RFC3339),
+			Status:        row.Status.String,
+			CreatedAt:     row.CreatedAt.Time.Format(time.RFC3339),
+		})
+	}
+	return a, nil
 }

@@ -1,6 +1,8 @@
 package appointment
 
-import db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
+import (
+	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
+)
 
 type AppointmentController struct {
 	service AppointmentServiceInterface
@@ -43,6 +45,13 @@ type AppointmentWithDetails struct {
 	ServiceName   string `json:"service_name"`
 	StartTime     string `json:"start_time"`
 	EndTime       string `json:"end_time"`
+	DoctorID      int64  `json:"doctor_id"`
+	ServiceID     int64  `json:"service_id"`
+	Date          string `json:"date"`
+	Status        string `json:"status"`
+	Notes         string `json:"notes"`
+	ReminderSend  bool   `json:"reminder_send"`
+	CreatedAt     string `json:"created_at"`
 }
 
 type updateAppointmentStatusRequest struct {
