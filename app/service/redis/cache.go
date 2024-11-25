@@ -153,6 +153,9 @@ func (client *ClientType) ClearUserInfoCache() {
 	}
 }
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 98e9e45 (ratelimit and recovery function)
 
 type PetInfo struct {
 	Petid           int64   `json:"petid"`
@@ -203,9 +206,14 @@ func (c *ClientType) PetInfoLoadCache(petid int64) (*PetInfo, error) {
 }
 
 func (client *ClientType) RemovePetInfoCache(petid int64) {
+<<<<<<< HEAD
 	petKey := fmt.Sprintf("%s:%d", PET_INFO_KEY, petid)
 	client.RemoveCacheByKey(petKey)
 	fmt.Println("Remove cache for key: ", petKey)
+=======
+	petKey := fmt.Sprintf("%s:%s", PET_INFO_KEY, string(petid))
+	client.RemoveCacheByKey(petKey)
+>>>>>>> 98e9e45 (ratelimit and recovery function)
 }
 
 func (client *ClientType) ClearPetInfoCache() {
@@ -217,5 +225,8 @@ func (client *ClientType) ClearPetInfoCache() {
 		}
 	}
 }
+<<<<<<< HEAD
 =======
 >>>>>>> 1f24c18 (feat: OTP with redis)
+=======
+>>>>>>> 98e9e45 (ratelimit and recovery function)
