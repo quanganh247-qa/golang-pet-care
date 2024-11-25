@@ -14,6 +14,7 @@ type ServiceControllerInterface interface {
 	GetAllServices(ctx *gin.Context)
 	UpdateService(ctx *gin.Context)
 	GetServiceByID(ctx *gin.Context)
+	getAllServices(ctx *gin.Context)
 }
 
 func (controller *ServiceController) CreateService(ctx *gin.Context) {
@@ -93,4 +94,19 @@ func (controller *ServiceController) UpdateService(ctx *gin.Context) {
 		return
 	}
 	ctx.JSON(http.StatusOK, gin.H{"message": "Success"})
+}
+
+func (controller *ServiceController) getAllServices(ctx *gin.Context) {
+	pagination, err := util.GetPageInQuery(ctx.Request.URL.Query())
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
+		return
+	}
+	services, err := controller.service.getAllServices(ctx, pagination)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, services)
 }

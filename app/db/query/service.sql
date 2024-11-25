@@ -15,7 +15,7 @@ SELECT * FROM Service
 WHERE serviceID = $1 LIMIT 1;
 
 -- name: GetAllServices :many
-SELECT * FROM Service ORDER BY serviceID LIMIT $1 OFFSET $2;
+SELECT * FROM Service ORDER BY name LIMIT $1 OFFSET $2;
 
 -- name: DeleteService :exec
 DELETE FROM Service WHERE serviceID = $1;

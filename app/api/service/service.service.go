@@ -15,6 +15,7 @@ type ServiceServiceInterface interface {
 	getAllServicesService(ctx *gin.Context, pagination *util.Pagination) ([]GroupedServiceResponse, error)
 	updateServiceService(ctx *gin.Context, serviceid int64, req updateServiceRequest) error
 	getServiceByIDService(ctx *gin.Context, serviceid int64) (*createServiceResponse, error)
+	getAllServices(ctx *gin.Context, pagination *util.Pagination) ([]createServiceResponse, error)
 }
 
 func (server *ServiceService) createServiceService(ctx *gin.Context, req createServiceRequest) (*db.Service, error) {
@@ -146,4 +147,30 @@ func (server *ServiceService) updateServiceService(ctx *gin.Context, serviceid i
 		}
 		return server.storeDB.UpdateService(ctx, params)
 	}
+}
+
+func (server *ServiceService) getAllServices(ctx *gin.Context, pagination *util.Pagination) ([]createServiceResponse, error) {
+	var services []createServiceResponse
+	offset := (pagination.Page - 1) * pagination.PageSize
+	rows, err := server.storeDB.GetAllServices(ctx, db.GetAllServicesParams{
+		Limit:  int32(pagination.PageSize),
+		Offset: int32(offset),
+	})
+
+	for _, row := range rows {
+		service := createServiceResponse{
+			ServiceID:   row.Serviceid,
+			TypeID:      row.Typeid.Int64,
+			Name:        row.Name,
+			Price:       row.Price.Float64,
+			Duration:    row.Duration.Microseconds,
+			Description: row.Description.String,
+			Isavailable: row.Isavailable.Bool,
+		}
+		services = append(services, service)
+	}
+	if err != nil {
+		return nil, fmt.Errorf("transaction failed: %w", err)
+	}
+	return services, nil
 }
