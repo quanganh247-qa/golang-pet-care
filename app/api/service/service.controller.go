@@ -14,6 +14,7 @@ type ServiceControllerInterface interface {
 	GetAllServices(ctx *gin.Context)
 	UpdateService(ctx *gin.Context)
 	GetServiceByID(ctx *gin.Context)
+	getAllServices(ctx *gin.Context)
 }
 
 func (controller *ServiceController) CreateServiceController(ctx *gin.Context) {
@@ -114,4 +115,19 @@ func (controller *ServiceController) DeleteService(ctx *gin.Context) {
 		return
 	}
 	ctx.JSON(http.StatusOK, util.SuccessResponse("Success", nil))
+}
+
+func (controller *ServiceController) getAllServices(ctx *gin.Context) {
+	pagination, err := util.GetPageInQuery(ctx.Request.URL.Query())
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
+		return
+	}
+	services, err := controller.service.getAllServices(ctx, pagination)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, services)
 }

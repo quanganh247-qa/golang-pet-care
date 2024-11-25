@@ -18,8 +18,12 @@ SELECT * FROM Service
 WHERE serviceID = $1 LIMIT 1;
 
 -- name: GetAllServices :many
+<<<<<<< HEAD
 SELECT * FROM Service ORDER BY serviceID LIMIT $1 OFFSET $2;
 >>>>>>> cfbe865 (updated service response)
+=======
+SELECT * FROM Service ORDER BY name LIMIT $1 OFFSET $2;
+>>>>>>> 5e493e4 (get all services)
 
 -- name: DeleteService :exec
 UPDATE services
