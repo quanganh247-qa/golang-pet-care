@@ -106,3 +106,22 @@ WHERE
 ORDER BY 
   u.full_name;
 
+
+-- name: GetDoctors :many
+SELECT 
+    d.id AS doctor_id,
+    u.username,
+    u.full_name,
+    u.role,
+    d.specialization,
+    d.years_of_experience,
+    d.education,
+    d.certificate_number,
+    d.bio,
+    d.consultation_fee
+FROM 
+    Doctors d
+JOIN 
+    users u ON d.user_id = u.id
+ORDER BY 
+    u.full_name;

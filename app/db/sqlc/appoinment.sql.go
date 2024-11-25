@@ -78,6 +78,61 @@ func (q *Queries) GetAppointmentDetailById(ctx context.Context, appointmentID in
 	return i, err
 }
 
+const getAppointmentsByPetOfUser = `-- name: GetAppointmentsByPetOfUser :many
+SELECT 
+    a.appointment_id,
+    a.petid,
+    a.doctor_id,
+    a.service_id,
+    a.date,
+    a.status,
+    a.notes,
+    a.reminder_send,
+    a.time_slot_id,
+    a.created_at
+FROM 
+    Appointment a
+JOIN 
+    Pet p ON a.petid = p.petid
+JOIN 
+    users u ON p.username = u.username
+WHERE 
+    u.username = $1
+ORDER BY 
+    a.date DESC
+`
+
+func (q *Queries) GetAppointmentsByPetOfUser(ctx context.Context, username string) ([]Appointment, error) {
+	rows, err := q.db.Query(ctx, getAppointmentsByPetOfUser, username)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []Appointment{}
+	for rows.Next() {
+		var i Appointment
+		if err := rows.Scan(
+			&i.AppointmentID,
+			&i.Petid,
+			&i.DoctorID,
+			&i.ServiceID,
+			&i.Date,
+			&i.Status,
+			&i.Notes,
+			&i.ReminderSend,
+			&i.TimeSlotID,
+			&i.CreatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getAppointmentsOfDoctorWithDetails = `-- name: GetAppointmentsOfDoctorWithDetails :many
 SELECT 
     a.appointment_id as appointment_id,

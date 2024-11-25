@@ -34,6 +34,7 @@ type Querier interface {
 	GetAllTimeSlots(ctx context.Context, arg GetAllTimeSlotsParams) ([]GetAllTimeSlotsRow, error)
 	GetAllUsers(ctx context.Context) ([]User, error)
 	GetAppointmentDetailById(ctx context.Context, appointmentID int64) (Appointment, error)
+	GetAppointmentsByPetOfUser(ctx context.Context, username string) ([]Appointment, error)
 	GetAppointmentsOfDoctorWithDetails(ctx context.Context, id int64) ([]GetAppointmentsOfDoctorWithDetailsRow, error)
 	GetDeviceTokenByUsername(ctx context.Context, username string) ([]Devicetoken, error)
 	// 1. Query cơ bản để lấy thông tin bệnh và thuốc điều trị
@@ -41,6 +42,7 @@ type Querier interface {
 	GetDiseaseTreatmentPlanWithPhases(ctx context.Context, lower string) ([]GetDiseaseTreatmentPlanWithPhasesRow, error)
 	GetDoctor(ctx context.Context, id int64) (GetDoctorRow, error)
 	GetDoctorById(ctx context.Context, id int64) (Doctor, error)
+	GetDoctors(ctx context.Context) ([]GetDoctorsRow, error)
 	GetNotificationsByUsername(ctx context.Context, arg GetNotificationsByUsernameParams) ([]Notification, error)
 	GetPetByID(ctx context.Context, petid int64) (Pet, error)
 	GetPetLogByID(ctx context.Context, arg GetPetLogByIDParams) (GetPetLogByIDRow, error)
