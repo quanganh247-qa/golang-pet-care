@@ -318,6 +318,7 @@ JOIN
 WHERE
   d.id = $1;
 
+<<<<<<< HEAD
 -- name: GetDoctorById :one
 select * from Doctors where id = $1;
 >>>>>>> 685da65 (latest update)
@@ -331,6 +332,9 @@ SELECT distinct (role) FROM users;
 <<<<<<< HEAD
 =======
 >>>>>>> 685da65 (latest update)
+=======
+
+>>>>>>> e30b070 (Get list appoinment by user)
 -- name: GetDoctors :many
 SELECT 
     d.id AS doctor_id,
@@ -348,6 +352,7 @@ FROM
 JOIN 
     users u ON d.user_id = u.id
 ORDER BY 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
     u.full_name;
@@ -391,3 +396,6 @@ SELECT * FROM Doctors WHERE is_active is true;
 -- name: GetAllRole :many
 SELECT distinct (role) FROM users;
 >>>>>>> 4ccd381 (Update appointment flow)
+=======
+    u.full_name;
+>>>>>>> e30b070 (Get list appoinment by user)

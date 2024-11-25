@@ -405,6 +405,7 @@ ORDER BY date DESC;
 =======
 -- name: GetAppointmentDetailById :one
 <<<<<<< HEAD
+<<<<<<< HEAD
 SELECT * from Appointment WHERE appointment_id = $1;
 <<<<<<< HEAD
 >>>>>>> 7e35c2e (get appointment detail)
@@ -677,3 +678,29 @@ ORDER BY date DESC;
 -- name: GetAppointmentDetailById :one
 SELECT * from Appointment WHERE appointment_id = $1;
 >>>>>>> 7e35c2e (get appointment detail)
+=======
+SELECT * from Appointment WHERE appointment_id = $1;
+
+-- name: GetAppointmentsByPetOfUser :many
+SELECT 
+    a.appointment_id,
+    a.petid,
+    a.doctor_id,
+    a.service_id,
+    a.date,
+    a.status,
+    a.notes,
+    a.reminder_send,
+    a.time_slot_id,
+    a.created_at
+FROM 
+    Appointment a
+JOIN 
+    Pet p ON a.petid = p.petid
+JOIN 
+    users u ON p.username = u.username
+WHERE 
+    u.username = $1
+ORDER BY 
+    a.date DESC;
+>>>>>>> e30b070 (Get list appoinment by user)

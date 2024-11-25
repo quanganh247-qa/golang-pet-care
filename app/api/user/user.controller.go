@@ -60,6 +60,7 @@ type UserControllerInterface interface {
 	updatetUserAvatar(ctx *gin.Context)
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> 473cd1d (uplaod image method)
 =======
 	GetDoctors(ctx *gin.Context)
@@ -89,6 +90,9 @@ type UserControllerInterface interface {
 	updatetUser(ctx *gin.Context)
 	updatetUserAvatar(ctx *gin.Context)
 >>>>>>> 473cd1d (uplaod image method)
+=======
+	GetDoctors(ctx *gin.Context)
+>>>>>>> e30b070 (Get list appoinment by user)
 }
 
 // createUser godoc
@@ -785,6 +789,9 @@ func (controller *UserController) updatetUserAvatar(ctx *gin.Context) {
 		return
 	}
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> e30b070 (Get list appoinment by user)
 	err = controller.service.updateUserImageService(ctx, authPayload.Username, req)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
@@ -794,6 +801,9 @@ func (controller *UserController) updatetUserAvatar(ctx *gin.Context) {
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> e30b070 (Get list appoinment by user)
 func (controller *UserController) GetDoctors(ctx *gin.Context) {
 	// pagination, err := util.GetPageInQuery(ctx.Request.URL.Query())
 	// if err != nil {
@@ -802,9 +812,12 @@ func (controller *UserController) GetDoctors(ctx *gin.Context) {
 	// }
 
 	res, err := controller.service.GetDoctorsService(ctx)
+<<<<<<< HEAD
 =======
 	res, err := controller.service.updateUserImageService(ctx, authPayload.Username, req)
 >>>>>>> 473cd1d (uplaod image method)
+=======
+>>>>>>> e30b070 (Get list appoinment by user)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
 		return

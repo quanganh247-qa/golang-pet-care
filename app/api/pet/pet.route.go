@@ -65,8 +65,12 @@ func Routes(routerGroup middleware.RouterGroup) {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> c73e2dc (pagination function)
 =======
+=======
+		authRoute.PUT("/avatar/:petid", petApi.controller.UpdatePetAvatar)
+>>>>>>> e30b070 (Get list appoinment by user)
 =======
 		authRoute.PUT("/avatar/:petid", petApi.controller.UpdatePetAvatar)
 >>>>>>> e30b070 (Get list appoinment by user)

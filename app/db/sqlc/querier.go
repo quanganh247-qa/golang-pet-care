@@ -353,6 +353,7 @@ type Querier interface {
 	GetAppointmentCountByDateRange(ctx context.Context, arg GetAppointmentCountByDateRangeParams) ([]GetAppointmentCountByDateRangeRow, error)
 	GetAppointmentDetailById(ctx context.Context, appointmentID int64) (Appointment, error)
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> 3bf345d (happy new year)
 	GetAppointmentsByDoctor(ctx context.Context, doctorID pgtype.Int8) ([]GetAppointmentsByDoctorRow, error)
 =======
@@ -388,6 +389,9 @@ type Querier interface {
 =======
 	GetAppointmentDetailById(ctx context.Context, appointmentID int64) (Appointment, error)
 >>>>>>> 7e35c2e (get appointment detail)
+=======
+	GetAppointmentsByPetOfUser(ctx context.Context, username string) ([]Appointment, error)
+>>>>>>> e30b070 (Get list appoinment by user)
 	GetAppointmentsOfDoctorWithDetails(ctx context.Context, id int64) ([]GetAppointmentsOfDoctorWithDetailsRow, error)
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -491,6 +495,7 @@ type Querier interface {
 	GetDoctorByUsername(ctx context.Context, username string) (GetDoctorByUsernameRow, error)
 =======
 	GetDoctorById(ctx context.Context, id int64) (Doctor, error)
+<<<<<<< HEAD
 	GetDoctorSchedules(ctx context.Context, doctorID int32) ([]Doctorschedule, error)
 	GetDoctorTimeSlots(ctx context.Context, arg GetDoctorTimeSlotsParams) ([]Timeslot, error)
 >>>>>>> e9037c6 (update sqlc)
@@ -530,6 +535,9 @@ type Querier interface {
 =======
 	GetDoctorById(ctx context.Context, id int64) (Doctor, error)
 >>>>>>> cfbe865 (updated service response)
+=======
+	GetDoctors(ctx context.Context) ([]GetDoctorsRow, error)
+>>>>>>> e30b070 (Get list appoinment by user)
 	GetNotificationsByUsername(ctx context.Context, arg GetNotificationsByUsernameParams) ([]Notification, error)
 >>>>>>> 6f3ea8a (update sqlc)
 =======

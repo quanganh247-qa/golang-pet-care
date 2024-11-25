@@ -4,12 +4,15 @@ import (
 	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	"github.com/quanganh247-qa/go-blog-be/app/service/worker"
 =======
 >>>>>>> e30b070 (Get list appoinment by user)
 =======
 	"github.com/quanganh247-qa/go-blog-be/app/service/worker"
 >>>>>>> e859654 (Elastic search)
+=======
+>>>>>>> e30b070 (Get list appoinment by user)
 )
 
 type AppointmentController struct {
@@ -172,6 +175,7 @@ type AppointmentWithDetails struct {
 	Notes         string `json:"notes"`
 	ReminderSend  bool   `json:"reminder_send"`
 	CreatedAt     string `json:"created_at"`
+<<<<<<< HEAD
 >>>>>>> e30b070 (Get list appoinment by user)
 =======
 	// StartTime     string `json:"start_time"`
@@ -184,6 +188,8 @@ type AppointmentWithDetails struct {
 	CreatedAt    string `json:"created_at"`
 >>>>>>> 98e9e45 (ratelimit and recovery function)
 =======
+=======
+>>>>>>> e30b070 (Get list appoinment by user)
 }
 
 type createAppointmentResponse struct {

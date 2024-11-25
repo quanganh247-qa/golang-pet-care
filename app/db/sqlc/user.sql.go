@@ -439,7 +439,74 @@ func (q *Queries) GetDoctorById(ctx context.Context, id int64) (Doctor, error) {
 	return i, err
 }
 
+<<<<<<< HEAD
 >>>>>>> cfbe865 (updated service response)
+=======
+const getDoctors = `-- name: GetDoctors :many
+SELECT 
+    d.id AS doctor_id,
+    u.username,
+    u.full_name,
+    u.role,
+    d.specialization,
+    d.years_of_experience,
+    d.education,
+    d.certificate_number,
+    d.bio,
+    d.consultation_fee
+FROM 
+    Doctors d
+JOIN 
+    users u ON d.user_id = u.id
+ORDER BY 
+    u.full_name
+`
+
+type GetDoctorsRow struct {
+	DoctorID          int64          `json:"doctor_id"`
+	Username          string         `json:"username"`
+	FullName          string         `json:"full_name"`
+	Role              pgtype.Text    `json:"role"`
+	Specialization    pgtype.Text    `json:"specialization"`
+	YearsOfExperience pgtype.Int4    `json:"years_of_experience"`
+	Education         pgtype.Text    `json:"education"`
+	CertificateNumber pgtype.Text    `json:"certificate_number"`
+	Bio               pgtype.Text    `json:"bio"`
+	ConsultationFee   pgtype.Numeric `json:"consultation_fee"`
+}
+
+func (q *Queries) GetDoctors(ctx context.Context) ([]GetDoctorsRow, error) {
+	rows, err := q.db.Query(ctx, getDoctors)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetDoctorsRow{}
+	for rows.Next() {
+		var i GetDoctorsRow
+		if err := rows.Scan(
+			&i.DoctorID,
+			&i.Username,
+			&i.FullName,
+			&i.Role,
+			&i.Specialization,
+			&i.YearsOfExperience,
+			&i.Education,
+			&i.CertificateNumber,
+			&i.Bio,
+			&i.ConsultationFee,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+>>>>>>> e30b070 (Get list appoinment by user)
 const getUser = `-- name: GetUser :one
 SELECT id, username, hashed_password, full_name, email, phone_number, address, data_image, original_image, role, created_at, is_verified_email
 FROM users

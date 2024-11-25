@@ -1174,6 +1174,7 @@ func (q *Queries) GetAppointmentDetailById(ctx context.Context, appointmentID in
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 const getAppointmentsByDoctor = `-- name: GetAppointmentsByDoctor :many
 SELECT 
 <<<<<<< HEAD
@@ -1249,6 +1250,8 @@ type GetAppointmentsByDoctorRow struct {
 func (q *Queries) GetAppointmentsByDoctor(ctx context.Context, doctorID pgtype.Int8) ([]GetAppointmentsByDoctorRow, error) {
 	rows, err := q.db.Query(ctx, getAppointmentsByDoctor, doctorID)
 =======
+=======
+>>>>>>> e30b070 (Get list appoinment by user)
 const getAppointmentsByPetOfUser = `-- name: GetAppointmentsByPetOfUser :many
 SELECT 
     a.appointment_id,
@@ -1268,13 +1271,18 @@ JOIN
 JOIN 
     users u ON p.username = u.username
 WHERE 
+<<<<<<< HEAD
     u.username = $1 and p.is_active is true
+=======
+    u.username = $1
+>>>>>>> e30b070 (Get list appoinment by user)
 ORDER BY 
     a.date DESC
 `
 
 func (q *Queries) GetAppointmentsByPetOfUser(ctx context.Context, username string) ([]Appointment, error) {
 	rows, err := q.db.Query(ctx, getAppointmentsByPetOfUser, username)
+<<<<<<< HEAD
 >>>>>>> e30b070 (Get list appoinment by user)
 =======
 const getAppointmentsByDoctor = `-- name: GetAppointmentsByDoctor :one
@@ -1326,10 +1334,13 @@ type GetAppointmentsByDoctorRow struct {
 
 func (q *Queries) GetAppointmentsByDoctor(ctx context.Context, doctorID pgtype.Int8) ([]GetAppointmentsByDoctorRow, error) {
 	rows, err := q.db.Query(ctx, getAppointmentsByDoctor, doctorID)
+=======
+>>>>>>> e30b070 (Get list appoinment by user)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
+<<<<<<< HEAD
 	items := []GetAppointmentsByDoctorRow{}
 	for rows.Next() {
 		var i GetAppointmentsByDoctorRow
@@ -1554,6 +1565,22 @@ func (q *Queries) GetAppointmentsByUser(ctx context.Context, username pgtype.Tex
 			&i.EndTime,
 			&i.State,
 >>>>>>> dc47646 (Optimize SQL query)
+=======
+	items := []Appointment{}
+	for rows.Next() {
+		var i Appointment
+		if err := rows.Scan(
+			&i.AppointmentID,
+			&i.Petid,
+			&i.DoctorID,
+			&i.ServiceID,
+			&i.Date,
+			&i.Status,
+			&i.Notes,
+			&i.ReminderSend,
+			&i.TimeSlotID,
+			&i.CreatedAt,
+>>>>>>> e30b070 (Get list appoinment by user)
 		); err != nil {
 			return nil, err
 		}
@@ -1566,12 +1593,15 @@ func (q *Queries) GetAppointmentsByUser(ctx context.Context, username pgtype.Tex
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> 7e35c2e (get appointment detail)
 =======
 >>>>>>> e30b070 (Get list appoinment by user)
 =======
 >>>>>>> 7e35c2e (get appointment detail)
+=======
+>>>>>>> e30b070 (Get list appoinment by user)
 const getAppointmentsOfDoctorWithDetails = `-- name: GetAppointmentsOfDoctorWithDetails :many
 SELECT 
     a.appointment_id as appointment_id,

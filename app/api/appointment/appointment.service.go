@@ -72,6 +72,7 @@ type AppointmentServiceInterface interface {
 	GetAppointmentByID(ctx *gin.Context, id int64) (*db.Appointment, error)
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> 7e35c2e (get appointment detail)
 =======
 	GetAppointmentsByPetOfUser(ctx *gin.Context, username string) ([]AppointmentWithDetails, error)
@@ -94,6 +95,9 @@ type AppointmentServiceInterface interface {
 >>>>>>> c8bec46 (feat: add chatbot, room management, and pet allergy features)
 =======
 >>>>>>> 7e35c2e (get appointment detail)
+=======
+	GetAppointmentsByPetOfUser(ctx *gin.Context, username string) ([]AppointmentWithDetails, error)
+>>>>>>> e30b070 (Get list appoinment by user)
 }
 
 func (s *AppointmentService) CreateAppointment(ctx *gin.Context, req createAppointmentRequest, username string) (*createAppointmentResponse, error) {
@@ -1784,4 +1788,32 @@ func (s *AppointmentService) GetAppointmentByID(ctx *gin.Context, id int64) (*db
 	}
 	return &appointment, nil
 >>>>>>> 7e35c2e (get appointment detail)
+}
+
+// get by id
+func (s *AppointmentService) GetAppointmentsByPetOfUser(ctx *gin.Context, username string) ([]AppointmentWithDetails, error) {
+	rows, err := s.storeDB.GetAppointmentsByPetOfUser(ctx, username)
+	if err != nil {
+		return nil, err
+	}
+	var a []AppointmentWithDetails
+	for _, row := range rows {
+		service, err := s.storeDB.GetServiceByID(ctx, row.ServiceID.Int64)
+		if err != nil {
+			return nil, err
+		}
+		pet, err := s.storeDB.GetPetByID(ctx, row.Petid.Int64)
+		if err != nil {
+			return nil, err
+		}
+		a = append(a, AppointmentWithDetails{
+			AppointmentID: row.AppointmentID,
+			PetName:       pet.Name,
+			ServiceName:   service.Name,
+			Date:          row.Date.Time.Format(time.RFC3339),
+			Status:        row.Status.String,
+			CreatedAt:     row.CreatedAt.Time.Format(time.RFC3339),
+		})
+	}
+	return a, nil
 }
