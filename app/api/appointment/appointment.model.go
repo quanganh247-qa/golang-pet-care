@@ -108,6 +108,7 @@ type timeSlotResponse struct {
 	ID          int64  `json:"id"`
 	ServiceName string `json:"service_name"`
 	PetName     string `json:"pet_name"`
+	Date        string `json:"date"`
 	DoctorName  string `json:"doctor_name"`
 	Note        string `json:"note"`
 >>>>>>> cfbe865 (updated service response)
