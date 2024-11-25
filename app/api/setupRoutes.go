@@ -1,6 +1,13 @@
 package api
 
 import (
+<<<<<<< HEAD
+=======
+	"io"
+	"net/http"
+	"os"
+
+>>>>>>> 98e9e45 (ratelimit and recovery function)
 	"github.com/gin-gonic/gin"
 	"github.com/quanganh247-qa/go-blog-be/app/api/appointment"
 <<<<<<< HEAD
@@ -48,6 +55,7 @@ import (
 	"github.com/quanganh247-qa/go-blog-be/app/util"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
+	"go.uber.org/zap"
 )
 
 <<<<<<< HEAD
@@ -60,7 +68,21 @@ func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor) {
 	routerDefault.SetTrustedProxies(nil)
 	routerDefault.Static("/static", "app/static")
 	routerDefault.Use(middleware.CORSMiddleware())
+<<<<<<< HEAD
 	routerDefault.Use(middleware.LoggingMiddleware())
+=======
+	routerDefault.Use(middleware.IPbasedRateLimitingMiddleware())
+	logger, _ := zap.NewProduction()
+	defer logger.Sync()
+
+	debug := true // or false, depending on your environment
+	// Apply the custom recovery middleware
+	routerDefault.Use(util.Recover(logger, debug))
+
+	// Create a custom logger with the desired output format
+	gin.DefaultWriter = io.MultiWriter(os.Stdout)
+	gin.DefaultErrorWriter = io.MultiWriter(os.Stderr)
+>>>>>>> 98e9e45 (ratelimit and recovery function)
 
 	// Setup route handlers
 	chatHandler := handlers.NewChatHandler(config.GoogleAPIKey, config.OpenFDAAPIKey)
@@ -84,6 +106,16 @@ func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor) {
 
 >>>>>>> 7a9ad08 (updated pet api)
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	router.GET("/panic", func(c *gin.Context) {
+		panic("test panic")
+	})
+
+	router.GET("/health", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{
+			"status": "healthy",
+		})
+	})
+
 	user.Routes(routerGroup, taskDistributor)
 	service_type.Routes(routerGroup)
 >>>>>>> 9d28896 (image pet)

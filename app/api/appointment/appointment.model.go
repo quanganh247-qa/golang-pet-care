@@ -129,6 +129,7 @@ type AppointmentWithDetails struct {
 	AppointmentID int64  `json:"appointment_id"`
 	PetName       string `json:"pet_name"`
 	ServiceName   string `json:"service_name"`
+<<<<<<< HEAD
 	StartTime     string `json:"start_time"`
 	EndTime       string `json:"end_time"`
 	DoctorID      int64  `json:"doctor_id"`
@@ -139,6 +140,16 @@ type AppointmentWithDetails struct {
 	ReminderSend  bool   `json:"reminder_send"`
 	CreatedAt     string `json:"created_at"`
 >>>>>>> e30b070 (Get list appoinment by user)
+=======
+	// StartTime     string `json:"start_time"`
+	// EndTime       string `json:"end_time"`
+	DoctorName   string `json:"doctor_name"`
+	Date         string `json:"date"`
+	Status       string `json:"status"`
+	Notes        string `json:"notes"`
+	ReminderSend bool   `json:"reminder_send"`
+	CreatedAt    string `json:"created_at"`
+>>>>>>> 98e9e45 (ratelimit and recovery function)
 }
 
 type CreateSOAPRequest struct {
