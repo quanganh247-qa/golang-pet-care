@@ -155,6 +155,9 @@ func (client *ClientType) ClearUserInfoCache() {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 98e9e45 (ratelimit and recovery function)
 =======
 >>>>>>> 98e9e45 (ratelimit and recovery function)
 
@@ -209,6 +212,7 @@ func (c *ClientType) PetInfoLoadCache(petid int64) (*PetInfo, error) {
 func (client *ClientType) RemovePetInfoCache(petid int64) {
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	petKey := fmt.Sprintf("%s:%d", PET_INFO_KEY, petid)
 	client.RemoveCacheByKey(petKey)
 	fmt.Println("Remove cache for key: ", petKey)
@@ -222,10 +226,15 @@ func (client *ClientType) RemovePetInfoCache(petid int64) {
 >>>>>>> 98e9e45 (ratelimit and recovery function)
 =======
 >>>>>>> 3b2f7a7 (fix appointment)
+=======
+	petKey := fmt.Sprintf("%s:%s", PET_INFO_KEY, string(petid))
+	client.RemoveCacheByKey(petKey)
+>>>>>>> 98e9e45 (ratelimit and recovery function)
 }
 
 func (client *ClientType) ClearPetInfoCache() {
 	iter := client.RedisClient.Scan(ctxRedis, 0, fmt.Sprintf("%s*", PET_INFO_KEY), 0).Iterator()
+<<<<<<< HEAD
 <<<<<<< HEAD
 =======
 func (client *ClientType) ClearTokenUserInfoCache() {
@@ -237,6 +246,8 @@ func (client *ClientType) ClearTokenUserInfoCache() {
 func (client *ClientType) ClearTokenUserInfoCache() {
 	iter := client.RedisClient.Scan(ctxRedis, 0, fmt.Sprintf("%s*", TOKEN_USER_INFO_KEY), 0).Iterator()
 >>>>>>> dff4498 (calendar api)
+=======
+>>>>>>> 98e9e45 (ratelimit and recovery function)
 	for iter.Next(ctxRedis) {
 		er := client.RemoveCacheByKey(iter.Val())
 		if er != nil {
@@ -246,6 +257,7 @@ func (client *ClientType) ClearTokenUserInfoCache() {
 }
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> 1f24c18 (feat: OTP with redis)
 =======
@@ -254,3 +266,5 @@ func (client *ClientType) ClearTokenUserInfoCache() {
 >>>>>>> dff4498 (calendar api)
 =======
 >>>>>>> 1f24c18 (feat: OTP with redis)
+=======
+>>>>>>> 98e9e45 (ratelimit and recovery function)

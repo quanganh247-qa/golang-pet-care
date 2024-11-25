@@ -134,6 +134,7 @@ import (
 	"github.com/quanganh247-qa/go-blog-be/app/util"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
+	"go.uber.org/zap"
 )
 
 <<<<<<< HEAD
@@ -158,6 +159,7 @@ func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor) {
 	routerDefault.SetTrustedProxies(nil)
 	routerDefault.Static("/static", "app/static")
 	routerDefault.Use(middleware.CORSMiddleware())
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -189,6 +191,16 @@ func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor) {
 	// routerDefault.Use(util.Recover(logger, debug))
 
 <<<<<<< HEAD
+=======
+	routerDefault.Use(middleware.IPbasedRateLimitingMiddleware())
+	logger, _ := zap.NewProduction()
+	defer logger.Sync()
+
+	debug := true // or false, depending on your environment
+	// Apply the custom recovery middleware
+	routerDefault.Use(util.Recover(logger, debug))
+
+>>>>>>> 98e9e45 (ratelimit and recovery function)
 	// Create a custom logger with the desired output format
 	gin.DefaultWriter = io.MultiWriter(os.Stdout)
 	gin.DefaultErrorWriter = io.MultiWriter(os.Stderr)
@@ -240,6 +252,7 @@ func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor) {
 			"status": "healthy",
 		})
 	})
+<<<<<<< HEAD
 =======
 	router.GET("/health", server.healthCheck)
 <<<<<<< HEAD
@@ -267,6 +280,9 @@ func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor) {
 	user.Routes(routerGroup)
 >>>>>>> 9d28896 (image pet)
 =======
+=======
+
+>>>>>>> 98e9e45 (ratelimit and recovery function)
 	user.Routes(routerGroup, taskDistributor)
 >>>>>>> 6610455 (feat: redis queue)
 	service_type.Routes(routerGroup)

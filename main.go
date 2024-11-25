@@ -55,6 +55,10 @@ func main() {
 	if err != nil {
 		log.Fatal("cannot load config:", err)
 	}
+
+	logger, _ := zap.NewProduction()
+	defer logger.Sync()
+
 	redisOpt := asynq.RedisClientOpt{
 		Addr: config.RedisAddress,
 	}

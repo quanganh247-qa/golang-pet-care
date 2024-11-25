@@ -49,6 +49,9 @@ type createPetRequest struct {
 
 type CreatePetResponse struct {
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 98e9e45 (ratelimit and recovery function)
 	Petid           int64   `json:"petid"`
 	Username        string  `json:"username"`
 	Name            string  `json:"name"`

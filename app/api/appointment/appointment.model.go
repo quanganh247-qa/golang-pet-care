@@ -167,6 +167,7 @@ type AppointmentWithDetails struct {
 	PetName       string `json:"pet_name"`
 	ServiceName   string `json:"service_name"`
 <<<<<<< HEAD
+<<<<<<< HEAD
 	StartTime     string `json:"start_time"`
 	EndTime       string `json:"end_time"`
 	DoctorID      int64  `json:"doctor_id"`
@@ -179,6 +180,8 @@ type AppointmentWithDetails struct {
 <<<<<<< HEAD
 >>>>>>> e30b070 (Get list appoinment by user)
 =======
+=======
+>>>>>>> 98e9e45 (ratelimit and recovery function)
 	// StartTime     string `json:"start_time"`
 	// EndTime       string `json:"end_time"`
 	DoctorName   string `json:"doctor_name"`
@@ -187,10 +190,13 @@ type AppointmentWithDetails struct {
 	Notes        string `json:"notes"`
 	ReminderSend bool   `json:"reminder_send"`
 	CreatedAt    string `json:"created_at"`
+<<<<<<< HEAD
 >>>>>>> 98e9e45 (ratelimit and recovery function)
 =======
 =======
 >>>>>>> e30b070 (Get list appoinment by user)
+=======
+>>>>>>> 98e9e45 (ratelimit and recovery function)
 }
 
 type createAppointmentResponse struct {

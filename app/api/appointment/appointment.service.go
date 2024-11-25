@@ -1743,6 +1743,7 @@ func (s *AppointmentService) UpdateQueueItemStatusService(ctx *gin.Context, id i
 	return nil
 }
 
+<<<<<<< HEAD
 func (s *AppointmentService) GetSOAPByAppointmentID(ctx *gin.Context, appointmentID int64) (*SOAPResponse, error) {
 	soap, err := s.storeDB.GetSOAPByAppointmentID(ctx, pgtype.Int8{Int64: appointmentID, Valid: true})
 	if err != nil {
@@ -1757,6 +1758,51 @@ func (s *AppointmentService) GetSOAPByAppointmentID(ctx *gin.Context, appointmen
 		Assessment:     soap.Assessment.String,
 		// Plan:           soap.Plan.String,
 	}, nil
+=======
+func (s *AppointmentService) GetAppointmentsOfDoctorService(ctx *gin.Context, doctorID int64) ([]AppointmentWithDetails, error) {
+
+	// // Get all appointments with related data in a single query
+	// appointments, err := s.storeDB.GetAppointmentsOfDoctorWithDetails(ctx, doctorID)
+	// if err != nil {
+	// 	return nil, fmt.Errorf("fetching appointments: %w", err)
+	// }
+
+	// // Pre-allocate slice with known capacity
+	// result := make([]AppointmentWithDetails, 0, len(appointments))
+
+	// for _, appt := range appointments {
+	// 	// ts := timeslot{
+	// 	// 	StartTime: appt.StartTime.Time.Format("2006-01-02 15:04:05"),
+	// 	// 	EndTime:   appt.EndTime.Time.Format("2006-01-02 15:04:05"),
+	// 	// }
+	// 	service, err := s.storeDB.GetServiceByID(ctx, appt.ServiceID.Int64)
+	// 	if err != nil {
+	// 		return nil, err
+	// 	}
+	// 	pet, err := s.storeDB.GetPetByID(ctx, appt.Pet)
+	// 	if err != nil {
+	// 		return nil, err
+	// 	}
+	// 	doc, err := s.storeDB.GetDoctor(ctx, appt.DoctorID.Int64)
+	// 	if err != nil {
+	// 		return nil, err
+	// 	}
+
+	// 	result = append(result, AppointmentWithDetails{
+	// 		AppointmentID: appt.AppointmentID,
+	// 		PetName:       appt.PetName.String,
+	// 		ServiceName:   appt.ServiceName.String,
+	// 		DoctorName:    appt.DoctorName,
+	// 		Date:          appt.Date.Time.Format("2006-01-02 15:04:05"),
+	// 		Status:        appt.Status.String,
+	// 		Notes:         appt.Notes.String,
+	// 		ReminderSend:  appt.ReminderSend.Bool,
+	// 	})
+	// }
+
+	return nil, nil
+
+>>>>>>> 98e9e45 (ratelimit and recovery function)
 }
 
 <<<<<<< HEAD
@@ -1811,8 +1857,13 @@ func (s *AppointmentService) GetAppointmentsByPetOfUser(ctx *gin.Context, userna
 		if err != nil {
 			return nil, err
 		}
+		doc, err := s.storeDB.GetDoctor(ctx, row.DoctorID.Int64)
+		if err != nil {
+			return nil, err
+		}
 		a = append(a, AppointmentWithDetails{
 			AppointmentID: row.AppointmentID,
+			DoctorName:    doc.Name,
 			PetName:       pet.Name,
 			ServiceName:   service.Name,
 			Date:          row.Date.Time.Format(time.RFC3339),

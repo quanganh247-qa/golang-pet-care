@@ -25,6 +25,7 @@ import (
 type PetServiceInterface interface {
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	CreatePet(ctx *gin.Context, username string, req createPetRequest) (*CreatePetResponse, error)
 	GetPetByID(ctx *gin.Context, petid int64) (*CreatePetResponse, error)
 	ListPets(ctx *gin.Context, req listPetsRequest, pagination *util.Pagination) ([]CreatePetResponse, error)
@@ -57,6 +58,14 @@ type PetServiceInterface interface {
 	DeletePet(ctx context.Context, petid int64) error
 	ListPetsByUsername(ctx *gin.Context, username string, pagination *util.Pagination) ([]createPetResponse, error)
 >>>>>>> c73e2dc (pagination function)
+=======
+	CreatePet(ctx *gin.Context, username string, req createPetRequest) (*CreatePetResponse, error)
+	GetPetByID(ctx *gin.Context, petid int64) (*CreatePetResponse, error)
+	ListPets(ctx *gin.Context, req listPetsRequest, pagination *util.Pagination) ([]CreatePetResponse, error)
+	UpdatePet(ctx *gin.Context, petid int64, req updatePetRequest) error
+	DeletePet(ctx context.Context, petid int64) error
+	ListPetsByUsername(ctx *gin.Context, username string, pagination *util.Pagination) ([]CreatePetResponse, error)
+>>>>>>> 98e9e45 (ratelimit and recovery function)
 	SetPetInactive(ctx context.Context, petid int64) error
 	GetPetLogsByPetIDService(ctx *gin.Context, pet_id int64, pagination *util.Pagination) ([]PetLog, error)
 	InsertPetLogService(ctx context.Context, req PetLog) error
@@ -104,6 +113,9 @@ type PetServiceInterface interface {
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 98e9e45 (ratelimit and recovery function)
 =======
 >>>>>>> 98e9e45 (ratelimit and recovery function)
 func (s *PetService) CreatePet(ctx *gin.Context, username string, req createPetRequest) (*CreatePetResponse, error) {
@@ -202,6 +214,7 @@ func (s *PetService) CreatePet(ctx *gin.Context, username string, req createPetR
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> c8bec46 (feat: add chatbot, room management, and pet allergy features)
 
@@ -214,6 +227,8 @@ func (s *PetService) CreatePet(ctx *gin.Context, username string, req createPetR
 >>>>>>> 98e9e45 (ratelimit and recovery function)
 =======
 >>>>>>> c8bec46 (feat: add chatbot, room management, and pet allergy features)
+=======
+>>>>>>> 98e9e45 (ratelimit and recovery function)
 		pet = CreatePetResponse{
 			Petid:           res.Petid,
 			Username:        res.Username,
@@ -278,6 +293,7 @@ func (s *PetService) CreatePet(ctx *gin.Context, username string, req createPetR
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 func (s *PetService) GetPetByID(ctx *gin.Context, petid int64) (*CreatePetResponse, error) {
 
 	pet, err := s.redis.PetInfoLoadCache(petid)
@@ -323,6 +339,11 @@ func (s *PetService) GetPetByID(ctx *gin.Context, petid int64) (*CreatePetRespon
 
 	pet, err := s.redis.PetInfoLoadCache(petid)
 >>>>>>> 98e9e45 (ratelimit and recovery function)
+=======
+func (s *PetService) GetPetByID(ctx *gin.Context, petid int64) (*CreatePetResponse, error) {
+
+	pet, err := s.redis.PetInfoLoadCache(petid)
+>>>>>>> 98e9e45 (ratelimit and recovery function)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get pet: %w", err)
 	}
@@ -344,6 +365,7 @@ func (s *PetService) GetPetByID(ctx *gin.Context, petid int64) (*CreatePetRespon
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 func (s *PetService) ListPets(ctx *gin.Context, req listPetsRequest, pagination *util.Pagination) ([]CreatePetResponse, error) {
 	var pets []CreatePetResponse
 =======
@@ -358,6 +380,10 @@ func (s *PetService) ListPets(ctx *gin.Context, req listPetsRequest, pagination 
 func (s *PetService) ListPets(ctx *gin.Context, req listPetsRequest, pagination *util.Pagination) ([]createPetResponse, error) {
 	var pets []createPetResponse
 >>>>>>> c73e2dc (pagination function)
+=======
+func (s *PetService) ListPets(ctx *gin.Context, req listPetsRequest, pagination *util.Pagination) ([]CreatePetResponse, error) {
+	var pets []CreatePetResponse
+>>>>>>> 98e9e45 (ratelimit and recovery function)
 	offset := (pagination.Page - 1) * pagination.PageSize
 
 	err := s.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
@@ -374,6 +400,7 @@ func (s *PetService) ListPets(ctx *gin.Context, req listPetsRequest, pagination 
 		for _, r := range res {
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 			pets = append(pets, CreatePetResponse{
 =======
 			pets = append(pets, createPetResponse{
@@ -384,6 +411,9 @@ func (s *PetService) ListPets(ctx *gin.Context, req listPetsRequest, pagination 
 >>>>>>> 98e9e45 (ratelimit and recovery function)
 =======
 >>>>>>> 9d28896 (image pet)
+=======
+			pets = append(pets, CreatePetResponse{
+>>>>>>> 98e9e45 (ratelimit and recovery function)
 				Petid:         r.Petid,
 				Username:      r.Username,
 				Name:          r.Name,
@@ -525,6 +555,7 @@ func (s *PetService) UpdatePet(ctx *gin.Context, petid int64, req createPetReque
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	go s.redis.RemovePetInfoCache(petid)
 =======
 >>>>>>> 5ea33aa (PUT pet info)
@@ -533,6 +564,9 @@ func (s *PetService) UpdatePet(ctx *gin.Context, petid int64, req createPetReque
 >>>>>>> 98e9e45 (ratelimit and recovery function)
 =======
 >>>>>>> 5ea33aa (PUT pet info)
+=======
+	go s.redis.RemovePetInfoCache(petid)
+>>>>>>> 98e9e45 (ratelimit and recovery function)
 	return nil
 }
 
@@ -553,6 +587,7 @@ func (s *PetService) UpdatePetAvatar(ctx *gin.Context, petid int64, req updatePe
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	go s.redis.RemovePetInfoCache(petid)
 =======
 >>>>>>> 5ea33aa (PUT pet info)
@@ -561,6 +596,9 @@ func (s *PetService) UpdatePetAvatar(ctx *gin.Context, petid int64, req updatePe
 >>>>>>> 98e9e45 (ratelimit and recovery function)
 =======
 >>>>>>> 5ea33aa (PUT pet info)
+=======
+	go s.redis.RemovePetInfoCache(petid)
+>>>>>>> 98e9e45 (ratelimit and recovery function)
 	return nil
 }
 
@@ -571,6 +609,7 @@ func (s *PetService) DeletePet(ctx context.Context, petid int64) error {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 func (s *PetService) ListPetsByUsername(ctx *gin.Context, username string, pagination *util.Pagination) ([]CreatePetResponse, error) {
 	var pets []CreatePetResponse
 =======
@@ -585,6 +624,10 @@ func (s *PetService) ListPetsByUsername(ctx *gin.Context, username string, pagin
 func (s *PetService) ListPetsByUsername(ctx *gin.Context, username string, pagination *util.Pagination) ([]createPetResponse, error) {
 	var pets []createPetResponse
 >>>>>>> c73e2dc (pagination function)
+=======
+func (s *PetService) ListPetsByUsername(ctx *gin.Context, username string, pagination *util.Pagination) ([]CreatePetResponse, error) {
+	var pets []CreatePetResponse
+>>>>>>> 98e9e45 (ratelimit and recovery function)
 	offset := (pagination.Page - 1) * pagination.PageSize
 
 	err := s.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
@@ -602,6 +645,7 @@ func (s *PetService) ListPetsByUsername(ctx *gin.Context, username string, pagin
 		for _, r := range res {
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 			pets = append(pets, CreatePetResponse{
 =======
 			pets = append(pets, createPetResponse{
@@ -612,6 +656,9 @@ func (s *PetService) ListPetsByUsername(ctx *gin.Context, username string, pagin
 >>>>>>> 98e9e45 (ratelimit and recovery function)
 =======
 >>>>>>> 9d28896 (image pet)
+=======
+			pets = append(pets, CreatePetResponse{
+>>>>>>> 98e9e45 (ratelimit and recovery function)
 				Petid:         r.Petid,
 				Username:      r.Username,
 				Name:          r.Name,
