@@ -160,7 +160,7 @@ func (s *AppointmentService) CreateAppointment(ctx *gin.Context, req createAppoi
 =======
 	if req.Date != "" {
 		//convert string to time.TIme
-		dateTime, err := time.Parse("2006-01-02 15:04:05", req.Date)
+		dateTime, err := time.Parse("2006-01-02T15:04:05Z", req.Date)
 		if err != nil {
 			return nil, fmt.Errorf("error while converting date: %w", err)
 		}
