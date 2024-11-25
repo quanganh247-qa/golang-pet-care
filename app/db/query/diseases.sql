@@ -26,6 +26,7 @@ WHERE LOWER(d.name) LIKE LOWER($1);
 -- name: GetDiseaseTreatmentPlanWithPhases :many
 SELECT 
 <<<<<<< HEAD
+<<<<<<< HEAD
     d.id AS disease_id,
     d.name AS disease_name,
     d.description AS disease_description,
@@ -38,6 +39,9 @@ SELECT
     m.description AS medicine_description,
     pm.phase_id AS phase_id,
 =======
+=======
+    d.id AS disease_id,
+>>>>>>> 9ee4f0a (fix bug ratelimit)
     d.name AS disease_name,
     d.description AS disease_description,
     d.symptoms,
@@ -50,7 +54,11 @@ SELECT
     m.usage AS medicine_usage,
     m.name AS medicine_name,
     m.description AS medicine_description,
+<<<<<<< HEAD
 >>>>>>> 6c35562 (dicease and treatment plan)
+=======
+    pm.phase_id AS phase_id,
+>>>>>>> 9ee4f0a (fix bug ratelimit)
     COALESCE(pm.dosage, m.dosage) AS dosage,
     COALESCE(pm.frequency, m.frequency) AS frequency,
     COALESCE(pm.duration, m.duration) AS duration,

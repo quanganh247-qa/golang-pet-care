@@ -69,9 +69,13 @@ func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor) {
 	routerDefault.Static("/static", "app/static")
 	routerDefault.Use(middleware.CORSMiddleware())
 <<<<<<< HEAD
+<<<<<<< HEAD
 	routerDefault.Use(middleware.LoggingMiddleware())
 =======
 	routerDefault.Use(middleware.IPbasedRateLimitingMiddleware())
+=======
+	// routerDefault.Use(middleware.IPbasedRateLimitingMiddleware())
+>>>>>>> 9ee4f0a (fix bug ratelimit)
 	logger, _ := zap.NewProduction()
 	defer logger.Sync()
 

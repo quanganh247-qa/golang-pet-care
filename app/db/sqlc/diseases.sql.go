@@ -143,6 +143,7 @@ SELECT
 =======
 const getDiseaseTreatmentPlanWithPhases = `-- name: GetDiseaseTreatmentPlanWithPhases :many
 SELECT 
+    d.id AS disease_id,
     d.name AS disease_name,
     d.description AS disease_description,
     d.symptoms,
@@ -155,7 +156,11 @@ SELECT
     m.usage AS medicine_usage,
     m.name AS medicine_name,
     m.description AS medicine_description,
+<<<<<<< HEAD
 >>>>>>> 6c35562 (dicease and treatment plan)
+=======
+    pm.phase_id AS phase_id,
+>>>>>>> 9ee4f0a (fix bug ratelimit)
     COALESCE(pm.dosage, m.dosage) AS dosage,
     COALESCE(pm.frequency, m.frequency) AS frequency,
     COALESCE(pm.duration, m.duration) AS duration,
@@ -187,6 +192,7 @@ ORDER BY tp.phase_number, m.name
 `
 
 type GetDiseaseTreatmentPlanWithPhasesRow struct {
+	DiseaseID           int64       `json:"disease_id"`
 	DiseaseName         string      `json:"disease_name"`
 	DiseaseDescription  pgtype.Text `json:"disease_description"`
 	Symptoms            []byte      `json:"symptoms"`
@@ -199,7 +205,11 @@ type GetDiseaseTreatmentPlanWithPhasesRow struct {
 	MedicineUsage       pgtype.Text `json:"medicine_usage"`
 	MedicineName        string      `json:"medicine_name"`
 	MedicineDescription pgtype.Text `json:"medicine_description"`
+<<<<<<< HEAD
 >>>>>>> 6c35562 (dicease and treatment plan)
+=======
+	PhaseID             int64       `json:"phase_id"`
+>>>>>>> 9ee4f0a (fix bug ratelimit)
 	Dosage              pgtype.Text `json:"dosage"`
 	Frequency           pgtype.Text `json:"frequency"`
 	Duration            pgtype.Text `json:"duration"`
@@ -218,6 +228,7 @@ func (q *Queries) GetDiseaseTreatmentPlanWithPhases(ctx context.Context, lower s
 		var i GetDiseaseTreatmentPlanWithPhasesRow
 		if err := rows.Scan(
 <<<<<<< HEAD
+<<<<<<< HEAD
 			&i.DiseaseID,
 			&i.DiseaseName,
 			&i.DiseaseDescription,
@@ -230,6 +241,9 @@ func (q *Queries) GetDiseaseTreatmentPlanWithPhases(ctx context.Context, lower s
 			&i.MedicineDescription,
 			&i.PhaseID,
 =======
+=======
+			&i.DiseaseID,
+>>>>>>> 9ee4f0a (fix bug ratelimit)
 			&i.DiseaseName,
 			&i.DiseaseDescription,
 			&i.Symptoms,
@@ -242,7 +256,11 @@ func (q *Queries) GetDiseaseTreatmentPlanWithPhases(ctx context.Context, lower s
 			&i.MedicineUsage,
 			&i.MedicineName,
 			&i.MedicineDescription,
+<<<<<<< HEAD
 >>>>>>> 6c35562 (dicease and treatment plan)
+=======
+			&i.PhaseID,
+>>>>>>> 9ee4f0a (fix bug ratelimit)
 			&i.Dosage,
 			&i.Frequency,
 			&i.Duration,
