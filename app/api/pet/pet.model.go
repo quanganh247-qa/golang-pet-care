@@ -2,6 +2,7 @@ package pet
 
 import (
 	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
+	"github.com/quanganh247-qa/go-blog-be/app/service/redis"
 )
 
 type PetApi struct {
@@ -14,6 +15,7 @@ type PetController struct {
 
 type PetService struct {
 	storeDB db.Store
+	redis   *redis.ClientType
 }
 
 type createPetRequest struct {
@@ -31,7 +33,7 @@ type createPetRequest struct {
 	OriginalImage   string  `json:"original_name"`
 }
 
-type createPetResponse struct {
+type CreatePetResponse struct {
 	Petid           int64   `json:"petid"`
 	Username        string  `json:"username"`
 	Name            string  `json:"name"`

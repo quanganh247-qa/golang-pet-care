@@ -81,3 +81,66 @@ func (client *ClientType) ClearUserInfoCache() {
 		}
 	}
 }
+
+type PetInfo struct {
+	Petid           int64   `json:"petid"`
+	Username        string  `json:"username"`
+	Name            string  `json:"name"`
+	Type            string  `json:"type"`
+	Breed           string  `json:"breed"`
+	Age             int16   `json:"age"`
+	BOD             string  `json:"birth_date"`
+	Weight          float64 `json:"weight"`
+	DataImage       []byte  `json:"data_image"`
+	OriginalImage   string  `json:"original_name"`
+	MicrochipNumber string  `json:"microchip_number"`
+}
+
+func (c *ClientType) PetInfoLoadCache(petid int64) (*PetInfo, error) {
+	petKey := fmt.Sprintf("%s:%d", PET_INFO_KEY, petid)
+	petInfo := PetInfo{}
+	err := c.GetWithBackground(petKey, &petInfo)
+	if err != nil {
+		log.Printf("Error when get cache for key %s: %v", petKey, err)
+		res, err := db.StoreDB.GetPetByID(ctxRedis, petid)
+		if err != nil {
+			if err == pgx.ErrNoRows {
+				return nil, err
+			}
+			return nil, err
+		}
+		pet := PetInfo{
+			Petid:         res.Petid,
+			Username:      res.Username,
+			Name:          res.Name,
+			Type:          res.Type,
+			Breed:         res.Breed.String,
+			BOD:           res.BirthDate.Time.Format("2006-01-02"),
+			Age:           int16(res.Age.Int32),
+			Weight:        res.Weight.Float64,
+			DataImage:     res.DataImage,
+			OriginalImage: res.OriginalImage.String,
+		}
+		err = c.SetWithBackground(petKey, &pet, time.Hour*12)
+		if err != nil {
+			log.Printf("Error when set cache for key %s: %v", petKey, err)
+		}
+		return &pet, nil
+	}
+	return &petInfo, nil
+}
+
+func (client *ClientType) RemovePetInfoCache(petid int64) {
+	petKey := fmt.Sprintf("%s:%s", PET_INFO_KEY, string(petid))
+	client.RemoveCacheByKey(petKey)
+}
+
+func (client *ClientType) ClearPetInfoCache() {
+	iter := client.RedisClient.Scan(ctxRedis, 0, fmt.Sprintf("%s*", PET_INFO_KEY), 0).Iterator()
+	for iter.Next(ctxRedis) {
+		er := client.RemoveCacheByKey(iter.Val())
+		if er != nil {
+			log.Printf("Error when remove cache for key %s: %v", iter.Val(), er)
+		}
+	}
+}

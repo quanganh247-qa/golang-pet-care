@@ -12,12 +12,12 @@ import (
 )
 
 type PetServiceInterface interface {
-	CreatePet(ctx *gin.Context, username string, req createPetRequest) (*createPetResponse, error)
-	GetPetByID(ctx *gin.Context, petid int64) (*createPetResponse, error)
-	ListPets(ctx *gin.Context, req listPetsRequest, pagination *util.Pagination) ([]createPetResponse, error)
+	CreatePet(ctx *gin.Context, username string, req createPetRequest) (*CreatePetResponse, error)
+	GetPetByID(ctx *gin.Context, petid int64) (*CreatePetResponse, error)
+	ListPets(ctx *gin.Context, req listPetsRequest, pagination *util.Pagination) ([]CreatePetResponse, error)
 	UpdatePet(ctx *gin.Context, petid int64, req updatePetRequest) error
 	DeletePet(ctx context.Context, petid int64) error
-	ListPetsByUsername(ctx *gin.Context, username string, pagination *util.Pagination) ([]createPetResponse, error)
+	ListPetsByUsername(ctx *gin.Context, username string, pagination *util.Pagination) ([]CreatePetResponse, error)
 	SetPetInactive(ctx context.Context, petid int64) error
 	GetPetLogsByPetIDService(ctx *gin.Context, pet_id int64, pagination *util.Pagination) ([]PetLog, error)
 	InsertPetLogService(ctx context.Context, req PetLog) error
@@ -26,8 +26,8 @@ type PetServiceInterface interface {
 	UpdatePetAvatar(ctx *gin.Context, petid int64, req updatePetAvatarRequest) error
 }
 
-func (s *PetService) CreatePet(ctx *gin.Context, username string, req createPetRequest) (*createPetResponse, error) {
-	var pet createPetResponse
+func (s *PetService) CreatePet(ctx *gin.Context, username string, req createPetRequest) (*CreatePetResponse, error) {
+	var pet CreatePetResponse
 
 	bod, err := time.Parse("2006-01-02", req.BOD)
 	if err != nil {
@@ -51,7 +51,7 @@ func (s *PetService) CreatePet(ctx *gin.Context, username string, req createPetR
 		if err != nil {
 			return fmt.Errorf("failed to create pet: %w", err)
 		}
-		pet = createPetResponse{
+		pet = CreatePetResponse{
 			Petid:           res.Petid,
 			Username:        res.Username,
 			Name:            res.Name,
@@ -70,35 +70,29 @@ func (s *PetService) CreatePet(ctx *gin.Context, username string, req createPetR
 	return &pet, nil
 }
 
-func (s *PetService) GetPetByID(ctx *gin.Context, petid int64) (*createPetResponse, error) {
-	var pet createPetResponse
-	err := s.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
-		res, err := q.GetPetByID(ctx, petid)
-		if err != nil {
-			return fmt.Errorf("failed to get pet: %w", err)
-		}
-		pet = createPetResponse{
-			Petid:         res.Petid,
-			Username:      res.Username,
-			Name:          res.Name,
-			Type:          res.Type,
-			Breed:         res.Breed.String,
-			BOD:           res.BirthDate.Time.Format("2006-01-02"),
-			Age:           int16(res.Age.Int32),
-			Weight:        res.Weight.Float64,
-			DataImage:     res.DataImage,
-			OriginalImage: res.OriginalImage.String,
-		}
-		return nil
-	})
+func (s *PetService) GetPetByID(ctx *gin.Context, petid int64) (*CreatePetResponse, error) {
+
+	pet, err := s.redis.PetInfoLoadCache(petid)
 	if err != nil {
-		return nil, fmt.Errorf("transaction failed: %w", err)
+		return nil, fmt.Errorf("failed to get pet: %w", err)
 	}
-	return &pet, nil
+	return &CreatePetResponse{
+		Petid:           pet.Petid,
+		Username:        pet.Username,
+		Name:            pet.Name,
+		Type:            pet.Type,
+		Breed:           pet.Breed,
+		Age:             pet.Age,
+		BOD:             pet.BOD,
+		Weight:          pet.Weight,
+		DataImage:       pet.DataImage,
+		OriginalImage:   pet.OriginalImage,
+		MicrochipNumber: pet.MicrochipNumber,
+	}, nil
 }
 
-func (s *PetService) ListPets(ctx *gin.Context, req listPetsRequest, pagination *util.Pagination) ([]createPetResponse, error) {
-	var pets []createPetResponse
+func (s *PetService) ListPets(ctx *gin.Context, req listPetsRequest, pagination *util.Pagination) ([]CreatePetResponse, error) {
+	var pets []CreatePetResponse
 	offset := (pagination.Page - 1) * pagination.PageSize
 
 	err := s.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
@@ -113,7 +107,7 @@ func (s *PetService) ListPets(ctx *gin.Context, req listPetsRequest, pagination 
 		}
 
 		for _, r := range res {
-			pets = append(pets, createPetResponse{
+			pets = append(pets, CreatePetResponse{
 				Petid:         r.Petid,
 				Username:      r.Username,
 				Name:          r.Name,
@@ -208,6 +202,7 @@ func (s *PetService) UpdatePet(ctx *gin.Context, petid int64, req updatePetReque
 	if err != nil {
 		return fmt.Errorf("transaction failed: %w", err)
 	}
+	go s.redis.RemovePetInfoCache(petid)
 	return nil
 }
 
@@ -225,6 +220,7 @@ func (s *PetService) UpdatePetAvatar(ctx *gin.Context, petid int64, req updatePe
 	if err != nil {
 		return fmt.Errorf("transaction failed: %w", err)
 	}
+	go s.redis.RemovePetInfoCache(petid)
 	return nil
 }
 
@@ -232,8 +228,8 @@ func (s *PetService) DeletePet(ctx context.Context, petid int64) error {
 	return s.storeDB.DeletePet(ctx, petid)
 }
 
-func (s *PetService) ListPetsByUsername(ctx *gin.Context, username string, pagination *util.Pagination) ([]createPetResponse, error) {
-	var pets []createPetResponse
+func (s *PetService) ListPetsByUsername(ctx *gin.Context, username string, pagination *util.Pagination) ([]CreatePetResponse, error) {
+	var pets []CreatePetResponse
 	offset := (pagination.Page - 1) * pagination.PageSize
 
 	err := s.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
@@ -249,7 +245,7 @@ func (s *PetService) ListPetsByUsername(ctx *gin.Context, username string, pagin
 		}
 
 		for _, r := range res {
-			pets = append(pets, createPetResponse{
+			pets = append(pets, CreatePetResponse{
 				Petid:         r.Petid,
 				Username:      r.Username,
 				Name:          r.Name,

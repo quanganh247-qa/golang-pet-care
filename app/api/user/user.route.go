@@ -10,7 +10,6 @@ import (
 func Routes(routerGroup middleware.RouterGroup, taskDistributor worker.TaskDistributor) {
 	user := routerGroup.RouterDefault.Group("/user")
 	authRoute := routerGroup.RouterAuth(user)
-	// user.Use(middleware.IPbasedRateLimitingMiddleware())
 
 	// Khoi tao api
 	userApi := &UserApi{
