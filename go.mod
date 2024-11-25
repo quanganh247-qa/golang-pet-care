@@ -1,13 +1,14 @@
 module github.com/quanganh247-qa/go-blog-be
 
-go 1.23
+go 1.23.2
+
+toolchain go1.23.3
 
 require (
 	github.com/aead/chacha20poly1305 v0.0.0-20201124145622-1a5aba2a8b29
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/fsnotify/fsnotify v1.7.0
 	github.com/gin-gonic/gin v1.10.0
-	github.com/golang/mock v1.6.0
 	github.com/google/uuid v1.6.0
 	github.com/hibiken/asynq v0.25.0
 	github.com/jackc/pgx v3.6.2+incompatible
@@ -21,19 +22,16 @@ require (
 	github.com/swaggo/files v1.0.1
 	github.com/swaggo/gin-swagger v1.6.0
 	github.com/swaggo/swag v1.16.4
+	go.uber.org/zap v1.21.0
 	golang.org/x/crypto v0.29.0
-	golang.org/x/oauth2 v0.18.0
 	golang.org/x/time v0.7.0
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20240314234333-6e1732d8331c
 	google.golang.org/grpc v1.62.1
 )
 
 require (
-	cloud.google.com/go/compute v1.24.0 // indirect
-	cloud.google.com/go/compute/metadata v0.2.3 // indirect
 	github.com/KyleBanks/depth v1.2.1 // indirect
 	github.com/cockroachdb/apd v1.1.0 // indirect
-	github.com/cpuguy83/go-md2man/v2 v2.0.5 // indirect
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
 	github.com/go-openapi/jsonpointer v0.21.0 // indirect
 	github.com/go-openapi/jsonreference v0.21.0 // indirect
@@ -47,15 +45,8 @@ require (
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
 	github.com/robfig/cron/v3 v3.0.1 // indirect
-	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/shopspring/decimal v1.4.0 // indirect
-	github.com/shurcooL/sanitized_anchor_name v1.0.0 // indirect
-	github.com/urfave/cli/v2 v2.27.5 // indirect
-	github.com/xrash/smetrics v0.0.0-20240521201337-686a1a2994c1 // indirect
 	golang.org/x/tools v0.27.0 // indirect
-	google.golang.org/appengine v1.6.8 // indirect
-	gopkg.in/yaml.v2 v2.4.0 // indirect
-	sigs.k8s.io/yaml v1.4.0 // indirect
 )
 
 require (

@@ -44,15 +44,14 @@ type AppointmentWithDetails struct {
 	AppointmentID int64  `json:"appointment_id"`
 	PetName       string `json:"pet_name"`
 	ServiceName   string `json:"service_name"`
-	StartTime     string `json:"start_time"`
-	EndTime       string `json:"end_time"`
-	DoctorID      int64  `json:"doctor_id"`
-	ServiceID     int64  `json:"service_id"`
-	Date          string `json:"date"`
-	Status        string `json:"status"`
-	Notes         string `json:"notes"`
-	ReminderSend  bool   `json:"reminder_send"`
-	CreatedAt     string `json:"created_at"`
+	// StartTime     string `json:"start_time"`
+	// EndTime       string `json:"end_time"`
+	DoctorName   string `json:"doctor_name"`
+	Date         string `json:"date"`
+	Status       string `json:"status"`
+	Notes        string `json:"notes"`
+	ReminderSend bool   `json:"reminder_send"`
+	CreatedAt    string `json:"created_at"`
 }
 
 type updateAppointmentStatusRequest struct {

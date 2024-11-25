@@ -2,6 +2,7 @@ package api
 
 import (
 	"io"
+	"net/http"
 	"os"
 
 	"github.com/gin-gonic/gin"
@@ -20,6 +21,7 @@ import (
 	"github.com/quanganh247-qa/go-blog-be/app/util"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
+	"go.uber.org/zap"
 )
 
 func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor) {
@@ -28,6 +30,14 @@ func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor) {
 	routerDefault.SetTrustedProxies(nil)
 	routerDefault.Static("/static", "app/static")
 	routerDefault.Use(middleware.CORSMiddleware())
+	routerDefault.Use(middleware.IPbasedRateLimitingMiddleware())
+	logger, _ := zap.NewProduction()
+	defer logger.Sync()
+
+	debug := true // or false, depending on your environment
+	// Apply the custom recovery middleware
+	routerDefault.Use(util.Recover(logger, debug))
+
 	// Create a custom logger with the desired output format
 	gin.DefaultWriter = io.MultiWriter(os.Stdout)
 	gin.DefaultErrorWriter = io.MultiWriter(os.Stderr)
@@ -41,6 +51,16 @@ func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor) {
 	}
 
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	router.GET("/panic", func(c *gin.Context) {
+		panic("test panic")
+	})
+
+	router.GET("/health", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{
+			"status": "healthy",
+		})
+	})
+
 	user.Routes(routerGroup, taskDistributor)
 	service_type.Routes(routerGroup)
 	pet.Routes(routerGroup)

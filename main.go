@@ -7,6 +7,7 @@ import (
 	"github.com/quanganh247-qa/go-blog-be/app/api"
 	"github.com/quanganh247-qa/go-blog-be/app/service/worker"
 	"github.com/quanganh247-qa/go-blog-be/app/util"
+	"go.uber.org/zap"
 )
 
 // @title 1View Blog Portal
@@ -35,6 +36,10 @@ func main() {
 	if err != nil {
 		log.Fatal("cannot load config:", err)
 	}
+
+	logger, _ := zap.NewProduction()
+	defer logger.Sync()
+
 	redisOpt := asynq.RedisClientOpt{
 		Addr: config.RedisAddress,
 	}
