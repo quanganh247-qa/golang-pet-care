@@ -95,7 +95,8 @@ type UserServiceInterface interface {
 =======
 	resendOTPService(ctx *gin.Context, username string) (*VerrifyEmailTxParams, error)
 	updateUserService(ctx *gin.Context, username string, arg UpdateUserParams) (*UserResponse, error)
-	updateUserImageService(ctx *gin.Context, username string, arg UpdateUserImageParams) (*UserResponse, error)
+	updateUserImageService(ctx *gin.Context, username string, arg UpdateUserImageParams) error
+	GetDoctorsService(ctx *gin.Context) ([]DoctorResponse, error)
 }
 
 >>>>>>> edfe5ad (OTP verifycation)
@@ -670,21 +671,11 @@ func (service *UserService) updateUserService(ctx *gin.Context, username string,
 	}, nil
 }
 
-func (service *UserService) updateUserImageService(ctx *gin.Context, username string, arg UpdateUserImageParams) (*UserResponse, error) {
-	var res db.User
+func (service *UserService) updateUserImageService(ctx *gin.Context, username string, arg UpdateUserImageParams) error {
 
-	_, err := service.storeDB.GetUser(ctx, username)
-	if err != nil {
-		if err == sql.ErrNoRows {
-			ctx.JSON(http.StatusNotFound, "user not found")
-			return nil, fmt.Errorf("user not found")
-		}
-		ctx.JSON(http.StatusInternalServerError, "internal server error")
-		return nil, fmt.Errorf("internal server error: %v", err)
-	}
-
-	err = service.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
-		res, err = q.UpdateAvatarUser(ctx, db.UpdateAvatarUserParams{
+	err := service.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
+		_, err := q.UpdateAvatarUser(ctx, db.UpdateAvatarUserParams{
+			Username:      username,
 			DataImage:     arg.DataImage,
 			OriginalImage: pgtype.Text{String: arg.OriginalImage, Valid: true},
 		})
@@ -694,18 +685,15 @@ func (service *UserService) updateUserImageService(ctx *gin.Context, username st
 		}
 		return nil
 	})
+	if err != nil {
+		return fmt.Errorf("failed to update user image: %w", err)
+
+	}
 
 	// remove cache
-	go service.redis.RemoveUserInfoCache(username)
+	service.redis.RemoveUserInfoCache(username)
 
-	return &UserResponse{
-		Username:      res.Username,
-		FullName:      res.FullName,
-		Email:         res.Email,
-		PhoneNumber:   res.PhoneNumber.String,
-		Address:       res.Address.String,
-		OriginalImage: res.OriginalImage.String,
-	}, nil
+	return nil
 }
 
 func (server *UserService) createDoctorService(ctx *gin.Context, arg InsertDoctorRequest, username string) (*DoctorResponse, error) {
@@ -967,6 +955,7 @@ func (s *UserService) GetAllRoleService(ctx *gin.Context) ([]string, error) {
 	return nil // Successfully updated
 }
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 <<<<<<< HEAD
 // func (s *UserService) InsertTokenInfoService(ctx *gin.Context, arg InsertTokenInfoRequest, username string) (*db.TokenInfo, error) {
@@ -1034,3 +1023,29 @@ func (s *UserService) ProccessTaskSendVerifyEmail(ctx context.Context, payload r
 >>>>>>> 9d28896 (image pet)
 =======
 >>>>>>> 272832d (redis cache)
+=======
+
+func (s *UserService) GetDoctorsService(ctx *gin.Context) ([]DoctorResponse, error) {
+	// offset := (pagination.Page - 1) * pagination.PageSize
+
+	rows, err := s.storeDB.GetDoctors(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("Failed to get doctors")
+	}
+	var doctors []DoctorResponse
+	for _, row := range rows {
+		doctors = append(doctors, DoctorResponse{
+			ID:             row.DoctorID,
+			Specialization: row.Specialization.String,
+			Name:           row.FullName,
+			YearsOfExp:     row.YearsOfExperience.Int32,
+			Education:      row.Education.String,
+			Certificate:    row.CertificateNumber.String,
+			Bio:            row.Bio.String,
+		})
+	}
+
+	return doctors, nil
+
+}
+>>>>>>> e30b070 (Get list appoinment by user)
