@@ -65,6 +65,7 @@ func (s *AppointmentService) CreateAppointment(ctx *gin.Context, req createAppoi
 		ID:          appointment.AppointmentID,
 		DoctorName:  doctor.Name,
 		PetName:     pet.Name,
+		Date:        appointment.Date.Time.Format(time.RFC3339),
 		ServiceName: service.Name,
 		Note:        req.Note,
 	}, nil

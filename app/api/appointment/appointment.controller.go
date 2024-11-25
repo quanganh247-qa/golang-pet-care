@@ -28,7 +28,7 @@ func (c *AppointmentController) createAppointment(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
 		return
 	}
-	ctx.JSON(http.StatusCreated, util.SuccessResponse("create appointment successful", res))
+	ctx.JSON(http.StatusOK, util.SuccessResponse("create appointment successful", res))
 }
 
 func (c *AppointmentController) updateAppointmentStatus(ctx *gin.Context) {
