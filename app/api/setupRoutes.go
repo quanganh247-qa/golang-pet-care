@@ -165,6 +165,7 @@ func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor) {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	routerDefault.Use(middleware.LoggingMiddleware())
 =======
 	routerDefault.Use(middleware.IPbasedRateLimitingMiddleware())
@@ -193,6 +194,9 @@ func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor) {
 <<<<<<< HEAD
 =======
 	routerDefault.Use(middleware.IPbasedRateLimitingMiddleware())
+=======
+	// routerDefault.Use(middleware.IPbasedRateLimitingMiddleware())
+>>>>>>> 9ee4f0a (fix bug ratelimit)
 	logger, _ := zap.NewProduction()
 	defer logger.Sync()
 
