@@ -140,7 +140,11 @@ type Querier interface {
 	GetAppointmentsByUser(ctx context.Context, username pgtype.Text) ([]GetAppointmentsByUserRow, error)
 =======
 	GetAppointmentDetailById(ctx context.Context, appointmentID int64) (Appointment, error)
+<<<<<<< HEAD
 >>>>>>> 7e35c2e (get appointment detail)
+=======
+	GetAppointmentsByPetOfUser(ctx context.Context, username string) ([]Appointment, error)
+>>>>>>> e30b070 (Get list appoinment by user)
 	GetAppointmentsOfDoctorWithDetails(ctx context.Context, id int64) ([]GetAppointmentsOfDoctorWithDetailsRow, error)
 <<<<<<< HEAD
 	GetAppointmentsQueue(ctx context.Context, doctorID pgtype.Int8) ([]Appointment, error)
@@ -224,7 +228,11 @@ type Querier interface {
 =======
 =======
 	GetDoctorById(ctx context.Context, id int64) (Doctor, error)
+<<<<<<< HEAD
 >>>>>>> cfbe865 (updated service response)
+=======
+	GetDoctors(ctx context.Context) ([]GetDoctorsRow, error)
+>>>>>>> e30b070 (Get list appoinment by user)
 	GetNotificationsByUsername(ctx context.Context, arg GetNotificationsByUsernameParams) ([]Notification, error)
 >>>>>>> eb8d761 (updated pet schedule)
 	GetPetByID(ctx context.Context, petid int64) (Pet, error)

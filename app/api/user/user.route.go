@@ -86,6 +86,7 @@ func Routes(routerGroup middleware.RouterGroup, taskDistributor worker.TaskDistr
 		authRoute.POST("/create-doctor", userApi.controller.createDoctor)
 		authRoute.POST("/timeslots", userApi.controller.insertTimeSlots)
 		authRoute.GET("/doctor/:id", userApi.controller.getDoctor)
+		authRoute.GET("/doctors", userApi.controller.GetDoctors)
 
 		// Schedule
 		authRoute.GET("/time-slots/:doctor_id", userApi.controller.getTimeSlots)

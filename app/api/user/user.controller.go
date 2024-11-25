@@ -50,7 +50,11 @@ type UserControllerInterface interface {
 =======
 	updatetUser(ctx *gin.Context)
 	updatetUserAvatar(ctx *gin.Context)
+<<<<<<< HEAD
 >>>>>>> 473cd1d (uplaod image method)
+=======
+	GetDoctors(ctx *gin.Context)
+>>>>>>> e30b070 (Get list appoinment by user)
 }
 
 // createUser godoc
@@ -631,7 +635,22 @@ func (controller *UserController) updatetUserAvatar(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
 		return
 	}
-	res, err := controller.service.updateUserImageService(ctx, authPayload.Username, req)
+	err = controller.service.updateUserImageService(ctx, authPayload.Username, req)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
+		return
+	}
+	ctx.JSON(http.StatusOK, util.SuccessResponse("Success", nil))
+}
+
+func (controller *UserController) GetDoctors(ctx *gin.Context) {
+	// pagination, err := util.GetPageInQuery(ctx.Request.URL.Query())
+	// if err != nil {
+	// 	ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
+	// 	return
+	// }
+
+	res, err := controller.service.GetDoctorsService(ctx)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
 		return

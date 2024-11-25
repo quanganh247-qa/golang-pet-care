@@ -39,6 +39,7 @@ type PetControllerInterface interface {
 	DeletePetLog(ctx *gin.Context)
 	UpdatePetLog(ctx *gin.Context)
 	UpdatePetAvatar(ctx *gin.Context)
+<<<<<<< HEAD
 =======
 >>>>>>> 7e616af (add pet log schema)
 =======
@@ -46,6 +47,8 @@ type PetControllerInterface interface {
 	DeletePetLog(ctx *gin.Context)
 	UpdatePetLog(ctx *gin.Context)
 >>>>>>> 3835eb4 (update pet_schedule api)
+=======
+>>>>>>> e30b070 (Get list appoinment by user)
 }
 
 func (c *PetController) CreatePet(ctx *gin.Context) {
@@ -377,9 +380,15 @@ func (c *PetController) UpdatePetLog(ctx *gin.Context) {
 	ctx.JSON(200, gin.H{"message": "Update pet log successfully"})
 }
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 func (c *PetController) UpdatePetAvatar(ctx *gin.Context) {
 	petidStr := ctx.Param("pet_id")
+=======
+
+func (c *PetController) UpdatePetAvatar(ctx *gin.Context) {
+	petidStr := ctx.Param("petid")
+>>>>>>> e30b070 (Get list appoinment by user)
 	petid, err := strconv.ParseInt(petidStr, 10, 64)
 	if err != nil {
 		ctx.JSON(400, gin.H{"error": "Invalid pet ID"})
@@ -403,7 +412,10 @@ func (c *PetController) UpdatePetAvatar(ctx *gin.Context) {
 
 	ctx.JSON(200, gin.H{"message": "Update pet avatar successfully"})
 }
+<<<<<<< HEAD
 =======
 >>>>>>> 7e616af (add pet log schema)
 =======
 >>>>>>> 3835eb4 (update pet_schedule api)
+=======
+>>>>>>> e30b070 (Get list appoinment by user)

@@ -35,7 +35,11 @@ type AppointmentControllerInterface interface {
 	updateAppointmentStatus(ctx *gin.Context)
 	getAppointmentsOfDoctor(ctx *gin.Context)
 	getAppointmentByID(ctx *gin.Context)
+<<<<<<< HEAD
 >>>>>>> 7e35c2e (get appointment detail)
+=======
+	getAppointmentsByPetOfUser(ctx *gin.Context)
+>>>>>>> e30b070 (Get list appoinment by user)
 }
 
 func (c *AppointmentController) createAppointment(ctx *gin.Context) {
@@ -396,4 +400,18 @@ func (c *AppointmentController) getAppointmentByID(ctx *gin.Context) {
 		return
 	}
 	ctx.JSON(http.StatusOK, util.SuccessResponse("get appointment by id successful", res))
+}
+
+func (c *AppointmentController) getAppointmentsByPetOfUser(ctx *gin.Context) {
+	payload, err := middleware.GetAuthorizationPayload(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
+		return
+	}
+	res, err := c.service.GetAppointmentsByPetOfUser(ctx, payload.Username)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
+		return
+	}
+	ctx.JSON(http.StatusOK, util.SuccessResponse("get appointment successful", res))
 }

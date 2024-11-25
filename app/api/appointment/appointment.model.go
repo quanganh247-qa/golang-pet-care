@@ -2,7 +2,10 @@ package appointment
 
 import (
 	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
+<<<<<<< HEAD
 	"github.com/quanganh247-qa/go-blog-be/app/service/worker"
+=======
+>>>>>>> e30b070 (Get list appoinment by user)
 )
 
 type AppointmentController struct {
@@ -110,6 +113,7 @@ type timeSlotResponse struct {
 >>>>>>> cfbe865 (updated service response)
 }
 
+<<<<<<< HEAD
 type updateAppointmentRequest struct {
 	PaymentStatus     *string `json:"payment_status"`
 	StateID           *int32  `json:"state_id"`
@@ -119,6 +123,21 @@ type updateAppointmentRequest struct {
 	ReminderSend      *bool   `json:"reminder_send"`
 	ArrivalTime       *string `json:"arrival_time"`
 	Priority          *string `json:"priority"`
+=======
+type AppointmentWithDetails struct {
+	AppointmentID int64  `json:"appointment_id"`
+	PetName       string `json:"pet_name"`
+	ServiceName   string `json:"service_name"`
+	StartTime     string `json:"start_time"`
+	EndTime       string `json:"end_time"`
+	DoctorID      int64  `json:"doctor_id"`
+	ServiceID     int64  `json:"service_id"`
+	Date          string `json:"date"`
+	Status        string `json:"status"`
+	Notes         string `json:"notes"`
+	ReminderSend  bool   `json:"reminder_send"`
+	CreatedAt     string `json:"created_at"`
+>>>>>>> e30b070 (Get list appoinment by user)
 }
 
 type CreateSOAPRequest struct {
