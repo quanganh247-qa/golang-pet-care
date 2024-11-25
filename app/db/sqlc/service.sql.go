@@ -66,7 +66,7 @@ func (q *Queries) DeleteService(ctx context.Context, serviceid int64) error {
 }
 
 const getAllServices = `-- name: GetAllServices :many
-SELECT serviceid, typeid, name, price, duration, description, isavailable, removed_at FROM Service ORDER BY serviceID LIMIT $1 OFFSET $2
+SELECT serviceid, typeid, name, price, duration, description, isavailable, removed_at FROM Service ORDER BY name LIMIT $1 OFFSET $2
 `
 
 type GetAllServicesParams struct {

@@ -26,6 +26,7 @@ func Routes(routerGroup middleware.RouterGroup) {
 		authRoute.GET("/list", SVApi.controller.GetAllServices)
 		authRoute.PUT("/update/:serviceid", SVApi.controller.UpdateService)
 		authRoute.GET("/getbyid/:serviceid", SVApi.controller.GetServiceByID)
+		authRoute.GET("/", SVApi.controller.getAllServices)
 
 	}
 
