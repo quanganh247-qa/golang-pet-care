@@ -118,6 +118,7 @@ WHERE id = $1
 =======
 const getAllServices = `-- name: GetAllServices :many
 SELECT serviceid, typeid, name, price, duration, description, isavailable, removed_at FROM Service ORDER BY name LIMIT $1 OFFSET $2
+<<<<<<< HEAD
 >>>>>>> 5e493e4 (get all services)
 =======
 const getServiceByID = `-- name: GetServiceByID :one
@@ -132,6 +133,8 @@ SELECT id, name, description, duration, cost, category, priority, created_at FRO
 >>>>>>> ada3717 (Docker file)
 WHERE id = $1
 >>>>>>> ffc9071 (AI suggestion)
+=======
+>>>>>>> 5e493e4 (get all services)
 `
 
 func (q *Queries) GetServiceByID(ctx context.Context, id int64) (Service, error) {

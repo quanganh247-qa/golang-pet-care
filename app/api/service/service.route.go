@@ -50,6 +50,7 @@ func Routes(routerGroup middleware.RouterGroup) {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 		// authRoute.POST("/create", userApi.controller.createUser)
 >>>>>>> cfbe865 (updated service response)
 =======
@@ -61,6 +62,9 @@ func Routes(routerGroup middleware.RouterGroup) {
 >>>>>>> b393bb9 (add service and add permission)
 =======
 >>>>>>> e30b070 (Get list appoinment by user)
+=======
+		authRoute.GET("/", SVApi.controller.getAllServices)
+>>>>>>> 5e493e4 (get all services)
 
 	}
 

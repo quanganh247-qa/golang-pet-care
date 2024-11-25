@@ -35,6 +35,7 @@ WHERE serviceID = $1 LIMIT 1;
 
 -- name: GetAllServices :many
 <<<<<<< HEAD
+<<<<<<< HEAD
 SELECT * FROM Service ORDER BY serviceID LIMIT $1 OFFSET $2;
 >>>>>>> cfbe865 (updated service response)
 =======
@@ -48,6 +49,9 @@ WHERE id = $1 and removed_at is NULL;
 =======
 WHERE id = $1;
 >>>>>>> ffc9071 (AI suggestion)
+=======
+SELECT * FROM Service ORDER BY name LIMIT $1 OFFSET $2;
+>>>>>>> 5e493e4 (get all services)
 
 -- name: DeleteService :exec
 UPDATE services
