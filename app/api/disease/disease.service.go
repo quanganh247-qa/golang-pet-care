@@ -88,6 +88,7 @@ func (s *DiceaseService) GetDiseaseTreatmentPlanWithPhasesService(ctx *gin.Conte
 		// Create or get disease entry
 		if _, exists := diseaseMap[row.DiseaseName]; !exists {
 			diseaseMap[row.DiseaseName] = &TreatmentPlan{
+				DiseaseID:       int(row.DiseaseID),
 				DiseaseName:     row.DiseaseName,
 				Description:     row.DiseaseDescription.String,
 				Symptoms:        symptoms,
@@ -104,6 +105,7 @@ func (s *DiceaseService) GetDiseaseTreatmentPlanWithPhasesService(ctx *gin.Conte
 		// Create or get phase entry
 		if _, exists := phaseMap[diseaseKey][int(row.PhaseNumber.Int32)]; !exists {
 			phaseMap[diseaseKey][int(row.PhaseNumber.Int32)] = &PhaseDetail{
+				PhaseID:     int(row.PhaseID),
 				PhaseNumber: int(row.PhaseNumber.Int32),
 				PhaseName:   row.PhaseName.String,
 				Duration:    row.PhaseDuration.String,
