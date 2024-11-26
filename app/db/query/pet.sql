@@ -18,7 +18,7 @@ DELETE FROM Pet WHERE PetID = $1;
 SELECT * FROM Pet WHERE is_active is true ORDER BY PetID LIMIT $1 OFFSET $2;
 
 -- name: ListPetsByUsername :many
-SELECT * FROM Pet WHERE username = $1 ORDER BY PetID LIMIT $2 OFFSET $3;
+SELECT * FROM Pet WHERE username = $1 and is_active is true ORDER BY PetID LIMIT $2 OFFSET $3;
 
 -- name: SetPetInactive :exec
 UPDATE Pet SET is_active = $2 WHERE PetID = $1 AND is_active is true;
