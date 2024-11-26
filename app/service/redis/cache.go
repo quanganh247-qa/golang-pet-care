@@ -161,11 +161,15 @@ func (c *ClientType) PetInfoLoadCache(petid int64) (*PetInfo, error) {
 
 func (client *ClientType) RemovePetInfoCache(petid int64) {
 <<<<<<< HEAD
+<<<<<<< HEAD
 	petKey := fmt.Sprintf("%s:%d", PET_INFO_KEY, petid)
 	client.RemoveCacheByKey(petKey)
 	fmt.Println("Remove cache for key: ", petKey)
 =======
 	petKey := fmt.Sprintf("%s:%s", PET_INFO_KEY, string(petid))
+=======
+	petKey := fmt.Sprintf("%s:%d", PET_INFO_KEY, petid)
+>>>>>>> 6d9728e (updated remove pet cache)
 	client.RemoveCacheByKey(petKey)
 >>>>>>> 98e9e45 (ratelimit and recovery function)
 }
