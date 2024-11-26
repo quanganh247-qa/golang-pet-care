@@ -79,6 +79,7 @@ SELECT * FROM Pet WHERE is_active is true ORDER BY PetID LIMIT $1 OFFSET $2;
 
 -- name: ListPetsByUsername :many
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 
 -- name: GetPetByID :one
@@ -114,6 +115,9 @@ WHERE petid = $1;
 -- name: DeletePet :exec
 DELETE FROM pets WHERE petid = $1;
 <<<<<<< HEAD
+=======
+SELECT * FROM Pet WHERE username = $1 and is_active is true ORDER BY PetID LIMIT $2 OFFSET $3;
+>>>>>>> 6d9728e (updated remove pet cache)
 =======
 SELECT * FROM Pet WHERE username = $1 and is_active is true ORDER BY PetID LIMIT $2 OFFSET $3;
 >>>>>>> 6d9728e (updated remove pet cache)
