@@ -150,7 +150,7 @@ func (q *Queries) ListPets(ctx context.Context, arg ListPetsParams) ([]Pet, erro
 }
 
 const listPetsByUsername = `-- name: ListPetsByUsername :many
-SELECT petid, name, type, breed, age, gender, healthnotes, weight, birth_date, username, microchip_number, last_checkup_date, is_active, data_image, original_image FROM Pet WHERE username = $1 ORDER BY PetID LIMIT $2 OFFSET $3
+SELECT petid, name, type, breed, age, gender, healthnotes, weight, birth_date, username, microchip_number, last_checkup_date, is_active, data_image, original_image FROM Pet WHERE username = $1 and is_active is true ORDER BY PetID LIMIT $2 OFFSET $3
 `
 
 type ListPetsByUsernameParams struct {
