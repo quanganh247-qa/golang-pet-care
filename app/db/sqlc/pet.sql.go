@@ -598,6 +598,7 @@ const listPetsByUsername = `-- name: ListPetsByUsername :many
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 SELECT petid, name, type, breed, age, gender, healthnotes, weight, birth_date, username, microchip_number, last_checkup_date, is_active, data_image, original_image FROM pets
 WHERE username = $1 AND is_active = true
 ORDER BY name LIMIT $2 OFFSET $3
@@ -615,6 +616,9 @@ ORDER BY name LIMIT $2 OFFSET $3
 =======
 SELECT petid, name, type, breed, age, gender, healthnotes, weight, birth_date, username, microchip_number, last_checkup_date, is_active, data_image, original_image FROM Pet WHERE username = $1 ORDER BY PetID LIMIT $2 OFFSET $3
 >>>>>>> 0fb3f30 (user images)
+=======
+SELECT petid, name, type, breed, age, gender, healthnotes, weight, birth_date, username, microchip_number, last_checkup_date, is_active, data_image, original_image FROM Pet WHERE username = $1 and is_active is true ORDER BY PetID LIMIT $2 OFFSET $3
+>>>>>>> c97bf6c (updated remove pet cache)
 `
 
 type ListPetsByUsernameParams struct {
