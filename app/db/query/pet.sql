@@ -54,6 +54,7 @@ SELECT * FROM Pet WHERE is_active is true ORDER BY PetID LIMIT $1 OFFSET $2;
 >>>>>>> 3fdf0ad (updated pet status)
 
 -- name: ListPetsByUsername :many
+<<<<<<< HEAD
 SELECT * FROM pets
 WHERE username = $1 AND is_active = true
 ORDER BY name LIMIT $2 OFFSET $3;
@@ -75,6 +76,9 @@ WHERE petid = $1;
 
 -- name: DeletePet :exec
 DELETE FROM pets WHERE petid = $1;
+=======
+SELECT * FROM Pet WHERE username = $1 and is_active is true ORDER BY PetID LIMIT $2 OFFSET $3;
+>>>>>>> 6d9728e (updated remove pet cache)
 
 -- name: SetPetInactive :exec
 <<<<<<< HEAD
