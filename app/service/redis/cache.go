@@ -218,6 +218,7 @@ func (client *ClientType) RemovePetInfoCache(petid int64) {
 	client.RemoveCacheByKey(petKey)
 	fmt.Println("Remove cache for key: ", petKey)
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 	petKey := fmt.Sprintf("%s:%s", PET_INFO_KEY, string(petid))
 =======
@@ -234,6 +235,8 @@ func (client *ClientType) RemovePetInfoCache(petid int64) {
 >>>>>>> 6d9728e (updated remove pet cache)
 	client.RemoveCacheByKey(petKey)
 >>>>>>> 98e9e45 (ratelimit and recovery function)
+=======
+>>>>>>> 3b2f7a7 (fix appointment)
 }
 
 func (client *ClientType) ClearPetInfoCache() {
