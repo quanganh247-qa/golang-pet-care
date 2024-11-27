@@ -548,6 +548,33 @@ func (q *Queries) GetUser(ctx context.Context, username string) (GetUserRow, err
 	return i, err
 }
 
+const getUserByEmail = `-- name: GetUserByEmail :one
+SELECT id, username, hashed_password, full_name, email, phone_number, address, data_image, original_image, role, created_at, is_verified_email, removed_at
+FROM users
+WHERE email = $1
+`
+
+func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error) {
+	row := q.db.QueryRow(ctx, getUserByEmail, email)
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.Username,
+		&i.HashedPassword,
+		&i.FullName,
+		&i.Email,
+		&i.PhoneNumber,
+		&i.Address,
+		&i.DataImage,
+		&i.OriginalImage,
+		&i.Role,
+		&i.CreatedAt,
+		&i.IsVerifiedEmail,
+		&i.RemovedAt,
+	)
+	return i, err
+}
+
 const insertDoctor = `-- name: InsertDoctor :one
 INSERT INTO Doctors (
     user_id,

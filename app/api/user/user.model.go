@@ -14,6 +14,7 @@ import (
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	"github.com/quanganh247-qa/go-blog-be/app/util"
 =======
 =======
@@ -34,6 +35,9 @@ import (
 >>>>>>> 272832d (redis cache)
 =======
 >>>>>>> 6610455 (feat: redis queue)
+=======
+	"github.com/quanganh247-qa/go-blog-be/app/util"
+>>>>>>> 1a9e82a (reset password api)
 )
 
 type UserController struct {
@@ -50,6 +54,7 @@ type UserService struct {
 	redis           *redis.ClientType
 	taskDistributor worker.TaskDistributor
 	config          util.Config
+<<<<<<< HEAD
 <<<<<<< HEAD
 =======
 	storeDB    db.Store
@@ -79,6 +84,8 @@ type UserService struct {
 	redis           *redis.ClientType
 	taskDistributor worker.TaskDistributor
 >>>>>>> 6610455 (feat: redis queue)
+=======
+>>>>>>> 1a9e82a (reset password api)
 }
 
 // route
@@ -323,6 +330,7 @@ type ForgotPasswordResponse struct {
 }
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> a2c21c8 (update pass)
 
@@ -335,3 +343,5 @@ type UpdatePasswordParams struct {
 >>>>>>> 1a9e82a (reset password api)
 =======
 >>>>>>> a2c21c8 (update pass)
+=======
+>>>>>>> 1a9e82a (reset password api)

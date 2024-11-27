@@ -65,6 +65,7 @@ type UserControllerInterface interface {
 =======
 	GetDoctors(ctx *gin.Context)
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> e30b070 (Get list appoinment by user)
 =======
 =======
@@ -93,6 +94,9 @@ type UserControllerInterface interface {
 =======
 	GetDoctors(ctx *gin.Context)
 >>>>>>> e30b070 (Get list appoinment by user)
+=======
+	ForgotPassword(ctx *gin.Context)
+>>>>>>> 1a9e82a (reset password api)
 }
 
 // createUser godoc
@@ -826,11 +830,15 @@ func (controller *UserController) GetDoctors(ctx *gin.Context) {
 }
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> 473cd1d (uplaod image method)
 =======
 
 =======
 >>>>>>> ae87825 (updated)
+=======
+
+>>>>>>> 1a9e82a (reset password api)
 func (controller *UserController) ForgotPassword(ctx *gin.Context) {
 	var req ForgotPasswordRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -844,6 +852,7 @@ func (controller *UserController) ForgotPassword(ctx *gin.Context) {
 	}
 	ctx.JSON(http.StatusOK, util.SuccessResponse("Success", nil))
 }
+<<<<<<< HEAD
 <<<<<<< HEAD
 >>>>>>> 1a9e82a (reset password api)
 =======
@@ -877,3 +886,5 @@ func (controller *UserController) UpdatePassword(ctx *gin.Context) {
 >>>>>>> eb8d761 (updated pet schedule)
 =======
 >>>>>>> 473cd1d (uplaod image method)
+=======
+>>>>>>> 1a9e82a (reset password api)

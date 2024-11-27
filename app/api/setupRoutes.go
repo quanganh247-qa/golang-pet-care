@@ -141,6 +141,7 @@ import (
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor, config util.Config, es *elasticsearch.ESService) {
 =======
 func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor) {
@@ -154,6 +155,9 @@ func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor, config
 =======
 func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor) {
 >>>>>>> 6610455 (feat: redis queue)
+=======
+func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor, config util.Config) {
+>>>>>>> 1a9e82a (reset password api)
 	gin.SetMode(gin.ReleaseMode)
 	routerDefault := gin.New()
 	routerDefault.SetTrustedProxies(nil)
@@ -261,6 +265,7 @@ func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor) {
 	router.GET("/health", server.healthCheck)
 <<<<<<< HEAD
 
+<<<<<<< HEAD
 	// // Adding the SuperTokens middleware
 	// router.Use(func(c *gin.Context) {
 	// 	supertokens.Middleware(http.HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
@@ -289,6 +294,9 @@ func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor) {
 >>>>>>> 98e9e45 (ratelimit and recovery function)
 	user.Routes(routerGroup, taskDistributor)
 >>>>>>> 6610455 (feat: redis queue)
+=======
+	user.Routes(routerGroup, taskDistributor, config)
+>>>>>>> 1a9e82a (reset password api)
 	service_type.Routes(routerGroup)
 >>>>>>> 9d28896 (image pet)
 =======

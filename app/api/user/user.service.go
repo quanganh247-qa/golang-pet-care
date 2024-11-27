@@ -7,6 +7,7 @@ import (
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	"log"
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -21,6 +22,9 @@ import (
 >>>>>>> 9d28896 (image pet)
 =======
 >>>>>>> 272832d (redis cache)
+=======
+	"log"
+>>>>>>> 1a9e82a (reset password api)
 	"math/big"
 >>>>>>> 9d28896 (image pet)
 =======
@@ -41,6 +45,9 @@ import (
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 1a9e82a (reset password api)
 =======
 >>>>>>> 1a9e82a (reset password api)
 	"github.com/quanganh247-qa/go-blog-be/app/service/mail"
@@ -173,6 +180,7 @@ func (server *UserService) createUserService(ctx *gin.Context, req createUserReq
 	updateUserService(ctx *gin.Context, username string, arg UpdateUserParams) (*UserResponse, error)
 	updateUserImageService(ctx *gin.Context, username string, arg UpdateUserImageParams) error
 	GetDoctorsService(ctx *gin.Context) ([]DoctorResponse, error)
+	ForgotPasswordService(ctx *gin.Context, email string) error
 }
 
 >>>>>>> edfe5ad (OTP verifycation)
@@ -1557,8 +1565,11 @@ func (s *UserService) GetDoctorsService(ctx *gin.Context) ([]DoctorResponse, err
 }
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> e30b070 (Get list appoinment by user)
 =======
+=======
+>>>>>>> 1a9e82a (reset password api)
 
 func (s *UserService) ForgotPasswordService(ctx *gin.Context, email string) error {
 
@@ -1610,11 +1621,14 @@ func (s *UserService) ForgotPasswordService(ctx *gin.Context, email string) erro
 		_, err := q.UpdateUserPassword(ctx, db.UpdateUserPasswordParams{
 			Username:       user.Username,
 			HashedPassword: hashedPwd,
+<<<<<<< HEAD
 =======
 		_, err := q.UpdateUserPassword(ctx, db.UpdateUserPasswordParams{
 			Username:       username,
 			HashedPassword: arg.Password,
 >>>>>>> a2c21c8 (update pass)
+=======
+>>>>>>> 1a9e82a (reset password api)
 		})
 		if err != nil {
 			ctx.JSON(http.StatusInternalServerError, "internal server error")
@@ -1626,10 +1640,14 @@ func (s *UserService) ForgotPasswordService(ctx *gin.Context, email string) erro
 		return fmt.Errorf("failed to update user password: %w", err)
 	}
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 1a9e82a (reset password api)
 
 	return nil
 
 }
+<<<<<<< HEAD
 >>>>>>> 1a9e82a (reset password api)
 =======
 	return nil
@@ -1645,3 +1663,5 @@ func (s *UserService) ForgotPasswordService(ctx *gin.Context, email string) erro
 >>>>>>> 272832d (redis cache)
 =======
 >>>>>>> e30b070 (Get list appoinment by user)
+=======
+>>>>>>> 1a9e82a (reset password api)

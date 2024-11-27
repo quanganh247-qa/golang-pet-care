@@ -1272,10 +1272,14 @@ JOIN
     users u ON p.username = u.username
 WHERE 
 <<<<<<< HEAD
+<<<<<<< HEAD
     u.username = $1 and p.is_active is true
 =======
     u.username = $1
 >>>>>>> e30b070 (Get list appoinment by user)
+=======
+    u.username = $1 and p.is_active is true
+>>>>>>> 1a9e82a (reset password api)
 ORDER BY 
     a.date DESC
 `

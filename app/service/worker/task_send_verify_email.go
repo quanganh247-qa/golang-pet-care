@@ -10,6 +10,7 @@ import (
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	"github.com/rs/zerolog/log"
 )
 
@@ -66,8 +67,27 @@ type PayloadSendVerifyEmail struct {
 >>>>>>> 1f24c18 (feat: OTP with redis)
 =======
 	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
+=======
+>>>>>>> 1a9e82a (reset password api)
 	"github.com/rs/zerolog/log"
 )
+
+// ForgotPasswordRequest represents the request body for forgot password
+type ForgotPasswordRequest struct {
+	Email string `json:"email" binding:"required,email"`
+}
+
+// ForgotPasswordResponse represents the response for forgot password
+type ForgotPasswordResponse struct {
+	Message string `json:"message"`
+}
+
+// CreateForgotPasswordPayload represents the payload for the async task
+type PayloadForgotPassword struct {
+	Username string `json:"username"`
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}
 
 type PayloadSendVerifyEmail struct {
 	Username string `json:"username"`
@@ -120,6 +140,9 @@ func (processor *RedisTaskProccessor) ProccessTaskSendVerifyEmail(ctx context.Co
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 1a9e82a (reset password api)
 =======
 >>>>>>> 1a9e82a (reset password api)
 	// verifyEmail, err := processor.store.CreateVerifyEmail(ctx, db.CreateVerifyEmailParams{
@@ -131,6 +154,9 @@ func (processor *RedisTaskProccessor) ProccessTaskSendVerifyEmail(ctx context.Co
 	// 	return fmt.Errorf("failed to create verify email %w", err)
 	// }
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 1a9e82a (reset password api)
 
 	subject := "Welcome to Pet Care App - Verify Your Email"
 

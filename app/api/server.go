@@ -74,8 +74,12 @@ func NewServer(config util.Config, taskDistributor worker.TaskDistributor) (*Ser
 >>>>>>> e859654 (Elastic search)
 =======
 	}
+<<<<<<< HEAD
 	server.SetupRoutes(taskDistributor)
 >>>>>>> 6610455 (feat: redis queue)
+=======
+	server.SetupRoutes(taskDistributor, config)
+>>>>>>> 1a9e82a (reset password api)
 
 	return server, nil
 }

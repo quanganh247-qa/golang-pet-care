@@ -30,10 +30,15 @@ func Routes(routerGroup middleware.RouterGroup, taskDistributor worker.TaskDistr
 >>>>>>> 1a9e82a (reset password api)
 =======
 	"github.com/quanganh247-qa/go-blog-be/app/service/worker"
+	"github.com/quanganh247-qa/go-blog-be/app/util"
 )
 
+<<<<<<< HEAD
 func Routes(routerGroup middleware.RouterGroup, taskDistributor worker.TaskDistributor) {
 >>>>>>> 6610455 (feat: redis queue)
+=======
+func Routes(routerGroup middleware.RouterGroup, taskDistributor worker.TaskDistributor, config util.Config) {
+>>>>>>> 1a9e82a (reset password api)
 	user := routerGroup.RouterDefault.Group("/user")
 	authRoute := routerGroup.RouterAuth(user)
 
@@ -48,6 +53,7 @@ func Routes(routerGroup middleware.RouterGroup, taskDistributor worker.TaskDistr
 				redis:           redis.Client,
 				taskDistributor: taskDistributor,
 				config:          config,
+<<<<<<< HEAD
 <<<<<<< HEAD
 =======
 				storeDB: db.StoreDB, // This should refer to the actual instance
@@ -68,6 +74,8 @@ func Routes(routerGroup middleware.RouterGroup, taskDistributor worker.TaskDistr
 				redis:           redis.Client,
 				taskDistributor: taskDistributor,
 >>>>>>> 6610455 (feat: redis queue)
+=======
+>>>>>>> 1a9e82a (reset password api)
 			},
 		},
 	}
@@ -108,6 +116,7 @@ func Routes(routerGroup middleware.RouterGroup, taskDistributor worker.TaskDistr
 		authRoute.PUT("/avatar", userApi.controller.updatetUserAvatar)
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 		user.PUT("/reset-password", userApi.controller.ForgotPassword)
 		authRoute.PUT("/change-password", userApi.controller.UpdatePassword)
 =======
@@ -129,6 +138,9 @@ func Routes(routerGroup middleware.RouterGroup, taskDistributor worker.TaskDistr
 		authRoute.PUT("/", userApi.controller.updatetUser)
 		authRoute.PUT("/avatar", userApi.controller.updatetUserAvatar)
 >>>>>>> 473cd1d (uplaod image method)
+=======
+		user.PUT("/password", userApi.controller.ForgotPassword)
+>>>>>>> 1a9e82a (reset password api)
 
 <<<<<<< HEAD
 <<<<<<< HEAD
