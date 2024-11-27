@@ -27,6 +27,13 @@ WHERE email = $1;
 =======
 >>>>>>> 0fb3f30 (user images)
 
+
+-- name: GetUserByEmail :one
+SELECT *
+FROM users
+WHERE email = $1;
+
+
 -- name: GetAllUsers :many
 SELECT * FROM users ;
 

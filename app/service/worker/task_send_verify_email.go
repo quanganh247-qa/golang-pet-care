@@ -8,6 +8,7 @@ import (
 
 	"github.com/hibiken/asynq"
 <<<<<<< HEAD
+<<<<<<< HEAD
 	"github.com/rs/zerolog/log"
 )
 
@@ -33,8 +34,27 @@ type PayloadSendVerifyEmail struct {
 	OTP      int64  `json:"otp"`
 =======
 	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
+=======
+>>>>>>> 1a9e82a (reset password api)
 	"github.com/rs/zerolog/log"
 )
+
+// ForgotPasswordRequest represents the request body for forgot password
+type ForgotPasswordRequest struct {
+	Email string `json:"email" binding:"required,email"`
+}
+
+// ForgotPasswordResponse represents the response for forgot password
+type ForgotPasswordResponse struct {
+	Message string `json:"message"`
+}
+
+// CreateForgotPasswordPayload represents the payload for the async task
+type PayloadForgotPassword struct {
+	Username string `json:"username"`
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}
 
 type PayloadSendVerifyEmail struct {
 	Username string `json:"username"`
@@ -83,6 +103,9 @@ func (processor *RedisTaskProccessor) ProccessTaskSendVerifyEmail(ctx context.Co
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 1a9e82a (reset password api)
 	// verifyEmail, err := processor.store.CreateVerifyEmail(ctx, db.CreateVerifyEmailParams{
 	// 	Username:   user.Username,
 	// 	Email:      user.Email,
@@ -91,6 +114,7 @@ func (processor *RedisTaskProccessor) ProccessTaskSendVerifyEmail(ctx context.Co
 	// if err != nil {
 	// 	return fmt.Errorf("failed to create verify email %w", err)
 	// }
+<<<<<<< HEAD
 
 	subject := "Welcome to Pet Care App - Verify Your Email"
 
@@ -132,6 +156,8 @@ func (processor *RedisTaskProccessor) ProccessTaskSendVerifyEmail(ctx context.Co
 	if err != nil {
 		return fmt.Errorf("failed to create verify email %w", err)
 	}
+=======
+>>>>>>> 1a9e82a (reset password api)
 
 	subject := "Welcome to Pet Care App - Verify Your Email"
 
@@ -151,7 +177,7 @@ func (processor *RedisTaskProccessor) ProccessTaskSendVerifyEmail(ctx context.Co
         <p>Best regards,<br>Pet Care App Team</p>
     </div>
 </body>
-</html>`, user.Username, verifyEmail.SecretCode)
+</html>`, user.Username, payload.OTP)
 
 	to := []string{user.Email}
 
