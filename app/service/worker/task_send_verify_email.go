@@ -7,9 +7,25 @@ import (
 	"fmt"
 
 	"github.com/hibiken/asynq"
-	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
 	"github.com/rs/zerolog/log"
 )
+
+// ForgotPasswordRequest represents the request body for forgot password
+type ForgotPasswordRequest struct {
+	Email string `json:"email" binding:"required,email"`
+}
+
+// ForgotPasswordResponse represents the response for forgot password
+type ForgotPasswordResponse struct {
+	Message string `json:"message"`
+}
+
+// CreateForgotPasswordPayload represents the payload for the async task
+type PayloadForgotPassword struct {
+	Username string `json:"username"`
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}
 
 type PayloadSendVerifyEmail struct {
 	Username string `json:"username"`
@@ -51,14 +67,14 @@ func (processor *RedisTaskProccessor) ProccessTaskSendVerifyEmail(ctx context.Co
 		return fmt.Errorf("failed to get user: %w", err)
 	}
 
-	verifyEmail, err := processor.store.CreateVerifyEmail(ctx, db.CreateVerifyEmailParams{
-		Username:   user.Username,
-		Email:      user.Email,
-		SecretCode: payload.OTP,
-	})
-	if err != nil {
-		return fmt.Errorf("failed to create verify email %w", err)
-	}
+	// verifyEmail, err := processor.store.CreateVerifyEmail(ctx, db.CreateVerifyEmailParams{
+	// 	Username:   user.Username,
+	// 	Email:      user.Email,
+	// 	SecretCode: payload.OTP,
+	// })
+	// if err != nil {
+	// 	return fmt.Errorf("failed to create verify email %w", err)
+	// }
 
 	subject := "Welcome to Pet Care App - Verify Your Email"
 
@@ -78,7 +94,7 @@ func (processor *RedisTaskProccessor) ProccessTaskSendVerifyEmail(ctx context.Co
         <p>Best regards,<br>Pet Care App Team</p>
     </div>
 </body>
-</html>`, user.Username, verifyEmail.SecretCode)
+</html>`, user.Username, payload.OTP)
 
 	to := []string{user.Email}
 

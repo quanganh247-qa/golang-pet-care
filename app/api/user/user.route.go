@@ -5,9 +5,10 @@ import (
 	"github.com/quanganh247-qa/go-blog-be/app/middleware"
 	"github.com/quanganh247-qa/go-blog-be/app/service/redis"
 	"github.com/quanganh247-qa/go-blog-be/app/service/worker"
+	"github.com/quanganh247-qa/go-blog-be/app/util"
 )
 
-func Routes(routerGroup middleware.RouterGroup, taskDistributor worker.TaskDistributor) {
+func Routes(routerGroup middleware.RouterGroup, taskDistributor worker.TaskDistributor, config util.Config) {
 	user := routerGroup.RouterDefault.Group("/user")
 	authRoute := routerGroup.RouterAuth(user)
 
@@ -18,6 +19,7 @@ func Routes(routerGroup middleware.RouterGroup, taskDistributor worker.TaskDistr
 				storeDB:         db.StoreDB, // This should refer to the actual instance
 				redis:           redis.Client,
 				taskDistributor: taskDistributor,
+				config:          config,
 			},
 		},
 	}
@@ -34,6 +36,7 @@ func Routes(routerGroup middleware.RouterGroup, taskDistributor worker.TaskDistr
 		authRoute.POST("/logout", userApi.controller.logoutUser)
 		authRoute.PUT("/", userApi.controller.updatetUser)
 		authRoute.PUT("/avatar", userApi.controller.updatetUserAvatar)
+		user.PUT("/password", userApi.controller.ForgotPassword)
 
 		// Doctor
 		authRoute.POST("/create-doctor", userApi.controller.createDoctor)

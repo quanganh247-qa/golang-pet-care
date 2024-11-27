@@ -97,7 +97,7 @@ JOIN
 JOIN 
     users u ON p.username = u.username
 WHERE 
-    u.username = $1
+    u.username = $1 and p.is_active is true
 ORDER BY 
     a.date DESC
 `

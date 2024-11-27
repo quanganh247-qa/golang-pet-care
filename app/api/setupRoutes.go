@@ -24,7 +24,7 @@ import (
 	"go.uber.org/zap"
 )
 
-func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor) {
+func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor, config util.Config) {
 	gin.SetMode(gin.ReleaseMode)
 	routerDefault := gin.New()
 	routerDefault.SetTrustedProxies(nil)
@@ -61,7 +61,7 @@ func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor) {
 		})
 	})
 
-	user.Routes(routerGroup, taskDistributor)
+	user.Routes(routerGroup, taskDistributor, config)
 	service_type.Routes(routerGroup)
 	pet.Routes(routerGroup)
 	service.Routes(routerGroup)

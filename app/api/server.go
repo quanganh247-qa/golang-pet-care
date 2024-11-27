@@ -23,7 +23,7 @@ func NewServer(config util.Config, taskDistributor worker.TaskDistributor) (*Ser
 		Connection:      conn,
 		taskDistributor: taskDistributor,
 	}
-	server.SetupRoutes(taskDistributor)
+	server.SetupRoutes(taskDistributor, config)
 
 	return server, nil
 }

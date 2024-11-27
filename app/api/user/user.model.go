@@ -7,6 +7,7 @@ import (
 	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
 	"github.com/quanganh247-qa/go-blog-be/app/service/redis"
 	"github.com/quanganh247-qa/go-blog-be/app/service/worker"
+	"github.com/quanganh247-qa/go-blog-be/app/util"
 )
 
 type UserController struct {
@@ -17,6 +18,7 @@ type UserService struct {
 	storeDB         db.Store
 	redis           *redis.ClientType
 	taskDistributor worker.TaskDistributor
+	config          util.Config
 }
 
 // route
@@ -134,4 +136,14 @@ type InsertTokenInfoRequest struct {
 	RefreshToken pgtype.Text `json:"refresh_token"`
 	TokenType    string      `json:"token_type"`
 	Expiry       time.Time   `json:"expiry"`
+}
+
+// ForgotPasswordRequest represents the request body for forgot password
+type ForgotPasswordRequest struct {
+	Email string `json:"email" binding:"required,email"`
+}
+
+// ForgotPasswordResponse represents the response for forgot password
+type ForgotPasswordResponse struct {
+	Message string `json:"message"`
 }
