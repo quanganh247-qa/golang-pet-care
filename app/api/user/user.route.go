@@ -15,10 +15,15 @@ import (
 func Routes(routerGroup middleware.RouterGroup, taskDistributor worker.TaskDistributor, config util.Config) {
 =======
 	"github.com/quanganh247-qa/go-blog-be/app/service/worker"
+	"github.com/quanganh247-qa/go-blog-be/app/util"
 )
 
+<<<<<<< HEAD
 func Routes(routerGroup middleware.RouterGroup, taskDistributor worker.TaskDistributor) {
 >>>>>>> 6610455 (feat: redis queue)
+=======
+func Routes(routerGroup middleware.RouterGroup, taskDistributor worker.TaskDistributor, config util.Config) {
+>>>>>>> 1a9e82a (reset password api)
 	user := routerGroup.RouterDefault.Group("/user")
 	authRoute := routerGroup.RouterAuth(user)
 
@@ -32,6 +37,7 @@ func Routes(routerGroup middleware.RouterGroup, taskDistributor worker.TaskDistr
 				redis:           redis.Client,
 				taskDistributor: taskDistributor,
 				config:          config,
+<<<<<<< HEAD
 =======
 				storeDB: db.StoreDB, // This should refer to the actual instance
 				redis:   redis.Client,
@@ -41,6 +47,8 @@ func Routes(routerGroup middleware.RouterGroup, taskDistributor worker.TaskDistr
 				redis:           redis.Client,
 				taskDistributor: taskDistributor,
 >>>>>>> 6610455 (feat: redis queue)
+=======
+>>>>>>> 1a9e82a (reset password api)
 			},
 		},
 	}
@@ -68,6 +76,7 @@ func Routes(routerGroup middleware.RouterGroup, taskDistributor worker.TaskDistr
 <<<<<<< HEAD
 		authRoute.PUT("/", userApi.controller.updatetUser)
 		authRoute.PUT("/avatar", userApi.controller.updatetUserAvatar)
+<<<<<<< HEAD
 		user.PUT("/reset-password", userApi.controller.ForgotPassword)
 		authRoute.PUT("/change-password", userApi.controller.UpdatePassword)
 =======
@@ -76,6 +85,9 @@ func Routes(routerGroup middleware.RouterGroup, taskDistributor worker.TaskDistr
 		authRoute.PUT("/", userApi.controller.updatetUser)
 		authRoute.PUT("/avatar", userApi.controller.updatetUserAvatar)
 >>>>>>> 473cd1d (uplaod image method)
+=======
+		user.PUT("/password", userApi.controller.ForgotPassword)
+>>>>>>> 1a9e82a (reset password api)
 
 <<<<<<< HEAD
 		user.GET("/sessioninfo", userApi.controller.sessioninfo)

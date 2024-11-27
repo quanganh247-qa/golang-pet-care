@@ -390,8 +390,13 @@ func (q *Queries) GetUser(ctx context.Context, username string) (GetUserRow, err
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 const getUserByEmail = `-- name: GetUserByEmail :one
 SELECT id, username, hashed_password, full_name, email, phone_number, address, data_image, original_image, role, status, created_at, is_verified_email, removed_at
+=======
+const getUserByEmail = `-- name: GetUserByEmail :one
+SELECT id, username, hashed_password, full_name, email, phone_number, address, data_image, original_image, role, created_at, is_verified_email, removed_at
+>>>>>>> 1a9e82a (reset password api)
 FROM users
 WHERE email = $1
 `
@@ -399,6 +404,7 @@ WHERE email = $1
 func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error) {
 	row := q.db.QueryRow(ctx, getUserByEmail, email)
 	var i User
+<<<<<<< HEAD
 =======
 const getUser = `-- name: GetUser :one
 SELECT id, username, hashed_password, full_name, email, phone_number, address, data_image, original_image, role, created_at, is_verified_email
@@ -425,6 +431,8 @@ func (q *Queries) GetUser(ctx context.Context, username string) (GetUserRow, err
 	row := q.db.QueryRow(ctx, getUser, username)
 	var i GetUserRow
 >>>>>>> 0fb3f30 (user images)
+=======
+>>>>>>> 1a9e82a (reset password api)
 	err := row.Scan(
 		&i.ID,
 		&i.Username,
@@ -436,9 +444,15 @@ func (q *Queries) GetUser(ctx context.Context, username string) (GetUserRow, err
 		&i.DataImage,
 		&i.OriginalImage,
 		&i.Role,
+<<<<<<< HEAD
 		&i.Status,
 		&i.CreatedAt,
 		&i.IsVerifiedEmail,
+=======
+		&i.CreatedAt,
+		&i.IsVerifiedEmail,
+		&i.RemovedAt,
+>>>>>>> 1a9e82a (reset password api)
 	)
 	return i, err
 }

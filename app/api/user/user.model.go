@@ -10,6 +10,7 @@ import (
 	"github.com/quanganh247-qa/go-blog-be/app/service/redis"
 	"github.com/quanganh247-qa/go-blog-be/app/service/worker"
 <<<<<<< HEAD
+<<<<<<< HEAD
 	"github.com/quanganh247-qa/go-blog-be/app/util"
 =======
 	"github.com/quanganh247-qa/go-blog-be/app/service/mail"
@@ -20,6 +21,9 @@ import (
 >>>>>>> 272832d (redis cache)
 =======
 >>>>>>> 6610455 (feat: redis queue)
+=======
+	"github.com/quanganh247-qa/go-blog-be/app/util"
+>>>>>>> 1a9e82a (reset password api)
 )
 
 type UserController struct {
@@ -34,6 +38,7 @@ type UserService struct {
 	redis           *redis.ClientType
 	taskDistributor worker.TaskDistributor
 	config          util.Config
+<<<<<<< HEAD
 =======
 	storeDB    db.Store
 	emailQueue *rabbitmq.EmailQueue
@@ -48,6 +53,8 @@ type UserService struct {
 	redis           *redis.ClientType
 	taskDistributor worker.TaskDistributor
 >>>>>>> 6610455 (feat: redis queue)
+=======
+>>>>>>> 1a9e82a (reset password api)
 }
 
 // route
@@ -238,8 +245,11 @@ type ForgotPasswordRequest struct {
 type ForgotPasswordResponse struct {
 	Message string `json:"message"`
 }
+<<<<<<< HEAD
 
 type UpdatePasswordParams struct {
 	OldPassword string `json:"old_password"`
 	Password    string `json:"password"`
 }
+=======
+>>>>>>> 1a9e82a (reset password api)

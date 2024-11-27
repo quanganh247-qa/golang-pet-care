@@ -59,10 +59,14 @@ import (
 )
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor, config util.Config, es *elasticsearch.ESService) {
 =======
 func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor) {
 >>>>>>> 6610455 (feat: redis queue)
+=======
+func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor, config util.Config) {
+>>>>>>> 1a9e82a (reset password api)
 	gin.SetMode(gin.ReleaseMode)
 	routerDefault := gin.New()
 	routerDefault.SetTrustedProxies(nil)
@@ -120,7 +124,7 @@ func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor) {
 		})
 	})
 
-	user.Routes(routerGroup, taskDistributor)
+	user.Routes(routerGroup, taskDistributor, config)
 	service_type.Routes(routerGroup)
 >>>>>>> 9d28896 (image pet)
 	pet.Routes(routerGroup)

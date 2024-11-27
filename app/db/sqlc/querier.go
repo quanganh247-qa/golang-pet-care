@@ -254,6 +254,7 @@ type Querier interface {
 	GetTreatmentByDiseaseId(ctx context.Context, arg GetTreatmentByDiseaseIdParams) ([]GetTreatmentByDiseaseIdRow, error)
 >>>>>>> 6a85052 (get treatment by disease)
 	GetUser(ctx context.Context, username string) (GetUserRow, error)
+	GetUserByEmail(ctx context.Context, email string) (User, error)
 	GetVaccinationByID(ctx context.Context, vaccinationid int64) (Vaccination, error)
 	InsertDeviceToken(ctx context.Context, arg InsertDeviceTokenParams) (Devicetoken, error)
 >>>>>>> 0fb3f30 (user images)

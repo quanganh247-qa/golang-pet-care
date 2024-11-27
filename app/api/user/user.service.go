@@ -4,11 +4,15 @@ import (
 	"database/sql"
 	"fmt"
 <<<<<<< HEAD
+<<<<<<< HEAD
 	"log"
 <<<<<<< HEAD
 =======
 =======
 >>>>>>> 272832d (redis cache)
+=======
+	"log"
+>>>>>>> 1a9e82a (reset password api)
 	"math/big"
 >>>>>>> 9d28896 (image pet)
 	"net/http"
@@ -23,6 +27,9 @@ import (
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 1a9e82a (reset password api)
 	"github.com/quanganh247-qa/go-blog-be/app/service/mail"
 	"github.com/quanganh247-qa/go-blog-be/app/service/worker"
 =======
@@ -97,6 +104,7 @@ type UserServiceInterface interface {
 	updateUserService(ctx *gin.Context, username string, arg UpdateUserParams) (*UserResponse, error)
 	updateUserImageService(ctx *gin.Context, username string, arg UpdateUserImageParams) error
 	GetDoctorsService(ctx *gin.Context) ([]DoctorResponse, error)
+	ForgotPasswordService(ctx *gin.Context, email string) error
 }
 
 >>>>>>> edfe5ad (OTP verifycation)
@@ -1048,4 +1056,72 @@ func (s *UserService) GetDoctorsService(ctx *gin.Context) ([]DoctorResponse, err
 	return doctors, nil
 
 }
+<<<<<<< HEAD
 >>>>>>> e30b070 (Get list appoinment by user)
+=======
+
+func (s *UserService) ForgotPasswordService(ctx *gin.Context, email string) error {
+
+	user, err := s.storeDB.GetUserByEmail(ctx, email)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			ctx.JSON(http.StatusNotFound, "user not found")
+			return fmt.Errorf("user not found")
+		}
+		ctx.JSON(http.StatusInternalServerError, "internal server error")
+		return fmt.Errorf("internal server error: %v", err)
+	}
+
+	// Generate a custom password
+	customConfig := util.PasswordConfig{
+		Length:        12,
+		IncludeUpper:  true,
+		IncludeLower:  true,
+		IncludeNumber: true,
+		IncludeSymbol: true, // No special characters
+	}
+	customPassword, err := util.GeneratePassword(customConfig)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, "failed to generate password")
+		return fmt.Errorf("failed to generate password: %w", err)
+	}
+	mailer := mail.NewGmailSender(s.config.EmailSenderName, s.config.EmailSenderAddress, s.config.EmailSenderPassword)
+	if mailer == nil {
+		log.Fatal("Failed to create mailer")
+	}
+
+	subject := "New Password"
+	content := fmt.Sprintf("Your new password is: %s", customPassword)
+	to := []string{email}
+
+	// Send the new password to the user
+	err = mailer.SendEmail(subject, content, to, nil, nil, nil)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, "failed to send email")
+		return fmt.Errorf("failed to send email: %w", err)
+	}
+	hashedPwd, err := util.HashPassword(customPassword)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, "failed to hash password")
+		return fmt.Errorf("failed to hash password: %w", err)
+	}
+
+	err = s.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
+		_, err := q.UpdateUserPassword(ctx, db.UpdateUserPasswordParams{
+			Username:       user.Username,
+			HashedPassword: hashedPwd,
+		})
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, "internal server error")
+			return fmt.Errorf("internal server error: %v", err)
+		}
+		return nil
+	})
+	if err != nil {
+		return fmt.Errorf("failed to update user password: %w", err)
+	}
+
+	return nil
+
+}
+>>>>>>> 1a9e82a (reset password api)
