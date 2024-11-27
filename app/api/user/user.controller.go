@@ -32,6 +32,7 @@ type UserControllerInterface interface {
 	updatetUser(ctx *gin.Context)
 	updatetUserAvatar(ctx *gin.Context)
 	GetDoctors(ctx *gin.Context)
+	ForgotPassword(ctx *gin.Context)
 }
 
 // createUser godoc
@@ -418,4 +419,18 @@ func (controller *UserController) GetDoctors(ctx *gin.Context) {
 		return
 	}
 	ctx.JSON(http.StatusOK, util.SuccessResponse("Success", res))
+}
+
+func (controller *UserController) ForgotPassword(ctx *gin.Context) {
+	var req ForgotPasswordRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, util.ErrorValidator(err))
+		return
+	}
+	err := controller.service.ForgotPasswordService(ctx, req.Email)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
+		return
+	}
+	ctx.JSON(http.StatusOK, util.SuccessResponse("Success", nil))
 }

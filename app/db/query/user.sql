@@ -8,6 +8,13 @@ SELECT id, username, hashed_password, full_name, email, phone_number, address, d
 FROM users
 WHERE username = $1;
 
+
+-- name: GetUserByEmail :one
+SELECT *
+FROM users
+WHERE email = $1;
+
+
 -- name: GetAllUsers :many
 SELECT * FROM users ;
 

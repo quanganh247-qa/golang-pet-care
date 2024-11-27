@@ -1,6 +1,7 @@
 package mail
 
 import (
+	"context"
 	"fmt"
 	"net/smtp"
 
@@ -59,4 +60,12 @@ func (sender *GmailSender) SendEmail(subject string,
 	}
 	smtpAuth := smtp.PlainAuth("", sender.fromEmailAddress, sender.fromEmailPassword, smtpAuthAddress)
 	return e.Send(smtpServerAddress, smtpAuth)
+}
+
+// send new password to user
+func (sender *GmailSender) SendNewPassword(ctx context.Context, email string, newPassword string) error {
+	subject := "New Password"
+	content := fmt.Sprintf("Your new password is: %s", newPassword)
+	to := []string{email}
+	return sender.SendEmail(subject, content, to, nil, nil, nil)
 }
