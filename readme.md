@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ## Project Documentation
 
 ### Overview
@@ -63,3 +64,8 @@ source ~/.zshrc
 curl -X GET "localhost:9200/\_cat/indices?v"
 curl -X DELETE "localhost:9200/petclinic_medicines"
 curl -X DELETE "localhost:9200/petclinic_diseases"
+=======
+keploy record -c "gin -p 8089 -i run main.go"
+
+keploy test -c "gin -p 8089 -i run main.go" --delay 20
+>>>>>>> 3980627 (generated test cases with keploy)

@@ -933,6 +933,9 @@ func (s *UserService) UpdatePasswordService(ctx *gin.Context, username string, a
 	}
 	err = s.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 3980627 (generated test cases with keploy)
 		newHashedPwd, err := util.HashPassword(arg.Password)
 		if err != nil {
 			ctx.JSON(http.StatusInternalServerError, "failed to hash password")
