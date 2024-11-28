@@ -331,6 +331,9 @@ type ForgotPasswordResponse struct {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> a2c21c8 (update pass)
 =======
 >>>>>>> a2c21c8 (update pass)
 
@@ -339,9 +342,12 @@ type UpdatePasswordParams struct {
 	Password    string `json:"password"`
 }
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> 1a9e82a (reset password api)
 =======
 >>>>>>> a2c21c8 (update pass)
 =======
 >>>>>>> 1a9e82a (reset password api)
+=======
+>>>>>>> a2c21c8 (update pass)

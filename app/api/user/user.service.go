@@ -181,6 +181,7 @@ func (server *UserService) createUserService(ctx *gin.Context, req createUserReq
 	updateUserImageService(ctx *gin.Context, username string, arg UpdateUserImageParams) error
 	GetDoctorsService(ctx *gin.Context) ([]DoctorResponse, error)
 	ForgotPasswordService(ctx *gin.Context, email string) error
+	UpdatePasswordService(ctx *gin.Context, username string, arg UpdatePasswordParams) error
 }
 
 >>>>>>> edfe5ad (OTP verifycation)
@@ -1392,11 +1393,15 @@ func (s *UserService) ForgotPasswordService(ctx *gin.Context, email string) erro
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 // update password
 >>>>>>> a2c21c8 (update pass)
 =======
 >>>>>>> ae87825 (updated)
+=======
+// update password
+>>>>>>> a2c21c8 (update pass)
 func (s *UserService) UpdatePasswordService(ctx *gin.Context, username string, arg UpdatePasswordParams) error {
 
 	user, err := s.storeDB.GetUser(ctx, username)
@@ -1415,6 +1420,7 @@ func (s *UserService) UpdatePasswordService(ctx *gin.Context, username string, a
 		return fmt.Errorf("incorrect old password")
 	}
 	err = s.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 =======
@@ -1629,6 +1635,11 @@ func (s *UserService) ForgotPasswordService(ctx *gin.Context, email string) erro
 >>>>>>> a2c21c8 (update pass)
 =======
 >>>>>>> 1a9e82a (reset password api)
+=======
+		_, err := q.UpdateUserPassword(ctx, db.UpdateUserPasswordParams{
+			Username:       username,
+			HashedPassword: arg.Password,
+>>>>>>> a2c21c8 (update pass)
 		})
 		if err != nil {
 			ctx.JSON(http.StatusInternalServerError, "internal server error")
@@ -1639,6 +1650,7 @@ func (s *UserService) ForgotPasswordService(ctx *gin.Context, email string) erro
 	if err != nil {
 		return fmt.Errorf("failed to update user password: %w", err)
 	}
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 =======
@@ -1665,3 +1677,7 @@ func (s *UserService) ForgotPasswordService(ctx *gin.Context, email string) erro
 >>>>>>> e30b070 (Get list appoinment by user)
 =======
 >>>>>>> 1a9e82a (reset password api)
+=======
+	return nil
+}
+>>>>>>> a2c21c8 (update pass)

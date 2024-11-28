@@ -72,6 +72,7 @@ type UserControllerInterface interface {
 >>>>>>> ae87825 (updated)
 	ForgotPassword(ctx *gin.Context)
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> 1a9e82a (reset password api)
 =======
 	UpdatePassword(ctx *gin.Context)
@@ -97,6 +98,9 @@ type UserControllerInterface interface {
 =======
 	ForgotPassword(ctx *gin.Context)
 >>>>>>> 1a9e82a (reset password api)
+=======
+	UpdatePassword(ctx *gin.Context)
+>>>>>>> a2c21c8 (update pass)
 }
 
 // createUser godoc
@@ -854,8 +858,11 @@ func (controller *UserController) ForgotPassword(ctx *gin.Context) {
 }
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> 1a9e82a (reset password api)
 =======
+=======
+>>>>>>> a2c21c8 (update pass)
 
 func (controller *UserController) UpdatePassword(ctx *gin.Context) {
 	var req UpdatePasswordParams
@@ -875,6 +882,7 @@ func (controller *UserController) UpdatePassword(ctx *gin.Context) {
 	}
 	ctx.JSON(http.StatusOK, util.SuccessResponse("Success", nil))
 }
+<<<<<<< HEAD
 >>>>>>> a2c21c8 (update pass)
 =======
 >>>>>>> ada3717 (Docker file)
@@ -888,3 +896,5 @@ func (controller *UserController) UpdatePassword(ctx *gin.Context) {
 >>>>>>> 473cd1d (uplaod image method)
 =======
 >>>>>>> 1a9e82a (reset password api)
+=======
+>>>>>>> a2c21c8 (update pass)
