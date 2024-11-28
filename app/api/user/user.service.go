@@ -1423,6 +1423,9 @@ func (s *UserService) UpdatePasswordService(ctx *gin.Context, username string, a
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 3980627 (generated test cases with keploy)
 =======
 >>>>>>> 3980627 (generated test cases with keploy)
 		newHashedPwd, err := util.HashPassword(arg.Password)
