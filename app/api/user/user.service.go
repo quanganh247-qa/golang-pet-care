@@ -105,6 +105,7 @@ type UserServiceInterface interface {
 	updateUserImageService(ctx *gin.Context, username string, arg UpdateUserImageParams) error
 	GetDoctorsService(ctx *gin.Context) ([]DoctorResponse, error)
 	ForgotPasswordService(ctx *gin.Context, email string) error
+	UpdatePasswordService(ctx *gin.Context, username string, arg UpdatePasswordParams) error
 }
 
 >>>>>>> edfe5ad (OTP verifycation)
@@ -909,6 +910,10 @@ func (s *UserService) ForgotPasswordService(ctx *gin.Context, email string) erro
 
 }
 
+<<<<<<< HEAD
+=======
+// update password
+>>>>>>> a2c21c8 (update pass)
 func (s *UserService) UpdatePasswordService(ctx *gin.Context, username string, arg UpdatePasswordParams) error {
 
 	user, err := s.storeDB.GetUser(ctx, username)
@@ -927,6 +932,7 @@ func (s *UserService) UpdatePasswordService(ctx *gin.Context, username string, a
 		return fmt.Errorf("incorrect old password")
 	}
 	err = s.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
+<<<<<<< HEAD
 		newHashedPwd, err := util.HashPassword(arg.Password)
 		if err != nil {
 			ctx.JSON(http.StatusInternalServerError, "failed to hash password")
@@ -1110,6 +1116,11 @@ func (s *UserService) ForgotPasswordService(ctx *gin.Context, email string) erro
 		_, err := q.UpdateUserPassword(ctx, db.UpdateUserPasswordParams{
 			Username:       user.Username,
 			HashedPassword: hashedPwd,
+=======
+		_, err := q.UpdateUserPassword(ctx, db.UpdateUserPasswordParams{
+			Username:       username,
+			HashedPassword: arg.Password,
+>>>>>>> a2c21c8 (update pass)
 		})
 		if err != nil {
 			ctx.JSON(http.StatusInternalServerError, "internal server error")
@@ -1120,8 +1131,13 @@ func (s *UserService) ForgotPasswordService(ctx *gin.Context, email string) erro
 	if err != nil {
 		return fmt.Errorf("failed to update user password: %w", err)
 	}
+<<<<<<< HEAD
 
 	return nil
 
 }
 >>>>>>> 1a9e82a (reset password api)
+=======
+	return nil
+}
+>>>>>>> a2c21c8 (update pass)

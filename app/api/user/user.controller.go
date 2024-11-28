@@ -58,7 +58,11 @@ type UserControllerInterface interface {
 >>>>>>> e30b070 (Get list appoinment by user)
 =======
 	ForgotPassword(ctx *gin.Context)
+<<<<<<< HEAD
 >>>>>>> 1a9e82a (reset password api)
+=======
+	UpdatePassword(ctx *gin.Context)
+>>>>>>> a2c21c8 (update pass)
 }
 
 // createUser godoc
@@ -678,4 +682,26 @@ func (controller *UserController) ForgotPassword(ctx *gin.Context) {
 	}
 	ctx.JSON(http.StatusOK, util.SuccessResponse("Success", nil))
 }
+<<<<<<< HEAD
 >>>>>>> 1a9e82a (reset password api)
+=======
+
+func (controller *UserController) UpdatePassword(ctx *gin.Context) {
+	var req UpdatePasswordParams
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, util.ErrorValidator(err))
+		return
+	}
+	authPayload, err := middleware.GetAuthorizationPayload(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
+		return
+	}
+	err = controller.service.UpdatePasswordService(ctx, authPayload.Username, req)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
+		return
+	}
+	ctx.JSON(http.StatusOK, util.SuccessResponse("Success", nil))
+}
+>>>>>>> a2c21c8 (update pass)
