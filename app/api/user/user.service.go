@@ -703,9 +703,14 @@ func (s *UserService) UpdatePasswordService(ctx *gin.Context, username string, a
 		return fmt.Errorf("incorrect old password")
 	}
 	err = s.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
-		_, err := q.UpdateUserPassword(ctx, db.UpdateUserPasswordParams{
+		newHashedPwd, err := util.HashPassword(arg.Password)
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, "failed to hash password")
+			return fmt.Errorf("failed to hash password: %w", err)
+		}
+		_, err = q.UpdateUserPassword(ctx, db.UpdateUserPasswordParams{
 			Username:       username,
-			HashedPassword: arg.Password,
+			HashedPassword: newHashedPwd,
 		})
 		if err != nil {
 			ctx.JSON(http.StatusInternalServerError, "internal server error")
