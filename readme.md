@@ -2,6 +2,7 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 ## Project Documentation
 
 ### Overview
@@ -277,3 +278,8 @@ curl -X DELETE "localhost:9200/petclinic_medicines"
 >>>>>>> e859654 (Elastic search)
 =======
 >>>>>>> ada3717 (Docker file)
+=======
+keploy record -c "gin -p 8089 -i run main.go"
+
+keploy test -c "gin -p 8089 -i run main.go" --delay 20
+>>>>>>> 3980627 (generated test cases with keploy)
