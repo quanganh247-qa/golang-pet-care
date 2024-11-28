@@ -36,7 +36,8 @@ func Routes(routerGroup middleware.RouterGroup, taskDistributor worker.TaskDistr
 		authRoute.POST("/logout", userApi.controller.logoutUser)
 		authRoute.PUT("/", userApi.controller.updatetUser)
 		authRoute.PUT("/avatar", userApi.controller.updatetUserAvatar)
-		user.PUT("/password", userApi.controller.ForgotPassword)
+		user.PUT("/reset-password", userApi.controller.ForgotPassword)
+		authRoute.PUT("/change-password", userApi.controller.UpdatePassword)
 
 		// Doctor
 		authRoute.POST("/create-doctor", userApi.controller.createDoctor)
