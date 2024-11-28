@@ -39,6 +39,7 @@ type UserServiceInterface interface {
 	updateUserImageService(ctx *gin.Context, username string, arg UpdateUserImageParams) error
 	GetDoctorsService(ctx *gin.Context) ([]DoctorResponse, error)
 	ForgotPasswordService(ctx *gin.Context, email string) error
+	UpdatePasswordService(ctx *gin.Context, username string, arg UpdatePasswordParams) error
 }
 
 func (server *UserService) createUserService(ctx *gin.Context, req createUserRequest) (*VerrifyEmailTxParams, error) {
@@ -681,4 +682,39 @@ func (s *UserService) ForgotPasswordService(ctx *gin.Context, email string) erro
 
 	return nil
 
+}
+
+// update password
+func (s *UserService) UpdatePasswordService(ctx *gin.Context, username string, arg UpdatePasswordParams) error {
+
+	user, err := s.storeDB.GetUser(ctx, username)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			ctx.JSON(http.StatusNotFound, "user not found")
+			return fmt.Errorf("user not found")
+		}
+		ctx.JSON(http.StatusInternalServerError, "internal server error")
+		return fmt.Errorf("internal server error: %v", err)
+	}
+	// Check if the old password is correct
+	err = util.CheckPassword(arg.OldPassword, user.HashedPassword)
+	if err != nil {
+		ctx.JSON(http.StatusForbidden, "incorrect old password")
+		return fmt.Errorf("incorrect old password")
+	}
+	err = s.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
+		_, err := q.UpdateUserPassword(ctx, db.UpdateUserPasswordParams{
+			Username:       username,
+			HashedPassword: arg.Password,
+		})
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, "internal server error")
+			return fmt.Errorf("internal server error: %v", err)
+		}
+		return nil
+	})
+	if err != nil {
+		return fmt.Errorf("failed to update user password: %w", err)
+	}
+	return nil
 }
