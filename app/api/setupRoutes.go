@@ -41,6 +41,7 @@ import (
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> 4ccd381 (Update appointment flow)
 	"github.com/quanganh247-qa/go-blog-be/app/api/doctor"
@@ -60,6 +61,9 @@ import (
 =======
 	"github.com/quanganh247-qa/go-blog-be/app/api/medications"
 >>>>>>> e859654 (Elastic search)
+=======
+	"github.com/quanganh247-qa/go-blog-be/app/api/location"
+>>>>>>> 4625843 (added goong maps api)
 	"github.com/quanganh247-qa/go-blog-be/app/api/notification"
 >>>>>>> 3bf345d (happy new year)
 =======
@@ -376,7 +380,11 @@ func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor, config
 >>>>>>> 9fd7fc8 (feat: validate notification schema and APIs)
 =======
 	vaccination.Routes(routerGroup)
+<<<<<<< HEAD
 >>>>>>> 290baeb (fixed vaccine routes)
+=======
+	location.Routes(routerGroup, &config)
+>>>>>>> 4625843 (added goong maps api)
 
 	server.Router = routerDefault
 }

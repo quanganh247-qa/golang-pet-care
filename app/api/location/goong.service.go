@@ -10,6 +10,7 @@ import (
 type GoongServiceInterface interface {
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	AutoCompleteService(input string, location *Location, limit string) (*AutocompleteResponse, error)
 =======
 	AutoCompleteService(input string, location *Location) (*AutocompleteResponse, error)
@@ -17,6 +18,9 @@ type GoongServiceInterface interface {
 =======
 	AutoCompleteService(input string, location *Location, limit string) (*AutocompleteResponse, error)
 >>>>>>> c449ffc (feat: cart api)
+=======
+	AutoCompleteService(input string, location *Location) (*AutocompleteResponse, error)
+>>>>>>> 4625843 (added goong maps api)
 	GetPlaceDetailService(placeID string) (*PlaceDetailResponse, error)
 	GetDirectionService(req DirectionRequest) (*DirectionsResponse, error)
 	ForwardGeocodeService(address string) (*GeocodeResponse, error)
@@ -25,6 +29,7 @@ type GoongServiceInterface interface {
 }
 
 // Autocomplete searches for places based on input text
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 func (s *GoongService) AutoCompleteService(input string, location *Location, limit string) (*AutocompleteResponse, error) {
@@ -42,10 +47,19 @@ func (s *GoongService) AutoCompleteService(input string, location *Location, lim
 >>>>>>> 4625843 (added goong maps api)
 =======
 >>>>>>> c449ffc (feat: cart api)
+=======
+func (s *GoongService) AutoCompleteService(input string, location *Location) (*AutocompleteResponse, error) {
+	// Build base URL
+	fmt.Println(s.config.BaseURL)
+
+	baseURL := fmt.Sprintf("%s/Place/AutoComplete", s.config.BaseURL)
+	fmt.Println(baseURL)
+>>>>>>> 4625843 (added goong maps api)
 	// Add parameters
 	params := url.Values{}
 	params.Add("api_key", s.config.APIKey)
 	params.Add("input", input)
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 	params.Add("limit", limit)
@@ -54,6 +68,8 @@ func (s *GoongService) AutoCompleteService(input string, location *Location, lim
 =======
 	params.Add("limit", limit)
 >>>>>>> c449ffc (feat: cart api)
+=======
+>>>>>>> 4625843 (added goong maps api)
 
 	// Add location if provided
 	if location != nil {

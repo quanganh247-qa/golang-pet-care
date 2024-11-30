@@ -39,6 +39,7 @@ type Config struct {
 	GoogleRedirectURL  string `mapstructure:"GOOGLE_REDIRECT_URL"`
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	GoogleAPIKey       string `mapstructure:"GOOGLE_API_KEY"`
 
 	OpenFDAAPIKey string `mapstructure:"OPENFDA_API_KEY"`
@@ -98,6 +99,11 @@ type Config struct {
 >>>>>>> 4ccd381 (Update appointment flow)
 =======
 >>>>>>> 6b24d88 (feat(payment): add PayOS payment integration and enhance treatment module)
+=======
+
+	GoongAPIKey  string `mapstructure:"GOONG_API_KEY"`
+	GoongBaseURL string `mapstructure:"GOONG_BASE_URL"`
+>>>>>>> 4625843 (added goong maps api)
 }
 
 var Configs = Config{}

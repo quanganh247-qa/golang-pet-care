@@ -20,6 +20,7 @@ type GoongControllerInterface interface {
 func (controller *GoongController) Autocomplete(c *gin.Context) {
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 	// Parse the input query parameter
 	input := c.DefaultQuery("input", "") // Default to an empty string if not provided
@@ -35,6 +36,11 @@ func (controller *GoongController) Autocomplete(c *gin.Context) {
 	input := c.DefaultQuery("input", "") // Default to an empty string if not provided
 	limit := c.DefaultQuery("limit", "")
 >>>>>>> c449ffc (feat: cart api)
+=======
+	// Parse the input query parameter
+	input := c.DefaultQuery("input", "") // Default to an empty string if not provided
+
+>>>>>>> 4625843 (added goong maps api)
 	// Parse the location query parameters if provided
 	locationParam := c.DefaultQuery("location", "")
 	var location *Location
@@ -68,6 +74,7 @@ func (controller *GoongController) Autocomplete(c *gin.Context) {
 	// Call the GoongService's Autocomplete method
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	result, err := controller.service.AutoCompleteService(input, location, limit)
 =======
 	result, err := controller.service.AutoCompleteService(input, location)
@@ -75,6 +82,9 @@ func (controller *GoongController) Autocomplete(c *gin.Context) {
 =======
 	result, err := controller.service.AutoCompleteService(input, location, limit)
 >>>>>>> c449ffc (feat: cart api)
+=======
+	result, err := controller.service.AutoCompleteService(input, location)
+>>>>>>> 4625843 (added goong maps api)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
