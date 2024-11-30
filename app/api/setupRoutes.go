@@ -19,6 +19,7 @@ import (
 	"github.com/quanganh247-qa/go-blog-be/app/api/disease"
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	"github.com/quanganh247-qa/go-blog-be/app/api/doctor"
 	"github.com/quanganh247-qa/go-blog-be/app/api/location"
 	"github.com/quanganh247-qa/go-blog-be/app/api/medical_records"
@@ -33,6 +34,9 @@ import (
 =======
 >>>>>>> 6c35562 (dicease and treatment plan)
 =======
+=======
+	"github.com/quanganh247-qa/go-blog-be/app/api/location"
+>>>>>>> 4625843 (added goong maps api)
 	"github.com/quanganh247-qa/go-blog-be/app/api/notification"
 >>>>>>> 9fd7fc8 (feat: validate notification schema and APIs)
 	"github.com/quanganh247-qa/go-blog-be/app/api/pet"
@@ -151,6 +155,7 @@ func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor, config
 	petschedule.Routes(routerGroup)
 	notification.Routes(routerGroup)
 	vaccination.Routes(routerGroup)
+	location.Routes(routerGroup, &config)
 
 	server.Router = routerDefault
 >>>>>>> 79a3bcc (medicine api)

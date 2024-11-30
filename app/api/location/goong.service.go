@@ -8,7 +8,11 @@ import (
 )
 
 type GoongServiceInterface interface {
+<<<<<<< HEAD
 	AutoCompleteService(input string, location *Location, limit string) (*AutocompleteResponse, error)
+=======
+	AutoCompleteService(input string, location *Location) (*AutocompleteResponse, error)
+>>>>>>> 4625843 (added goong maps api)
 	GetPlaceDetailService(placeID string) (*PlaceDetailResponse, error)
 	GetDirectionService(req DirectionRequest) (*DirectionsResponse, error)
 	ForwardGeocodeService(address string) (*GeocodeResponse, error)
@@ -17,14 +21,26 @@ type GoongServiceInterface interface {
 }
 
 // Autocomplete searches for places based on input text
+<<<<<<< HEAD
 func (s *GoongService) AutoCompleteService(input string, location *Location, limit string) (*AutocompleteResponse, error) {
 	// Build base URL
 	baseURL := fmt.Sprintf("%s/Place/AutoComplete", s.config.BaseURL)
+=======
+func (s *GoongService) AutoCompleteService(input string, location *Location) (*AutocompleteResponse, error) {
+	// Build base URL
+	fmt.Println(s.config.BaseURL)
+
+	baseURL := fmt.Sprintf("%s/Place/AutoComplete", s.config.BaseURL)
+	fmt.Println(baseURL)
+>>>>>>> 4625843 (added goong maps api)
 	// Add parameters
 	params := url.Values{}
 	params.Add("api_key", s.config.APIKey)
 	params.Add("input", input)
+<<<<<<< HEAD
 	params.Add("limit", limit)
+=======
+>>>>>>> 4625843 (added goong maps api)
 
 	// Add location if provided
 	if location != nil {

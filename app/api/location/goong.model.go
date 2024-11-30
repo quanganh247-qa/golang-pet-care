@@ -120,7 +120,11 @@ type PlaceDetail struct {
 	PlaceID    string             `json:"place_id"`
 	Name       string             `json:"name"`
 	Address    string             `json:"formatted_address"`
+<<<<<<< HEAD
 	Geometry   Geometry           `json:"geometry"`
+=======
+	Location   Location           `json:"geometry"`
+>>>>>>> 4625843 (added goong maps api)
 	Types      []string           `json:"types"`
 	Components []AddressComponent `json:"address_components"`
 }
