@@ -9,6 +9,7 @@ import (
 	"github.com/quanganh247-qa/go-blog-be/app/api/appointment"
 	"github.com/quanganh247-qa/go-blog-be/app/api/device_token"
 	"github.com/quanganh247-qa/go-blog-be/app/api/disease"
+	"github.com/quanganh247-qa/go-blog-be/app/api/location"
 	"github.com/quanganh247-qa/go-blog-be/app/api/notification"
 	"github.com/quanganh247-qa/go-blog-be/app/api/pet"
 	petschedule "github.com/quanganh247-qa/go-blog-be/app/api/pet_schedule"
@@ -71,6 +72,7 @@ func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor, config
 	petschedule.Routes(routerGroup)
 	notification.Routes(routerGroup)
 	vaccination.Routes(routerGroup)
+	location.Routes(routerGroup, &config)
 
 	server.Router = routerDefault
 
