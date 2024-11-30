@@ -73,7 +73,6 @@ require (
 	github.com/stretchr/testify v1.9.0
 	github.com/swaggo/files v1.0.1
 	github.com/swaggo/gin-swagger v1.6.0
-	github.com/swaggo/swag v1.16.4
 	go.uber.org/zap v1.21.0
 	golang.org/x/crypto v0.29.0
 	golang.org/x/time v0.7.0
@@ -151,6 +150,8 @@ require (
 	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
 	github.com/robfig/cron/v3 v3.0.1 // indirect
 	github.com/shopspring/decimal v1.4.0 // indirect
+	github.com/stretchr/objx v0.5.2 // indirect
+	github.com/swaggo/swag v1.16.4 // indirect
 	golang.org/x/tools v0.27.0 // indirect
 )
 

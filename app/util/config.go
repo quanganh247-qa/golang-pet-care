@@ -37,6 +37,7 @@ type Config struct {
 	GoogleClientID     string `mapstructure:"GOOGLE_CLIENT_ID"`
 	GoogleClientSecret string `mapstructure:"GOOGLE_CLIENT_SECRET"`
 	GoogleRedirectURL  string `mapstructure:"GOOGLE_REDIRECT_URL"`
+<<<<<<< HEAD
 	GoogleAPIKey       string `mapstructure:"GOOGLE_API_KEY"`
 
 	OpenFDAAPIKey string `mapstructure:"OPENFDA_API_KEY"`
@@ -58,6 +59,11 @@ type Config struct {
 	MinIOAccessKey   string `mapstructure:"MINIO_ACCESS_KEY"`
 	MinIOSecretKey   string `mapstructure:"MINIO_SECRET_KEY"`
 	MinIOSSL         bool   `mapstructure:"MINIO_SSL"`
+=======
+
+	GoongAPIKey  string `mapstructure:"GOONG_API_KEY"`
+	GoongBaseURL string `mapstructure:"GOONG_BASE_URL"`
+>>>>>>> 4625843 (added goong maps api)
 }
 
 var Configs = Config{}
