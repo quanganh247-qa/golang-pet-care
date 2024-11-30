@@ -40,6 +40,9 @@ type Config struct {
 	GoogleClientID     string `mapstructure:"GOOGLE_CLIENT_ID"`
 	GoogleClientSecret string `mapstructure:"GOOGLE_CLIENT_SECRET"`
 	GoogleRedirectURL  string `mapstructure:"GOOGLE_REDIRECT_URL"`
+
+	GoongAPIKey  string `mapstructure:"GOONG_API_KEY"`
+	GoongBaseURL string `mapstructure:"GOONG_BASE_URL"`
 }
 
 var Configs = Config{}
