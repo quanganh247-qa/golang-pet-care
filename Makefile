@@ -29,4 +29,8 @@ redis:
 rabbitmq:
 	docker run -d --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:3-management
 
+postgres-ec:
+	docker run -d  --name postgres-ec  -p 5432:5432 -e POSTGRES_PASSWORD=12345678  -e PGDATA=/var/lib/postgresql/data/pgdata  -v postgres_volume:/var/lib/postgresql/data  postgres:15-alpine
+
+
 .PHONY: mup mdown  mforce sqlc server   postgres  redis  rabbitmq
