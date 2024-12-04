@@ -3,6 +3,7 @@ package payment
 import (
 	"bytes"
 	"encoding/json"
+<<<<<<< HEAD
 	"errors"
 	"fmt"
 	"io/ioutil"
@@ -36,6 +37,23 @@ type PaymentServiceInterface interface {
 func (s *PaymentService) GetToken(c *gin.Context) (*TokenResponse, error) {
 	// Build base URL
 	baseURL := fmt.Sprintf("%s/token_generate", s.config.VietQRBaseURL)
+=======
+	"fmt"
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+)
+
+type VietQRServiceInterface interface {
+	GetToken(c *gin.Context) (*TokenResponse, error)
+	GetBanksService(c *gin.Context) (*BankResponse, error)
+	GenerateQRService(c *gin.Context, qrRequest QRRequest) (*GenerateQRCodeResponse, error)
+}
+
+func (s *VietQRService) GetToken(c *gin.Context) (*TokenResponse, error) {
+	// Build base URL
+	baseURL := fmt.Sprintf("%s/token_generate", s.config.BaseURL)
+>>>>>>> c449ffc (feat: cart api)
 	fmt.Println(baseURL)
 	// Make request
 	resp, err := s.client.Post(baseURL, "application/json", nil)
@@ -59,9 +77,15 @@ func (s *PaymentService) GetToken(c *gin.Context) (*TokenResponse, error) {
 }
 
 // get banks
+<<<<<<< HEAD
 func (s *PaymentService) GetBanksService(c *gin.Context) (*BankResponse, error) {
 	// Build base URL
 	baseURL := fmt.Sprintf("%s/banks", s.config.VietQRBaseURL)
+=======
+func (s *VietQRService) GetBanksService(c *gin.Context) (*BankResponse, error) {
+	// Build base URL
+	baseURL := fmt.Sprintf("%s/banks", s.config.BaseURL)
+>>>>>>> c449ffc (feat: cart api)
 	fmt.Println(baseURL)
 	// Make request
 	resp, err := s.client.Get(baseURL)
@@ -84,10 +108,17 @@ func (s *PaymentService) GetBanksService(c *gin.Context) (*BankResponse, error) 
 	return &result, nil
 }
 
+<<<<<<< HEAD
 func (s *PaymentService) GenerateQRService(c *gin.Context, qrRequest QRRequest) (*GenerateQRCodeResponse, error) {
 	// Build base URL
 
 	baseURL := fmt.Sprintf("%s/generate", s.config.VietQRBaseURL)
+=======
+// generate qr
+func (s *VietQRService) GenerateQRService(c *gin.Context, qrRequest QRRequest) (*GenerateQRCodeResponse, error) {
+	// Build base URL
+	baseURL := fmt.Sprintf("%s/generate", s.config.BaseURL)
+>>>>>>> c449ffc (feat: cart api)
 
 	// Make request
 	reqBody, _ := json.Marshal(qrRequest)
@@ -96,8 +127,13 @@ func (s *PaymentService) GenerateQRService(c *gin.Context, qrRequest QRRequest) 
 		return nil, fmt.Errorf("failed to make request: %v", err)
 	}
 	// Thêm các Header cần thiết
+<<<<<<< HEAD
 	resp.Header.Set("x-client-id", s.config.VietQRClientKey)
 	resp.Header.Set("x-api-key", s.config.VietQRAPIKey)
+=======
+	resp.Header.Set("x-client-id", s.config.ClientKey)
+	resp.Header.Set("x-api-key", s.config.APIKey)
+>>>>>>> c449ffc (feat: cart api)
 	defer resp.Body.Close()
 
 	// Check response status
@@ -111,6 +147,7 @@ func (s *PaymentService) GenerateQRService(c *gin.Context, qrRequest QRRequest) 
 		return nil, fmt.Errorf("failed to decode response: %v", err)
 	}
 
+<<<<<<< HEAD
 	err = s.storeDB.ExecWithTransaction(c, func(q *db.Queries) error {
 		// UpdateOrderPaymentStatus
 		_, err := q.UpdateOrderPaymentStatus(c, int64(qrRequest.OrderID))
@@ -542,3 +579,7 @@ func calculateTotalAmount(items []payos.Item) int {
 	}
 	return total
 }
+=======
+	return &result, nil
+}
+>>>>>>> c449ffc (feat: cart api)

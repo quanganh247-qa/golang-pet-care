@@ -12,6 +12,7 @@ type Querier interface {
 <<<<<<< HEAD
 <<<<<<< HEAD
 	ActiveReminder(ctx context.Context, arg ActiveReminderParams) error
+<<<<<<< HEAD
 	AddItemToCart(ctx context.Context, arg AddItemToCartParams) (CartItem, error)
 	// Assign Carprofen to the Initial Phase
 	AssignCarprofenToInitialPhase(ctx context.Context, arg AssignCarprofenToInitialPhaseParams) error
@@ -48,7 +49,11 @@ type Querier interface {
 =======
 	ActiveReminder(ctx context.Context, arg ActiveReminderParams) error
 >>>>>>> eb8d761 (updated pet schedule)
+=======
+	AddItemToCart(ctx context.Context, arg AddItemToCartParams) error
+>>>>>>> c449ffc (feat: cart api)
 	CreateAppointment(ctx context.Context, arg CreateAppointmentParams) (Appointment, error)
+	CreateCartForUser(ctx context.Context, userID int64) (int64, error)
 	CreatePet(ctx context.Context, arg CreatePetParams) (Pet, error)
 	CreatePetSchedule(ctx context.Context, arg CreatePetScheduleParams) error
 >>>>>>> 272832d (redis cache)
@@ -147,6 +152,7 @@ type Querier interface {
 >>>>>>> e30b070 (Get list appoinment by user)
 	GetAppointmentsOfDoctorWithDetails(ctx context.Context, id int64) ([]GetAppointmentsOfDoctorWithDetailsRow, error)
 <<<<<<< HEAD
+<<<<<<< HEAD
 	GetAppointmentsQueue(ctx context.Context, doctorID pgtype.Int8) ([]Appointment, error)
 	GetAvailableDoctors(ctx context.Context, date pgtype.Date) ([]GetAvailableDoctorsRow, error)
 	GetAvailableRooms(ctx context.Context, arg GetAvailableRoomsParams) ([]Room, error)
@@ -163,6 +169,9 @@ type Querier interface {
 	GetDiseaseByID(ctx context.Context, id int64) (Disease, error)
 	GetDiseaseTreatmentPlanWithPhases(ctx context.Context, lower string) ([]GetDiseaseTreatmentPlanWithPhasesRow, error)
 =======
+=======
+	GetCartByUserId(ctx context.Context, userID int64) ([]Cart, error)
+>>>>>>> c449ffc (feat: cart api)
 	GetDeviceTokenByUsername(ctx context.Context, username string) ([]Devicetoken, error)
 <<<<<<< HEAD
 >>>>>>> 0fb3f30 (user images)

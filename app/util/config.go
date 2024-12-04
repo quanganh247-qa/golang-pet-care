@@ -48,6 +48,7 @@ type Config struct {
 	VietQRBaseURL   string `mapstructure:"VIETQR_BASE_URL"`
 	VietQRAPIKey    string `mapstructure:"VIETQR_API_KEY"`
 	VietQRClientKey string `mapstructure:"VIETQR_CLIENT_KEY"`
+<<<<<<< HEAD
 
 	PaypalClientID     string `mapstructure:"PAYPAL_CLIENT_ID"`
 	PaypalClientSecret string `mapstructure:"PAYPAL_CLIENT_SECRET"`
@@ -64,6 +65,8 @@ type Config struct {
 	GoongAPIKey  string `mapstructure:"GOONG_API_KEY"`
 	GoongBaseURL string `mapstructure:"GOONG_BASE_URL"`
 >>>>>>> 4625843 (added goong maps api)
+=======
+>>>>>>> c449ffc (feat: cart api)
 }
 
 var Configs = Config{}

@@ -30,9 +30,13 @@ type userInfo struct {
 	FullName        string `json:"full_name"`
 	Email           string `json:"email"`
 <<<<<<< HEAD
+<<<<<<< HEAD
 	HashedPassword  string `json:"hashed_password"`
 =======
 >>>>>>> 272832d (redis cache)
+=======
+	HashedPassword  string `json:"hashed_password"`
+>>>>>>> c449ffc (feat: cart api)
 	PhoneNumber     string `json:"phone_number"`
 	Address         string `json:"address"`
 	Role            string `json:"role"`
@@ -71,6 +75,7 @@ func (c *ClientType) UserInfoLoadCache(username string) (*UserInfo, error) {
 			Role:            userData.Role.String,
 =======
 		userRes := userInfo{
+<<<<<<< HEAD
 			UserID:        userData.ID,
 			Username:      userData.Username,
 			Email:         userData.Email,
@@ -81,6 +86,19 @@ func (c *ClientType) UserInfoLoadCache(username string) (*UserInfo, error) {
 			Address:       userData.Address.String,
 			Role:          userData.Role.String,
 >>>>>>> 272832d (redis cache)
+=======
+			UserID:          userData.ID,
+			Username:        userData.Username,
+			Email:           userData.Email,
+			HashedPassword:  userData.HashedPassword,
+			IsVerifiedEmail: userData.IsVerifiedEmail.Bool,
+			FullName:        userData.FullName,
+			DataImage:       string(userData.DataImage),
+			OriginalImage:   userData.OriginalImage.String,
+			PhoneNumber:     userData.PhoneNumber.String,
+			Address:         userData.Address.String,
+			Role:            userData.Role.String,
+>>>>>>> c449ffc (feat: cart api)
 		}
 		err = c.SetWithBackground(userKey, &userRes, time.Hour*12)
 		if err != nil {

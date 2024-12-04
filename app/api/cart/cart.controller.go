@@ -2,15 +2,22 @@ package cart
 
 import (
 	"net/http"
+<<<<<<< HEAD
 	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/quanganh247-qa/go-blog-be/app/middleware"
 	"github.com/quanganh247-qa/go-blog-be/app/util"
+=======
+
+	"github.com/gin-gonic/gin"
+	"github.com/quanganh247-qa/go-blog-be/app/middleware"
+>>>>>>> c449ffc (feat: cart api)
 )
 
 type CartControllerInterface interface {
 	AddToCart(ctx *gin.Context)
+<<<<<<< HEAD
 	GetCartItems(ctx *gin.Context)
 	CreateOrder(c *gin.Context)
 	GetOrders(c *gin.Context)
@@ -21,6 +28,12 @@ type CartControllerInterface interface {
 
 func (c *CartController) AddToCart(ctx *gin.Context) {
 	var req CartItemRequest
+=======
+}
+
+func (c *CartController) AddToCart(ctx *gin.Context) {
+	var req CartItem
+>>>>>>> c449ffc (feat: cart api)
 	if err := ctx.ShouldBindBodyWithJSON(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -31,12 +44,17 @@ func (c *CartController) AddToCart(ctx *gin.Context) {
 		return
 	}
 
+<<<<<<< HEAD
 	res, err := c.service.AddToCartService(ctx, req, authPayload.Username)
+=======
+	err = c.service.AddToCartService(ctx, req, authPayload.Username)
+>>>>>>> c449ffc (feat: cart api)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
+<<<<<<< HEAD
 	ctx.JSON(http.StatusOK, util.SuccessResponse("Item added to cart successfully", res))
 }
 
@@ -143,4 +161,7 @@ func (c *CartController) GetAllOrders(ctx *gin.Context) {
 		return
 	}
 	ctx.JSON(http.StatusOK, util.SuccessResponse("Orders fetched successfully", res))
+=======
+	ctx.JSON(http.StatusOK, gin.H{"message": "Item added to cart successfully"})
+>>>>>>> c449ffc (feat: cart api)
 }
