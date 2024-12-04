@@ -166,7 +166,17 @@ func (server *UserService) getAllUsersService(ctx *gin.Context) ([]UserResponse,
 }
 
 func (service *UserService) loginUserService(ctx *gin.Context, req loginUserRequest) (*loginUSerResponse, error) {
-	user, err := service.storeDB.GetUser(ctx, req.Username)
+	// user, err := service.storeDB.GetUser(ctx, req.Username)
+	// if err != nil {
+	// 	if err == sql.ErrNoRows {
+	// 		ctx.JSON(http.StatusNotFound, "user not found")
+	// 		return nil, fmt.Errorf("user not found")
+	// 	}
+	// 	ctx.JSON(http.StatusInternalServerError, "internal server error")
+	// 	return nil, fmt.Errorf("internal server error: %v", err)
+	// }
+
+	user, err := service.redis.UserInfoLoadCache(req.Username)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			ctx.JSON(http.StatusNotFound, "user not found")
@@ -182,7 +192,7 @@ func (service *UserService) loginUserService(ctx *gin.Context, req loginUserRequ
 		return nil, fmt.Errorf("Incorrect passward")
 	}
 
-	if !user.IsVerifiedEmail.Bool {
+	if !user.IsVerifiedEmail {
 		ctx.JSON(http.StatusForbidden, "email not verified")
 		return nil, fmt.Errorf("email not verified")
 	}
@@ -199,10 +209,9 @@ func (service *UserService) loginUserService(ctx *gin.Context, req loginUserRequ
 
 	return &loginUSerResponse{
 		User: UserResponse{
-			Username:  user.Username,
-			FullName:  user.FullName,
-			Email:     user.Email,
-			DataImage: user.DataImage,
+			Username: user.Username,
+			FullName: user.FullName,
+			Email:    user.Email,
 		},
 		DeviceToken: tokens.Token,
 	}, nil

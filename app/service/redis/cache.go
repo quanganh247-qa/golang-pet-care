@@ -25,6 +25,7 @@ type userInfo struct {
 	Username        string `json:"username"`
 	FullName        string `json:"full_name"`
 	Email           string `json:"email"`
+	HashedPassword  string `json:"hashed_password"`
 	PhoneNumber     string `json:"phone_number"`
 	Address         string `json:"address"`
 	Role            string `json:"role"`
@@ -48,15 +49,17 @@ func (c *ClientType) UserInfoLoadCache(username string) (*userInfo, error) {
 		}
 
 		userRes := userInfo{
-			UserID:        userData.ID,
-			Username:      userData.Username,
-			Email:         userData.Email,
-			FullName:      userData.FullName,
-			DataImage:     string(userData.DataImage),
-			OriginalImage: userData.OriginalImage.String,
-			PhoneNumber:   userData.PhoneNumber.String,
-			Address:       userData.Address.String,
-			Role:          userData.Role.String,
+			UserID:          userData.ID,
+			Username:        userData.Username,
+			Email:           userData.Email,
+			HashedPassword:  userData.HashedPassword,
+			IsVerifiedEmail: userData.IsVerifiedEmail.Bool,
+			FullName:        userData.FullName,
+			DataImage:       string(userData.DataImage),
+			OriginalImage:   userData.OriginalImage.String,
+			PhoneNumber:     userData.PhoneNumber.String,
+			Address:         userData.Address.String,
+			Role:            userData.Role.String,
 		}
 		err = c.SetWithBackground(userKey, &userRes, time.Hour*12)
 		if err != nil {
