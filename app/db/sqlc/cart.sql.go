@@ -11,6 +11,7 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+<<<<<<< HEAD
 const addItemToCart = `-- name: AddItemToCart :one
 INSERT INTO cart_items (
     cart_id,
@@ -20,11 +21,23 @@ INSERT INTO cart_items (
 ) VALUES (
     $1, $2, $3, $4
 ) RETURNING id, cart_id, product_id, quantity, unit_price, total_price
+=======
+const addItemToCart = `-- name: AddItemToCart :exec
+WITH product_check AS (
+    SELECT id FROM CartItem 
+    WHERE CartItem.cart_id = $1 AND CartItem.product_id = $2
+)
+UPDATE CartItem
+SET quantity = CartItem.quantity + $3
+WHERE CartItem.cart_id = $1 AND CartItem.product_id = $2
+RETURNING id, cart_id, product_id, quantity, unit_price, total_price
+>>>>>>> c449ffc (feat: cart api)
 `
 
 type AddItemToCartParams struct {
 	CartID    int64       `json:"cart_id"`
 	ProductID int64       `json:"product_id"`
+<<<<<<< HEAD
 	UnitPrice float64     `json:"unit_price"`
 	Quantity  pgtype.Int4 `json:"quantity"`
 }
@@ -179,6 +192,33 @@ FROM carts c
 LEFT JOIN cart_items ci ON ci.cart_id = c.id
 WHERE c.user_id = $1
 GROUP BY c.id, c.user_id, c.created_at, c.updated_at
+=======
+	Quantity  pgtype.Int4 `json:"quantity"`
+}
+
+func (q *Queries) AddItemToCart(ctx context.Context, arg AddItemToCartParams) error {
+	_, err := q.db.Exec(ctx, addItemToCart, arg.CartID, arg.ProductID, arg.Quantity)
+	return err
+}
+
+const createCartForUser = `-- name: CreateCartForUser :one
+INSERT INTO Cart (user_id)
+VALUES ($1)
+RETURNING id AS cart_id
+`
+
+func (q *Queries) CreateCartForUser(ctx context.Context, userID int64) (int64, error) {
+	row := q.db.QueryRow(ctx, createCartForUser, userID)
+	var cart_id int64
+	err := row.Scan(&cart_id)
+	return cart_id, err
+}
+
+const getCartByUserId = `-- name: GetCartByUserId :many
+SELECT id, user_id, created_at, updated_at 
+FROM Cart
+WHERE user_id = $1
+>>>>>>> c449ffc (feat: cart api)
 `
 
 func (q *Queries) GetCartByUserId(ctx context.Context, userID int64) ([]Cart, error) {
@@ -205,6 +245,7 @@ func (q *Queries) GetCartByUserId(ctx context.Context, userID int64) ([]Cart, er
 	}
 	return items, nil
 }
+<<<<<<< HEAD
 
 const getCartItems = `-- name: GetCartItems :many
 SELECT 
@@ -440,3 +481,5 @@ func (q *Queries) UpdateOrderPaymentStatus(ctx context.Context, id int64) (Order
 	)
 	return i, err
 }
+=======
+>>>>>>> c449ffc (feat: cart api)

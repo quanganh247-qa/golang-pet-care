@@ -12,9 +12,13 @@ import (
 	"github.com/quanganh247-qa/go-blog-be/app/api/appointment"
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	"github.com/quanganh247-qa/go-blog-be/app/api/cart"
 	"github.com/quanganh247-qa/go-blog-be/app/api/chatbot"
 	"github.com/quanganh247-qa/go-blog-be/app/api/chatbot/handlers"
+=======
+	"github.com/quanganh247-qa/go-blog-be/app/api/cart"
+>>>>>>> c449ffc (feat: cart api)
 	"github.com/quanganh247-qa/go-blog-be/app/api/device_token"
 	"github.com/quanganh247-qa/go-blog-be/app/api/disease"
 <<<<<<< HEAD
@@ -38,7 +42,11 @@ import (
 	"github.com/quanganh247-qa/go-blog-be/app/api/location"
 >>>>>>> 4625843 (added goong maps api)
 	"github.com/quanganh247-qa/go-blog-be/app/api/notification"
+<<<<<<< HEAD
 >>>>>>> 9fd7fc8 (feat: validate notification schema and APIs)
+=======
+	"github.com/quanganh247-qa/go-blog-be/app/api/payment"
+>>>>>>> c449ffc (feat: cart api)
 	"github.com/quanganh247-qa/go-blog-be/app/api/pet"
 	petschedule "github.com/quanganh247-qa/go-blog-be/app/api/pet_schedule"
 <<<<<<< HEAD
@@ -156,6 +164,8 @@ func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor, config
 	notification.Routes(routerGroup)
 	vaccination.Routes(routerGroup)
 	location.Routes(routerGroup, &config)
+	payment.Routes(routerGroup, &config)
+	cart.Routes(routerGroup)
 
 	server.Router = routerDefault
 >>>>>>> 79a3bcc (medicine api)

@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+<<<<<<< HEAD
 type PaymentControllerInterface interface {
 	GetToken(c *gin.Context)
 	GetBanks(c *gin.Context)
@@ -21,6 +22,15 @@ type PaymentControllerInterface interface {
 }
 
 func (c *PaymentController) GetToken(ctx *gin.Context) {
+=======
+type VietQRControllerInterface interface {
+	GetToken(c *gin.Context)
+	GetBanks(c *gin.Context)
+	GenerateQRCode(c *gin.Context)
+}
+
+func (c *VietQRController) GetToken(ctx *gin.Context) {
+>>>>>>> c449ffc (feat: cart api)
 	result, err := c.service.GetToken(ctx)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -30,7 +40,11 @@ func (c *PaymentController) GetToken(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, result)
 }
 
+<<<<<<< HEAD
 func (c *PaymentController) GetBanks(ctx *gin.Context) {
+=======
+func (c *VietQRController) GetBanks(ctx *gin.Context) {
+>>>>>>> c449ffc (feat: cart api)
 	result, err := c.service.GetBanksService(ctx)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -40,7 +54,11 @@ func (c *PaymentController) GetBanks(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, result)
 }
 
+<<<<<<< HEAD
 func (c *PaymentController) GenerateQRCode(ctx *gin.Context) {
+=======
+func (c *VietQRController) GenerateQRCode(ctx *gin.Context) {
+>>>>>>> c449ffc (feat: cart api)
 	var qrRequest QRRequest
 	if err := ctx.ShouldBindJSON(&qrRequest); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -55,6 +73,7 @@ func (c *PaymentController) GenerateQRCode(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, result)
 }
+<<<<<<< HEAD
 
 func (c *PaymentController) CreatePayPalOrder(ctx *gin.Context) {
 	var orderRequest OrderRequest
@@ -162,3 +181,5 @@ func (c *PaymentController) CreatePayOSLink(ctx *gin.Context) {
 	}
 	ctx.JSON(http.StatusOK, result)
 }
+=======
+>>>>>>> c449ffc (feat: cart api)

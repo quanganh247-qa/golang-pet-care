@@ -1,5 +1,6 @@
 package payment
 
+<<<<<<< HEAD
 import (
 	"net/http"
 
@@ -35,6 +36,29 @@ type PaymentApi struct {
 
 type PaymentController struct {
 	service PaymentServiceInterface
+=======
+import "net/http"
+
+// GoongConfig contains configuration for VierQR Maps API
+type VietQRConfig struct {
+	APIKey    string
+	ClientKey string
+	BaseURL   string
+}
+
+// GoongService handles interactions with VierQR Maps API
+type VietQRService struct {
+	config *VietQRConfig
+	client *http.Client
+}
+
+type VietQRApi struct {
+	controller VietQRControllerInterface
+}
+
+type VietQRController struct {
+	service VietQRServiceInterface
+>>>>>>> c449ffc (feat: cart api)
 }
 
 type TokenResponse struct {
@@ -69,7 +93,10 @@ type QRRequest struct {
 	Bank        string `json:"bank"`
 	AddInfo     string `json:"addInfo"`
 	Format      string `json:"format"`
+<<<<<<< HEAD
 	OrderID     int64  `json:"order_id"`
+=======
+>>>>>>> c449ffc (feat: cart api)
 }
 
 type GenerateQRCodeResponse struct {
@@ -84,6 +111,7 @@ type GenerateQRData struct {
 	QRCode      string `json:"qrCode"`      // Dữ liệu QR code
 	QRDataURL   string `json:"qrDataURL"`   // Dữ liệu QR code dạng base64
 }
+<<<<<<< HEAD
 
 type OauthTokenResponse struct {
 	AccessToken string `json:"access_token"`
@@ -209,3 +237,5 @@ type CreatePaymentLinkRequest struct {
 	Description   string
 	UserID        int64
 }
+=======
+>>>>>>> c449ffc (feat: cart api)
