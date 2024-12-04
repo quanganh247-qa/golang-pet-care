@@ -39,7 +39,13 @@ func Routes(routerGroup middleware.RouterGroup) {
 		authRoute.GET("/orders", cartApi.controller.GetAllOrders)
 =======
 		authRoute.POST("/", cartApi.controller.AddToCart)
+<<<<<<< HEAD
 >>>>>>> c449ffc (feat: cart api)
+=======
+		authRoute.GET("/", cartApi.controller.GetCartItems)
+		authRoute.POST("/order", cartApi.controller.CreateOrder)
+
+>>>>>>> 21608b5 (cart and order api)
 	}
 
 }

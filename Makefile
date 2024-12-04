@@ -47,6 +47,7 @@ redis:
 elasticsearch:
 	docker run --name elasticsearch -p 9200:9200 -e "discovery.type=single-node" -e "xpack.security.enabled=false" -d elasticsearch:8.12.0
 
+<<<<<<< HEAD
 minio:
 	docker run -d --name minio -p 9000:9000 -e "MINIO_ACCESS_KEY=1View" -e "MINIO_SECRET_KEY=12345678" -v minio_data:/data minio/minio:latest server /data
 
@@ -73,3 +74,10 @@ migrate-create:
 	migrate create -ext sql -dir app/db/migration -seq $(name)
 
 .PHONY: mup mdown mforce sqlc server postgres redis supertokens elasticsearch minio docker-build docker-up docker-down docker-logs migrate-up migrate-down migrate-create
+=======
+postgres-ec:
+	docker run -d  --name postgres-ec  -p 5432:5432 -e POSTGRES_PASSWORD=12345678  -e PGDATA=/var/lib/postgresql/data/pgdata  -v postgres_volume:/var/lib/postgresql/data  postgres:15-alpine
+
+
+.PHONY: mup mdown  mforce sqlc server   postgres  redis  rabbitmq
+>>>>>>> 21608b5 (cart and order api)

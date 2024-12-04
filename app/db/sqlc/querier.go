@@ -13,6 +13,7 @@ type Querier interface {
 <<<<<<< HEAD
 	ActiveReminder(ctx context.Context, arg ActiveReminderParams) error
 <<<<<<< HEAD
+<<<<<<< HEAD
 	AddItemToCart(ctx context.Context, arg AddItemToCartParams) (CartItem, error)
 	// Assign Carprofen to the Initial Phase
 	AssignCarprofenToInitialPhase(ctx context.Context, arg AssignCarprofenToInitialPhaseParams) error
@@ -52,8 +53,12 @@ type Querier interface {
 =======
 	AddItemToCart(ctx context.Context, arg AddItemToCartParams) error
 >>>>>>> c449ffc (feat: cart api)
+=======
+	AddItemToCart(ctx context.Context, arg AddItemToCartParams) (Cartitem, error)
+>>>>>>> 21608b5 (cart and order api)
 	CreateAppointment(ctx context.Context, arg CreateAppointmentParams) (Appointment, error)
 	CreateCartForUser(ctx context.Context, userID int64) (int64, error)
+	CreateOrder(ctx context.Context, arg CreateOrderParams) (Order, error)
 	CreatePet(ctx context.Context, arg CreatePetParams) (Pet, error)
 	CreatePetSchedule(ctx context.Context, arg CreatePetScheduleParams) error
 >>>>>>> 272832d (redis cache)
@@ -160,6 +165,7 @@ type Querier interface {
 	GetAvailableTimeSlots(ctx context.Context, arg GetAvailableTimeSlotsParams) ([]GetAvailableTimeSlotsRow, error)
 	GetCartByUserId(ctx context.Context, userID int64) ([]Cart, error)
 	GetCartItems(ctx context.Context, cartID int64) ([]GetCartItemsRow, error)
+<<<<<<< HEAD
 	GetCartItemsByUserId(ctx context.Context, userID int64) ([]GetCartItemsByUserIdRow, error)
 	GetCartTotal(ctx context.Context, cartID int64) (float64, error)
 	GetClinicInfo(ctx context.Context, id int64) (GetClinicInfoRow, error)
@@ -172,6 +178,9 @@ type Querier interface {
 =======
 	GetCartByUserId(ctx context.Context, userID int64) ([]Cart, error)
 >>>>>>> c449ffc (feat: cart api)
+=======
+	GetCartTotal(ctx context.Context, cartID int64) (float64, error)
+>>>>>>> 21608b5 (cart and order api)
 	GetDeviceTokenByUsername(ctx context.Context, username string) ([]Devicetoken, error)
 <<<<<<< HEAD
 >>>>>>> 0fb3f30 (user images)
@@ -248,6 +257,7 @@ type Querier interface {
 	GetPetLogByID(ctx context.Context, arg GetPetLogByIDParams) (GetPetLogByIDRow, error)
 	GetPetLogsByPetID(ctx context.Context, arg GetPetLogsByPetIDParams) ([]GetPetLogsByPetIDRow, error)
 	GetPetScheduleById(ctx context.Context, id int64) (PetSchedule, error)
+	GetProductByID(ctx context.Context, productID int64) (Product, error)
 	GetServiceByID(ctx context.Context, serviceid int64) (Service, error)
 	GetServiceType(ctx context.Context, typeid int64) (Servicetype, error)
 	GetTimeSlotByID(ctx context.Context, id int64) (GetTimeSlotByIDRow, error)
