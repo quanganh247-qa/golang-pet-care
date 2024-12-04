@@ -10,7 +10,9 @@ import (
 
 type Querier interface {
 	ActiveReminder(ctx context.Context, arg ActiveReminderParams) error
+	AddItemToCart(ctx context.Context, arg AddItemToCartParams) error
 	CreateAppointment(ctx context.Context, arg CreateAppointmentParams) (Appointment, error)
+	CreateCartForUser(ctx context.Context, userID int64) (int64, error)
 	CreatePet(ctx context.Context, arg CreatePetParams) (Pet, error)
 	CreatePetSchedule(ctx context.Context, arg CreatePetScheduleParams) error
 	CreateService(ctx context.Context, arg CreateServiceParams) (Service, error)
@@ -36,6 +38,7 @@ type Querier interface {
 	GetAppointmentDetailById(ctx context.Context, appointmentID int64) (Appointment, error)
 	GetAppointmentsByPetOfUser(ctx context.Context, username string) ([]Appointment, error)
 	GetAppointmentsOfDoctorWithDetails(ctx context.Context, id int64) ([]GetAppointmentsOfDoctorWithDetailsRow, error)
+	GetCartByUserId(ctx context.Context, userID int64) ([]Cart, error)
 	GetDeviceTokenByUsername(ctx context.Context, username string) ([]Devicetoken, error)
 	// 1. Query cơ bản để lấy thông tin bệnh và thuốc điều trị
 	GetDiceaseAndMedicinesInfo(ctx context.Context, lower string) ([]GetDiceaseAndMedicinesInfoRow, error)
