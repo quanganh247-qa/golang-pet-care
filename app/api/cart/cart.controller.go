@@ -4,6 +4,7 @@ import (
 	"net/http"
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> b0fe977 (place order and make payment)
 	"strconv"
@@ -19,10 +20,16 @@ import (
 >>>>>>> c449ffc (feat: cart api)
 =======
 >>>>>>> 21608b5 (cart and order api)
+=======
+
+	"github.com/gin-gonic/gin"
+	"github.com/quanganh247-qa/go-blog-be/app/middleware"
+>>>>>>> c449ffc (feat: cart api)
 )
 
 type CartControllerInterface interface {
 	AddToCart(ctx *gin.Context)
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 	GetCartItems(ctx *gin.Context)
@@ -48,10 +55,13 @@ func (c *CartController) AddToCart(ctx *gin.Context) {
 =======
 	RemoveItemFromCart(c *gin.Context)
 >>>>>>> 4a16bfc (remove item in cart)
+=======
+>>>>>>> c449ffc (feat: cart api)
 }
 
 func (c *CartController) AddToCart(ctx *gin.Context) {
 	var req CartItem
+<<<<<<< HEAD
 >>>>>>> c449ffc (feat: cart api)
 =======
 }
@@ -59,6 +69,8 @@ func (c *CartController) AddToCart(ctx *gin.Context) {
 func (c *CartController) AddToCart(ctx *gin.Context) {
 	var req CartItemRequest
 >>>>>>> dc47646 (Optimize SQL query)
+=======
+>>>>>>> c449ffc (feat: cart api)
 	if err := ctx.ShouldBindBodyWithJSON(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -71,6 +83,7 @@ func (c *CartController) AddToCart(ctx *gin.Context) {
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	res, err := c.service.AddToCartService(ctx, req, authPayload.Username)
 =======
 	err = c.service.AddToCartService(ctx, req, authPayload.Username)
@@ -78,11 +91,15 @@ func (c *CartController) AddToCart(ctx *gin.Context) {
 =======
 	res, err := c.service.AddToCartService(ctx, req, authPayload.Username)
 >>>>>>> 21608b5 (cart and order api)
+=======
+	err = c.service.AddToCartService(ctx, req, authPayload.Username)
+>>>>>>> c449ffc (feat: cart api)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 =======
@@ -264,4 +281,7 @@ func (c *CartController) GetAllOrders(ctx *gin.Context) {
 		return
 	}
 	ctx.JSON(http.StatusOK, util.SuccessResponse("Orders fetched successfully", res))
+=======
+	ctx.JSON(http.StatusOK, gin.H{"message": "Item added to cart successfully"})
+>>>>>>> c449ffc (feat: cart api)
 }

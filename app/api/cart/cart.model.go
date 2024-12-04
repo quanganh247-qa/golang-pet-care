@@ -17,6 +17,7 @@ type CartItem struct {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> dc47646 (Optimize SQL query)
 type CartItemRequest struct {
@@ -84,6 +85,16 @@ type Order struct {
 }
 
 <<<<<<< HEAD
+=======
+type Order struct {
+	ID              int64   `json:"id"`
+	UserID          int64   `json:"user_id"`
+	TotalAmount     float64 `json:"total_amount"`
+	PaymentStatus   string  `json:"payment_status"`
+	ShippingAddress string  `json:"shipping_address"`
+}
+
+>>>>>>> c449ffc (feat: cart api)
 type OrderItem struct {
 	ID         int64   `json:"id"`
 	OrderID    int64   `json:"order_id"`
@@ -91,6 +102,7 @@ type OrderItem struct {
 	Quantity   int     `json:"quantity"`
 	UnitPrice  float64 `json:"unit_price"`
 	TotalPrice float64 `json:"total_price"`
+<<<<<<< HEAD
 >>>>>>> c449ffc (feat: cart api)
 =======
 // PlaceOrderResponse represents the response body after placing an order
@@ -107,6 +119,8 @@ type OrderResponse struct {
 	TotalAmount   float64 `json:"total_amount"`
 	PaymentStatus string  `json:"payment_status"`
 >>>>>>> b0fe977 (place order and make payment)
+=======
+>>>>>>> c449ffc (feat: cart api)
 }
 
 type CartApi struct {

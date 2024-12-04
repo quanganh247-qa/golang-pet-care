@@ -95,6 +95,22 @@ type CartItem struct {
 	TotalPrice pgtype.Float8 `json:"total_price"`
 }
 
+type Cart struct {
+	ID        int64            `json:"id"`
+	UserID    int64            `json:"user_id"`
+	CreatedAt pgtype.Timestamp `json:"created_at"`
+	UpdatedAt pgtype.Timestamp `json:"updated_at"`
+}
+
+type Cartitem struct {
+	ID         int64         `json:"id"`
+	CartID     int64         `json:"cart_id"`
+	ProductID  int64         `json:"product_id"`
+	Quantity   pgtype.Int4   `json:"quantity"`
+	UnitPrice  float64       `json:"unit_price"`
+	TotalPrice pgtype.Float8 `json:"total_price"`
+}
+
 type Checkout struct {
 	CheckoutID    int64            `json:"checkout_id"`
 	Petid         pgtype.Int8      `json:"petid"`
@@ -430,6 +446,25 @@ type Notification struct {
 	IsRead         pgtype.Bool      `json:"is_read"`
 }
 
+type Order struct {
+	ID              int64            `json:"id"`
+	UserID          int64            `json:"user_id"`
+	OrderDate       pgtype.Timestamp `json:"order_date"`
+	TotalAmount     float64          `json:"total_amount"`
+	PaymentStatus   pgtype.Text      `json:"payment_status"`
+	ShippingAddress pgtype.Text      `json:"shipping_address"`
+	Notes           pgtype.Text      `json:"notes"`
+}
+
+type Orderitem struct {
+	ID         int64         `json:"id"`
+	OrderID    int64         `json:"order_id"`
+	ProductID  int64         `json:"product_id"`
+	Quantity   int32         `json:"quantity"`
+	UnitPrice  float64       `json:"unit_price"`
+	TotalPrice pgtype.Float8 `json:"total_price"`
+}
+
 type Pet struct {
 	Petid           int64         `json:"petid"`
 	Name            string        `json:"name"`
@@ -728,7 +763,24 @@ type PhaseMedicine struct {
 	Notes      pgtype.Text `json:"notes"`
 }
 
+<<<<<<< HEAD
 >>>>>>> 6c35562 (dicease and treatment plan)
+=======
+type Product struct {
+	ProductID     int64            `json:"product_id"`
+	Name          string           `json:"name"`
+	Description   pgtype.Text      `json:"description"`
+	Price         pgtype.Numeric   `json:"price"`
+	StockQuantity pgtype.Int4      `json:"stock_quantity"`
+	Category      pgtype.Text      `json:"category"`
+	DataImage     []byte           `json:"data_image"`
+	OriginalImage pgtype.Text      `json:"original_image"`
+	CreatedAt     pgtype.Timestamp `json:"created_at"`
+	IsAvailable   pgtype.Bool      `json:"is_available"`
+	RemovedAt     pgtype.Timestamp `json:"removed_at"`
+}
+
+>>>>>>> c449ffc (feat: cart api)
 type Service struct {
 	ID          int64            `json:"id"`
 	Name        pgtype.Text      `json:"name"`

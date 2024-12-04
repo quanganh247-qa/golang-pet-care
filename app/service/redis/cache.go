@@ -39,6 +39,7 @@ type UserInfo struct {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	HashedPassword  string `json:"hashed_password"`
 =======
 >>>>>>> 272832d (redis cache)
@@ -47,6 +48,9 @@ type UserInfo struct {
 >>>>>>> c449ffc (feat: cart api)
 =======
 >>>>>>> 272832d (redis cache)
+=======
+	HashedPassword  string `json:"hashed_password"`
+>>>>>>> c449ffc (feat: cart api)
 	PhoneNumber     string `json:"phone_number"`
 	Address         string `json:"address"`
 	Role            string `json:"role"`
@@ -98,6 +102,7 @@ func (c *ClientType) UserInfoLoadCache(username string) (*UserInfo, error) {
 		userRes := userInfo{
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> 272832d (redis cache)
 			UserID:        userData.ID,
@@ -112,6 +117,8 @@ func (c *ClientType) UserInfoLoadCache(username string) (*UserInfo, error) {
 <<<<<<< HEAD
 >>>>>>> 272832d (redis cache)
 =======
+=======
+>>>>>>> c449ffc (feat: cart api)
 			UserID:          userData.ID,
 			Username:        userData.Username,
 			Email:           userData.Email,
@@ -123,9 +130,12 @@ func (c *ClientType) UserInfoLoadCache(username string) (*UserInfo, error) {
 			PhoneNumber:     userData.PhoneNumber.String,
 			Address:         userData.Address.String,
 			Role:            userData.Role.String,
+<<<<<<< HEAD
 >>>>>>> c449ffc (feat: cart api)
 =======
 >>>>>>> 272832d (redis cache)
+=======
+>>>>>>> c449ffc (feat: cart api)
 		}
 		err = c.SetWithBackground(userKey, &userRes, time.Hour*12)
 		if err != nil {

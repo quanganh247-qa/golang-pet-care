@@ -8,6 +8,7 @@ import (
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 type PaymentControllerInterface interface {
 	GetToken(c *gin.Context)
 	GetBanks(c *gin.Context)
@@ -45,6 +46,15 @@ func (c *VietQRController) GetToken(ctx *gin.Context) {
 =======
 func (c *PaymentController) GetToken(ctx *gin.Context) {
 >>>>>>> e859654 (Elastic search)
+=======
+type VietQRControllerInterface interface {
+	GetToken(c *gin.Context)
+	GetBanks(c *gin.Context)
+	GenerateQRCode(c *gin.Context)
+}
+
+func (c *VietQRController) GetToken(ctx *gin.Context) {
+>>>>>>> c449ffc (feat: cart api)
 	result, err := c.service.GetToken(ctx)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -56,6 +66,7 @@ func (c *PaymentController) GetToken(ctx *gin.Context) {
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 func (c *PaymentController) GetBanks(ctx *gin.Context) {
 =======
 func (c *VietQRController) GetBanks(ctx *gin.Context) {
@@ -63,6 +74,9 @@ func (c *VietQRController) GetBanks(ctx *gin.Context) {
 =======
 func (c *PaymentController) GetBanks(ctx *gin.Context) {
 >>>>>>> e859654 (Elastic search)
+=======
+func (c *VietQRController) GetBanks(ctx *gin.Context) {
+>>>>>>> c449ffc (feat: cart api)
 	result, err := c.service.GetBanksService(ctx)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -74,6 +88,7 @@ func (c *PaymentController) GetBanks(ctx *gin.Context) {
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 func (c *PaymentController) GenerateQRCode(ctx *gin.Context) {
 =======
 func (c *VietQRController) GenerateQRCode(ctx *gin.Context) {
@@ -81,6 +96,9 @@ func (c *VietQRController) GenerateQRCode(ctx *gin.Context) {
 =======
 func (c *PaymentController) GenerateQRCode(ctx *gin.Context) {
 >>>>>>> e859654 (Elastic search)
+=======
+func (c *VietQRController) GenerateQRCode(ctx *gin.Context) {
+>>>>>>> c449ffc (feat: cart api)
 	var qrRequest QRRequest
 	if err := ctx.ShouldBindJSON(&qrRequest); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -95,6 +113,7 @@ func (c *PaymentController) GenerateQRCode(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, result)
 }
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 =======
@@ -217,3 +236,5 @@ func (c *PaymentController) CreatePayOSLink(ctx *gin.Context) {
 >>>>>>> ada3717 (Docker file)
 =======
 >>>>>>> 6b24d88 (feat(payment): add PayOS payment integration and enhance treatment module)
+=======
+>>>>>>> c449ffc (feat: cart api)

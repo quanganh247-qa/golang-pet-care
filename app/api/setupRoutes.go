@@ -18,6 +18,7 @@ import (
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	"github.com/quanganh247-qa/go-blog-be/app/api/cart"
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -33,6 +34,9 @@ import (
 	"github.com/quanganh247-qa/go-blog-be/app/api/chatbot"
 	"github.com/quanganh247-qa/go-blog-be/app/api/chatbot/handlers"
 >>>>>>> c8bec46 (feat: add chatbot, room management, and pet allergy features)
+=======
+	"github.com/quanganh247-qa/go-blog-be/app/api/cart"
+>>>>>>> c449ffc (feat: cart api)
 	"github.com/quanganh247-qa/go-blog-be/app/api/device_token"
 	"github.com/quanganh247-qa/go-blog-be/app/api/disease"
 <<<<<<< HEAD
@@ -65,6 +69,7 @@ import (
 	"github.com/quanganh247-qa/go-blog-be/app/api/location"
 >>>>>>> 4625843 (added goong maps api)
 	"github.com/quanganh247-qa/go-blog-be/app/api/notification"
+<<<<<<< HEAD
 >>>>>>> 3bf345d (happy new year)
 =======
 >>>>>>> ada3717 (Docker file)
@@ -92,6 +97,9 @@ import (
 =======
 	"github.com/quanganh247-qa/go-blog-be/app/api/notification"
 >>>>>>> 9fd7fc8 (feat: validate notification schema and APIs)
+=======
+	"github.com/quanganh247-qa/go-blog-be/app/api/payment"
+>>>>>>> c449ffc (feat: cart api)
 	"github.com/quanganh247-qa/go-blog-be/app/api/pet"
 	petschedule "github.com/quanganh247-qa/go-blog-be/app/api/pet_schedule"
 <<<<<<< HEAD
@@ -384,7 +392,12 @@ func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor, config
 >>>>>>> 290baeb (fixed vaccine routes)
 =======
 	location.Routes(routerGroup, &config)
+<<<<<<< HEAD
 >>>>>>> 4625843 (added goong maps api)
+=======
+	payment.Routes(routerGroup, &config)
+	cart.Routes(routerGroup)
+>>>>>>> c449ffc (feat: cart api)
 
 	server.Router = routerDefault
 }

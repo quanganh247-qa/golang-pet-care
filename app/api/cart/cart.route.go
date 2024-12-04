@@ -9,6 +9,7 @@ import (
 func Routes(routerGroup middleware.RouterGroup) {
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	cart := routerGroup.RouterDefault.Group("/")
 =======
 	cart := routerGroup.RouterDefault.Group("/cart")
@@ -16,6 +17,9 @@ func Routes(routerGroup middleware.RouterGroup) {
 =======
 	cart := routerGroup.RouterDefault.Group("/")
 >>>>>>> dc47646 (Optimize SQL query)
+=======
+	cart := routerGroup.RouterDefault.Group("/cart")
+>>>>>>> c449ffc (feat: cart api)
 	authRoute := routerGroup.RouterAuth(cart)
 	// Medicine.Use(middleware.IPbasedRateLimitingMiddleware())
 
@@ -30,6 +34,7 @@ func Routes(routerGroup middleware.RouterGroup) {
 	}
 
 	{
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 =======
@@ -66,6 +71,9 @@ func Routes(routerGroup middleware.RouterGroup) {
 =======
 		authRoute.GET("/orders", cartApi.controller.GetAllOrders)
 >>>>>>> dc47646 (Optimize SQL query)
+=======
+		authRoute.POST("/", cartApi.controller.AddToCart)
+>>>>>>> c449ffc (feat: cart api)
 	}
 
 }

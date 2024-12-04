@@ -18,6 +18,7 @@ type Querier interface {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	AddItemToCart(ctx context.Context, arg AddItemToCartParams) (CartItem, error)
 	// Assign Carprofen to the Initial Phase
 	AssignCarprofenToInitialPhase(ctx context.Context, arg AssignCarprofenToInitialPhaseParams) error
@@ -124,7 +125,11 @@ type Querier interface {
 =======
 	ActiveReminder(ctx context.Context, arg ActiveReminderParams) error
 >>>>>>> eb8d761 (updated pet schedule)
+=======
+	AddItemToCart(ctx context.Context, arg AddItemToCartParams) error
+>>>>>>> c449ffc (feat: cart api)
 	CreateAppointment(ctx context.Context, arg CreateAppointmentParams) (Appointment, error)
+	CreateCartForUser(ctx context.Context, userID int64) (int64, error)
 	CreatePet(ctx context.Context, arg CreatePetParams) (Pet, error)
 	CreatePetSchedule(ctx context.Context, arg CreatePetScheduleParams) error
 >>>>>>> 272832d (redis cache)
@@ -400,6 +405,7 @@ type Querier interface {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	GetAppointmentsQueue(ctx context.Context, doctorID pgtype.Int8) ([]Appointment, error)
 =======
 	GetAppointmentsQueue(ctx context.Context) ([]Appointment, error)
@@ -458,6 +464,9 @@ type Querier interface {
 =======
 	GetCartTotal(ctx context.Context, cartID int64) (float64, error)
 >>>>>>> 21608b5 (cart and order api)
+=======
+	GetCartByUserId(ctx context.Context, userID int64) ([]Cart, error)
+>>>>>>> c449ffc (feat: cart api)
 	GetDeviceTokenByUsername(ctx context.Context, username string) ([]Devicetoken, error)
 <<<<<<< HEAD
 <<<<<<< HEAD

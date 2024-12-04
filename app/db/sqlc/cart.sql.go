@@ -13,6 +13,7 @@ import (
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 const addItemToCart = `-- name: AddItemToCart :one
 INSERT INTO cart_items (
     cart_id,
@@ -24,6 +25,8 @@ INSERT INTO cart_items (
     $1, $2, $3, $4
 ) RETURNING id, cart_id, product_id, quantity, unit_price, total_price
 =======
+=======
+>>>>>>> c449ffc (feat: cart api)
 const addItemToCart = `-- name: AddItemToCart :exec
 WITH product_check AS (
     SELECT id FROM CartItem 
@@ -32,6 +35,7 @@ WITH product_check AS (
 UPDATE CartItem
 SET quantity = CartItem.quantity + $3
 WHERE CartItem.cart_id = $1 AND CartItem.product_id = $2
+<<<<<<< HEAD
 =======
 const addItemToCart = `-- name: AddItemToCart :one
 <<<<<<< HEAD
@@ -48,11 +52,15 @@ DO UPDATE SET
 >>>>>>> 21608b5 (cart and order api)
 RETURNING id, cart_id, product_id, quantity, unit_price, total_price
 >>>>>>> c449ffc (feat: cart api)
+=======
+RETURNING id, cart_id, product_id, quantity, unit_price, total_price
+>>>>>>> c449ffc (feat: cart api)
 `
 
 type AddItemToCartParams struct {
 	CartID    int64       `json:"cart_id"`
 	ProductID int64       `json:"product_id"`
+<<<<<<< HEAD
 <<<<<<< HEAD
 	UnitPrice float64     `json:"unit_price"`
 	Quantity  pgtype.Int4 `json:"quantity"`
@@ -396,6 +404,33 @@ LEFT JOIN cart_items ci ON ci.cart_id = c.id
 WHERE c.user_id = $1
 GROUP BY c.id, c.user_id, c.created_at, c.updated_at
 >>>>>>> dc47646 (Optimize SQL query)
+=======
+	Quantity  pgtype.Int4 `json:"quantity"`
+}
+
+func (q *Queries) AddItemToCart(ctx context.Context, arg AddItemToCartParams) error {
+	_, err := q.db.Exec(ctx, addItemToCart, arg.CartID, arg.ProductID, arg.Quantity)
+	return err
+}
+
+const createCartForUser = `-- name: CreateCartForUser :one
+INSERT INTO Cart (user_id)
+VALUES ($1)
+RETURNING id AS cart_id
+`
+
+func (q *Queries) CreateCartForUser(ctx context.Context, userID int64) (int64, error) {
+	row := q.db.QueryRow(ctx, createCartForUser, userID)
+	var cart_id int64
+	err := row.Scan(&cart_id)
+	return cart_id, err
+}
+
+const getCartByUserId = `-- name: GetCartByUserId :many
+SELECT id, user_id, created_at, updated_at 
+FROM Cart
+WHERE user_id = $1
+>>>>>>> c449ffc (feat: cart api)
 `
 
 func (q *Queries) GetCartByUserId(ctx context.Context, userID int64) ([]Cart, error) {
@@ -422,6 +457,7 @@ func (q *Queries) GetCartByUserId(ctx context.Context, userID int64) ([]Cart, er
 	}
 	return items, nil
 }
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 
@@ -770,3 +806,5 @@ func (q *Queries) UpdateOrderPaymentStatus(ctx context.Context, id int64) (Order
 >>>>>>> 21608b5 (cart and order api)
 =======
 >>>>>>> b0fe977 (place order and make payment)
+=======
+>>>>>>> c449ffc (feat: cart api)

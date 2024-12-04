@@ -2,6 +2,7 @@ package payment
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 import (
 	"net/http"
 
@@ -82,6 +83,29 @@ type VietQRController struct {
 type PaymentController struct {
 	service PaymentServiceInterface
 >>>>>>> e859654 (Elastic search)
+=======
+import "net/http"
+
+// GoongConfig contains configuration for VierQR Maps API
+type VietQRConfig struct {
+	APIKey    string
+	ClientKey string
+	BaseURL   string
+}
+
+// GoongService handles interactions with VierQR Maps API
+type VietQRService struct {
+	config *VietQRConfig
+	client *http.Client
+}
+
+type VietQRApi struct {
+	controller VietQRControllerInterface
+}
+
+type VietQRController struct {
+	service VietQRServiceInterface
+>>>>>>> c449ffc (feat: cart api)
 }
 
 type TokenResponse struct {
@@ -118,12 +142,15 @@ type QRRequest struct {
 	Format      string `json:"format"`
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	OrderID     int64  `json:"order_id"`
 =======
 >>>>>>> c449ffc (feat: cart api)
 =======
 	OrderID     int64  `json:"order_id"`
 >>>>>>> b0fe977 (place order and make payment)
+=======
+>>>>>>> c449ffc (feat: cart api)
 }
 
 type GenerateQRCodeResponse struct {
@@ -138,6 +165,7 @@ type GenerateQRData struct {
 	QRCode      string `json:"qrCode"`      // Dữ liệu QR code
 	QRDataURL   string `json:"qrDataURL"`   // Dữ liệu QR code dạng base64
 }
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 =======
@@ -284,3 +312,5 @@ type CreatePaymentLinkRequest struct {
 >>>>>>> ada3717 (Docker file)
 =======
 >>>>>>> 6b24d88 (feat(payment): add PayOS payment integration and enhance treatment module)
+=======
+>>>>>>> c449ffc (feat: cart api)
