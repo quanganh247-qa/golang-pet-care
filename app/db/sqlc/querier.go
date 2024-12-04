@@ -10,9 +10,10 @@ import (
 
 type Querier interface {
 	ActiveReminder(ctx context.Context, arg ActiveReminderParams) error
-	AddItemToCart(ctx context.Context, arg AddItemToCartParams) error
+	AddItemToCart(ctx context.Context, arg AddItemToCartParams) (Cartitem, error)
 	CreateAppointment(ctx context.Context, arg CreateAppointmentParams) (Appointment, error)
 	CreateCartForUser(ctx context.Context, userID int64) (int64, error)
+	CreateOrder(ctx context.Context, arg CreateOrderParams) (Order, error)
 	CreatePet(ctx context.Context, arg CreatePetParams) (Pet, error)
 	CreatePetSchedule(ctx context.Context, arg CreatePetScheduleParams) error
 	CreateService(ctx context.Context, arg CreateServiceParams) (Service, error)
@@ -39,6 +40,8 @@ type Querier interface {
 	GetAppointmentsByPetOfUser(ctx context.Context, username string) ([]Appointment, error)
 	GetAppointmentsOfDoctorWithDetails(ctx context.Context, id int64) ([]GetAppointmentsOfDoctorWithDetailsRow, error)
 	GetCartByUserId(ctx context.Context, userID int64) ([]Cart, error)
+	GetCartItems(ctx context.Context, cartID int64) ([]GetCartItemsRow, error)
+	GetCartTotal(ctx context.Context, cartID int64) (float64, error)
 	GetDeviceTokenByUsername(ctx context.Context, username string) ([]Devicetoken, error)
 	// 1. Query cơ bản để lấy thông tin bệnh và thuốc điều trị
 	GetDiceaseAndMedicinesInfo(ctx context.Context, lower string) ([]GetDiceaseAndMedicinesInfoRow, error)
@@ -51,6 +54,7 @@ type Querier interface {
 	GetPetLogByID(ctx context.Context, arg GetPetLogByIDParams) (GetPetLogByIDRow, error)
 	GetPetLogsByPetID(ctx context.Context, arg GetPetLogsByPetIDParams) ([]GetPetLogsByPetIDRow, error)
 	GetPetScheduleById(ctx context.Context, id int64) (PetSchedule, error)
+	GetProductByID(ctx context.Context, productID int64) (Product, error)
 	GetServiceByID(ctx context.Context, serviceid int64) (Service, error)
 	GetServiceType(ctx context.Context, typeid int64) (Servicetype, error)
 	GetTimeSlotByID(ctx context.Context, id int64) (GetTimeSlotByIDRow, error)

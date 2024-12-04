@@ -166,17 +166,7 @@ func (server *UserService) getAllUsersService(ctx *gin.Context) ([]UserResponse,
 }
 
 func (service *UserService) loginUserService(ctx *gin.Context, req loginUserRequest) (*loginUSerResponse, error) {
-	// user, err := service.storeDB.GetUser(ctx, req.Username)
-	// if err != nil {
-	// 	if err == sql.ErrNoRows {
-	// 		ctx.JSON(http.StatusNotFound, "user not found")
-	// 		return nil, fmt.Errorf("user not found")
-	// 	}
-	// 	ctx.JSON(http.StatusInternalServerError, "internal server error")
-	// 	return nil, fmt.Errorf("internal server error: %v", err)
-	// }
-
-	user, err := service.redis.UserInfoLoadCache(req.Username)
+	user, err := service.storeDB.GetUser(ctx, req.Username)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			ctx.JSON(http.StatusNotFound, "user not found")
@@ -186,13 +176,27 @@ func (service *UserService) loginUserService(ctx *gin.Context, req loginUserRequ
 		return nil, fmt.Errorf("internal server error: %v", err)
 	}
 
+	fmt.Println(user.Username)
+
+	// user, err := service.redis.UserInfoLoadCache(req.Username)
+	// if err != nil {
+	// 	if err == sql.ErrNoRows {
+	// 		ctx.JSON(http.StatusNotFound, "user not found")
+	// 		return nil, fmt.Errorf("user not found")
+	// 	}
+	// 	ctx.JSON(http.StatusInternalServerError, "internal server error")
+	// 	return nil, fmt.Errorf("internal server error: %v", err)
+	// }
+
 	err = util.CheckPassword(req.Password, user.HashedPassword)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, "Incorrect passward")
 		return nil, fmt.Errorf("Incorrect passward")
 	}
 
-	if !user.IsVerifiedEmail {
+	fmt.Println(user.IsVerifiedEmail.Bool)
+
+	if !user.IsVerifiedEmail.Bool {
 		ctx.JSON(http.StatusForbidden, "email not verified")
 		return nil, fmt.Errorf("email not verified")
 	}
