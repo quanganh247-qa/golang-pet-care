@@ -613,17 +613,7 @@ func (server *UserService) getAllUsersService(ctx *gin.Context) ([]UserResponse,
 }
 
 func (service *UserService) loginUserService(ctx *gin.Context, req loginUserRequest) (*loginUSerResponse, error) {
-	// user, err := service.storeDB.GetUser(ctx, req.Username)
-	// if err != nil {
-	// 	if err == sql.ErrNoRows {
-	// 		ctx.JSON(http.StatusNotFound, "user not found")
-	// 		return nil, fmt.Errorf("user not found")
-	// 	}
-	// 	ctx.JSON(http.StatusInternalServerError, "internal server error")
-	// 	return nil, fmt.Errorf("internal server error: %v", err)
-	// }
-
-	user, err := service.redis.UserInfoLoadCache(req.Username)
+	user, err := service.storeDB.GetUser(ctx, req.Username)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			ctx.JSON(http.StatusNotFound, "user not found")
@@ -637,6 +627,7 @@ func (service *UserService) loginUserService(ctx *gin.Context, req loginUserRequ
 <<<<<<< HEAD
 <<<<<<< HEAD
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 =======
@@ -663,6 +654,8 @@ func (service *UserService) loginUserService(ctx *gin.Context, req loginUserRequ
 <<<<<<< HEAD
 <<<<<<< HEAD
 =======
+=======
+>>>>>>> 21608b5 (cart and order api)
 	fmt.Println(user.Username)
 
 	// user, err := service.redis.UserInfoLoadCache(req.Username)
@@ -674,11 +667,15 @@ func (service *UserService) loginUserService(ctx *gin.Context, req loginUserRequ
 	// 	ctx.JSON(http.StatusInternalServerError, "internal server error")
 	// 	return nil, fmt.Errorf("internal server error: %v", err)
 	// }
+<<<<<<< HEAD
 =======
 		ctx.JSON(http.StatusInternalServerError, "internal server error")
 		return nil, fmt.Errorf("internal server error: %v", err)
 	}
 >>>>>>> b393bb9 (add service and add permission)
+
+>>>>>>> 21608b5 (cart and order api)
+=======
 
 >>>>>>> 21608b5 (cart and order api)
 	err = util.CheckPassword(req.Password, user.HashedPassword)
@@ -687,7 +684,9 @@ func (service *UserService) loginUserService(ctx *gin.Context, req loginUserRequ
 		return nil, fmt.Errorf("Incorrect passward")
 	}
 
-	if !user.IsVerifiedEmail {
+	fmt.Println(user.IsVerifiedEmail.Bool)
+
+	if !user.IsVerifiedEmail.Bool {
 		ctx.JSON(http.StatusForbidden, "email not verified")
 		return nil, fmt.Errorf("email not verified")
 	}

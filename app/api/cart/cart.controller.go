@@ -13,6 +13,7 @@ import (
 	"github.com/quanganh247-qa/go-blog-be/app/middleware"
 	"github.com/quanganh247-qa/go-blog-be/app/util"
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 
 	"github.com/gin-gonic/gin"
@@ -25,10 +26,13 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/quanganh247-qa/go-blog-be/app/middleware"
 >>>>>>> c449ffc (feat: cart api)
+=======
+>>>>>>> 21608b5 (cart and order api)
 )
 
 type CartControllerInterface interface {
 	AddToCart(ctx *gin.Context)
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -57,6 +61,10 @@ func (c *CartController) AddToCart(ctx *gin.Context) {
 >>>>>>> 4a16bfc (remove item in cart)
 =======
 >>>>>>> c449ffc (feat: cart api)
+=======
+	GetCartItems(ctx *gin.Context)
+	CreateOrder(c *gin.Context)
+>>>>>>> 21608b5 (cart and order api)
 }
 
 func (c *CartController) AddToCart(ctx *gin.Context) {
@@ -84,6 +92,7 @@ func (c *CartController) AddToCart(ctx *gin.Context) {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	res, err := c.service.AddToCartService(ctx, req, authPayload.Username)
 =======
 	err = c.service.AddToCartService(ctx, req, authPayload.Username)
@@ -94,6 +103,9 @@ func (c *CartController) AddToCart(ctx *gin.Context) {
 =======
 	err = c.service.AddToCartService(ctx, req, authPayload.Username)
 >>>>>>> c449ffc (feat: cart api)
+=======
+	res, err := c.service.AddToCartService(ctx, req, authPayload.Username)
+>>>>>>> 21608b5 (cart and order api)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -102,6 +114,9 @@ func (c *CartController) AddToCart(ctx *gin.Context) {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 21608b5 (cart and order api)
 =======
 >>>>>>> 21608b5 (cart and order api)
 	ctx.JSON(http.StatusOK, util.SuccessResponse("Item added to cart successfully", res))
@@ -146,6 +161,7 @@ func (c *CartController) CreateOrder(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, util.SuccessResponse("Order is added successfully", res))
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 }
 
 func (c *CartController) GetOrders(ctx *gin.Context) {
@@ -284,4 +300,6 @@ func (c *CartController) GetAllOrders(ctx *gin.Context) {
 =======
 	ctx.JSON(http.StatusOK, gin.H{"message": "Item added to cart successfully"})
 >>>>>>> c449ffc (feat: cart api)
+=======
+>>>>>>> 21608b5 (cart and order api)
 }

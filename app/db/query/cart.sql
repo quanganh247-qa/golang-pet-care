@@ -1,6 +1,7 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 -- name: AddItemToCart :one
 INSERT INTO cart_items (
     cart_id,
@@ -163,6 +164,8 @@ SET quantity = CartItem.quantity + $3
 WHERE CartItem.cart_id = $1 AND CartItem.product_id = $2
 <<<<<<< HEAD
 =======
+=======
+>>>>>>> 21608b5 (cart and order api)
 -- name: AddItemToCart :one
 INSERT INTO CartItem (cart_id, product_id, quantity, unit_price)
 VALUES (
@@ -174,6 +177,7 @@ VALUES (
 ON CONFLICT (cart_id, product_id)
 DO UPDATE SET 
     quantity = CartItem.quantity + EXCLUDED.quantity
+<<<<<<< HEAD
 >>>>>>> 21608b5 (cart and order api)
 RETURNING *;
 
@@ -188,6 +192,10 @@ WHERE Products.product_id = $2
 ON CONFLICT (cart_id, product_id) DO NOTHING
 RETURNING *;
 >>>>>>> c449ffc (feat: cart api)
+=======
+RETURNING *;
+
+>>>>>>> 21608b5 (cart and order api)
 
 -- name: GetCartByUserId :many
 SELECT * 
@@ -201,6 +209,7 @@ RETURNING id AS cart_id;
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> c449ffc (feat: cart api)
 -- UPDATE CartItem
@@ -211,6 +220,8 @@ RETURNING id AS cart_id;
 -- RETURNING *;
 >>>>>>> c449ffc (feat: cart api)
 =======
+=======
+>>>>>>> 21608b5 (cart and order api)
 -- name: GetCartItems :many
 SELECT 
     CartItem.*,
@@ -227,6 +238,7 @@ WHERE cart_id = $1;
 -- name: CreateOrder :one
 INSERT INTO Orders (user_id, total_amount, cart_items, shipping_address, notes)
 VALUES ($1, $2, $3, $4, $5)
+<<<<<<< HEAD
 RETURNING *; -- Returning fields you may want to use
 <<<<<<< HEAD
 >>>>>>> 21608b5 (cart and order api)
@@ -276,3 +288,6 @@ LIMIT $2 OFFSET $3;
 =======
 -- RETURNING *;
 >>>>>>> c449ffc (feat: cart api)
+=======
+RETURNING *; -- Returning fields you may want to use
+>>>>>>> 21608b5 (cart and order api)

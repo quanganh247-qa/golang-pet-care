@@ -9,6 +9,7 @@ import (
 	"context"
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> 1ec1fee (create product api)
 
@@ -63,6 +64,10 @@ func (q *Queries) GetAllProducts(ctx context.Context, arg GetAllProductsParams) 
 >>>>>>> 21608b5 (cart and order api)
 =======
 >>>>>>> bd5945b (get list products)
+=======
+)
+
+>>>>>>> 21608b5 (cart and order api)
 const getProductByID = `-- name: GetProductByID :one
 SELECT product_id, name, description, price, stock_quantity, category, data_image, original_image, created_at, is_available, removed_at from Products where product_id = $1
 `
@@ -85,6 +90,7 @@ func (q *Queries) GetProductByID(ctx context.Context, productID int64) (Product,
 	)
 	return i, err
 }
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 =======
@@ -140,3 +146,5 @@ func (q *Queries) InsertProduct(ctx context.Context, arg InsertProductParams) (P
 >>>>>>> 21608b5 (cart and order api)
 =======
 >>>>>>> 1ec1fee (create product api)
+=======
+>>>>>>> 21608b5 (cart and order api)

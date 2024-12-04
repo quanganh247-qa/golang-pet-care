@@ -14,6 +14,7 @@ import (
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 const addItemToCart = `-- name: AddItemToCart :one
 INSERT INTO cart_items (
     cart_id,
@@ -39,6 +40,9 @@ WHERE CartItem.cart_id = $1 AND CartItem.product_id = $2
 =======
 const addItemToCart = `-- name: AddItemToCart :one
 <<<<<<< HEAD
+=======
+const addItemToCart = `-- name: AddItemToCart :one
+>>>>>>> 21608b5 (cart and order api)
 INSERT INTO CartItem (cart_id, product_id, quantity, unit_price)
 VALUES (
     $1, -- cart_id
@@ -49,6 +53,9 @@ VALUES (
 ON CONFLICT (cart_id, product_id)
 DO UPDATE SET 
     quantity = CartItem.quantity + EXCLUDED.quantity
+<<<<<<< HEAD
+>>>>>>> 21608b5 (cart and order api)
+=======
 >>>>>>> 21608b5 (cart and order api)
 RETURNING id, cart_id, product_id, quantity, unit_price, total_price
 >>>>>>> c449ffc (feat: cart api)
@@ -408,9 +415,18 @@ GROUP BY c.id, c.user_id, c.created_at, c.updated_at
 	Quantity  pgtype.Int4 `json:"quantity"`
 }
 
-func (q *Queries) AddItemToCart(ctx context.Context, arg AddItemToCartParams) error {
-	_, err := q.db.Exec(ctx, addItemToCart, arg.CartID, arg.ProductID, arg.Quantity)
-	return err
+func (q *Queries) AddItemToCart(ctx context.Context, arg AddItemToCartParams) (Cartitem, error) {
+	row := q.db.QueryRow(ctx, addItemToCart, arg.CartID, arg.ProductID, arg.Quantity)
+	var i Cartitem
+	err := row.Scan(
+		&i.ID,
+		&i.CartID,
+		&i.ProductID,
+		&i.Quantity,
+		&i.UnitPrice,
+		&i.TotalPrice,
+	)
+	return i, err
 }
 
 const createCartForUser = `-- name: CreateCartForUser :one
@@ -424,6 +440,42 @@ func (q *Queries) CreateCartForUser(ctx context.Context, userID int64) (int64, e
 	var cart_id int64
 	err := row.Scan(&cart_id)
 	return cart_id, err
+}
+
+const createOrder = `-- name: CreateOrder :one
+INSERT INTO Orders (user_id, total_amount, cart_items, shipping_address, notes)
+VALUES ($1, $2, $3, $4, $5)
+RETURNING id, user_id, order_date, total_amount, payment_status, cart_items, shipping_address, notes
+`
+
+type CreateOrderParams struct {
+	UserID          int64       `json:"user_id"`
+	TotalAmount     float64     `json:"total_amount"`
+	CartItems       []byte      `json:"cart_items"`
+	ShippingAddress pgtype.Text `json:"shipping_address"`
+	Notes           pgtype.Text `json:"notes"`
+}
+
+func (q *Queries) CreateOrder(ctx context.Context, arg CreateOrderParams) (Order, error) {
+	row := q.db.QueryRow(ctx, createOrder,
+		arg.UserID,
+		arg.TotalAmount,
+		arg.CartItems,
+		arg.ShippingAddress,
+		arg.Notes,
+	)
+	var i Order
+	err := row.Scan(
+		&i.ID,
+		&i.UserID,
+		&i.OrderDate,
+		&i.TotalAmount,
+		&i.PaymentStatus,
+		&i.CartItems,
+		&i.ShippingAddress,
+		&i.Notes,
+	)
+	return i, err
 }
 
 const getCartByUserId = `-- name: GetCartByUserId :many
@@ -460,6 +512,7 @@ func (q *Queries) GetCartByUserId(ctx context.Context, userID int64) ([]Cart, er
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 const getCartItems = `-- name: GetCartItems :many
 SELECT 
@@ -498,6 +551,19 @@ WHERE ci.cart_id = $1
 type GetCartItemsRow struct {
 <<<<<<< HEAD
 <<<<<<< HEAD
+=======
+
+const getCartItems = `-- name: GetCartItems :many
+SELECT 
+    cartitem.id, cartitem.cart_id, cartitem.product_id, cartitem.quantity, cartitem.unit_price, cartitem.total_price,
+    Products.name AS product_name
+FROM CartItem
+JOIN Products ON CartItem.product_id = Products.product_id
+WHERE CartItem.cart_id = $1
+`
+
+type GetCartItemsRow struct {
+>>>>>>> 21608b5 (cart and order api)
 	ID          int64         `json:"id"`
 	CartID      int64         `json:"cart_id"`
 	ProductID   int64         `json:"product_id"`
@@ -505,6 +571,7 @@ type GetCartItemsRow struct {
 	UnitPrice   float64       `json:"unit_price"`
 	TotalPrice  pgtype.Float8 `json:"total_price"`
 	ProductName string        `json:"product_name"`
+<<<<<<< HEAD
 >>>>>>> 21608b5 (cart and order api)
 =======
 	ID          int64            `json:"id"`
@@ -528,6 +595,8 @@ type GetCartItemsRow struct {
 	UnitPrice_2  float64       `json:"unit_price_2"`
 	TotalPrice_2 int32         `json:"total_price_2"`
 >>>>>>> ada3717 (Docker file)
+=======
+>>>>>>> 21608b5 (cart and order api)
 }
 
 func (q *Queries) GetCartItems(ctx context.Context, cartID int64) ([]GetCartItemsRow, error) {
@@ -546,6 +615,7 @@ func (q *Queries) GetCartItems(ctx context.Context, cartID int64) ([]GetCartItem
 			&i.Quantity,
 			&i.UnitPrice,
 			&i.TotalPrice,
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 			&i.ProductName,
@@ -618,6 +688,9 @@ func (q *Queries) GetCartItemsByUserId(ctx context.Context, userID int64) ([]Get
 >>>>>>> ada3717 (Docker file)
 =======
 >>>>>>> 6b24d88 (feat(payment): add PayOS payment integration and enhance treatment module)
+=======
+			&i.ProductName,
+>>>>>>> 21608b5 (cart and order api)
 		); err != nil {
 			return nil, err
 		}
@@ -633,6 +706,7 @@ const getCartTotal = `-- name: GetCartTotal :one
 SELECT SUM(total_price)::FLOAT8
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 FROM cart_items
 =======
 FROM CartItem
@@ -640,6 +714,9 @@ FROM CartItem
 =======
 FROM cart_items
 >>>>>>> 33fcf96 (Big update)
+=======
+FROM CartItem
+>>>>>>> 21608b5 (cart and order api)
 WHERE cart_id = $1
 `
 
@@ -649,6 +726,7 @@ func (q *Queries) GetCartTotal(ctx context.Context, cartID int64) (float64, erro
 	err := row.Scan(&column_1)
 	return column_1, err
 }
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 =======
@@ -808,3 +886,5 @@ func (q *Queries) UpdateOrderPaymentStatus(ctx context.Context, id int64) (Order
 >>>>>>> b0fe977 (place order and make payment)
 =======
 >>>>>>> c449ffc (feat: cart api)
+=======
+>>>>>>> 21608b5 (cart and order api)

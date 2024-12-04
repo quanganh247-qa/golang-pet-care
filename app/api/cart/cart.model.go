@@ -18,6 +18,7 @@ type CartItem struct {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> dc47646 (Optimize SQL query)
 type CartItemRequest struct {
@@ -45,6 +46,13 @@ type CartItemResponse struct {
 	Quantity    int32   `json:"quantity"`
 	UnitPrice   float64 `json:"unit_price"`
 >>>>>>> b0fe977 (place order and make payment)
+=======
+type CartItemResponse struct {
+	ID          int64   `json:"id"`
+	CartID      int64   `json:"cart_id"`
+	ProductName string  `json:"product_name"`
+	Quantity    int     `json:"quantity"`
+>>>>>>> 21608b5 (cart and order api)
 	TotalPrice  float64 `json:"total_price"`
 }
 
@@ -54,6 +62,7 @@ type PlaceOrderRequest struct {
 	Notes           string `json:"notes"`                               // Optional notes
 }
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 type Order struct {
 	ID              int64              `json:"id"`
@@ -86,6 +95,8 @@ type Order struct {
 
 <<<<<<< HEAD
 =======
+=======
+>>>>>>> 21608b5 (cart and order api)
 type Order struct {
 	ID              int64   `json:"id"`
 	UserID          int64   `json:"user_id"`
@@ -94,6 +105,7 @@ type Order struct {
 	ShippingAddress string  `json:"shipping_address"`
 }
 
+<<<<<<< HEAD
 >>>>>>> c449ffc (feat: cart api)
 type OrderItem struct {
 	ID         int64   `json:"id"`
@@ -107,10 +119,14 @@ type OrderItem struct {
 =======
 // PlaceOrderResponse represents the response body after placing an order
 <<<<<<< HEAD
+=======
+// PlaceOrderResponse represents the response body after placing an order
+>>>>>>> 21608b5 (cart and order api)
 type PlaceOrderResponse struct {
 	OrderID       int64  `json:"order_id"`       // ID of the created order
 	OrderDate     string `json:"order_date"`     // Date the order was placed
 	PaymentStatus string `json:"payment_status"` // Status of the payment
+<<<<<<< HEAD
 >>>>>>> 21608b5 (cart and order api)
 =======
 type OrderResponse struct {
@@ -121,6 +137,8 @@ type OrderResponse struct {
 >>>>>>> b0fe977 (place order and make payment)
 =======
 >>>>>>> c449ffc (feat: cart api)
+=======
+>>>>>>> 21608b5 (cart and order api)
 }
 
 type CartApi struct {
