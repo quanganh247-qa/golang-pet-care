@@ -94,6 +94,24 @@ func (q *Queries) CreateOrder(ctx context.Context, arg CreateOrderParams) (Order
 	return i, err
 }
 
+const decreaseItemQuantity = `-- name: DecreaseItemQuantity :exec
+UPDATE CartItem
+SET quantity = quantity - $3
+WHERE cart_id = $1 AND product_id = $2 AND quantity > $3
+RETURNING id, cart_id, product_id, quantity, unit_price, total_price
+`
+
+type DecreaseItemQuantityParams struct {
+	CartID    int64       `json:"cart_id"`
+	ProductID int64       `json:"product_id"`
+	Quantity  pgtype.Int4 `json:"quantity"`
+}
+
+func (q *Queries) DecreaseItemQuantity(ctx context.Context, arg DecreaseItemQuantityParams) error {
+	_, err := q.db.Exec(ctx, decreaseItemQuantity, arg.CartID, arg.ProductID, arg.Quantity)
+	return err
+}
+
 const getCartByUserId = `-- name: GetCartByUserId :many
 SELECT id, user_id, created_at, updated_at 
 FROM Cart
@@ -242,6 +260,21 @@ func (q *Queries) GetOrdersByUserId(ctx context.Context, userID int64) ([]Order,
 		return nil, err
 	}
 	return items, nil
+}
+
+const removeItemFromCart = `-- name: RemoveItemFromCart :exec
+DELETE FROM CartItem
+WHERE cart_id = $1 AND product_id = $2
+`
+
+type RemoveItemFromCartParams struct {
+	CartID    int64 `json:"cart_id"`
+	ProductID int64 `json:"product_id"`
+}
+
+func (q *Queries) RemoveItemFromCart(ctx context.Context, arg RemoveItemFromCartParams) error {
+	_, err := q.db.Exec(ctx, removeItemFromCart, arg.CartID, arg.ProductID)
+	return err
 }
 
 const updateOrderPaymentStatus = `-- name: UpdateOrderPaymentStatus :one

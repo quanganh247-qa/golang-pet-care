@@ -54,3 +54,13 @@ WHERE id = $1;
 UPDATE Orders
 SET payment_status = 'paid'
 WHERE id = $1 Returning *;
+
+-- name: RemoveItemFromCart :exec
+DELETE FROM CartItem
+WHERE cart_id = $1 AND product_id = $2;
+
+-- name: DecreaseItemQuantity :exec
+UPDATE CartItem
+SET quantity = quantity - $3
+WHERE cart_id = $1 AND product_id = $2 AND quantity > $3
+RETURNING *;
