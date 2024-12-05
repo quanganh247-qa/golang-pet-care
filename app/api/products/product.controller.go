@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"strconv"
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 	"net/http"
 >>>>>>> bd5945b (get list products)
@@ -18,6 +19,8 @@ import (
 =======
 	"net/http"
 >>>>>>> bd5945b (get list products)
+=======
+>>>>>>> 63e2c90 (get product by id)
 
 	"github.com/gin-gonic/gin"
 	"github.com/quanganh247-qa/go-blog-be/app/util"
@@ -33,6 +36,7 @@ type ProductControllerInterface interface {
 	GetProducts(c *gin.Context)
 	GetProductByID(c *gin.Context)
 <<<<<<< HEAD
+<<<<<<< HEAD
 }
 
 func (controller *ProductController) CreateProduct(ctx *gin.Context) {
@@ -97,6 +101,8 @@ func (controller *ProductController) CreateProduct(ctx *gin.Context) {
 =======
 	GetProducts(c *gin.Context)
 >>>>>>> bd5945b (get list products)
+=======
+>>>>>>> 63e2c90 (get product by id)
 }
 
 func (controller *ProductController) GetProducts(c *gin.Context) {
@@ -118,6 +124,9 @@ func (controller *ProductController) GetProducts(c *gin.Context) {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 63e2c90 (get product by id)
 =======
 >>>>>>> 63e2c90 (get product by id)
 
@@ -138,9 +147,12 @@ func (controller *ProductController) GetProductByID(c *gin.Context) {
 
 }
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> bd5945b (get list products)
 =======
 >>>>>>> 63e2c90 (get product by id)
 =======
 >>>>>>> bd5945b (get list products)
+=======
+>>>>>>> 63e2c90 (get product by id)

@@ -29,6 +29,7 @@ type ProductServiceInterface interface {
 	GetProducts(c *gin.Context, pagination *util.Pagination) ([]ProductResponse, error)
 	GetProductByID(c *gin.Context, productID int64) (*ProductResponse, error)
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 	GetProducts(c *gin.Context, pagination *util.Pagination) ([]ProductResponse, error)
 >>>>>>> bd5945b (get list products)
@@ -37,6 +38,8 @@ type ProductServiceInterface interface {
 =======
 	GetProducts(c *gin.Context, pagination *util.Pagination) ([]ProductResponse, error)
 >>>>>>> bd5945b (get list products)
+=======
+>>>>>>> 63e2c90 (get product by id)
 }
 
 // get all products
@@ -69,6 +72,9 @@ func (s *ProductService) GetProducts(c *gin.Context, pagination *util.Pagination
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 63e2c90 (get product by id)
 =======
 >>>>>>> 63e2c90 (get product by id)
 
@@ -91,6 +97,7 @@ func (s *ProductService) GetProductByID(c *gin.Context, productID int64) (*Produ
 
 	return &productResponse, nil
 }
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 =======
@@ -135,3 +142,5 @@ func (s *ProductService) CreateProductService(c *gin.Context, req CreateProductR
 >>>>>>> 1ec1fee (create product api)
 =======
 >>>>>>> bd5945b (get list products)
+=======
+>>>>>>> 63e2c90 (get product by id)
