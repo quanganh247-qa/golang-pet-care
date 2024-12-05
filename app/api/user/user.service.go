@@ -775,6 +775,7 @@ func (service *UserService) loginUserService(ctx *gin.Context, req loginUserRequ
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 			Username:  user.Username,
 			FullName:  user.FullName,
 			Email:     user.Email,
@@ -794,10 +795,13 @@ func (service *UserService) loginUserService(ctx *gin.Context, req loginUserRequ
 			Email:    user.Email,
 >>>>>>> c449ffc (feat: cart api)
 =======
+=======
+>>>>>>> 30f20e5 (dât image)
 			Username:  user.Username,
 			FullName:  user.FullName,
 			Email:     user.Email,
 			DataImage: []byte(user.DataImage),
+<<<<<<< HEAD
 >>>>>>> 30f20e5 (dât image)
 		},
 <<<<<<< HEAD
@@ -816,6 +820,8 @@ func (service *UserService) loginUserService(ctx *gin.Context, req loginUserRequ
 			FullName: user.FullName,
 			Email:    user.Email,
 >>>>>>> c449ffc (feat: cart api)
+=======
+>>>>>>> 30f20e5 (dât image)
 		},
 		DeviceToken: tokens.Token,
 >>>>>>> c3c833d (login api)
