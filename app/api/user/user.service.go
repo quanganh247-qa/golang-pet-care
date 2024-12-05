@@ -213,9 +213,10 @@ func (service *UserService) loginUserService(ctx *gin.Context, req loginUserRequ
 
 	return &loginUSerResponse{
 		User: UserResponse{
-			Username: user.Username,
-			FullName: user.FullName,
-			Email:    user.Email,
+			Username:  user.Username,
+			FullName:  user.FullName,
+			Email:     user.Email,
+			DataImage: []byte(user.DataImage),
 		},
 		DeviceToken: tokens.Token,
 	}, nil
