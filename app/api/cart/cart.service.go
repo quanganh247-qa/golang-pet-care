@@ -186,6 +186,7 @@ type CartServiceInterface interface {
 	CreateOrderService(c *gin.Context, username string, arg PlaceOrderRequest) (*OrderResponse, error)
 	GetOrdersService(c *gin.Context, username string) ([]OrderResponse, error)
 	GetOrderByIdService(c *gin.Context, username string, orderID int64) (*Order, error)
+	DeleteItemFromCartService(c *gin.Context, username string, itemID int64) error
 }
 
 func (s *CartService) AddToCartService(c *gin.Context, req CartItem, username string) (*CartItem, error) {
@@ -538,4 +539,36 @@ func (s *CartService) GetOrderByIdService(c *gin.Context, username string, order
 	}
 
 	return &orderResponse, nil
+}
+
+// delete item from cart
+
+func (s *CartService) DeleteItemFromCartService(c *gin.Context, username string, itemID int64) error {
+	user, err := s.redis.UserInfoLoadCache(username)
+	if err != nil {
+		return fmt.Errorf("failed to get user info: %w", err)
+	}
+
+	cart, err := s.storeDB.GetCartByUserId(c, user.UserID)
+	if err != nil {
+		return fmt.Errorf("failed to get cart by user id: %w", err)
+	}
+
+	err = s.storeDB.ExecWithTransaction(c, func(q *db.Queries) error {
+		err := q.RemoveItemFromCart(c, db.RemoveItemFromCartParams{
+			CartID:    cart[0].ID,
+			ProductID: itemID,
+		})
+		if err != nil {
+			return err
+		}
+
+		return nil
+	})
+	if err != nil {
+		return err
+	}
+
+	return nil
+
 }
