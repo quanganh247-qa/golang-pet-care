@@ -1,6 +1,10 @@
 package payment
 
-import "net/http"
+import (
+	"net/http"
+
+	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
+)
 
 // GoongConfig contains configuration for VierQR Maps API
 type VietQRConfig struct {
@@ -11,8 +15,9 @@ type VietQRConfig struct {
 
 // GoongService handles interactions with VierQR Maps API
 type VietQRService struct {
-	config *VietQRConfig
-	client *http.Client
+	config  *VietQRConfig
+	client  *http.Client
+	storeDB db.Store
 }
 
 type VietQRApi struct {
@@ -55,6 +60,7 @@ type QRRequest struct {
 	Bank        string `json:"bank"`
 	AddInfo     string `json:"addInfo"`
 	Format      string `json:"format"`
+	OrderID     int64  `json:"order_id"`
 }
 
 type GenerateQRCodeResponse struct {

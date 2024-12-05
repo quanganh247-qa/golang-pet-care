@@ -184,3 +184,84 @@ func (q *Queries) GetCartTotal(ctx context.Context, cartID int64) (float64, erro
 	err := row.Scan(&column_1)
 	return column_1, err
 }
+
+const getOrderById = `-- name: GetOrderById :one
+SELECT id, user_id, order_date, total_amount, payment_status, cart_items, shipping_address, notes
+FROM Orders
+WHERE id = $1
+`
+
+func (q *Queries) GetOrderById(ctx context.Context, id int64) (Order, error) {
+	row := q.db.QueryRow(ctx, getOrderById, id)
+	var i Order
+	err := row.Scan(
+		&i.ID,
+		&i.UserID,
+		&i.OrderDate,
+		&i.TotalAmount,
+		&i.PaymentStatus,
+		&i.CartItems,
+		&i.ShippingAddress,
+		&i.Notes,
+	)
+	return i, err
+}
+
+const getOrdersByUserId = `-- name: GetOrdersByUserId :many
+
+SELECT id, user_id, order_date, total_amount, payment_status, cart_items, shipping_address, notes
+FROM Orders
+WHERE user_id = $1 and payment_status = 'pending'
+`
+
+// Returning fields you may want to use
+func (q *Queries) GetOrdersByUserId(ctx context.Context, userID int64) ([]Order, error) {
+	rows, err := q.db.Query(ctx, getOrdersByUserId, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []Order{}
+	for rows.Next() {
+		var i Order
+		if err := rows.Scan(
+			&i.ID,
+			&i.UserID,
+			&i.OrderDate,
+			&i.TotalAmount,
+			&i.PaymentStatus,
+			&i.CartItems,
+			&i.ShippingAddress,
+			&i.Notes,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const updateOrderPaymentStatus = `-- name: UpdateOrderPaymentStatus :one
+UPDATE Orders
+SET payment_status = 'paid'
+WHERE id = $1 Returning id, user_id, order_date, total_amount, payment_status, cart_items, shipping_address, notes
+`
+
+func (q *Queries) UpdateOrderPaymentStatus(ctx context.Context, id int64) (Order, error) {
+	row := q.db.QueryRow(ctx, updateOrderPaymentStatus, id)
+	var i Order
+	err := row.Scan(
+		&i.ID,
+		&i.UserID,
+		&i.OrderDate,
+		&i.TotalAmount,
+		&i.PaymentStatus,
+		&i.CartItems,
+		&i.ShippingAddress,
+		&i.Notes,
+	)
+	return i, err
+}

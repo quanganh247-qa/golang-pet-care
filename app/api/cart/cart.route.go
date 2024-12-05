@@ -25,7 +25,8 @@ func Routes(routerGroup middleware.RouterGroup) {
 		authRoute.POST("/", cartApi.controller.AddToCart)
 		authRoute.GET("/", cartApi.controller.GetCartItems)
 		authRoute.POST("/order", cartApi.controller.CreateOrder)
-
+		authRoute.GET("/order", cartApi.controller.GetOrders)
+		authRoute.GET("/order/:order_id", cartApi.controller.GetOrderByID)
 	}
 
 }

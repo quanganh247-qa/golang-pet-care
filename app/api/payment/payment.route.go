@@ -3,6 +3,7 @@ package payment
 import (
 	"net/http"
 
+	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
 	"github.com/quanganh247-qa/go-blog-be/app/middleware"
 	"github.com/quanganh247-qa/go-blog-be/app/util"
 )
@@ -21,7 +22,8 @@ func Routes(routerGroup middleware.RouterGroup, config *util.Config) {
 					BaseURL:   config.VietQRBaseURL,
 					ClientKey: config.VietQRClientKey,
 				},
-				client: &http.Client{},
+				client:  &http.Client{},
+				storeDB: db.StoreDB,
 			},
 		},
 	}
