@@ -10,6 +10,7 @@ import (
 
 type ProductServiceInterface interface {
 	GetProducts(c *gin.Context, pagination *util.Pagination) ([]ProductResponse, error)
+	GetProductByID(c *gin.Context, productID int64) (*ProductResponse, error)
 }
 
 // get all products
@@ -38,4 +39,24 @@ func (s *ProductService) GetProducts(c *gin.Context, pagination *util.Pagination
 	}
 
 	return productResponse, nil
+}
+
+// get product by id
+func (s *ProductService) GetProductByID(c *gin.Context, productID int64) (*ProductResponse, error) {
+	product, err := s.storeDB.GetProductByID(c, productID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get product: %w", err)
+	}
+
+	productResponse := ProductResponse{
+		ProductID:     product.ProductID,
+		Name:          product.Name,
+		Price:         product.Price,
+		Stock:         product.StockQuantity.Int32,
+		Category:      product.Category.String,
+		DataImage:     product.DataImage,
+		OriginalImage: product.OriginalImage.String,
+	}
+
+	return &productResponse, nil
 }
