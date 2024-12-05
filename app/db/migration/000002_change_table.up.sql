@@ -2,7 +2,7 @@ CREATE TABLE Products (
     product_id BIGSERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     description TEXT,
-    price DECIMAL(10, 2) NOT NULL,
+    price float8 NOT NULL,
     stock_quantity INT DEFAULT 0,
     category VARCHAR(100),
     data_image BYTEA,

@@ -15,6 +15,7 @@ import (
 	"github.com/quanganh247-qa/go-blog-be/app/api/payment"
 	"github.com/quanganh247-qa/go-blog-be/app/api/pet"
 	petschedule "github.com/quanganh247-qa/go-blog-be/app/api/pet_schedule"
+	"github.com/quanganh247-qa/go-blog-be/app/api/products"
 	"github.com/quanganh247-qa/go-blog-be/app/api/service"
 	"github.com/quanganh247-qa/go-blog-be/app/api/service_type"
 	"github.com/quanganh247-qa/go-blog-be/app/api/user"
@@ -77,6 +78,7 @@ func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor, config
 	location.Routes(routerGroup, &config)
 	payment.Routes(routerGroup, &config)
 	cart.Routes(routerGroup)
+	products.Routes(routerGroup)
 
 	server.Router = routerDefault
 
