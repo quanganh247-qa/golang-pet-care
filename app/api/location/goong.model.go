@@ -120,7 +120,7 @@ type PlaceDetail struct {
 	PlaceID    string             `json:"place_id"`
 	Name       string             `json:"name"`
 	Address    string             `json:"formatted_address"`
-	Location   Location           `json:"geometry"`
+	Geometry   Geometry           `json:"geometry"`
 	Types      []string           `json:"types"`
 	Components []AddressComponent `json:"address_components"`
 }
