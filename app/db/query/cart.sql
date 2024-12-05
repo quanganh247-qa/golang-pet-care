@@ -239,10 +239,14 @@ WHERE cart_id = $1;
 INSERT INTO Orders (user_id, total_amount, cart_items, shipping_address, notes)
 VALUES ($1, $2, $3, $4, $5)
 <<<<<<< HEAD
+<<<<<<< HEAD
 RETURNING *; -- Returning fields you may want to use
 <<<<<<< HEAD
 >>>>>>> 21608b5 (cart and order api)
 =======
+=======
+RETURNING *; -- Returning fields you may want to use
+>>>>>>> b0fe977 (place order and make payment)
 
 -- name: GetOrdersByUserId :many
 SELECT *
@@ -257,6 +261,7 @@ WHERE id = $1;
 -- name: UpdateOrderPaymentStatus :one
 UPDATE Orders
 SET payment_status = 'paid'
+<<<<<<< HEAD
 WHERE id = $1 Returning *;
 >>>>>>> b0fe977 (place order and make payment)
 =======
@@ -291,3 +296,6 @@ LIMIT $2 OFFSET $3;
 =======
 RETURNING *; -- Returning fields you may want to use
 >>>>>>> 21608b5 (cart and order api)
+=======
+WHERE id = $1 Returning *;
+>>>>>>> b0fe977 (place order and make payment)

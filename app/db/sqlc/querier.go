@@ -563,6 +563,7 @@ type Querier interface {
 	GetDoctors(ctx context.Context) ([]GetDoctorsRow, error)
 >>>>>>> e30b070 (Get list appoinment by user)
 	GetNotificationsByUsername(ctx context.Context, arg GetNotificationsByUsernameParams) ([]Notification, error)
+<<<<<<< HEAD
 >>>>>>> 6f3ea8a (update sqlc)
 =======
 =======
@@ -601,6 +602,11 @@ type Querier interface {
 >>>>>>> 6c35562 (dicease and treatment plan)
 =======
 >>>>>>> 272832d (redis cache)
+=======
+	GetOrderById(ctx context.Context, id int64) (Order, error)
+	// Returning fields you may want to use
+	GetOrdersByUserId(ctx context.Context, userID int64) ([]Order, error)
+>>>>>>> b0fe977 (place order and make payment)
 	GetPetByID(ctx context.Context, petid int64) (Pet, error)
 <<<<<<< HEAD
 	GetPetDetailByUserID(ctx context.Context, arg GetPetDetailByUserIDParams) (GetPetDetailByUserIDRow, error)

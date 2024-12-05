@@ -2578,6 +2578,7 @@ VALUES
 <<<<<<< HEAD
     -- Giai đoạn điều trị cho Viêm khớp
     (5, 5, '0.1mg/kg', '1 lần/ngày', '7-14 ngày', 'Dùng Meloxicam để giảm đau và viêm khớp');
+<<<<<<< HEAD
 >>>>>>> 7af4c7a (new data)
 =======
 --     -- Giai đoạn điều trị cho Viêm khớp
@@ -2587,3 +2588,6 @@ VALUES
     -- Giai đoạn điều trị cho Viêm khớp
     (5, 5, '0.1mg/kg', '1 lần/ngày', '7-14 ngày', 'Dùng Meloxicam để giảm đau và viêm khớp');
 >>>>>>> bd5945b (get list products)
+=======
+
+>>>>>>> b0fe977 (place order and make payment)
