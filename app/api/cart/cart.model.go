@@ -17,8 +17,10 @@ type CartItem struct {
 type CartItemResponse struct {
 	ID          int64   `json:"id"`
 	CartID      int64   `json:"cart_id"`
+	ProductID   int64   `json:"product_id"`
 	ProductName string  `json:"product_name"`
-	Quantity    int     `json:"quantity"`
+	Quantity    int32   `json:"quantity"`
+	UnitPrice   float64 `json:"unit_price"`
 	TotalPrice  float64 `json:"total_price"`
 }
 
@@ -29,18 +31,21 @@ type PlaceOrderRequest struct {
 }
 
 type Order struct {
-	ID              int64   `json:"id"`
-	UserID          int64   `json:"user_id"`
-	TotalAmount     float64 `json:"total_amount"`
-	PaymentStatus   string  `json:"payment_status"`
-	ShippingAddress string  `json:"shipping_address"`
+	ID              int64              `json:"id"`
+	UserID          int64              `json:"user_id"`
+	TotalAmount     float64            `json:"total_amount"`
+	PaymentStatus   string             `json:"payment_status"`
+	OrderDate       string             `json:"order_date"`
+	ShippingAddress string             `json:"shipping_address"`
+	CartItems       []CartItemResponse `json:"cart_items"`
 }
 
 // PlaceOrderResponse represents the response body after placing an order
-type PlaceOrderResponse struct {
-	OrderID       int64  `json:"order_id"`       // ID of the created order
-	OrderDate     string `json:"order_date"`     // Date the order was placed
-	PaymentStatus string `json:"payment_status"` // Status of the payment
+type OrderResponse struct {
+	OrderID       int64   `json:"order_id"`
+	OrderDate     string  `json:"order_date"`
+	TotalAmount   float64 `json:"total_amount"`
+	PaymentStatus string  `json:"payment_status"`
 }
 
 type CartApi struct {

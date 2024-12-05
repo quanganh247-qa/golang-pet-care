@@ -7,6 +7,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
 )
 
 type VietQRServiceInterface interface {
@@ -69,6 +70,7 @@ func (s *VietQRService) GetBanksService(c *gin.Context) (*BankResponse, error) {
 // generate qr
 func (s *VietQRService) GenerateQRService(c *gin.Context, qrRequest QRRequest) (*GenerateQRCodeResponse, error) {
 	// Build base URL
+
 	baseURL := fmt.Sprintf("%s/generate", s.config.BaseURL)
 
 	// Make request
@@ -91,6 +93,19 @@ func (s *VietQRService) GenerateQRService(c *gin.Context, qrRequest QRRequest) (
 	var result GenerateQRCodeResponse
 	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
 		return nil, fmt.Errorf("failed to decode response: %v", err)
+	}
+
+	err = s.storeDB.ExecWithTransaction(c, func(q *db.Queries) error {
+		// UpdateOrderPaymentStatus
+		_, err := q.UpdateOrderPaymentStatus(c, int64(qrRequest.OrderID))
+		if err != nil {
+			return err
+		}
+		return nil
+
+	})
+	if err != nil {
+		return nil, err
 	}
 
 	return &result, nil
