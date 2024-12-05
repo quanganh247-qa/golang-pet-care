@@ -21,8 +21,11 @@ func Routes(routerGroup middleware.RouterGroup) {
 
 	{
 		authRoute.GET("/", petApi.controller.GetProducts)
+<<<<<<< HEAD
 		authRoute.POST("/", petApi.controller.CreateProduct)
 		authRoute.GET("/:product_id", petApi.controller.GetProductByID)
+=======
+>>>>>>> bd5945b (get list products)
 
 	}
 

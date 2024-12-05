@@ -50,11 +50,15 @@ import (
 	"github.com/quanganh247-qa/go-blog-be/app/api/pet"
 	petschedule "github.com/quanganh247-qa/go-blog-be/app/api/pet_schedule"
 <<<<<<< HEAD
+<<<<<<< HEAD
 	"github.com/quanganh247-qa/go-blog-be/app/api/products"
 	"github.com/quanganh247-qa/go-blog-be/app/api/rooms"
 	"github.com/quanganh247-qa/go-blog-be/app/api/search"
 =======
 >>>>>>> e01abc5 (pet schedule api)
+=======
+	"github.com/quanganh247-qa/go-blog-be/app/api/products"
+>>>>>>> bd5945b (get list products)
 	"github.com/quanganh247-qa/go-blog-be/app/api/service"
 	"github.com/quanganh247-qa/go-blog-be/app/api/user"
 	"github.com/quanganh247-qa/go-blog-be/app/api/vaccination"
@@ -166,6 +170,7 @@ func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor, config
 	location.Routes(routerGroup, &config)
 	payment.Routes(routerGroup, &config)
 	cart.Routes(routerGroup)
+	products.Routes(routerGroup)
 
 	server.Router = routerDefault
 >>>>>>> 79a3bcc (medicine api)
