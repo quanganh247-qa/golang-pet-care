@@ -454,6 +454,9 @@ func (q *Queries) GetCartTotal(ctx context.Context, cartID int64) (float64, erro
 	return column_1, err
 }
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> b0fe977 (place order and make payment)
 
 const getOrderById = `-- name: GetOrderById :one
 SELECT id, user_id, order_date, total_amount, payment_status, cart_items, shipping_address, notes
@@ -514,6 +517,7 @@ func (q *Queries) GetOrdersByUserId(ctx context.Context, userID int64) ([]Order,
 	return items, nil
 }
 
+<<<<<<< HEAD
 const removeItemFromCart = `-- name: RemoveItemFromCart :exec
 DELETE FROM cart_items 
 WHERE cart_id = $1 AND product_id = $2
@@ -548,6 +552,8 @@ func (q *Queries) UpdateCartItemQuantity(ctx context.Context, arg UpdateCartItem
 	return err
 }
 
+=======
+>>>>>>> b0fe977 (place order and make payment)
 const updateOrderPaymentStatus = `-- name: UpdateOrderPaymentStatus :one
 UPDATE Orders
 SET payment_status = 'paid'
@@ -569,7 +575,10 @@ func (q *Queries) UpdateOrderPaymentStatus(ctx context.Context, id int64) (Order
 	)
 	return i, err
 }
+<<<<<<< HEAD
 =======
 >>>>>>> c449ffc (feat: cart api)
 =======
 >>>>>>> 21608b5 (cart and order api)
+=======
+>>>>>>> b0fe977 (place order and make payment)

@@ -253,7 +253,13 @@ type Querier interface {
 	GetDoctors(ctx context.Context) ([]GetDoctorsRow, error)
 >>>>>>> e30b070 (Get list appoinment by user)
 	GetNotificationsByUsername(ctx context.Context, arg GetNotificationsByUsernameParams) ([]Notification, error)
+<<<<<<< HEAD
 >>>>>>> eb8d761 (updated pet schedule)
+=======
+	GetOrderById(ctx context.Context, id int64) (Order, error)
+	// Returning fields you may want to use
+	GetOrdersByUserId(ctx context.Context, userID int64) ([]Order, error)
+>>>>>>> b0fe977 (place order and make payment)
 	GetPetByID(ctx context.Context, petid int64) (Pet, error)
 	GetPetLogByID(ctx context.Context, arg GetPetLogByIDParams) (GetPetLogByIDRow, error)
 	GetPetLogsByPetID(ctx context.Context, arg GetPetLogsByPetIDParams) ([]GetPetLogsByPetIDRow, error)

@@ -163,4 +163,22 @@ WHERE cart_id = $1;
 INSERT INTO Orders (user_id, total_amount, cart_items, shipping_address, notes)
 VALUES ($1, $2, $3, $4, $5)
 RETURNING *; -- Returning fields you may want to use
+<<<<<<< HEAD
 >>>>>>> 21608b5 (cart and order api)
+=======
+
+-- name: GetOrdersByUserId :many
+SELECT *
+FROM Orders
+WHERE user_id = $1 and payment_status = 'pending';
+
+-- name: GetOrderById :one
+SELECT *
+FROM Orders
+WHERE id = $1;
+
+-- name: UpdateOrderPaymentStatus :one
+UPDATE Orders
+SET payment_status = 'paid'
+WHERE id = $1 Returning *;
+>>>>>>> b0fe977 (place order and make payment)
