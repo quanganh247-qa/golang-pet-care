@@ -495,6 +495,7 @@ func (service *UserService) loginUserService(ctx *gin.Context, req loginUserRequ
 	return &loginUSerResponse{
 		User: UserResponse{
 <<<<<<< HEAD
+<<<<<<< HEAD
 			Username:  user.Username,
 			FullName:  user.FullName,
 			Email:     user.Email,
@@ -513,6 +514,12 @@ func (service *UserService) loginUserService(ctx *gin.Context, req loginUserRequ
 			FullName: user.FullName,
 			Email:    user.Email,
 >>>>>>> c449ffc (feat: cart api)
+=======
+			Username:  user.Username,
+			FullName:  user.FullName,
+			Email:     user.Email,
+			DataImage: []byte(user.DataImage),
+>>>>>>> 30f20e5 (dât image)
 		},
 		DeviceToken: tokens.Token,
 >>>>>>> c3c833d (login api)
