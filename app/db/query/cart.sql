@@ -81,6 +81,7 @@ SET payment_status = 'paid'
 WHERE id = $1 Returning *;
 
 -- name: RemoveItemFromCart :exec
+<<<<<<< HEAD
 DELETE FROM cart_items 
 WHERE cart_id = $1 AND product_id = $2;
 
@@ -182,3 +183,13 @@ UPDATE Orders
 SET payment_status = 'paid'
 WHERE id = $1 Returning *;
 >>>>>>> b0fe977 (place order and make payment)
+=======
+DELETE FROM CartItem
+WHERE cart_id = $1 AND product_id = $2;
+
+-- name: DecreaseItemQuantity :exec
+UPDATE CartItem
+SET quantity = quantity - $3
+WHERE cart_id = $1 AND product_id = $2 AND quantity > $3
+RETURNING *;
+>>>>>>> 4a16bfc (remove item in cart)

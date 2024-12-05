@@ -36,6 +36,7 @@ func Routes(routerGroup middleware.RouterGroup) {
 		authRoute.POST("/order", cartApi.controller.CreateOrder)
 		authRoute.GET("/order", cartApi.controller.GetOrders)
 		authRoute.GET("/order/:order_id", cartApi.controller.GetOrderByID)
+<<<<<<< HEAD
 		authRoute.GET("/orders", cartApi.controller.GetAllOrders)
 =======
 		authRoute.POST("/", cartApi.controller.AddToCart)
@@ -51,6 +52,9 @@ func Routes(routerGroup middleware.RouterGroup) {
 		authRoute.GET("/order", cartApi.controller.GetOrders)
 		authRoute.GET("/order/:order_id", cartApi.controller.GetOrderByID)
 >>>>>>> b0fe977 (place order and make payment)
+=======
+		authRoute.DELETE("/product/:product_id", cartApi.controller.RemoveItemFromCart)
+>>>>>>> 4a16bfc (remove item in cart)
 	}
 
 }
