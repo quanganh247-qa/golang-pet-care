@@ -439,7 +439,7 @@ type Product struct {
 	ProductID     int64            `json:"product_id"`
 	Name          string           `json:"name"`
 	Description   pgtype.Text      `json:"description"`
-	Price         pgtype.Numeric   `json:"price"`
+	Price         float64          `json:"price"`
 	StockQuantity pgtype.Int4      `json:"stock_quantity"`
 	Category      pgtype.Text      `json:"category"`
 	DataImage     []byte           `json:"data_image"`
