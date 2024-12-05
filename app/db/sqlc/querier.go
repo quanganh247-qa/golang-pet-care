@@ -21,6 +21,7 @@ type Querier interface {
 	CreateUser(ctx context.Context, arg CreateUserParams) (int64, error)
 	CreateVaccination(ctx context.Context, arg CreateVaccinationParams) (Vaccination, error)
 	CreateVerifyEmail(ctx context.Context, arg CreateVerifyEmailParams) (VerifyEmail, error)
+	DecreaseItemQuantity(ctx context.Context, arg DecreaseItemQuantityParams) error
 	DeleteAllNotificationsByUser(ctx context.Context, username string) error
 	DeleteDeviceToken(ctx context.Context, arg DeleteDeviceTokenParams) error
 	DeleteNotificationByID(ctx context.Context, notificationid int64) error
@@ -79,6 +80,7 @@ type Querier interface {
 	ListPets(ctx context.Context, arg ListPetsParams) ([]Pet, error)
 	ListPetsByUsername(ctx context.Context, arg ListPetsByUsernameParams) ([]Pet, error)
 	ListVaccinationsByPetID(ctx context.Context, arg ListVaccinationsByPetIDParams) ([]Vaccination, error)
+	RemoveItemFromCart(ctx context.Context, arg RemoveItemFromCartParams) error
 	SetPetInactive(ctx context.Context, arg SetPetInactiveParams) error
 	UpdateAppointmentStatus(ctx context.Context, arg UpdateAppointmentStatusParams) error
 	UpdateAvatarUser(ctx context.Context, arg UpdateAvatarUserParams) (User, error)
