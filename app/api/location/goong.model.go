@@ -121,10 +121,14 @@ type PlaceDetail struct {
 	Name       string             `json:"name"`
 	Address    string             `json:"formatted_address"`
 <<<<<<< HEAD
+<<<<<<< HEAD
 	Geometry   Geometry           `json:"geometry"`
 =======
 	Location   Location           `json:"geometry"`
 >>>>>>> 4625843 (added goong maps api)
+=======
+	Geometry   Geometry           `json:"geometry"`
+>>>>>>> 25820a0 (place detail)
 	Types      []string           `json:"types"`
 	Components []AddressComponent `json:"address_components"`
 }
