@@ -46,6 +46,7 @@ type CartControllerInterface interface {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	RemoveItemFromCart(c *gin.Context)
 	GetAllOrders(c *gin.Context)
 <<<<<<< HEAD
@@ -71,6 +72,9 @@ func (c *CartController) AddToCart(ctx *gin.Context) {
 >>>>>>> 21608b5 (cart and order api)
 =======
 >>>>>>> b0fe977 (place order and make payment)
+=======
+	RemoveItemFromCart(c *gin.Context)
+>>>>>>> 4a16bfc (remove item in cart)
 }
 
 func (c *CartController) AddToCart(ctx *gin.Context) {
@@ -339,4 +343,23 @@ func (c *CartController) GetOrderByID(ctx *gin.Context) {
 		return
 	}
 	ctx.JSON(http.StatusOK, util.SuccessResponse("Order fetched successfully", res))
+}
+
+func (c *CartController) RemoveItemFromCart(ctx *gin.Context) {
+	id := ctx.Param("product_id")
+
+	// Convert orderID to int64
+	idInt, _ := strconv.ParseInt(id, 10, 64)
+
+	authPayload, err := middleware.GetAuthorizationPayload(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	err = c.service.DeleteItemFromCartService(ctx, authPayload.Username, idInt)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	ctx.JSON(http.StatusOK, util.SuccessResponse("Item removed from cart successfully", nil))
 }

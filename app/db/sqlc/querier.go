@@ -153,6 +153,7 @@ type Querier interface {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	CreatetNotification(ctx context.Context, arg CreatetNotificationParams) (Notification, error)
 	DecreaseItemQuantity(ctx context.Context, arg DecreaseItemQuantityParams) error
 <<<<<<< HEAD
@@ -203,6 +204,9 @@ type Querier interface {
 	DeleteDeviceToken(ctx context.Context, arg DeleteDeviceTokenParams) error
 >>>>>>> 272832d (redis cache)
 =======
+=======
+	DecreaseItemQuantity(ctx context.Context, arg DecreaseItemQuantityParams) error
+>>>>>>> 4a16bfc (remove item in cart)
 	DeleteAllNotificationsByUser(ctx context.Context, username string) error
 	DeleteDeviceToken(ctx context.Context, arg DeleteDeviceTokenParams) error
 	DeleteNotificationByID(ctx context.Context, notificationid int64) error
@@ -860,6 +864,7 @@ type Querier interface {
 <<<<<<< HEAD
 	ListTreatmentsByPet(ctx context.Context, arg ListTreatmentsByPetParams) ([]PetTreatment, error)
 	ListVaccinationsByPetID(ctx context.Context, arg ListVaccinationsByPetIDParams) ([]Vaccination, error)
+<<<<<<< HEAD
 	MarkNotificationAsRead(ctx context.Context, id int64) error
 	ReleaseRoom(ctx context.Context, arg ReleaseRoomParams) error
 	RemoveItemFromCart(ctx context.Context, arg RemoveItemFromCartParams) error
@@ -897,6 +902,9 @@ type Querier interface {
 =======
 	ListVaccinationsByPetID(ctx context.Context, arg ListVaccinationsByPetIDParams) ([]Vaccination, error)
 >>>>>>> 23e695e (updated pagination for vaccine)
+=======
+	RemoveItemFromCart(ctx context.Context, arg RemoveItemFromCartParams) error
+>>>>>>> 4a16bfc (remove item in cart)
 	SetPetInactive(ctx context.Context, arg SetPetInactiveParams) error
 <<<<<<< HEAD
 <<<<<<< HEAD
