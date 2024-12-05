@@ -4,9 +4,13 @@ import (
 	"net/http"
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
 =======
 >>>>>>> c449ffc (feat: cart api)
+=======
+	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
+>>>>>>> b0fe977 (place order and make payment)
 	"github.com/quanganh247-qa/go-blog-be/app/middleware"
 	"github.com/quanganh247-qa/go-blog-be/app/util"
 )
@@ -45,8 +49,13 @@ func Routes(routerGroup middleware.RouterGroup, config *util.Config) {
 					BaseURL:   config.VietQRBaseURL,
 					ClientKey: config.VietQRClientKey,
 				},
+<<<<<<< HEAD
 				client: &http.Client{},
 >>>>>>> c449ffc (feat: cart api)
+=======
+				client:  &http.Client{},
+				storeDB: db.StoreDB,
+>>>>>>> b0fe977 (place order and make payment)
 			},
 		},
 	}

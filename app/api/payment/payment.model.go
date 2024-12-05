@@ -1,6 +1,7 @@
 package payment
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 import (
 	"net/http"
 
@@ -38,6 +39,13 @@ type PaymentController struct {
 	service PaymentServiceInterface
 =======
 import "net/http"
+=======
+import (
+	"net/http"
+
+	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
+)
+>>>>>>> b0fe977 (place order and make payment)
 
 // GoongConfig contains configuration for VierQR Maps API
 type VietQRConfig struct {
@@ -48,8 +56,9 @@ type VietQRConfig struct {
 
 // GoongService handles interactions with VierQR Maps API
 type VietQRService struct {
-	config *VietQRConfig
-	client *http.Client
+	config  *VietQRConfig
+	client  *http.Client
+	storeDB db.Store
 }
 
 type VietQRApi struct {
@@ -94,9 +103,13 @@ type QRRequest struct {
 	AddInfo     string `json:"addInfo"`
 	Format      string `json:"format"`
 <<<<<<< HEAD
+<<<<<<< HEAD
 	OrderID     int64  `json:"order_id"`
 =======
 >>>>>>> c449ffc (feat: cart api)
+=======
+	OrderID     int64  `json:"order_id"`
+>>>>>>> b0fe977 (place order and make payment)
 }
 
 type GenerateQRCodeResponse struct {

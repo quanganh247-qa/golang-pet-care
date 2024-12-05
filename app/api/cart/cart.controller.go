@@ -3,6 +3,9 @@ package cart
 import (
 	"net/http"
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> b0fe977 (place order and make payment)
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -26,6 +29,7 @@ type CartControllerInterface interface {
 	CreateOrder(c *gin.Context)
 	GetOrders(c *gin.Context)
 	GetOrderByID(c *gin.Context)
+<<<<<<< HEAD
 	RemoveItemFromCart(c *gin.Context)
 	GetAllOrders(c *gin.Context)
 }
@@ -37,6 +41,8 @@ func (c *CartController) AddToCart(ctx *gin.Context) {
 	GetCartItems(ctx *gin.Context)
 	CreateOrder(c *gin.Context)
 >>>>>>> 21608b5 (cart and order api)
+=======
+>>>>>>> b0fe977 (place order and make payment)
 }
 
 func (c *CartController) AddToCart(ctx *gin.Context) {
@@ -182,4 +188,35 @@ func (c *CartController) GetAllOrders(ctx *gin.Context) {
 >>>>>>> c449ffc (feat: cart api)
 =======
 >>>>>>> 21608b5 (cart and order api)
+}
+
+func (c *CartController) GetOrders(ctx *gin.Context) {
+	authPayload, err := middleware.GetAuthorizationPayload(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	res, err := c.service.GetOrdersService(ctx, authPayload.Username)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	ctx.JSON(http.StatusOK, util.SuccessResponse("Orders fetched successfully", res))
+}
+
+func (c *CartController) GetOrderByID(ctx *gin.Context) {
+	orderID := ctx.Param("order_id")
+	// Convert orderID to int64
+	id, _ := strconv.ParseInt(orderID, 10, 64)
+	authPayload, err := middleware.GetAuthorizationPayload(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	res, err := c.service.GetOrderByIdService(ctx, authPayload.Username, id)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	ctx.JSON(http.StatusOK, util.SuccessResponse("Order fetched successfully", res))
 }

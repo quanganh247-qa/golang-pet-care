@@ -183,7 +183,9 @@ func (s *CartService) CreateOrderService(c *gin.Context, username string, arg Pl
 type CartServiceInterface interface {
 	AddToCartService(c *gin.Context, req CartItem, username string) (*CartItem, error)
 	GetCartItemsService(c *gin.Context, username string) ([]CartItemResponse, error)
-	CreateOrderService(c *gin.Context, username string, arg PlaceOrderRequest) (*PlaceOrderResponse, error)
+	CreateOrderService(c *gin.Context, username string, arg PlaceOrderRequest) (*OrderResponse, error)
+	GetOrdersService(c *gin.Context, username string) ([]OrderResponse, error)
+	GetOrderByIdService(c *gin.Context, username string, orderID int64) (*Order, error)
 }
 
 func (s *CartService) AddToCartService(c *gin.Context, req CartItem, username string) (*CartItem, error) {
@@ -407,7 +409,7 @@ func (s *CartService) GetCartItemsService(c *gin.Context, username string) ([]Ca
 			ID:          cart.ID,
 			CartID:      cart.CartID,
 			ProductName: product.Name,
-			Quantity:    int(cart.Quantity.Int32),
+			Quantity:    cart.Quantity.Int32,
 			TotalPrice:  cart.TotalPrice.Float64,
 		})
 	}
@@ -416,7 +418,7 @@ func (s *CartService) GetCartItemsService(c *gin.Context, username string) ([]Ca
 
 }
 
-func (s *CartService) CreateOrderService(c *gin.Context, username string, arg PlaceOrderRequest) (*PlaceOrderResponse, error) {
+func (s *CartService) CreateOrderService(c *gin.Context, username string, arg PlaceOrderRequest) (*OrderResponse, error) {
 	user, err := s.redis.UserInfoLoadCache(username)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get user info: %w", err)
@@ -444,7 +446,7 @@ func (s *CartService) CreateOrderService(c *gin.Context, username string, arg Pl
 		return nil, fmt.Errorf("failed to convert cart items to JSON: %w", err)
 	}
 
-	var placeOrder PlaceOrderResponse
+	var placeOrder OrderResponse
 
 	err = s.storeDB.ExecWithTransaction(c, func(q *db.Queries) error {
 		order, err := q.CreateOrder(c, db.CreateOrderParams{
@@ -458,9 +460,10 @@ func (s *CartService) CreateOrderService(c *gin.Context, username string, arg Pl
 			return err
 		}
 
-		placeOrder = PlaceOrderResponse{
+		placeOrder = OrderResponse{
 			OrderID:       order.ID,
 			OrderDate:     order.OrderDate.Time.Format("2006-01-02"),
+			TotalAmount:   order.TotalAmount,
 			PaymentStatus: order.PaymentStatus.String,
 		}
 
@@ -473,4 +476,66 @@ func (s *CartService) CreateOrderService(c *gin.Context, username string, arg Pl
 	return &placeOrder, nil
 
 >>>>>>> 21608b5 (cart and order api)
+}
+
+// get list of orders
+func (s *CartService) GetOrdersService(c *gin.Context, username string) ([]OrderResponse, error) {
+	user, err := s.redis.UserInfoLoadCache(username)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get user info: %w", err)
+	}
+
+	orders, err := s.storeDB.GetOrdersByUserId(c, user.UserID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get orders by user id: %w", err)
+	}
+
+	var orderResponses []OrderResponse
+	for _, order := range orders {
+		orderResponses = append(orderResponses, OrderResponse{
+			OrderID:       order.ID,
+			OrderDate:     order.OrderDate.Time.Format("2006-01-02"),
+			TotalAmount:   order.TotalAmount,
+			PaymentStatus: order.PaymentStatus.String,
+		})
+	}
+
+	return orderResponses, nil
+}
+
+// get oder by id
+
+func (s *CartService) GetOrderByIdService(c *gin.Context, username string, orderID int64) (*Order, error) {
+	user, err := s.redis.UserInfoLoadCache(username)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get user info: %w", err)
+	}
+
+	order, err := s.storeDB.GetOrderById(c, orderID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get order by id: %w", err)
+	}
+
+	if order.UserID != user.UserID {
+		return nil, fmt.Errorf("order not found")
+	}
+
+	// Convert cartItems slice to JSON
+	var cartItems []CartItemResponse
+	err = json.Unmarshal([]byte(order.CartItems), &cartItems)
+	if err != nil {
+		return nil, fmt.Errorf("failed to unmarshal cart items: %w", err)
+	}
+
+	orderResponse := Order{
+		ID:              order.ID,
+		UserID:          order.UserID,
+		OrderDate:       order.OrderDate.Time.Format("2006-01-02"),
+		TotalAmount:     order.TotalAmount,
+		ShippingAddress: order.ShippingAddress.String,
+		PaymentStatus:   order.PaymentStatus.String,
+		CartItems:       cartItems,
+	}
+
+	return &orderResponse, nil
 }

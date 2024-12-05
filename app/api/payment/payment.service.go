@@ -42,6 +42,7 @@ func (s *PaymentService) GetToken(c *gin.Context) (*TokenResponse, error) {
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
 )
 
 type VietQRServiceInterface interface {
@@ -117,6 +118,7 @@ func (s *PaymentService) GenerateQRService(c *gin.Context, qrRequest QRRequest) 
 // generate qr
 func (s *VietQRService) GenerateQRService(c *gin.Context, qrRequest QRRequest) (*GenerateQRCodeResponse, error) {
 	// Build base URL
+
 	baseURL := fmt.Sprintf("%s/generate", s.config.BaseURL)
 >>>>>>> c449ffc (feat: cart api)
 
@@ -148,6 +150,9 @@ func (s *VietQRService) GenerateQRService(c *gin.Context, qrRequest QRRequest) (
 	}
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> b0fe977 (place order and make payment)
 	err = s.storeDB.ExecWithTransaction(c, func(q *db.Queries) error {
 		// UpdateOrderPaymentStatus
 		_, err := q.UpdateOrderPaymentStatus(c, int64(qrRequest.OrderID))
