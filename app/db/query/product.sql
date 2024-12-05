@@ -2,6 +2,7 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 SELECT * from Products where product_id = $1;
 
 -- name: GetAllProducts :many
@@ -25,3 +26,9 @@ SELECT * from Products  ORDER BY name  LIMIT $1 OFFSET $2;
 =======
 SELECT * from Products where product_id = $1;
 >>>>>>> 21608b5 (cart and order api)
+=======
+SELECT * from Products where product_id = $1;
+
+-- name: GetAllProducts :many
+SELECT * from Products  ORDER BY name  LIMIT $1 OFFSET $2;
+>>>>>>> bd5945b (get list products)

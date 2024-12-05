@@ -105,6 +105,7 @@ import (
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	"github.com/quanganh247-qa/go-blog-be/app/api/products"
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -127,6 +128,9 @@ import (
 >>>>>>> e859654 (Elastic search)
 =======
 >>>>>>> e01abc5 (pet schedule api)
+=======
+	"github.com/quanganh247-qa/go-blog-be/app/api/products"
+>>>>>>> bd5945b (get list products)
 	"github.com/quanganh247-qa/go-blog-be/app/api/service"
 	"github.com/quanganh247-qa/go-blog-be/app/api/user"
 	"github.com/quanganh247-qa/go-blog-be/app/api/vaccination"
@@ -328,6 +332,7 @@ func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor, config
 	payment.Routes(routerGroup, &config)
 	cart.Routes(routerGroup)
 	products.Routes(routerGroup)
+<<<<<<< HEAD
 	medical_records.Routes(routerGroup)
 	search.Routes(routerGroup, es)
 	medications.Routes(routerGroup, es)
@@ -398,6 +403,8 @@ func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor, config
 	payment.Routes(routerGroup, &config)
 	cart.Routes(routerGroup)
 >>>>>>> c449ffc (feat: cart api)
+=======
+>>>>>>> bd5945b (get list products)
 
 	server.Router = routerDefault
 }

@@ -3,6 +3,7 @@ package products
 import (
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> 1ec1fee (create product api)
 	"encoding/json"
@@ -14,12 +15,16 @@ import (
 >>>>>>> bd5945b (get list products)
 =======
 >>>>>>> 63e2c90 (get product by id)
+=======
+	"net/http"
+>>>>>>> bd5945b (get list products)
 
 	"github.com/gin-gonic/gin"
 	"github.com/quanganh247-qa/go-blog-be/app/util"
 )
 
 type ProductControllerInterface interface {
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 =======
@@ -89,6 +94,9 @@ func (controller *ProductController) CreateProduct(ctx *gin.Context) {
 		return
 	}
 	ctx.JSON(http.StatusCreated, util.SuccessResponse("Success", res))
+=======
+	GetProducts(c *gin.Context)
+>>>>>>> bd5945b (get list products)
 }
 
 func (controller *ProductController) GetProducts(c *gin.Context) {
@@ -107,6 +115,7 @@ func (controller *ProductController) GetProducts(c *gin.Context) {
 
 	c.JSON(http.StatusOK, products)
 }
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 =======
@@ -133,3 +142,5 @@ func (controller *ProductController) GetProductByID(c *gin.Context) {
 >>>>>>> bd5945b (get list products)
 =======
 >>>>>>> 63e2c90 (get product by id)
+=======
+>>>>>>> bd5945b (get list products)

@@ -58,6 +58,7 @@ func (q *Queries) GetAllProducts(ctx context.Context, arg GetAllProductsParams) 
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 )
 
@@ -68,6 +69,8 @@ func (q *Queries) GetAllProducts(ctx context.Context, arg GetAllProductsParams) 
 )
 
 >>>>>>> 21608b5 (cart and order api)
+=======
+>>>>>>> bd5945b (get list products)
 const getProductByID = `-- name: GetProductByID :one
 SELECT product_id, name, description, price, stock_quantity, category, data_image, original_image, created_at, is_available, removed_at from Products where product_id = $1
 `

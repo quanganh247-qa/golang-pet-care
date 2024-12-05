@@ -29,6 +29,7 @@ type ProductResponse struct {
 }
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> 1ec1fee (create product api)
 
@@ -48,3 +49,5 @@ type CreateProductRequest struct {
 >>>>>>> bd5945b (get list products)
 =======
 >>>>>>> 1ec1fee (create product api)
+=======
+>>>>>>> bd5945b (get list products)
