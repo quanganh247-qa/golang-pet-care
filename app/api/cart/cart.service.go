@@ -95,6 +95,8 @@ func (s *CartService) GetCartItemsService(c *gin.Context, username string) ([]Ca
 			ID:          cart.ID,
 			CartID:      cart.CartID,
 			ProductName: product.Name,
+			UnitPrice:   product.Price,
+			ProductID:   cart.ProductID,
 			Quantity:    cart.Quantity.Int32,
 			TotalPrice:  cart.TotalPrice.Float64,
 		})
