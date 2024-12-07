@@ -189,4 +189,49 @@ keploy test -c "gin -p 8089 -i run main.go" --delay 20
 ### Architecture Diagram
 
 ![image](https://github.com/user-attachments/assets/ec053782-9055-42d0-9a1d-59407e2f5ff3)
+<<<<<<< HEAD
 >>>>>>> 2968ee5 (Update readme.md)
+=======
+
+### Features
+  - Frontend (React Native)
+  - Backend (Go , Gin web framework)
+  - Database (PostgreSQL)
+  - Caching Layer, manage queue (Redis)
+  - Third-Party Services
+    - JWT: Secure token-based authentication for users.
+    - Goong Maps: The perfect alternative to Google Maps API in Vietnam
+    - Gmail: Automates email notifications for critical user actions (e.g., email confirmation).
+    - Notifee: Hanlde notifications function
+    - VietQR : Handle payment intergration
+   
+### Setup Instructions
+#### Prerequisites
+  - Docker: Ensure Docker is installed on your machine.
+  - Node.js: Required for React Native development.
+  - Go: Backend server development.
+  - PostgreSQL: Database setup.
+  - Redis : Caching setup
+
+### Installation
+  1. Clone the repository:
+  2. Start Docker containers:
+     ``` cd go-lang-petcare```
+     ``` make postgres ```
+     ``` make redis ```
+  4. Configure environment variables:
+     - Backend: .env file for the Go server.
+     - Frontend: .env file for React Native app.
+     - Add API keys for Gmail, VietQr, and Goong maps...
+  5. Install dependencies by running:
+      ``` go mod tidy ```
+      ``` go mod verify ```
+  7. Initialize the database:
+       ``` make mup ```
+  8. Run the backend server:
+       ``` go run main.go ```
+
+
+
+
+>>>>>>> 2c765c9 (Update readme.md)
