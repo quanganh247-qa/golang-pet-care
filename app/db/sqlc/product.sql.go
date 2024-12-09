@@ -7,6 +7,8 @@ package db
 
 import (
 	"context"
+
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 const getAllProducts = `-- name: GetAllProducts :many
@@ -56,6 +58,52 @@ SELECT product_id, name, description, price, stock_quantity, category, data_imag
 
 func (q *Queries) GetProductByID(ctx context.Context, productID int64) (Product, error) {
 	row := q.db.QueryRow(ctx, getProductByID, productID)
+	var i Product
+	err := row.Scan(
+		&i.ProductID,
+		&i.Name,
+		&i.Description,
+		&i.Price,
+		&i.StockQuantity,
+		&i.Category,
+		&i.DataImage,
+		&i.OriginalImage,
+		&i.CreatedAt,
+		&i.IsAvailable,
+		&i.RemovedAt,
+	)
+	return i, err
+}
+
+const insertProduct = `-- name: InsertProduct :one
+INSERT INTO Products (name, description, price, category, stock_quantity,data_image,original_image,created_at,is_available) 
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING product_id, name, description, price, stock_quantity, category, data_image, original_image, created_at, is_available, removed_at
+`
+
+type InsertProductParams struct {
+	Name          string           `json:"name"`
+	Description   pgtype.Text      `json:"description"`
+	Price         float64          `json:"price"`
+	Category      pgtype.Text      `json:"category"`
+	StockQuantity pgtype.Int4      `json:"stock_quantity"`
+	DataImage     []byte           `json:"data_image"`
+	OriginalImage pgtype.Text      `json:"original_image"`
+	CreatedAt     pgtype.Timestamp `json:"created_at"`
+	IsAvailable   pgtype.Bool      `json:"is_available"`
+}
+
+func (q *Queries) InsertProduct(ctx context.Context, arg InsertProductParams) (Product, error) {
+	row := q.db.QueryRow(ctx, insertProduct,
+		arg.Name,
+		arg.Description,
+		arg.Price,
+		arg.Category,
+		arg.StockQuantity,
+		arg.DataImage,
+		arg.OriginalImage,
+		arg.CreatedAt,
+		arg.IsAvailable,
+	)
 	var i Product
 	err := row.Scan(
 		&i.ProductID,

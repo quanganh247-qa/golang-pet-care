@@ -27,3 +27,15 @@ type ProductResponse struct {
 	DataImage     []byte  `json:"data_image"`
 	OriginalImage string  `json:"original_name"`
 }
+
+// CreateProductRequest represents the structure for creating a new product
+type CreateProductRequest struct {
+	Name          string  `json:"name" validate:"required"`              // Product name (required)
+	Description   string  `json:"description,omitempty"`                 // Product description (optional)
+	Price         float64 `json:"price" validate:"required"`             // Product price (required)
+	StockQuantity int     `json:"stock_quantity,omitempty" default:"0"`  // Stock quantity (optional, default 0)
+	Category      string  `json:"category,omitempty"`                    // Product category (optional)
+	DataImage     []byte  `json:"data_image,omitempty"`                  // Binary image data (optional)
+	OriginalImage string  `json:"original_image,omitempty"`              // Image file name or URL (optional)
+	IsAvailable   *bool   `json:"is_available,omitempty" default:"true"` // Availability status (optional, default true)
+}
