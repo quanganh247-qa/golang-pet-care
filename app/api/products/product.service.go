@@ -5,15 +5,22 @@ import (
 
 	"github.com/gin-gonic/gin"
 <<<<<<< HEAD
+<<<<<<< HEAD
 	"github.com/jackc/pgx/v5/pgtype"
 =======
 >>>>>>> bd5945b (get list products)
+=======
+	"github.com/jackc/pgx/v5/pgtype"
+>>>>>>> 1ec1fee (create product api)
 	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
 	"github.com/quanganh247-qa/go-blog-be/app/util"
 )
 
 type ProductServiceInterface interface {
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 1ec1fee (create product api)
 	CreateProductService(c *gin.Context, req CreateProductRequest) (*ProductResponse, error)
 	GetProducts(c *gin.Context, pagination *util.Pagination) ([]ProductResponse, error)
 	GetProductByID(c *gin.Context, productID int64) (*ProductResponse, error)
@@ -77,6 +84,9 @@ func (s *ProductService) GetProductByID(c *gin.Context, productID int64) (*Produ
 	return &productResponse, nil
 }
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 1ec1fee (create product api)
 
 // create product
 func (s *ProductService) CreateProductService(c *gin.Context, req CreateProductRequest) (*ProductResponse, error) {
@@ -108,7 +118,10 @@ func (s *ProductService) CreateProductService(c *gin.Context, req CreateProductR
 	return &productResponse, nil
 
 }
+<<<<<<< HEAD
 =======
 >>>>>>> bd5945b (get list products)
 =======
 >>>>>>> 63e2c90 (get product by id)
+=======
+>>>>>>> 1ec1fee (create product api)

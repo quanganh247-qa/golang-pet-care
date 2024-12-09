@@ -8,6 +8,9 @@ package db
 import (
 	"context"
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 1ec1fee (create product api)
 
 	"github.com/jackc/pgx/v5/pgtype"
 )
@@ -83,6 +86,9 @@ func (q *Queries) GetProductByID(ctx context.Context, productID int64) (Product,
 	return i, err
 }
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 1ec1fee (create product api)
 
 const insertProduct = `-- name: InsertProduct :one
 INSERT INTO Products (name, description, price, category, stock_quantity,data_image,original_image,created_at,is_available) 
@@ -129,5 +135,8 @@ func (q *Queries) InsertProduct(ctx context.Context, arg InsertProductParams) (P
 	)
 	return i, err
 }
+<<<<<<< HEAD
 =======
 >>>>>>> 21608b5 (cart and order api)
+=======
+>>>>>>> 1ec1fee (create product api)
