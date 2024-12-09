@@ -26,6 +26,9 @@ func Routes(routerGroup middleware.RouterGroup) {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 1ec1fee (create product api)
 =======
 >>>>>>> 1ec1fee (create product api)
 		authRoute.POST("/", petApi.controller.CreateProduct)

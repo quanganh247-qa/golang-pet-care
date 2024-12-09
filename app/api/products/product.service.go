@@ -7,6 +7,7 @@ import (
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	"github.com/jackc/pgx/v5/pgtype"
 =======
 >>>>>>> bd5945b (get list products)
@@ -15,6 +16,9 @@ import (
 >>>>>>> 1ec1fee (create product api)
 =======
 >>>>>>> bd5945b (get list products)
+=======
+	"github.com/jackc/pgx/v5/pgtype"
+>>>>>>> 1ec1fee (create product api)
 	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
 	"github.com/quanganh247-qa/go-blog-be/app/util"
 )
@@ -23,6 +27,9 @@ type ProductServiceInterface interface {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 1ec1fee (create product api)
 =======
 >>>>>>> 1ec1fee (create product api)
 	CreateProductService(c *gin.Context, req CreateProductRequest) (*ProductResponse, error)
@@ -100,6 +107,9 @@ func (s *ProductService) GetProductByID(c *gin.Context, productID int64) (*Produ
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 1ec1fee (create product api)
 =======
 >>>>>>> 1ec1fee (create product api)
 
@@ -134,6 +144,7 @@ func (s *ProductService) CreateProductService(c *gin.Context, req CreateProductR
 
 }
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> bd5945b (get list products)
 =======
@@ -144,3 +155,5 @@ func (s *ProductService) CreateProductService(c *gin.Context, req CreateProductR
 >>>>>>> bd5945b (get list products)
 =======
 >>>>>>> 63e2c90 (get product by id)
+=======
+>>>>>>> 1ec1fee (create product api)

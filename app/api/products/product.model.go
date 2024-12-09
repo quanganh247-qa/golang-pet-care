@@ -30,6 +30,9 @@ type ProductResponse struct {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 1ec1fee (create product api)
 =======
 >>>>>>> 1ec1fee (create product api)
 
@@ -45,9 +48,12 @@ type CreateProductRequest struct {
 	IsAvailable   *bool   `json:"is_available,omitempty" default:"true"` // Availability status (optional, default true)
 }
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> bd5945b (get list products)
 =======
 >>>>>>> 1ec1fee (create product api)
 =======
 >>>>>>> bd5945b (get list products)
+=======
+>>>>>>> 1ec1fee (create product api)

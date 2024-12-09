@@ -10,6 +10,9 @@ import (
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 1ec1fee (create product api)
 =======
 >>>>>>> 1ec1fee (create product api)
 
@@ -96,6 +99,9 @@ func (q *Queries) GetProductByID(ctx context.Context, productID int64) (Product,
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 1ec1fee (create product api)
 =======
 >>>>>>> 1ec1fee (create product api)
 
@@ -145,9 +151,12 @@ func (q *Queries) InsertProduct(ctx context.Context, arg InsertProductParams) (P
 	return i, err
 }
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> 21608b5 (cart and order api)
 =======
 >>>>>>> 1ec1fee (create product api)
 =======
 >>>>>>> 21608b5 (cart and order api)
+=======
+>>>>>>> 1ec1fee (create product api)
