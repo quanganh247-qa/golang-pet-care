@@ -26,12 +26,6 @@ func InitRedis(address string) error {
 			DB:       0,  // use default DB
 		}),
 	}
-	// // Test the connection
-	// pong, err := Client.RedisClient.Ping(ctxRedis).Result() // Fixed: Added RedisClient
-	// if err != nil {
-	// 	log.Fatal(err) // Handle error and exit the program
-	// 	return fmt.Errorf("cannot connect to redis: %v", err)
-	// }
 	return nil
 }
 func (client *ClientType) Set(ctx context.Context, key string, value interface{}, duration time.Duration) error {
