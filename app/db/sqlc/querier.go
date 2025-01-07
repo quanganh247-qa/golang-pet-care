@@ -136,6 +136,7 @@ type Querier interface {
 >>>>>>> 1f24c18 (feat: OTP with redis)
 	DeleteVaccination(ctx context.Context, vaccinationid int64) error
 <<<<<<< HEAD
+<<<<<<< HEAD
 	GetActiveTreatments(ctx context.Context, arg GetActiveTreatmentsParams) ([]GetActiveTreatmentsRow, error)
 	GetAllAppointments(ctx context.Context, arg GetAllAppointmentsParams) ([]GetAllAppointmentsRow, error)
 	GetAllAppointmentsByDate(ctx context.Context, arg GetAllAppointmentsByDateParams) ([]GetAllAppointmentsByDateRow, error)
@@ -147,6 +148,8 @@ type Querier interface {
 	GetAllTreatmentPhasesByTreatmentID(ctx context.Context, treatmentID pgtype.Int8) ([]TreatmentPhase, error)
 =======
 	GetActiveDoctors(ctx context.Context, arg GetActiveDoctorsParams) ([]GetActiveDoctorsRow, error)
+=======
+>>>>>>> 6f3ea8a (update sqlc)
 	GetAllProducts(ctx context.Context, arg GetAllProductsParams) ([]Product, error)
 	GetAllSchedulesByPet(ctx context.Context, arg GetAllSchedulesByPetParams) ([]PetSchedule, error)
 	GetAllServices(ctx context.Context, arg GetAllServicesParams) ([]Service, error)
@@ -203,6 +206,7 @@ type Querier interface {
 	// 1. Query cơ bản để lấy thông tin bệnh và thuốc điều trị
 	GetDiceaseAndMedicinesInfo(ctx context.Context, lower string) ([]GetDiceaseAndMedicinesInfoRow, error)
 	GetDiseaseTreatmentPlanWithPhases(ctx context.Context, lower string) ([]GetDiseaseTreatmentPlanWithPhasesRow, error)
+<<<<<<< HEAD
 >>>>>>> 6c35562 (dicease and treatment plan)
 	GetDoctor(ctx context.Context, id int64) (GetDoctorRow, error)
 <<<<<<< HEAD
@@ -227,6 +231,11 @@ type Querier interface {
 	GetMedicationsByPhase(ctx context.Context, phaseID int64) ([]GetMedicationsByPhaseRow, error)
 	GetMedicineByID(ctx context.Context, id int64) (Medicine, error)
 	GetMedicineByTreatmentID(ctx context.Context, treatmentID pgtype.Int8) ([]GetMedicineByTreatmentIDRow, error)
+=======
+	GetDoctorSchedules(ctx context.Context, doctorID int32) ([]Doctorschedule, error)
+	GetDoctorTimeSlots(ctx context.Context, arg GetDoctorTimeSlotsParams) ([]Timeslot, error)
+	GetNotificationsByUsername(ctx context.Context, arg GetNotificationsByUsernameParams) ([]Notification, error)
+>>>>>>> 6f3ea8a (update sqlc)
 	GetOrderById(ctx context.Context, id int64) (Order, error)
 	// Returning fields you may want to use
 	GetOrdersByUserId(ctx context.Context, userID int64) ([]Order, error)
@@ -306,6 +315,7 @@ type Querier interface {
 	GetUserByEmail(ctx context.Context, email string) (User, error)
 	GetVaccinationByID(ctx context.Context, vaccinationid int64) (Vaccination, error)
 	InsertDeviceToken(ctx context.Context, arg InsertDeviceTokenParams) (Devicetoken, error)
+<<<<<<< HEAD
 >>>>>>> 0fb3f30 (user images)
 	InsertDoctor(ctx context.Context, arg InsertDoctorParams) (Doctor, error)
 <<<<<<< HEAD
@@ -318,6 +328,8 @@ type Querier interface {
 	ListPetSchedulesByUsername(ctx context.Context, username string) ([]ListPetSchedulesByUsernameRow, error)
 =======
 	InsertDoctorSchedule(ctx context.Context, arg InsertDoctorScheduleParams) (Doctorschedule, error)
+=======
+>>>>>>> 6f3ea8a (update sqlc)
 	InsertNotification(ctx context.Context, arg InsertNotificationParams) (Notification, error)
 	InsertPetLog(ctx context.Context, arg InsertPetLogParams) (PetLog, error)
 	InsertProduct(ctx context.Context, arg InsertProductParams) (Product, error)

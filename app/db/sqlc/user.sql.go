@@ -118,6 +118,7 @@ func (q *Queries) DeleteUser(ctx context.Context, id int64) error {
 	return err
 }
 
+<<<<<<< HEAD
 const getActiveDoctors = `-- name: GetActiveDoctors :many
 SELECT 
   d.id,
@@ -180,6 +181,8 @@ func (q *Queries) GetAllRole(ctx context.Context) ([]pgtype.Text, error) {
 	return items, nil
 }
 
+=======
+>>>>>>> 6f3ea8a (update sqlc)
 const getAllUsers = `-- name: GetAllUsers :many
 <<<<<<< HEAD
 SELECT id, username, hashed_password, full_name, email, phone_number, address, data_image, original_image, role, status, created_at, is_verified_email, removed_at FROM users
@@ -223,6 +226,7 @@ func (q *Queries) GetAllUsers(ctx context.Context) ([]User, error) {
 	return items, nil
 }
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 =======
 const getDoctor = `-- name: GetDoctor :one
@@ -358,6 +362,8 @@ func (q *Queries) GetDoctors(ctx context.Context) ([]GetDoctorsRow, error) {
 }
 
 >>>>>>> e30b070 (Get list appoinment by user)
+=======
+>>>>>>> 6f3ea8a (update sqlc)
 const getUser = `-- name: GetUser :one
 SELECT id, username, hashed_password, full_name, email, phone_number, address, data_image, original_image, role, created_at, is_verified_email
 FROM users
@@ -556,6 +562,7 @@ func (q *Queries) VerifiedUser(ctx context.Context, username string) (User, erro
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 const updateUser = `-- name: UpdateUser :one
 <<<<<<< HEAD
 UPDATE users
@@ -713,6 +720,8 @@ func (q *Queries) InsertDoctorSchedule(ctx context.Context, arg InsertDoctorSche
 	return i, err
 }
 
+=======
+>>>>>>> 6f3ea8a (update sqlc)
 const updateAvatarUser = `-- name: UpdateAvatarUser :one
 UPDATE users
 SET data_image = $2, original_image = $3

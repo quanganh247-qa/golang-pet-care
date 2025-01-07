@@ -98,6 +98,7 @@ DELETE FROM users
 WHERE id = $1;
 
 
+<<<<<<< HEAD
 -- name: InsertDoctor :one
 INSERT INTO Doctors (
     user_id,
@@ -146,10 +147,53 @@ JOIN
   users u ON d.user_id = u.id
 WHERE
   d.id = $1;
+=======
+-- -- name: InsertDoctor :one
+-- INSERT INTO Doctors (
+--     user_id,
+--     specialization,
+--     years_of_experience,
+--     education,
+--     certificate_number,
+--     bio,
+--     consultation_fee
+-- ) VALUES (
+--     $1, $2, $3, $4, $5, $6, $7
+-- ) RETURNING *;
 
--- name: GetDoctorById :one
-select * from Doctors where id = $1;
+-- -- name: InsertDoctorSchedule :one
+-- INSERT INTO DoctorSchedules (
+--     doctor_id,
+--     day_of_week,
+--     start_time,
+--     end_time,
+--     is_active
+--   ) VALUES (
+--     $1, $2, $3, $4, $5
+-- ) RETURNING *;
 
+-- -- name: GetDoctor :one
+-- SELECT 
+--   d.id,
+--   u.full_name AS name,
+--   d.specialization,
+--   d.years_of_experience,
+--   d.education,
+--   d.certificate_number,
+--   d.bio,
+--   d.consultation_fee
+-- FROM
+--   Doctors d
+-- JOIN
+--   users u ON d.user_id = u.id
+-- WHERE
+--   d.id = $1;
+>>>>>>> 6f3ea8a (update sqlc)
+
+-- -- name: GetDoctorById :one
+-- select * from Doctors where id = $1;
+
+<<<<<<< HEAD
 -- name: GetActiveDoctors :many
 SELECT 
   d.id,
@@ -171,12 +215,35 @@ WHERE
 ORDER BY 
   u.full_name;
 >>>>>>> cfbe865 (updated service response)
+=======
+-- -- name: GetActiveDoctors :many
+-- SELECT 
+--   d.id,
+--   u.full_name AS name,
+--   d.specialization,
+--   d.years_of_experience,
+--   d.consultation_fee
+-- FROM 
+--   Doctors d
+-- JOIN 
+--   users u ON d.user_id = u.id
+-- LEFT JOIN 
+--   DoctorSchedules ds ON d.id = ds.doctor_id
+-- WHERE 
+--   d.is_active = true
+--   AND (ds.is_active = true OR ds.is_active IS NULL)
+--   AND ($1::VARCHAR IS NULL OR d.specialization = $1)
+--   AND ($2::INT IS NULL OR ds.day_of_week = $2)
+-- ORDER BY 
+--   u.full_name;
+>>>>>>> 6f3ea8a (update sqlc)
 
 <<<<<<< HEAD
 -- name: GetAllRole :many
 SELECT distinct (role) FROM users;
 =======
 
+<<<<<<< HEAD
 -- name: GetDoctors :many
 SELECT 
     d.id AS doctor_id,
@@ -196,3 +263,23 @@ JOIN
 ORDER BY 
     u.full_name;
 >>>>>>> e30b070 (Get list appoinment by user)
+=======
+-- -- name: GetDoctors :many
+-- SELECT 
+--     d.id AS doctor_id,
+--     u.username,
+--     u.full_name,
+--     u.role,
+--     d.specialization,
+--     d.years_of_experience,
+--     d.education,
+--     d.certificate_number,
+--     d.bio,
+--     d.consultation_fee
+-- FROM 
+--     Doctors d
+-- JOIN 
+--     users u ON d.user_id = u.id
+-- ORDER BY 
+--     u.full_name;
+>>>>>>> 6f3ea8a (update sqlc)
