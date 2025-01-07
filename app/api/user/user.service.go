@@ -7,6 +7,7 @@ import (
 <<<<<<< HEAD
 	"log"
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 =======
 >>>>>>> 272832d (redis cache)
@@ -15,6 +16,8 @@ import (
 >>>>>>> 1a9e82a (reset password api)
 	"math/big"
 >>>>>>> 9d28896 (image pet)
+=======
+>>>>>>> ae87825 (updated)
 	"net/http"
 
 	"github.com/hibiken/asynq"
@@ -67,6 +70,7 @@ type UserServiceInterface interface {
 <<<<<<< HEAD
 	verifyEmailService(ctx *gin.Context, arg VerrifyEmailTxParams) error
 
+<<<<<<< HEAD
 	resendOTPService(ctx *gin.Context, username string) (*VerrifyEmailTxParams, error)
 	updateUserService(ctx *gin.Context, username string, arg UpdateUserParams) (*UserResponse, error)
 	updateUserImageService(ctx *gin.Context, username string, arg UpdateUserImageParams) error
@@ -100,10 +104,12 @@ type UserServiceInterface interface {
 
 <<<<<<< HEAD
 =======
+=======
+>>>>>>> ae87825 (updated)
 	resendOTPService(ctx *gin.Context, username string) (*VerrifyEmailTxParams, error)
 	updateUserService(ctx *gin.Context, username string, arg UpdateUserParams) (*UserResponse, error)
 	updateUserImageService(ctx *gin.Context, username string, arg UpdateUserImageParams) error
-	GetDoctorsService(ctx *gin.Context) ([]DoctorResponse, error)
+
 	ForgotPasswordService(ctx *gin.Context, email string) error
 	UpdatePasswordService(ctx *gin.Context, username string, arg UpdatePasswordParams) error
 }
@@ -735,6 +741,7 @@ func (service *UserService) updateUserImageService(ctx *gin.Context, username st
 	return nil
 }
 
+<<<<<<< HEAD
 func (server *UserService) createDoctorService(ctx *gin.Context, arg InsertDoctorRequest, username string) (*DoctorResponse, error) {
 
 	user, err := server.storeDB.GetUser(ctx, username)
@@ -875,6 +882,8 @@ func (service *UserService) updateUserImageService(ctx *gin.Context, username st
 	return nil
 }
 
+=======
+>>>>>>> ae87825 (updated)
 func (s *UserService) ForgotPasswordService(ctx *gin.Context, email string) error {
 
 	user, err := s.storeDB.GetUserByEmail(ctx, email)
@@ -941,9 +950,12 @@ func (s *UserService) ForgotPasswordService(ctx *gin.Context, email string) erro
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 // update password
 >>>>>>> a2c21c8 (update pass)
+=======
+>>>>>>> ae87825 (updated)
 func (s *UserService) UpdatePasswordService(ctx *gin.Context, username string, arg UpdatePasswordParams) error {
 
 	user, err := s.storeDB.GetUser(ctx, username)

@@ -5,6 +5,7 @@ VALUES (
    $1, $2, $3, $4, $5, $6, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
 ) RETURNING *;
 
+<<<<<<< HEAD
 -- -- name: GetTimeSlotsByDoctorAndDate :many
 -- SELECT * from time_slots WHERE doctor_id = $1 AND "date" = $2 ORDER BY start_time ASC;
 
@@ -29,3 +30,5 @@ SELECT booked_patients, max_patients, start_time, end_time
 FROM time_slots
 WHERE id = $1
 FOR UPDATE;
+=======
+>>>>>>> ae87825 (updated)

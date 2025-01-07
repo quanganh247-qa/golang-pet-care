@@ -905,36 +905,7 @@ CREATE TABLE CheckoutService (
 );
 
 
-CREATE TABLE Doctors (
-  id BIGSERIAL PRIMARY KEY,
-  user_id BIGINT NOT NULL,
-  specialization VARCHAR(100),
-  years_of_experience INT,
-  education TEXT,
-  certificate_number VARCHAR(50),
-  bio TEXT,
-  consultation_fee DECIMAL(10,2)
-);
 
-CREATE TABLE TimeSlots (
-  id BIGSERIAL PRIMARY KEY,
-  doctor_id BIGINT NOT NULL,
-  start_time timestamp NOT NULL,
-  end_time timestamp NOT NULL,
-  is_active BOOLEAN DEFAULT true,
-  day date NOT NULL,
-  FOREIGN KEY (doctor_id) REFERENCES Doctors (id)
-);
-
-CREATE TABLE DoctorSchedules (
-  id BIGSERIAL PRIMARY KEY,
-  doctor_id BIGINT NOT NULL,
-  day_of_week INT,
-  start_time timestamp NOT NULL,
-  end_time timestamp NOT NULL,
-  is_active BOOLEAN DEFAULT true,
-  max_appointments INT DEFAULT 1
-);
 
 
 -- Create device tokens table with proper foreign key reference

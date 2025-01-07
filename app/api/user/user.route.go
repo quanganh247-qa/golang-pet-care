@@ -95,6 +95,7 @@ func Routes(routerGroup middleware.RouterGroup, taskDistributor worker.TaskDistr
 >>>>>>> a2c21c8 (update pass)
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 		user.GET("/sessioninfo", userApi.controller.sessioninfo)
 		user.GET("/userinfo", userApi.controller.userinfo)
 		authRoute.GET("/roles", userApi.controller.GetAllRole)
@@ -117,6 +118,8 @@ func Routes(routerGroup middleware.RouterGroup, taskDistributor worker.TaskDistr
 
 =======
 >>>>>>> e01abc5 (pet schedule api)
+=======
+>>>>>>> ae87825 (updated)
 	}
 
 }
