@@ -7,7 +7,6 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
-	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
 	"github.com/quanganh247-qa/go-blog-be/app/middleware"
 	"github.com/quanganh247-qa/go-blog-be/app/service/token"
 	"github.com/quanganh247-qa/go-blog-be/app/util"
@@ -21,34 +20,13 @@ type UserControllerInterface interface {
 	logoutUser(ctx *gin.Context)
 	verifyEmail(ctx *gin.Context)
 	getAccessToken(ctx *gin.Context)
-	createDoctor(ctx *gin.Context)
-	addSchedule(ctx *gin.Context)
-	getDoctor(ctx *gin.Context)
-	insertTimeSlots(ctx *gin.Context)
-	getTimeSlots(ctx *gin.Context)
-	getAllTimeSlots(ctx *gin.Context)
-	updateDoctorAvailableTime(ctx *gin.Context)
 	resendOTP(ctx *gin.Context)
 	updatetUser(ctx *gin.Context)
 	updatetUserAvatar(ctx *gin.Context)
-	GetDoctors(ctx *gin.Context)
 	ForgotPassword(ctx *gin.Context)
 	UpdatePassword(ctx *gin.Context)
 }
 
-// createUser godoc
-// @Summary Create a new user
-// @Description Create a new user with the input payload
-// @Tags user
-// @Accept  json
-// @Produce  json
-// @Param data formData string true "User data"
-// @Param image formData file true "User image"
-// @Success 201 {object} VerrifyEmailTxParams
-// @Router /user [post]
-// @Security ApiKeyAuth
-// @in header
-// @name Authorization
 func (controller *UserController) createUser(ctx *gin.Context) {
 	var req createUserRequest
 
@@ -217,148 +195,6 @@ func (controller *UserController) resendOTP(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, util.SuccessResponse("Resend OTP successfull", res))
 }
 
-func (controller *UserController) createDoctor(ctx *gin.Context) {
-	var req InsertDoctorRequest
-	if err := ctx.ShouldBindJSON(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, util.ErrorValidator(err))
-		return
-	}
-	authPayload, err := middleware.GetAuthorizationPayload(ctx)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
-		return
-	}
-	res, err := controller.service.createDoctorService(ctx, req, authPayload.Username)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
-		return
-	}
-	ctx.JSON(http.StatusCreated, util.SuccessResponse("Success", res))
-}
-
-func (controller *UserController) addSchedule(ctx *gin.Context) {
-	var req InsertDoctorScheduleRequest
-	if err := ctx.ShouldBindJSON(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, util.ErrorValidator(err))
-		return
-	}
-	authPayload, err := middleware.GetAuthorizationPayload(ctx)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
-		return
-	}
-	res, err := controller.service.createDoctorScheduleService(ctx, req, authPayload.Username)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
-		return
-	}
-	ctx.JSON(http.StatusCreated, util.SuccessResponse("Inserted schedulke successfull", res))
-}
-
-func (controller *UserController) getDoctor(ctx *gin.Context) {
-	authPayload, err := middleware.GetAuthorizationPayload(ctx)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
-		return
-	}
-	user, err := db.StoreDB.GetUser(ctx, authPayload.Username)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
-		return
-	}
-	res, err := controller.service.getDoctorByID(ctx, user.ID)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
-		return
-	}
-	ctx.JSON(http.StatusOK, util.SuccessResponse("Success", res))
-}
-
-func (controller *UserController) insertTimeSlots(ctx *gin.Context) {
-	var req db.InsertTimeslotParams
-	if err := ctx.ShouldBindJSON(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, util.ErrorValidator(err))
-		return
-	}
-	authPayload, err := middleware.GetAuthorizationPayload(ctx)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
-		return
-	}
-
-	res, err := controller.service.insertTimeSlots(ctx, authPayload.Username, req)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
-		return
-	}
-	ctx.JSON(http.StatusCreated, util.SuccessResponse("Inserted timeslot successfull", res))
-
-}
-
-func (controller *UserController) getTimeSlots(ctx *gin.Context) {
-	doctorID := ctx.Param("doctor_id")
-	if doctorID == "" {
-		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(errors.New("doctor_id is required")))
-		return
-	}
-	// day
-	day := ctx.Query("day")
-	// convert sitrng to int
-	doctorIDInt, err := strconv.Atoi(doctorID)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
-		return
-	}
-	res, err := controller.service.GetTimeslotsAvailable(ctx, int64(doctorIDInt), day)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
-		return
-	}
-	ctx.JSON(http.StatusOK, util.SuccessResponse("All list of time slots are available", res))
-}
-
-func (controller *UserController) getAllTimeSlots(ctx *gin.Context) {
-	doctorID := ctx.Param("doctor_id")
-	if doctorID == "" {
-		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(errors.New("doctor_id is required")))
-		return
-	}
-	// day
-	day := ctx.Query("day")
-	// convert sitrng to int
-	doctorIDInt, err := strconv.Atoi(doctorID)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
-		return
-	}
-	res, err := controller.service.GetTimeslotsAvailable(ctx, int64(doctorIDInt), day)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
-		return
-	}
-	ctx.JSON(http.StatusOK, util.SuccessResponse("All list of time slots are available", res))
-}
-
-func (controller *UserController) updateDoctorAvailableTime(ctx *gin.Context) {
-	timeID := ctx.Param("id")
-	if timeID == "" {
-		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(errors.New("Time slot is required")))
-		return
-	}
-	// convert sitrng to int64
-	timeSlotId, err := strconv.ParseInt(timeID, 10, 64)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
-		return
-	}
-	err = controller.service.UpdateDoctorAvailable(ctx, timeSlotId)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
-		return
-	}
-	ctx.JSON(http.StatusOK, util.SuccessResponse("Updated timeslot successfull", nil))
-}
-
 func (controller *UserController) updatetUser(ctx *gin.Context) {
 
 	var arg UpdateUserParams
@@ -405,21 +241,6 @@ func (controller *UserController) updatetUserAvatar(ctx *gin.Context) {
 		return
 	}
 	ctx.JSON(http.StatusOK, util.SuccessResponse("Success", nil))
-}
-
-func (controller *UserController) GetDoctors(ctx *gin.Context) {
-	// pagination, err := util.GetPageInQuery(ctx.Request.URL.Query())
-	// if err != nil {
-	// 	ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
-	// 	return
-	// }
-
-	res, err := controller.service.GetDoctorsService(ctx)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
-		return
-	}
-	ctx.JSON(http.StatusOK, util.SuccessResponse("Success", res))
 }
 
 func (controller *UserController) ForgotPassword(ctx *gin.Context) {
