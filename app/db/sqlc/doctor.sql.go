@@ -11,6 +11,7 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+<<<<<<< HEAD
 const createDoctor = `-- name: CreateDoctor :one
 INSERT INTO doctors (
     user_id,
@@ -50,10 +51,55 @@ func (q *Queries) CreateDoctor(ctx context.Context, arg CreateDoctorParams) (Doc
 		&i.Education,
 		&i.CertificateNumber,
 		&i.Bio,
+=======
+const createDoctorSchedule = `-- name: CreateDoctorSchedule :one
+INSERT INTO doctorschedules (
+    doctor_id,
+    day_of_week,
+    shift,
+    start_time,
+    end_time,
+    is_active
+) VALUES (
+    $1, $2, $3, $4, $5, $6
+) RETURNING id, doctor_id, day_of_week, shift, start_time, end_time, is_active, created_at, updated_at
+`
+
+type CreateDoctorScheduleParams struct {
+	DoctorID  int32       `json:"doctor_id"`
+	DayOfWeek pgtype.Text `json:"day_of_week"`
+	Shift     string      `json:"shift"`
+	StartTime pgtype.Time `json:"start_time"`
+	EndTime   pgtype.Time `json:"end_time"`
+	IsActive  pgtype.Bool `json:"is_active"`
+}
+
+func (q *Queries) CreateDoctorSchedule(ctx context.Context, arg CreateDoctorScheduleParams) (Doctorschedule, error) {
+	row := q.db.QueryRow(ctx, createDoctorSchedule,
+		arg.DoctorID,
+		arg.DayOfWeek,
+		arg.Shift,
+		arg.StartTime,
+		arg.EndTime,
+		arg.IsActive,
+	)
+	var i Doctorschedule
+	err := row.Scan(
+		&i.ID,
+		&i.DoctorID,
+		&i.DayOfWeek,
+		&i.Shift,
+		&i.StartTime,
+		&i.EndTime,
+		&i.IsActive,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+>>>>>>> e9037c6 (update sqlc)
 	)
 	return i, err
 }
 
+<<<<<<< HEAD
 const deleteDoctor = `-- name: DeleteDoctor :exec
 DELETE FROM doctors
 WHERE id = $1
@@ -88,10 +134,20 @@ type GetAvailableDoctorsRow struct {
 
 func (q *Queries) GetAvailableDoctors(ctx context.Context, date pgtype.Date) ([]GetAvailableDoctorsRow, error) {
 	rows, err := q.db.Query(ctx, getAvailableDoctors, date)
+=======
+const getDoctorSchedules = `-- name: GetDoctorSchedules :many
+SELECT id, doctor_id, day_of_week, shift, start_time, end_time, is_active, created_at, updated_at FROM doctorschedules
+WHERE doctor_id = $1 AND is_active = true
+`
+
+func (q *Queries) GetDoctorSchedules(ctx context.Context, doctorID int32) ([]Doctorschedule, error) {
+	rows, err := q.db.Query(ctx, getDoctorSchedules, doctorID)
+>>>>>>> e9037c6 (update sqlc)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
+<<<<<<< HEAD
 	items := []GetAvailableDoctorsRow{}
 	for rows.Next() {
 		var i GetAvailableDoctorsRow
@@ -269,6 +325,21 @@ func (q *Queries) ListDoctors(ctx context.Context) ([]ListDoctorsRow, error) {
 			&i.Education,
 			&i.CertificateNumber,
 			&i.Bio,
+=======
+	items := []Doctorschedule{}
+	for rows.Next() {
+		var i Doctorschedule
+		if err := rows.Scan(
+			&i.ID,
+			&i.DoctorID,
+			&i.DayOfWeek,
+			&i.Shift,
+			&i.StartTime,
+			&i.EndTime,
+			&i.IsActive,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+>>>>>>> e9037c6 (update sqlc)
 		); err != nil {
 			return nil, err
 		}
@@ -280,6 +351,7 @@ func (q *Queries) ListDoctors(ctx context.Context) ([]ListDoctorsRow, error) {
 	return items, nil
 }
 
+<<<<<<< HEAD
 const updateDoctor = `-- name: UpdateDoctor :one
 UPDATE doctors
 SET 
@@ -319,6 +391,44 @@ func (q *Queries) UpdateDoctor(ctx context.Context, arg UpdateDoctorParams) (Doc
 		&i.Education,
 		&i.CertificateNumber,
 		&i.Bio,
+=======
+const updateDoctorSchedule = `-- name: UpdateDoctorSchedule :one
+UPDATE doctorschedules
+SET 
+    start_time = COALESCE($1, start_time),
+    end_time = COALESCE($2, end_time),
+    is_active = COALESCE($3, is_active),
+    updated_at = CURRENT_TIMESTAMP
+WHERE id = $4
+RETURNING id, doctor_id, day_of_week, shift, start_time, end_time, is_active, created_at, updated_at
+`
+
+type UpdateDoctorScheduleParams struct {
+	StartTime pgtype.Time `json:"start_time"`
+	EndTime   pgtype.Time `json:"end_time"`
+	IsActive  pgtype.Bool `json:"is_active"`
+	ID        int64       `json:"id"`
+}
+
+func (q *Queries) UpdateDoctorSchedule(ctx context.Context, arg UpdateDoctorScheduleParams) (Doctorschedule, error) {
+	row := q.db.QueryRow(ctx, updateDoctorSchedule,
+		arg.StartTime,
+		arg.EndTime,
+		arg.IsActive,
+		arg.ID,
+	)
+	var i Doctorschedule
+	err := row.Scan(
+		&i.ID,
+		&i.DoctorID,
+		&i.DayOfWeek,
+		&i.Shift,
+		&i.StartTime,
+		&i.EndTime,
+		&i.IsActive,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+>>>>>>> e9037c6 (update sqlc)
 	)
 	return i, err
 }

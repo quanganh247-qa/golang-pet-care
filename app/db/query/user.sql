@@ -195,6 +195,9 @@ INSERT INTO DoctorSchedules (
     is_active
   ) VALUES (
     $1, $2, $3, $4, $5
+<<<<<<< HEAD
+>>>>>>> e9037c6 (update sqlc)
+=======
 >>>>>>> e9037c6 (update sqlc)
 ) RETURNING *;
 

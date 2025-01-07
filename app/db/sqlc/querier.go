@@ -134,12 +134,14 @@ type Querier interface {
 >>>>>>> 21608b5 (cart and order api)
 	CreateAppointment(ctx context.Context, arg CreateAppointmentParams) (Appointment, error)
 	CreateCartForUser(ctx context.Context, userID int64) (int64, error)
+	CreateDoctorSchedule(ctx context.Context, arg CreateDoctorScheduleParams) (Doctorschedule, error)
 	CreateOrder(ctx context.Context, arg CreateOrderParams) (Order, error)
 	CreatePet(ctx context.Context, arg CreatePetParams) (Pet, error)
 	CreatePetSchedule(ctx context.Context, arg CreatePetScheduleParams) error
 >>>>>>> 272832d (redis cache)
 	CreateService(ctx context.Context, arg CreateServiceParams) (Service, error)
 	CreateServiceType(ctx context.Context, arg CreateServiceTypeParams) (Servicetype, error)
+	CreateTimeSlot(ctx context.Context, arg CreateTimeSlotParams) (Timeslot, error)
 	CreateUser(ctx context.Context, arg CreateUserParams) (int64, error)
 >>>>>>> 0fb3f30 (user images)
 	CreateVaccination(ctx context.Context, arg CreateVaccinationParams) (Vaccination, error)
@@ -209,6 +211,7 @@ type Querier interface {
 >>>>>>> 4a16bfc (remove item in cart)
 	DeleteAllNotificationsByUser(ctx context.Context, username string) error
 	DeleteDeviceToken(ctx context.Context, arg DeleteDeviceTokenParams) error
+	DeleteDoctorSchedule(ctx context.Context, id int64) error
 	DeleteNotificationByID(ctx context.Context, notificationid int64) error
 >>>>>>> 9fd7fc8 (feat: validate notification schema and APIs)
 	DeletePet(ctx context.Context, petid int64) error
@@ -262,6 +265,7 @@ type Querier interface {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> 7e616af (add pet log schema)
 =======
 =======
@@ -272,6 +276,9 @@ type Querier interface {
 =======
 	DeleteService(ctx context.Context, id int64) error
 >>>>>>> b393bb9 (add service and add permission)
+=======
+	DeleteTimeSlot(ctx context.Context, id int64) error
+>>>>>>> e9037c6 (update sqlc)
 	DeleteUser(ctx context.Context, id int64) error
 >>>>>>> 1f24c18 (feat: OTP with redis)
 =======
@@ -344,6 +351,7 @@ type Querier interface {
 >>>>>>> 272832d (redis cache)
 	GetAllServices(ctx context.Context, arg GetAllServicesParams) ([]Service, error)
 <<<<<<< HEAD
+<<<<<<< HEAD
 	GetAllTimeSlots(ctx context.Context, arg GetAllTimeSlotsParams) ([]GetAllTimeSlotsRow, error)
 >>>>>>> 79a3bcc (medicine api)
 =======
@@ -352,6 +360,8 @@ type Querier interface {
 >>>>>>> b393bb9 (add service and add permission)
 =======
 >>>>>>> 6b24d88 (feat(payment): add PayOS payment integration and enhance treatment module)
+=======
+>>>>>>> e9037c6 (update sqlc)
 	GetAllUsers(ctx context.Context) ([]User, error)
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -544,6 +554,8 @@ type Querier interface {
 	GetDoctor(ctx context.Context, id int64) (GetDoctorRow, error)
 <<<<<<< HEAD
 	GetDoctorById(ctx context.Context, id int64) (Doctor, error)
+	GetDoctorSchedules(ctx context.Context, doctorID int32) ([]Doctorschedule, error)
+	GetDoctorTimeSlots(ctx context.Context, arg GetDoctorTimeSlotsParams) ([]Timeslot, error)
 	GetDoctors(ctx context.Context) ([]GetDoctorsRow, error)
 <<<<<<< HEAD
 >>>>>>> 685da65 (latest update)
@@ -709,6 +721,7 @@ type Querier interface {
 	GetServiceType(ctx context.Context, typeid int64) (Servicetype, error)
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	GetTimeSlotByID(ctx context.Context, id int64) (GetTimeSlotByIDRow, error)
 	GetTimeslotsAvailable(ctx context.Context, arg GetTimeslotsAvailableParams) ([]GetTimeslotsAvailableRow, error)
 <<<<<<< HEAD
@@ -739,6 +752,8 @@ type Querier interface {
 	GetTimeSlotsByDoctorAndDate(ctx context.Context, arg GetTimeSlotsByDoctorAndDateParams) ([]Timeslot, error)
 <<<<<<< HEAD
 >>>>>>> 685da65 (latest update)
+=======
+>>>>>>> e9037c6 (update sqlc)
 	GetTreatmentByDiseaseId(ctx context.Context, arg GetTreatmentByDiseaseIdParams) ([]GetTreatmentByDiseaseIdRow, error)
 >>>>>>> 6a85052 (get treatment by disease)
 =======
@@ -817,10 +832,13 @@ type Querier interface {
 	InsertNotification(ctx context.Context, arg InsertNotificationParams) (Notification, error)
 	InsertPetLog(ctx context.Context, arg InsertPetLogParams) (PetLog, error)
 	InsertProduct(ctx context.Context, arg InsertProductParams) (Product, error)
+<<<<<<< HEAD
 	InsertTimeslot(ctx context.Context, arg InsertTimeslotParams) (Timeslot, error)
 <<<<<<< HEAD
 >>>>>>> 7e616af (add pet log schema)
 =======
+=======
+>>>>>>> e9037c6 (update sqlc)
 	IsReadNotification(ctx context.Context, notificationid int64) error
 <<<<<<< HEAD
 >>>>>>> 9fd7fc8 (feat: validate notification schema and APIs)
@@ -934,6 +952,7 @@ type Querier interface {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	UpdateCartItemQuantity(ctx context.Context, arg UpdateCartItemQuantityParams) error
 	UpdateDoctor(ctx context.Context, arg UpdateDoctorParams) (Doctor, error)
 <<<<<<< HEAD
@@ -992,6 +1011,9 @@ type Querier interface {
 >>>>>>> 6c35562 (dicease and treatment plan)
 =======
 >>>>>>> 272832d (redis cache)
+=======
+	UpdateDoctorSchedule(ctx context.Context, arg UpdateDoctorScheduleParams) (Doctorschedule, error)
+>>>>>>> e9037c6 (update sqlc)
 	UpdateNotification(ctx context.Context, appointmentID int64) error
 	UpdateOrderPaymentStatus(ctx context.Context, id int64) (Order, error)
 	UpdatePet(ctx context.Context, arg UpdatePetParams) error
@@ -1033,6 +1055,7 @@ type Querier interface {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	UpdateTimeSlot(ctx context.Context, arg UpdateTimeSlotParams) (Timeslot, error)
 >>>>>>> e9037c6 (update sqlc)
 =======
@@ -1050,6 +1073,9 @@ type Querier interface {
 	UpdateTreatment(ctx context.Context, arg UpdateTreatmentParams) error
 	UpdateTreatmentPhaseStatus(ctx context.Context, arg UpdateTreatmentPhaseStatusParams) error
 >>>>>>> 3bf345d (happy new year)
+=======
+	UpdateTimeSlot(ctx context.Context, arg UpdateTimeSlotParams) (Timeslot, error)
+>>>>>>> e9037c6 (update sqlc)
 	UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error)
 	UpdateUserPassword(ctx context.Context, arg UpdateUserPasswordParams) (User, error)
 =======

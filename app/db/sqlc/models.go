@@ -136,6 +136,7 @@ type CheckoutService struct {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> ada3717 (Docker file)
 type Clinic struct {
@@ -174,15 +175,24 @@ type DeviceToken struct {
 
 <<<<<<< HEAD
 >>>>>>> e859654 (Elastic search)
+=======
+>>>>>>> e9037c6 (update sqlc)
 type Department struct {
 	ID          int64            `json:"id"`
 	Name        string           `json:"name"`
 	Description pgtype.Text      `json:"description"`
+<<<<<<< HEAD
+=======
+	IsActive    pgtype.Bool      `json:"is_active"`
+>>>>>>> e9037c6 (update sqlc)
 	CreatedAt   pgtype.Timestamp `json:"created_at"`
 	UpdatedAt   pgtype.Timestamp `json:"updated_at"`
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+>>>>>>> e9037c6 (update sqlc)
+=======
 >>>>>>> e9037c6 (update sqlc)
 type Devicetoken struct {
 >>>>>>> 0fb3f30 (user images)
@@ -244,6 +254,7 @@ type DiseaseMedicine struct {
 type Doctor struct {
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> ada3717 (Docker file)
 	ID                int64       `json:"id"`
@@ -296,6 +307,28 @@ type MedicalHistory struct {
 	CertificateNumber pgtype.Text   `json:"certificate_number"`
 	Bio               pgtype.Text   `json:"bio"`
 	ConsultationFee   pgtype.Float8 `json:"consultation_fee"`
+=======
+	ID                int64         `json:"id"`
+	UserID            int64         `json:"user_id"`
+	Specialization    pgtype.Text   `json:"specialization"`
+	YearsOfExperience pgtype.Int4   `json:"years_of_experience"`
+	Education         pgtype.Text   `json:"education"`
+	CertificateNumber pgtype.Text   `json:"certificate_number"`
+	Bio               pgtype.Text   `json:"bio"`
+	ConsultationFee   pgtype.Float8 `json:"consultation_fee"`
+}
+
+type Doctorschedule struct {
+	ID        int64            `json:"id"`
+	DoctorID  int32            `json:"doctor_id"`
+	DayOfWeek pgtype.Text      `json:"day_of_week"`
+	Shift     string           `json:"shift"`
+	StartTime pgtype.Time      `json:"start_time"`
+	EndTime   pgtype.Time      `json:"end_time"`
+	IsActive  pgtype.Bool      `json:"is_active"`
+	CreatedAt pgtype.Timestamp `json:"created_at"`
+	UpdatedAt pgtype.Timestamp `json:"updated_at"`
+>>>>>>> e9037c6 (update sqlc)
 }
 
 <<<<<<< HEAD
@@ -804,6 +837,7 @@ type Shift struct {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 type State struct {
 	ID        int64            `json:"id"`
 	State     string           `json:"state"`
@@ -813,6 +847,9 @@ type State struct {
 type Timeslot struct {
 <<<<<<< HEAD
 <<<<<<< HEAD
+=======
+type Timeslot struct {
+>>>>>>> e9037c6 (update sqlc)
 	ID          int64            `json:"id"`
 	DoctorID    int32            `json:"doctor_id"`
 	ScheduleID  int32            `json:"schedule_id"`
@@ -823,6 +860,7 @@ type Timeslot struct {
 	SlotStatus  pgtype.Bool      `json:"slot_status"`
 	CreatedAt   pgtype.Timestamp `json:"created_at"`
 	UpdatedAt   pgtype.Timestamp `json:"updated_at"`
+<<<<<<< HEAD
 >>>>>>> e9037c6 (update sqlc)
 =======
 	ID        int64            `json:"id"`
@@ -848,6 +886,8 @@ type TimeSlot struct {
 	CreatedAt      pgtype.Timestamp `json:"created_at"`
 	UpdatedAt      pgtype.Timestamp `json:"updated_at"`
 >>>>>>> b393bb9 (add service and add permission)
+=======
+>>>>>>> e9037c6 (update sqlc)
 }
 
 <<<<<<< HEAD

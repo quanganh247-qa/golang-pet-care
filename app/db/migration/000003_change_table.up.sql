@@ -7,7 +7,7 @@ CREATE TABLE Doctors (
   education TEXT,
   certificate_number VARCHAR(50),
   bio TEXT,
-  consultation_fee FLOAT8,
+  consultation_fee FLOAT8
 );
 
 
