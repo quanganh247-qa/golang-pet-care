@@ -290,6 +290,7 @@ type Querier interface {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> e859654 (Elastic search)
 	GetActiveTreatments(ctx context.Context, arg GetActiveTreatmentsParams) ([]GetActiveTreatmentsRow, error)
@@ -313,6 +314,8 @@ type Querier interface {
 	GetAllRole(ctx context.Context) ([]pgtype.Text, error)
 =======
 	GetActiveDoctors(ctx context.Context, arg GetActiveDoctorsParams) ([]GetActiveDoctorsRow, error)
+=======
+>>>>>>> 6f3ea8a (update sqlc)
 	GetAllProducts(ctx context.Context, arg GetAllProductsParams) ([]Product, error)
 >>>>>>> bd5945b (get list products)
 	GetAllSchedulesByPet(ctx context.Context, arg GetAllSchedulesByPetParams) ([]PetSchedule, error)
@@ -515,6 +518,7 @@ type Querier interface {
 	// 1. Query cơ bản để lấy thông tin bệnh và thuốc điều trị
 	GetDiceaseAndMedicinesInfo(ctx context.Context, lower string) ([]GetDiceaseAndMedicinesInfoRow, error)
 	GetDiseaseTreatmentPlanWithPhases(ctx context.Context, lower string) ([]GetDiseaseTreatmentPlanWithPhasesRow, error)
+<<<<<<< HEAD
 >>>>>>> 6c35562 (dicease and treatment plan)
 	GetDoctor(ctx context.Context, id int64) (GetDoctorRow, error)
 <<<<<<< HEAD
@@ -578,6 +582,10 @@ type Querier interface {
 =======
 	GetDoctors(ctx context.Context) ([]GetDoctorsRow, error)
 >>>>>>> e30b070 (Get list appoinment by user)
+=======
+	GetDoctorSchedules(ctx context.Context, doctorID int32) ([]Doctorschedule, error)
+	GetDoctorTimeSlots(ctx context.Context, arg GetDoctorTimeSlotsParams) ([]Timeslot, error)
+>>>>>>> 6f3ea8a (update sqlc)
 	GetNotificationsByUsername(ctx context.Context, arg GetNotificationsByUsernameParams) ([]Notification, error)
 <<<<<<< HEAD
 >>>>>>> 6f3ea8a (update sqlc)
@@ -807,6 +815,7 @@ type Querier interface {
 	GetUserByEmail(ctx context.Context, email string) (User, error)
 	GetVaccinationByID(ctx context.Context, vaccinationid int64) (Vaccination, error)
 	InsertDeviceToken(ctx context.Context, arg InsertDeviceTokenParams) (Devicetoken, error)
+<<<<<<< HEAD
 >>>>>>> 0fb3f30 (user images)
 	InsertDoctor(ctx context.Context, arg InsertDoctorParams) (Doctor, error)
 <<<<<<< HEAD
@@ -829,6 +838,8 @@ type Querier interface {
 >>>>>>> c8bec46 (feat: add chatbot, room management, and pet allergy features)
 =======
 	InsertDoctorSchedule(ctx context.Context, arg InsertDoctorScheduleParams) (Doctorschedule, error)
+=======
+>>>>>>> 6f3ea8a (update sqlc)
 	InsertNotification(ctx context.Context, arg InsertNotificationParams) (Notification, error)
 	InsertPetLog(ctx context.Context, arg InsertPetLogParams) (PetLog, error)
 	InsertProduct(ctx context.Context, arg InsertProductParams) (Product, error)

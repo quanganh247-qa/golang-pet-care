@@ -196,6 +196,7 @@ func (q *Queries) DeleteUser(ctx context.Context, id int64) error {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> 1f24c18 (feat: OTP with redis)
 const getActiveDoctors = `-- name: GetActiveDoctors :many
@@ -309,6 +310,8 @@ func (q *Queries) GetAllRole(ctx context.Context) ([]pgtype.Text, error) {
 >>>>>>> 33fcf96 (Big update)
 =======
 >>>>>>> ffc9071 (AI suggestion)
+=======
+>>>>>>> 6f3ea8a (update sqlc)
 const getAllUsers = `-- name: GetAllUsers :many
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -360,6 +363,7 @@ func (q *Queries) GetAllUsers(ctx context.Context) ([]User, error) {
 	return items, nil
 }
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -507,6 +511,8 @@ func (q *Queries) GetDoctors(ctx context.Context) ([]GetDoctorsRow, error) {
 }
 
 >>>>>>> e30b070 (Get list appoinment by user)
+=======
+>>>>>>> 6f3ea8a (update sqlc)
 const getUser = `-- name: GetUser :one
 SELECT id, username, hashed_password, full_name, email, phone_number, address, data_image, original_image, role, created_at, is_verified_email
 FROM users
@@ -575,6 +581,7 @@ func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error
 	return i, err
 }
 
+<<<<<<< HEAD
 const insertDoctor = `-- name: InsertDoctor :one
 INSERT INTO Doctors (
     user_id,
@@ -1262,6 +1269,8 @@ func (q *Queries) UpdateUserPassword(ctx context.Context, arg UpdateUserPassword
 	return i, err
 }
 
+=======
+>>>>>>> 6f3ea8a (update sqlc)
 const updateAvatarUser = `-- name: UpdateAvatarUser :one
 UPDATE users
 SET data_image = $2, original_image = $3

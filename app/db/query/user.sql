@@ -119,6 +119,7 @@ DELETE FROM users
 WHERE id = $1;
 
 
+<<<<<<< HEAD
 =======
 -- name: UpdateUser :one
 UPDATE users
@@ -289,6 +290,52 @@ ORDER BY
   u.full_name;
 >>>>>>> cfbe865 (updated service response)
 =======
+=======
+-- -- name: InsertDoctor :one
+-- INSERT INTO Doctors (
+--     user_id,
+--     specialization,
+--     years_of_experience,
+--     education,
+--     certificate_number,
+--     bio,
+--     consultation_fee
+-- ) VALUES (
+--     $1, $2, $3, $4, $5, $6, $7
+-- ) RETURNING *;
+
+-- -- name: InsertDoctorSchedule :one
+-- INSERT INTO DoctorSchedules (
+--     doctor_id,
+--     day_of_week,
+--     start_time,
+--     end_time,
+--     is_active
+--   ) VALUES (
+--     $1, $2, $3, $4, $5
+-- ) RETURNING *;
+
+-- -- name: GetDoctor :one
+-- SELECT 
+--   d.id,
+--   u.full_name AS name,
+--   d.specialization,
+--   d.years_of_experience,
+--   d.education,
+--   d.certificate_number,
+--   d.bio,
+--   d.consultation_fee
+-- FROM
+--   Doctors d
+-- JOIN
+--   users u ON d.user_id = u.id
+-- WHERE
+--   d.id = $1;
+
+-- -- name: GetDoctorById :one
+-- select * from Doctors where id = $1;
+
+>>>>>>> 6f3ea8a (update sqlc)
 -- -- name: GetActiveDoctors :many
 -- SELECT 
 --   d.id,
@@ -309,6 +356,7 @@ ORDER BY
 --   AND ($2::INT IS NULL OR ds.day_of_week = $2)
 -- ORDER BY 
 --   u.full_name;
+<<<<<<< HEAD
 >>>>>>> 6f3ea8a (update sqlc)
 =======
 -- name: GetDoctor :one
@@ -327,12 +375,15 @@ JOIN
   users u ON d.user_id = u.id
 WHERE
   d.id = $1;
+=======
+>>>>>>> 6f3ea8a (update sqlc)
 
 <<<<<<< HEAD
 -- name: GetDoctorById :one
 select * from Doctors where id = $1;
 >>>>>>> 685da65 (latest update)
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 -- name: GetAllRole :many
 SELECT distinct (role) FROM users;
@@ -368,6 +419,8 @@ ORDER BY
     u.full_name;
 >>>>>>> e30b070 (Get list appoinment by user)
 =======
+=======
+>>>>>>> 6f3ea8a (update sqlc)
 -- -- name: GetDoctors :many
 -- SELECT 
 --     d.id AS doctor_id,
@@ -385,6 +438,7 @@ ORDER BY
 -- JOIN 
 --     users u ON d.user_id = u.id
 -- ORDER BY 
+<<<<<<< HEAD
 --     u.full_name;
 >>>>>>> 6f3ea8a (update sqlc)
 =======
@@ -409,3 +463,6 @@ SELECT distinct (role) FROM users;
 =======
     u.full_name;
 >>>>>>> e30b070 (Get list appoinment by user)
+=======
+--     u.full_name;
+>>>>>>> 6f3ea8a (update sqlc)
