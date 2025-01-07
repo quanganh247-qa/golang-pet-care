@@ -356,7 +356,7 @@ CREATE INDEX idx_pet_logs_pet_id ON pet_logs (petid);
 CREATE INDEX idx_pet_logs_datetime ON pet_logs (datetime);
 
 
---------
+-- --------
 INSERT INTO users (username, hashed_password, full_name, email, phone_number, address, original_image, role, is_verified_email)
 VALUES
     ('hoangduong', '$2a$10$somehashedpassword1234567890', 'Hoàng Dương', 'hoang.duong@example.com', '0912345678', '789 Đường DEF, Hà Nội', 'hoangduong_avatar.png', 'user', true),
@@ -471,3 +471,4 @@ VALUES
 
     -- Giai đoạn điều trị cho Viêm khớp
     (5, 5, '0.1mg/kg', '1 lần/ngày', '7-14 ngày', 'Dùng Meloxicam để giảm đau và viêm khớp');
+

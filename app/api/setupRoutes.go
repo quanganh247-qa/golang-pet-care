@@ -7,11 +7,15 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/quanganh247-qa/go-blog-be/app/api/appointment"
+	"github.com/quanganh247-qa/go-blog-be/app/api/cart"
 	"github.com/quanganh247-qa/go-blog-be/app/api/device_token"
 	"github.com/quanganh247-qa/go-blog-be/app/api/disease"
+	"github.com/quanganh247-qa/go-blog-be/app/api/location"
 	"github.com/quanganh247-qa/go-blog-be/app/api/notification"
+	"github.com/quanganh247-qa/go-blog-be/app/api/payment"
 	"github.com/quanganh247-qa/go-blog-be/app/api/pet"
 	petschedule "github.com/quanganh247-qa/go-blog-be/app/api/pet_schedule"
+	"github.com/quanganh247-qa/go-blog-be/app/api/products"
 	"github.com/quanganh247-qa/go-blog-be/app/api/service"
 	"github.com/quanganh247-qa/go-blog-be/app/api/service_type"
 	"github.com/quanganh247-qa/go-blog-be/app/api/user"
@@ -71,6 +75,10 @@ func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor, config
 	petschedule.Routes(routerGroup)
 	notification.Routes(routerGroup)
 	vaccination.Routes(routerGroup)
+	location.Routes(routerGroup, &config)
+	payment.Routes(routerGroup, &config)
+	cart.Routes(routerGroup)
+	products.Routes(routerGroup)
 
 	server.Router = routerDefault
 

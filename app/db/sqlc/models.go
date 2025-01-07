@@ -21,6 +21,22 @@ type Appointment struct {
 	CreatedAt     pgtype.Timestamp `json:"created_at"`
 }
 
+type Cart struct {
+	ID        int64            `json:"id"`
+	UserID    int64            `json:"user_id"`
+	CreatedAt pgtype.Timestamp `json:"created_at"`
+	UpdatedAt pgtype.Timestamp `json:"updated_at"`
+}
+
+type Cartitem struct {
+	ID         int64         `json:"id"`
+	CartID     int64         `json:"cart_id"`
+	ProductID  int64         `json:"product_id"`
+	Quantity   pgtype.Int4   `json:"quantity"`
+	UnitPrice  float64       `json:"unit_price"`
+	TotalPrice pgtype.Float8 `json:"total_price"`
+}
+
 type Checkout struct {
 	CheckoutID    int64            `json:"checkout_id"`
 	Petid         pgtype.Int8      `json:"petid"`
@@ -108,6 +124,17 @@ type Notification struct {
 	IsRead         pgtype.Bool      `json:"is_read"`
 }
 
+type Order struct {
+	ID              int64            `json:"id"`
+	UserID          int64            `json:"user_id"`
+	OrderDate       pgtype.Timestamp `json:"order_date"`
+	TotalAmount     float64          `json:"total_amount"`
+	PaymentStatus   pgtype.Text      `json:"payment_status"`
+	CartItems       []byte           `json:"cart_items"`
+	ShippingAddress pgtype.Text      `json:"shipping_address"`
+	Notes           pgtype.Text      `json:"notes"`
+}
+
 type Pet struct {
 	Petid           int64         `json:"petid"`
 	Name            string        `json:"name"`
@@ -166,6 +193,20 @@ type PhaseMedicine struct {
 	Frequency  pgtype.Text `json:"frequency"`
 	Duration   pgtype.Text `json:"duration"`
 	Notes      pgtype.Text `json:"notes"`
+}
+
+type Product struct {
+	ProductID     int64            `json:"product_id"`
+	Name          string           `json:"name"`
+	Description   pgtype.Text      `json:"description"`
+	Price         float64          `json:"price"`
+	StockQuantity pgtype.Int4      `json:"stock_quantity"`
+	Category      pgtype.Text      `json:"category"`
+	DataImage     []byte           `json:"data_image"`
+	OriginalImage pgtype.Text      `json:"original_image"`
+	CreatedAt     pgtype.Timestamp `json:"created_at"`
+	IsAvailable   pgtype.Bool      `json:"is_available"`
+	RemovedAt     pgtype.Timestamp `json:"removed_at"`
 }
 
 type Service struct {
