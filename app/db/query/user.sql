@@ -105,9 +105,27 @@ INSERT INTO Doctors (
     years_of_experience,
     education,
     certificate_number,
+<<<<<<< HEAD
     bio
 ) VALUES (
     $1, $2, $3, $4, $5, $6
+=======
+    bio,
+    consultation_fee
+) VALUES (
+    $1, $2, $3, $4, $5, $6, $7
+) RETURNING *;
+
+-- name: InsertDoctorSchedule :one
+INSERT INTO DoctorSchedules (
+    doctor_id,
+    day_of_week,
+    start_time,
+    end_time,
+    is_active
+  ) VALUES (
+    $1, $2, $3, $4, $5
+>>>>>>> e9037c6 (update sqlc)
 ) RETURNING *;
 
 <<<<<<< HEAD

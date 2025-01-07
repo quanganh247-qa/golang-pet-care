@@ -146,9 +146,19 @@ func (q *Queries) DeleteUser(ctx context.Context, id int64) error {
 	return err
 }
 
+<<<<<<< HEAD
 const getAllRole = `-- name: GetAllRole :many
 SELECT distinct (role) FROM users
 `
+=======
+type GetActiveDoctorsRow struct {
+	ID                int64         `json:"id"`
+	Name              string        `json:"name"`
+	Specialization    pgtype.Text   `json:"specialization"`
+	YearsOfExperience pgtype.Int4   `json:"years_of_experience"`
+	ConsultationFee   pgtype.Float8 `json:"consultation_fee"`
+}
+>>>>>>> e9037c6 (update sqlc)
 
 func (q *Queries) GetAllRole(ctx context.Context) ([]pgtype.Text, error) {
 	rows, err := q.db.Query(ctx, getAllRole)
@@ -234,14 +244,14 @@ WHERE
 `
 
 type GetDoctorRow struct {
-	ID                int64          `json:"id"`
-	Name              string         `json:"name"`
-	Specialization    pgtype.Text    `json:"specialization"`
-	YearsOfExperience pgtype.Int4    `json:"years_of_experience"`
-	Education         pgtype.Text    `json:"education"`
-	CertificateNumber pgtype.Text    `json:"certificate_number"`
-	Bio               pgtype.Text    `json:"bio"`
-	ConsultationFee   pgtype.Numeric `json:"consultation_fee"`
+	ID                int64         `json:"id"`
+	Name              string        `json:"name"`
+	Specialization    pgtype.Text   `json:"specialization"`
+	YearsOfExperience pgtype.Int4   `json:"years_of_experience"`
+	Education         pgtype.Text   `json:"education"`
+	CertificateNumber pgtype.Text   `json:"certificate_number"`
+	Bio               pgtype.Text   `json:"bio"`
+	ConsultationFee   pgtype.Float8 `json:"consultation_fee"`
 }
 
 func (q *Queries) GetDoctor(ctx context.Context, id int64) (GetDoctorRow, error) {
@@ -304,16 +314,16 @@ ORDER BY
 `
 
 type GetDoctorsRow struct {
-	DoctorID          int64          `json:"doctor_id"`
-	Username          string         `json:"username"`
-	FullName          string         `json:"full_name"`
-	Role              pgtype.Text    `json:"role"`
-	Specialization    pgtype.Text    `json:"specialization"`
-	YearsOfExperience pgtype.Int4    `json:"years_of_experience"`
-	Education         pgtype.Text    `json:"education"`
-	CertificateNumber pgtype.Text    `json:"certificate_number"`
-	Bio               pgtype.Text    `json:"bio"`
-	ConsultationFee   pgtype.Numeric `json:"consultation_fee"`
+	DoctorID          int64         `json:"doctor_id"`
+	Username          string        `json:"username"`
+	FullName          string        `json:"full_name"`
+	Role              pgtype.Text   `json:"role"`
+	Specialization    pgtype.Text   `json:"specialization"`
+	YearsOfExperience pgtype.Int4   `json:"years_of_experience"`
+	Education         pgtype.Text   `json:"education"`
+	CertificateNumber pgtype.Text   `json:"certificate_number"`
+	Bio               pgtype.Text   `json:"bio"`
+	ConsultationFee   pgtype.Float8 `json:"consultation_fee"`
 }
 
 func (q *Queries) GetDoctors(ctx context.Context) ([]GetDoctorsRow, error) {
@@ -572,12 +582,23 @@ RETURNING id, username, hashed_password, full_name, email, phone_number, address
 `
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 type UpdateUserParams struct {
 	Username    string      `json:"username"`
 	FullName    string      `json:"full_name"`
 	Email       string      `json:"email"`
 	PhoneNumber pgtype.Text `json:"phone_number"`
 	Address     pgtype.Text `json:"address"`
+=======
+type InsertDoctorParams struct {
+	UserID            int64         `json:"user_id"`
+	Specialization    pgtype.Text   `json:"specialization"`
+	YearsOfExperience pgtype.Int4   `json:"years_of_experience"`
+	Education         pgtype.Text   `json:"education"`
+	CertificateNumber pgtype.Text   `json:"certificate_number"`
+	Bio               pgtype.Text   `json:"bio"`
+	ConsultationFee   pgtype.Float8 `json:"consultation_fee"`
+>>>>>>> e9037c6 (update sqlc)
 }
 
 func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error) {
@@ -617,6 +638,7 @@ func (q *Queries) VerifiedUser(ctx context.Context, arg VerifiedUserParams) (Use
 	return i, err
 }
 
+<<<<<<< HEAD
 const updateUserPassword = `-- name: UpdateUserPassword :one
 UPDATE users
 SET hashed_password = $2
@@ -646,6 +668,47 @@ func (q *Queries) UpdateUserPassword(ctx context.Context, arg UpdateUserPassword
 		&i.CreatedAt,
 		&i.IsVerifiedEmail,
 		&i.RemovedAt,
+=======
+const insertDoctorSchedule = `-- name: InsertDoctorSchedule :one
+INSERT INTO DoctorSchedules (
+    doctor_id,
+    day_of_week,
+    start_time,
+    end_time,
+    is_active
+  ) VALUES (
+    $1, $2, $3, $4, $5
+) RETURNING id, doctor_id, day_of_week, shift, start_time, end_time, is_active, created_at, updated_at
+`
+
+type InsertDoctorScheduleParams struct {
+	DoctorID  int32       `json:"doctor_id"`
+	DayOfWeek pgtype.Text `json:"day_of_week"`
+	StartTime pgtype.Time `json:"start_time"`
+	EndTime   pgtype.Time `json:"end_time"`
+	IsActive  pgtype.Bool `json:"is_active"`
+}
+
+func (q *Queries) InsertDoctorSchedule(ctx context.Context, arg InsertDoctorScheduleParams) (Doctorschedule, error) {
+	row := q.db.QueryRow(ctx, insertDoctorSchedule,
+		arg.DoctorID,
+		arg.DayOfWeek,
+		arg.StartTime,
+		arg.EndTime,
+		arg.IsActive,
+	)
+	var i Doctorschedule
+	err := row.Scan(
+		&i.ID,
+		&i.DoctorID,
+		&i.DayOfWeek,
+		&i.Shift,
+		&i.StartTime,
+		&i.EndTime,
+		&i.IsActive,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+>>>>>>> e9037c6 (update sqlc)
 	)
 	return i, err
 }
