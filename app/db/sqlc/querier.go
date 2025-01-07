@@ -36,7 +36,6 @@ type Querier interface {
 	DeleteTimeSlot(ctx context.Context, id int64) error
 	DeleteUser(ctx context.Context, id int64) error
 	DeleteVaccination(ctx context.Context, vaccinationid int64) error
-	GetActiveDoctors(ctx context.Context, arg GetActiveDoctorsParams) ([]GetActiveDoctorsRow, error)
 	GetAllProducts(ctx context.Context, arg GetAllProductsParams) ([]Product, error)
 	GetAllSchedulesByPet(ctx context.Context, arg GetAllSchedulesByPetParams) ([]PetSchedule, error)
 	GetAllServices(ctx context.Context, arg GetAllServicesParams) ([]Service, error)
@@ -51,11 +50,8 @@ type Querier interface {
 	// 1. Query cơ bản để lấy thông tin bệnh và thuốc điều trị
 	GetDiceaseAndMedicinesInfo(ctx context.Context, lower string) ([]GetDiceaseAndMedicinesInfoRow, error)
 	GetDiseaseTreatmentPlanWithPhases(ctx context.Context, lower string) ([]GetDiseaseTreatmentPlanWithPhasesRow, error)
-	GetDoctor(ctx context.Context, id int64) (GetDoctorRow, error)
-	GetDoctorById(ctx context.Context, id int64) (Doctor, error)
 	GetDoctorSchedules(ctx context.Context, doctorID int32) ([]Doctorschedule, error)
 	GetDoctorTimeSlots(ctx context.Context, arg GetDoctorTimeSlotsParams) ([]Timeslot, error)
-	GetDoctors(ctx context.Context) ([]GetDoctorsRow, error)
 	GetNotificationsByUsername(ctx context.Context, arg GetNotificationsByUsernameParams) ([]Notification, error)
 	GetOrderById(ctx context.Context, id int64) (Order, error)
 	// Returning fields you may want to use
@@ -72,8 +68,6 @@ type Querier interface {
 	GetUserByEmail(ctx context.Context, email string) (User, error)
 	GetVaccinationByID(ctx context.Context, vaccinationid int64) (Vaccination, error)
 	InsertDeviceToken(ctx context.Context, arg InsertDeviceTokenParams) (Devicetoken, error)
-	InsertDoctor(ctx context.Context, arg InsertDoctorParams) (Doctor, error)
-	InsertDoctorSchedule(ctx context.Context, arg InsertDoctorScheduleParams) (Doctorschedule, error)
 	InsertNotification(ctx context.Context, arg InsertNotificationParams) (Notification, error)
 	InsertPetLog(ctx context.Context, arg InsertPetLogParams) (PetLog, error)
 	InsertProduct(ctx context.Context, arg InsertProductParams) (Product, error)
