@@ -9,6 +9,7 @@ VALUES (
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 -- -- name: GetTimeSlotsByDoctorAndDate :many
 -- SELECT * from time_slots WHERE doctor_id = $1 AND "date" = $2 ORDER BY start_time ASC;
 
@@ -118,3 +119,5 @@ FROM time_slots
 WHERE id = $1
 FOR UPDATE;
 >>>>>>> ada3717 (Docker file)
+=======
+>>>>>>> ae87825 (updated)

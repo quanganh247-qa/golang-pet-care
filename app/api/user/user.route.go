@@ -150,6 +150,7 @@ func Routes(routerGroup middleware.RouterGroup, taskDistributor worker.TaskDistr
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 		user.GET("/sessioninfo", userApi.controller.sessioninfo)
 		user.GET("/userinfo", userApi.controller.userinfo)
 		authRoute.GET("/roles", userApi.controller.GetAllRole)
@@ -186,6 +187,8 @@ func Routes(routerGroup middleware.RouterGroup, taskDistributor worker.TaskDistr
 >>>>>>> ada3717 (Docker file)
 =======
 >>>>>>> e01abc5 (pet schedule api)
+=======
+>>>>>>> ae87825 (updated)
 	}
 
 }

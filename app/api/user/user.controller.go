@@ -25,6 +25,7 @@ type UserControllerInterface interface {
 	getAccessToken(ctx *gin.Context)
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	resendOTP(ctx *gin.Context)
 	updatetUser(ctx *gin.Context)
 	updatetUserAvatar(ctx *gin.Context)
@@ -51,6 +52,8 @@ type UserControllerInterface interface {
 =======
 =======
 >>>>>>> ae87825 (updated)
+=======
+>>>>>>> ae87825 (updated)
 	resendOTP(ctx *gin.Context)
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -61,6 +64,7 @@ type UserControllerInterface interface {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> 473cd1d (uplaod image method)
 =======
 	GetDoctors(ctx *gin.Context)
@@ -68,6 +72,8 @@ type UserControllerInterface interface {
 <<<<<<< HEAD
 >>>>>>> e30b070 (Get list appoinment by user)
 =======
+=======
+>>>>>>> ae87825 (updated)
 =======
 >>>>>>> ae87825 (updated)
 	ForgotPassword(ctx *gin.Context)
@@ -103,19 +109,6 @@ type UserControllerInterface interface {
 >>>>>>> a2c21c8 (update pass)
 }
 
-// createUser godoc
-// @Summary Create a new user
-// @Description Create a new user with the input payload
-// @Tags user
-// @Accept  json
-// @Produce  json
-// @Param data formData string true "User data"
-// @Param image formData file true "User image"
-// @Success 201 {object} VerrifyEmailTxParams
-// @Router /user [post]
-// @Security ApiKeyAuth
-// @in header
-// @name Authorization
 func (controller *UserController) createUser(ctx *gin.Context) {
 	var req createUserRequest
 <<<<<<< HEAD
@@ -487,6 +480,7 @@ func (controller *UserController) resendOTP(ctx *gin.Context) {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 func (controller *UserController) updatetUser(ctx *gin.Context) {
 
 	var arg UpdateUserParams
@@ -748,6 +742,8 @@ func (controller *UserController) updateDoctorAvailableTime(ctx *gin.Context) {
 =======
 
 >>>>>>> 473cd1d (uplaod image method)
+=======
+>>>>>>> ae87825 (updated)
 func (controller *UserController) updatetUser(ctx *gin.Context) {
 
 	var arg UpdateUserParams
@@ -810,6 +806,7 @@ func (controller *UserController) updatetUserAvatar(ctx *gin.Context) {
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> e30b070 (Get list appoinment by user)
 func (controller *UserController) GetDoctors(ctx *gin.Context) {
@@ -843,6 +840,8 @@ func (controller *UserController) GetDoctors(ctx *gin.Context) {
 =======
 
 >>>>>>> 1a9e82a (reset password api)
+=======
+>>>>>>> ae87825 (updated)
 func (controller *UserController) ForgotPassword(ctx *gin.Context) {
 	var req ForgotPasswordRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
