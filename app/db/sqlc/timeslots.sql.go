@@ -11,166 +11,145 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
-const getAllTimeSlots = `-- name: GetAllTimeSlots :many
-SELECT 
-    ts.doctor_id ,
-    ts.start_time,
-    ts.end_time
-FROM 
-    TimeSlots ts
-JOIN 
-    Doctors d ON ts.doctor_id = d.id
-WHERE 
-    d.id = $1  -- Replace $1 with the doctor's ID you are querying for
-    AND ts.day::date = $2
-`
-
-type GetAllTimeSlotsParams struct {
-	ID  int64       `json:"id"`
-	Day pgtype.Date `json:"day"`
-}
-
-type GetAllTimeSlotsRow struct {
-	DoctorID  int64            `json:"doctor_id"`
-	StartTime pgtype.Timestamp `json:"start_time"`
-	EndTime   pgtype.Timestamp `json:"end_time"`
-}
-
-func (q *Queries) GetAllTimeSlots(ctx context.Context, arg GetAllTimeSlotsParams) ([]GetAllTimeSlotsRow, error) {
-	rows, err := q.db.Query(ctx, getAllTimeSlots, arg.ID, arg.Day)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	items := []GetAllTimeSlotsRow{}
-	for rows.Next() {
-		var i GetAllTimeSlotsRow
-		if err := rows.Scan(&i.DoctorID, &i.StartTime, &i.EndTime); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
-}
-
-const getTimeSlotByID = `-- name: GetTimeSlotByID :one
-SELECT 
-    ts.doctor_id ,
-    ts.start_time,
-    ts.end_time
-FROM
-    TimeSlots ts
-WHERE
-    ts.id = $1
-`
-
-type GetTimeSlotByIDRow struct {
-	DoctorID  int64            `json:"doctor_id"`
-	StartTime pgtype.Timestamp `json:"start_time"`
-	EndTime   pgtype.Timestamp `json:"end_time"`
-}
-
-func (q *Queries) GetTimeSlotByID(ctx context.Context, id int64) (GetTimeSlotByIDRow, error) {
-	row := q.db.QueryRow(ctx, getTimeSlotByID, id)
-	var i GetTimeSlotByIDRow
-	err := row.Scan(&i.DoctorID, &i.StartTime, &i.EndTime)
-	return i, err
-}
-
-const getTimeslotsAvailable = `-- name: GetTimeslotsAvailable :many
-SELECT 
-    ts.doctor_id ,
-    ts.start_time,
-    ts.end_time
-FROM 
-    TimeSlots ts
-JOIN 
-    Doctors d ON ts.doctor_id = d.id
-WHERE 
-    d.id = $1  -- Replace $1 with the doctor's ID you are querying for
-    AND ts.day::date = $2  -- Replace $2 with the specific date (YYYY-MM-DD)
-    AND ts.is_active = true
-`
-
-type GetTimeslotsAvailableParams struct {
-	ID  int64       `json:"id"`
-	Day pgtype.Date `json:"day"`
-}
-
-type GetTimeslotsAvailableRow struct {
-	DoctorID  int64            `json:"doctor_id"`
-	StartTime pgtype.Timestamp `json:"start_time"`
-	EndTime   pgtype.Timestamp `json:"end_time"`
-}
-
-func (q *Queries) GetTimeslotsAvailable(ctx context.Context, arg GetTimeslotsAvailableParams) ([]GetTimeslotsAvailableRow, error) {
-	rows, err := q.db.Query(ctx, getTimeslotsAvailable, arg.ID, arg.Day)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	items := []GetTimeslotsAvailableRow{}
-	for rows.Next() {
-		var i GetTimeslotsAvailableRow
-		if err := rows.Scan(&i.DoctorID, &i.StartTime, &i.EndTime); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
-}
-
-const insertTimeslot = `-- name: InsertTimeslot :one
-INSERT INTO Timeslots (
+const createTimeSlot = `-- name: CreateTimeSlot :one
+INSERT INTO timeslots (
     doctor_id,
+    schedule_id,
+    date,
     start_time,
     end_time,
-    day
+    max_patients,
+    slot_status
 ) VALUES (
-    $1, $2, $3, now()
-) RETURNING id, doctor_id, start_time, end_time, is_active, day
+    $1, $2, $3, $4, $5, $6, $7
+) RETURNING id, doctor_id, schedule_id, date, start_time, end_time, max_patients, slot_status, created_at, updated_at
 `
 
-type InsertTimeslotParams struct {
-	DoctorID  int64            `json:"doctor_id"`
-	StartTime pgtype.Timestamp `json:"start_time"`
-	EndTime   pgtype.Timestamp `json:"end_time"`
+type CreateTimeSlotParams struct {
+	DoctorID    int32       `json:"doctor_id"`
+	ScheduleID  int32       `json:"schedule_id"`
+	Date        pgtype.Date `json:"date"`
+	StartTime   pgtype.Time `json:"start_time"`
+	EndTime     pgtype.Time `json:"end_time"`
+	MaxPatients pgtype.Int4 `json:"max_patients"`
+	SlotStatus  pgtype.Bool `json:"slot_status"`
 }
 
-func (q *Queries) InsertTimeslot(ctx context.Context, arg InsertTimeslotParams) (Timeslot, error) {
-	row := q.db.QueryRow(ctx, insertTimeslot, arg.DoctorID, arg.StartTime, arg.EndTime)
+func (q *Queries) CreateTimeSlot(ctx context.Context, arg CreateTimeSlotParams) (Timeslot, error) {
+	row := q.db.QueryRow(ctx, createTimeSlot,
+		arg.DoctorID,
+		arg.ScheduleID,
+		arg.Date,
+		arg.StartTime,
+		arg.EndTime,
+		arg.MaxPatients,
+		arg.SlotStatus,
+	)
 	var i Timeslot
 	err := row.Scan(
 		&i.ID,
 		&i.DoctorID,
+		&i.ScheduleID,
+		&i.Date,
 		&i.StartTime,
 		&i.EndTime,
-		&i.IsActive,
-		&i.Day,
+		&i.MaxPatients,
+		&i.SlotStatus,
+		&i.CreatedAt,
+		&i.UpdatedAt,
 	)
 	return i, err
 }
 
-const updateDoctorAvailable = `-- name: UpdateDoctorAvailable :exec
-
-UPDATE TimeSlots
-SET is_active = $1
-WHERE id = $2
+const deleteDoctorSchedule = `-- name: DeleteDoctorSchedule :exec
+DELETE FROM doctorschedules WHERE id = $1
 `
 
-type UpdateDoctorAvailableParams struct {
-	IsActive pgtype.Bool `json:"is_active"`
-	ID       int64       `json:"id"`
+func (q *Queries) DeleteDoctorSchedule(ctx context.Context, id int64) error {
+	_, err := q.db.Exec(ctx, deleteDoctorSchedule, id)
+	return err
 }
 
-// Replace $2 with the specific date (YYYY-MM-DD)
-func (q *Queries) UpdateDoctorAvailable(ctx context.Context, arg UpdateDoctorAvailableParams) error {
-	_, err := q.db.Exec(ctx, updateDoctorAvailable, arg.IsActive, arg.ID)
+const deleteTimeSlot = `-- name: DeleteTimeSlot :exec
+DELETE FROM timeslots WHERE id = $1
+`
+
+func (q *Queries) DeleteTimeSlot(ctx context.Context, id int64) error {
+	_, err := q.db.Exec(ctx, deleteTimeSlot, id)
 	return err
+}
+
+const getDoctorTimeSlots = `-- name: GetDoctorTimeSlots :many
+SELECT id, doctor_id, schedule_id, date, start_time, end_time, max_patients, slot_status, created_at, updated_at FROM timeslots
+WHERE doctor_id = $1 AND date = $2
+`
+
+type GetDoctorTimeSlotsParams struct {
+	DoctorID int32       `json:"doctor_id"`
+	Date     pgtype.Date `json:"date"`
+}
+
+func (q *Queries) GetDoctorTimeSlots(ctx context.Context, arg GetDoctorTimeSlotsParams) ([]Timeslot, error) {
+	rows, err := q.db.Query(ctx, getDoctorTimeSlots, arg.DoctorID, arg.Date)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []Timeslot{}
+	for rows.Next() {
+		var i Timeslot
+		if err := rows.Scan(
+			&i.ID,
+			&i.DoctorID,
+			&i.ScheduleID,
+			&i.Date,
+			&i.StartTime,
+			&i.EndTime,
+			&i.MaxPatients,
+			&i.SlotStatus,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const updateTimeSlot = `-- name: UpdateTimeSlot :one
+UPDATE timeslots
+SET 
+    max_patients = COALESCE($1, max_patients),
+    slot_status = COALESCE($2, slot_status),
+    updated_at = CURRENT_TIMESTAMP
+WHERE id = $3
+RETURNING id, doctor_id, schedule_id, date, start_time, end_time, max_patients, slot_status, created_at, updated_at
+`
+
+type UpdateTimeSlotParams struct {
+	MaxPatients pgtype.Int4 `json:"max_patients"`
+	SlotStatus  pgtype.Bool `json:"slot_status"`
+	ID          int64       `json:"id"`
+}
+
+func (q *Queries) UpdateTimeSlot(ctx context.Context, arg UpdateTimeSlotParams) (Timeslot, error) {
+	row := q.db.QueryRow(ctx, updateTimeSlot, arg.MaxPatients, arg.SlotStatus, arg.ID)
+	var i Timeslot
+	err := row.Scan(
+		&i.ID,
+		&i.DoctorID,
+		&i.ScheduleID,
+		&i.Date,
+		&i.StartTime,
+		&i.EndTime,
+		&i.MaxPatients,
+		&i.SlotStatus,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
 }
