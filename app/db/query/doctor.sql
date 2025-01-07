@@ -5,6 +5,7 @@ INSERT INTO doctors (
     years_of_experience,
     education,
     certificate_number,
+<<<<<<< HEAD
     bio) VALUES (
     $1, $2, $3, $4, $5, $6
 ) RETURNING *;
@@ -74,3 +75,10 @@ JOIN users u ON d.user_id = u.id
 JOIN time_slots ts ON ts.doctor_id = d.id
 WHERE ts.date = $1
 AND ts.booked_patients < ts.max_patients;
+=======
+    bio,
+    consultation_fee
+) VALUES (
+    $1, $2, $3, $4, $5, $6, $7
+) RETURNING *;
+>>>>>>> ae87825 (updated)
