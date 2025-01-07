@@ -94,6 +94,7 @@ type CheckoutService struct {
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 type Clinic struct {
 	ID      int64       `json:"id"`
 	Name    pgtype.Text `json:"name"`
@@ -113,6 +114,17 @@ type Consultation struct {
 
 type DeviceToken struct {
 =======
+=======
+type Department struct {
+	ID          int64            `json:"id"`
+	Name        string           `json:"name"`
+	Description pgtype.Text      `json:"description"`
+	IsActive    pgtype.Bool      `json:"is_active"`
+	CreatedAt   pgtype.Timestamp `json:"created_at"`
+	UpdatedAt   pgtype.Timestamp `json:"updated_at"`
+}
+
+>>>>>>> e9037c6 (update sqlc)
 type Devicetoken struct {
 >>>>>>> 0fb3f30 (user images)
 	ID         int64            `json:"id"`
@@ -148,6 +160,7 @@ type DiseaseMedicine struct {
 
 >>>>>>> 6c35562 (dicease and treatment plan)
 type Doctor struct {
+<<<<<<< HEAD
 	ID                int64       `json:"id"`
 	UserID            int64       `json:"user_id"`
 	Specialization    pgtype.Text `json:"specialization"`
@@ -176,6 +189,28 @@ type MedicalHistory struct {
 	Treatment       pgtype.Int8      `json:"treatment"`
 	CreatedAt       pgtype.Timestamp `json:"created_at"`
 	UpdatedAt       pgtype.Timestamp `json:"updated_at"`
+=======
+	ID                int64         `json:"id"`
+	UserID            int64         `json:"user_id"`
+	Specialization    pgtype.Text   `json:"specialization"`
+	YearsOfExperience pgtype.Int4   `json:"years_of_experience"`
+	Education         pgtype.Text   `json:"education"`
+	CertificateNumber pgtype.Text   `json:"certificate_number"`
+	Bio               pgtype.Text   `json:"bio"`
+	ConsultationFee   pgtype.Float8 `json:"consultation_fee"`
+}
+
+type Doctorschedule struct {
+	ID        int64            `json:"id"`
+	DoctorID  int32            `json:"doctor_id"`
+	DayOfWeek pgtype.Text      `json:"day_of_week"`
+	Shift     string           `json:"shift"`
+	StartTime pgtype.Time      `json:"start_time"`
+	EndTime   pgtype.Time      `json:"end_time"`
+	IsActive  pgtype.Bool      `json:"is_active"`
+	CreatedAt pgtype.Timestamp `json:"created_at"`
+	UpdatedAt pgtype.Timestamp `json:"updated_at"`
+>>>>>>> e9037c6 (update sqlc)
 }
 
 <<<<<<< HEAD
@@ -471,11 +506,25 @@ type Shift struct {
 	CreatedAt        pgtype.Timestamp `json:"created_at"`
 }
 
+<<<<<<< HEAD
 type State struct {
 	ID        int64            `json:"id"`
 	State     string           `json:"state"`
 	CreatedAt pgtype.Timestamp `json:"created_at"`
 	UpdatedAt pgtype.Timestamp `json:"updated_at"`
+=======
+type Timeslot struct {
+	ID          int64            `json:"id"`
+	DoctorID    int32            `json:"doctor_id"`
+	ScheduleID  int32            `json:"schedule_id"`
+	Date        pgtype.Date      `json:"date"`
+	StartTime   pgtype.Time      `json:"start_time"`
+	EndTime     pgtype.Time      `json:"end_time"`
+	MaxPatients pgtype.Int4      `json:"max_patients"`
+	SlotStatus  pgtype.Bool      `json:"slot_status"`
+	CreatedAt   pgtype.Timestamp `json:"created_at"`
+	UpdatedAt   pgtype.Timestamp `json:"updated_at"`
+>>>>>>> e9037c6 (update sqlc)
 }
 
 <<<<<<< HEAD
