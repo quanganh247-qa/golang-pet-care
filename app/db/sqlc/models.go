@@ -57,6 +57,15 @@ type Checkoutservice struct {
 	Subtotal          pgtype.Float8 `json:"subtotal"`
 }
 
+type Department struct {
+	ID          int64            `json:"id"`
+	Name        string           `json:"name"`
+	Description pgtype.Text      `json:"description"`
+	IsActive    pgtype.Bool      `json:"is_active"`
+	CreatedAt   pgtype.Timestamp `json:"created_at"`
+	UpdatedAt   pgtype.Timestamp `json:"updated_at"`
+}
+
 type Devicetoken struct {
 	ID         int64            `json:"id"`
 	Username   string           `json:"username"`
@@ -82,24 +91,26 @@ type DiseaseMedicine struct {
 }
 
 type Doctor struct {
-	ID                int64          `json:"id"`
-	UserID            int64          `json:"user_id"`
-	Specialization    pgtype.Text    `json:"specialization"`
-	YearsOfExperience pgtype.Int4    `json:"years_of_experience"`
-	Education         pgtype.Text    `json:"education"`
-	CertificateNumber pgtype.Text    `json:"certificate_number"`
-	Bio               pgtype.Text    `json:"bio"`
-	ConsultationFee   pgtype.Numeric `json:"consultation_fee"`
+	ID                int64         `json:"id"`
+	UserID            int64         `json:"user_id"`
+	Specialization    pgtype.Text   `json:"specialization"`
+	YearsOfExperience pgtype.Int4   `json:"years_of_experience"`
+	Education         pgtype.Text   `json:"education"`
+	CertificateNumber pgtype.Text   `json:"certificate_number"`
+	Bio               pgtype.Text   `json:"bio"`
+	ConsultationFee   pgtype.Float8 `json:"consultation_fee"`
 }
 
 type Doctorschedule struct {
-	ID              int64            `json:"id"`
-	DoctorID        int64            `json:"doctor_id"`
-	DayOfWeek       pgtype.Int4      `json:"day_of_week"`
-	StartTime       pgtype.Timestamp `json:"start_time"`
-	EndTime         pgtype.Timestamp `json:"end_time"`
-	IsActive        pgtype.Bool      `json:"is_active"`
-	MaxAppointments pgtype.Int4      `json:"max_appointments"`
+	ID        int64            `json:"id"`
+	DoctorID  int32            `json:"doctor_id"`
+	DayOfWeek pgtype.Text      `json:"day_of_week"`
+	Shift     string           `json:"shift"`
+	StartTime pgtype.Time      `json:"start_time"`
+	EndTime   pgtype.Time      `json:"end_time"`
+	IsActive  pgtype.Bool      `json:"is_active"`
+	CreatedAt pgtype.Timestamp `json:"created_at"`
+	UpdatedAt pgtype.Timestamp `json:"updated_at"`
 }
 
 type Medicine struct {
@@ -228,12 +239,16 @@ type Servicetype struct {
 }
 
 type Timeslot struct {
-	ID        int64            `json:"id"`
-	DoctorID  int64            `json:"doctor_id"`
-	StartTime pgtype.Timestamp `json:"start_time"`
-	EndTime   pgtype.Timestamp `json:"end_time"`
-	IsActive  pgtype.Bool      `json:"is_active"`
-	Day       pgtype.Date      `json:"day"`
+	ID          int64            `json:"id"`
+	DoctorID    int32            `json:"doctor_id"`
+	ScheduleID  int32            `json:"schedule_id"`
+	Date        pgtype.Date      `json:"date"`
+	StartTime   pgtype.Time      `json:"start_time"`
+	EndTime     pgtype.Time      `json:"end_time"`
+	MaxPatients pgtype.Int4      `json:"max_patients"`
+	SlotStatus  pgtype.Bool      `json:"slot_status"`
+	CreatedAt   pgtype.Timestamp `json:"created_at"`
+	UpdatedAt   pgtype.Timestamp `json:"updated_at"`
 }
 
 type TreatmentPhase struct {

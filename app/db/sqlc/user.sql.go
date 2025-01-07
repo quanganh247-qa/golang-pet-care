@@ -84,11 +84,11 @@ type GetActiveDoctorsParams struct {
 }
 
 type GetActiveDoctorsRow struct {
-	ID                int64          `json:"id"`
-	Name              string         `json:"name"`
-	Specialization    pgtype.Text    `json:"specialization"`
-	YearsOfExperience pgtype.Int4    `json:"years_of_experience"`
-	ConsultationFee   pgtype.Numeric `json:"consultation_fee"`
+	ID                int64         `json:"id"`
+	Name              string        `json:"name"`
+	Specialization    pgtype.Text   `json:"specialization"`
+	YearsOfExperience pgtype.Int4   `json:"years_of_experience"`
+	ConsultationFee   pgtype.Float8 `json:"consultation_fee"`
 }
 
 func (q *Queries) GetActiveDoctors(ctx context.Context, arg GetActiveDoctorsParams) ([]GetActiveDoctorsRow, error) {
@@ -174,14 +174,14 @@ WHERE
 `
 
 type GetDoctorRow struct {
-	ID                int64          `json:"id"`
-	Name              string         `json:"name"`
-	Specialization    pgtype.Text    `json:"specialization"`
-	YearsOfExperience pgtype.Int4    `json:"years_of_experience"`
-	Education         pgtype.Text    `json:"education"`
-	CertificateNumber pgtype.Text    `json:"certificate_number"`
-	Bio               pgtype.Text    `json:"bio"`
-	ConsultationFee   pgtype.Numeric `json:"consultation_fee"`
+	ID                int64         `json:"id"`
+	Name              string        `json:"name"`
+	Specialization    pgtype.Text   `json:"specialization"`
+	YearsOfExperience pgtype.Int4   `json:"years_of_experience"`
+	Education         pgtype.Text   `json:"education"`
+	CertificateNumber pgtype.Text   `json:"certificate_number"`
+	Bio               pgtype.Text   `json:"bio"`
+	ConsultationFee   pgtype.Float8 `json:"consultation_fee"`
 }
 
 func (q *Queries) GetDoctor(ctx context.Context, id int64) (GetDoctorRow, error) {
@@ -241,16 +241,16 @@ ORDER BY
 `
 
 type GetDoctorsRow struct {
-	DoctorID          int64          `json:"doctor_id"`
-	Username          string         `json:"username"`
-	FullName          string         `json:"full_name"`
-	Role              pgtype.Text    `json:"role"`
-	Specialization    pgtype.Text    `json:"specialization"`
-	YearsOfExperience pgtype.Int4    `json:"years_of_experience"`
-	Education         pgtype.Text    `json:"education"`
-	CertificateNumber pgtype.Text    `json:"certificate_number"`
-	Bio               pgtype.Text    `json:"bio"`
-	ConsultationFee   pgtype.Numeric `json:"consultation_fee"`
+	DoctorID          int64         `json:"doctor_id"`
+	Username          string        `json:"username"`
+	FullName          string        `json:"full_name"`
+	Role              pgtype.Text   `json:"role"`
+	Specialization    pgtype.Text   `json:"specialization"`
+	YearsOfExperience pgtype.Int4   `json:"years_of_experience"`
+	Education         pgtype.Text   `json:"education"`
+	CertificateNumber pgtype.Text   `json:"certificate_number"`
+	Bio               pgtype.Text   `json:"bio"`
+	ConsultationFee   pgtype.Float8 `json:"consultation_fee"`
 }
 
 func (q *Queries) GetDoctors(ctx context.Context) ([]GetDoctorsRow, error) {
@@ -367,13 +367,13 @@ INSERT INTO Doctors (
 `
 
 type InsertDoctorParams struct {
-	UserID            int64          `json:"user_id"`
-	Specialization    pgtype.Text    `json:"specialization"`
-	YearsOfExperience pgtype.Int4    `json:"years_of_experience"`
-	Education         pgtype.Text    `json:"education"`
-	CertificateNumber pgtype.Text    `json:"certificate_number"`
-	Bio               pgtype.Text    `json:"bio"`
-	ConsultationFee   pgtype.Numeric `json:"consultation_fee"`
+	UserID            int64         `json:"user_id"`
+	Specialization    pgtype.Text   `json:"specialization"`
+	YearsOfExperience pgtype.Int4   `json:"years_of_experience"`
+	Education         pgtype.Text   `json:"education"`
+	CertificateNumber pgtype.Text   `json:"certificate_number"`
+	Bio               pgtype.Text   `json:"bio"`
+	ConsultationFee   pgtype.Float8 `json:"consultation_fee"`
 }
 
 func (q *Queries) InsertDoctor(ctx context.Context, arg InsertDoctorParams) (Doctor, error) {
@@ -406,20 +406,18 @@ INSERT INTO DoctorSchedules (
     day_of_week,
     start_time,
     end_time,
-    is_active,
-    max_appointments
-) VALUES (
-    $1, $2, $3, $4, $5, $6
-) RETURNING id, doctor_id, day_of_week, start_time, end_time, is_active, max_appointments
+    is_active
+  ) VALUES (
+    $1, $2, $3, $4, $5
+) RETURNING id, doctor_id, day_of_week, shift, start_time, end_time, is_active, created_at, updated_at
 `
 
 type InsertDoctorScheduleParams struct {
-	DoctorID        int64            `json:"doctor_id"`
-	DayOfWeek       pgtype.Int4      `json:"day_of_week"`
-	StartTime       pgtype.Timestamp `json:"start_time"`
-	EndTime         pgtype.Timestamp `json:"end_time"`
-	IsActive        pgtype.Bool      `json:"is_active"`
-	MaxAppointments pgtype.Int4      `json:"max_appointments"`
+	DoctorID  int32       `json:"doctor_id"`
+	DayOfWeek pgtype.Text `json:"day_of_week"`
+	StartTime pgtype.Time `json:"start_time"`
+	EndTime   pgtype.Time `json:"end_time"`
+	IsActive  pgtype.Bool `json:"is_active"`
 }
 
 func (q *Queries) InsertDoctorSchedule(ctx context.Context, arg InsertDoctorScheduleParams) (Doctorschedule, error) {
@@ -429,17 +427,18 @@ func (q *Queries) InsertDoctorSchedule(ctx context.Context, arg InsertDoctorSche
 		arg.StartTime,
 		arg.EndTime,
 		arg.IsActive,
-		arg.MaxAppointments,
 	)
 	var i Doctorschedule
 	err := row.Scan(
 		&i.ID,
 		&i.DoctorID,
 		&i.DayOfWeek,
+		&i.Shift,
 		&i.StartTime,
 		&i.EndTime,
 		&i.IsActive,
-		&i.MaxAppointments,
+		&i.CreatedAt,
+		&i.UpdatedAt,
 	)
 	return i, err
 }

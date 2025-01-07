@@ -66,10 +66,9 @@ INSERT INTO DoctorSchedules (
     day_of_week,
     start_time,
     end_time,
-    is_active,
-    max_appointments
-) VALUES (
-    $1, $2, $3, $4, $5, $6
+    is_active
+  ) VALUES (
+    $1, $2, $3, $4, $5
 ) RETURNING *;
 
 -- name: GetDoctor :one

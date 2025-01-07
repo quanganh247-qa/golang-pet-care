@@ -151,11 +151,11 @@ ORDER BY ts.start_time ASC
 `
 
 type GetAppointmentsOfDoctorWithDetailsRow struct {
-	AppointmentID int64            `json:"appointment_id"`
-	PetName       pgtype.Text      `json:"pet_name"`
-	ServiceName   pgtype.Text      `json:"service_name"`
-	StartTime     pgtype.Timestamp `json:"start_time"`
-	EndTime       pgtype.Timestamp `json:"end_time"`
+	AppointmentID int64       `json:"appointment_id"`
+	PetName       pgtype.Text `json:"pet_name"`
+	ServiceName   pgtype.Text `json:"service_name"`
+	StartTime     pgtype.Time `json:"start_time"`
+	EndTime       pgtype.Time `json:"end_time"`
 }
 
 func (q *Queries) GetAppointmentsOfDoctorWithDetails(ctx context.Context, id int64) ([]GetAppointmentsOfDoctorWithDetailsRow, error) {
