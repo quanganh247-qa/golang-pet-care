@@ -563,6 +563,7 @@ func (q *Queries) VerifiedUser(ctx context.Context, username string) (User, erro
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 const updateUser = `-- name: UpdateUser :one
 <<<<<<< HEAD
 UPDATE users
@@ -597,6 +598,22 @@ type UpdateUserParams struct {
 	PhoneNumber pgtype.Text `json:"phone_number"`
 	Address     pgtype.Text `json:"address"`
 =======
+=======
+const insertDoctor = `-- name: InsertDoctor :one
+INSERT INTO Doctors (
+    user_id,
+    specialization,
+    years_of_experience,
+    education,
+    certificate_number,
+    bio,
+    consultation_fee
+) VALUES (
+    $1, $2, $3, $4, $5, $6, $7
+) RETURNING id, user_id, specialization, years_of_experience, education, certificate_number, bio, consultation_fee
+`
+
+>>>>>>> 3003e08 (update sqlc)
 type InsertDoctorParams struct {
 	UserID            int64         `json:"user_id"`
 	Specialization    pgtype.Text   `json:"specialization"`
@@ -605,6 +622,7 @@ type InsertDoctorParams struct {
 	CertificateNumber pgtype.Text   `json:"certificate_number"`
 	Bio               pgtype.Text   `json:"bio"`
 	ConsultationFee   pgtype.Float8 `json:"consultation_fee"`
+<<<<<<< HEAD
 >>>>>>> e9037c6 (update sqlc)
 }
 
@@ -641,10 +659,35 @@ func (q *Queries) VerifiedUser(ctx context.Context, arg VerifiedUserParams) (Use
 		&i.CreatedAt,
 		&i.IsVerifiedEmail,
 		&i.RemovedAt,
+=======
+}
+
+func (q *Queries) InsertDoctor(ctx context.Context, arg InsertDoctorParams) (Doctor, error) {
+	row := q.db.QueryRow(ctx, insertDoctor,
+		arg.UserID,
+		arg.Specialization,
+		arg.YearsOfExperience,
+		arg.Education,
+		arg.CertificateNumber,
+		arg.Bio,
+		arg.ConsultationFee,
+	)
+	var i Doctor
+	err := row.Scan(
+		&i.ID,
+		&i.UserID,
+		&i.Specialization,
+		&i.YearsOfExperience,
+		&i.Education,
+		&i.CertificateNumber,
+		&i.Bio,
+		&i.ConsultationFee,
+>>>>>>> 3003e08 (update sqlc)
 	)
 	return i, err
 }
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 const updateUserPassword = `-- name: UpdateUserPassword :one
 UPDATE users
@@ -722,6 +765,8 @@ func (q *Queries) InsertDoctorSchedule(ctx context.Context, arg InsertDoctorSche
 
 =======
 >>>>>>> 6f3ea8a (update sqlc)
+=======
+>>>>>>> 3003e08 (update sqlc)
 const updateAvatarUser = `-- name: UpdateAvatarUser :one
 UPDATE users
 SET data_image = $2, original_image = $3

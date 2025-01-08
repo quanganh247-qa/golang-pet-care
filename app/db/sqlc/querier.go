@@ -316,6 +316,7 @@ type Querier interface {
 	GetVaccinationByID(ctx context.Context, vaccinationid int64) (Vaccination, error)
 	InsertDeviceToken(ctx context.Context, arg InsertDeviceTokenParams) (Devicetoken, error)
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> 0fb3f30 (user images)
 	InsertDoctor(ctx context.Context, arg InsertDoctorParams) (Doctor, error)
 <<<<<<< HEAD
@@ -330,6 +331,9 @@ type Querier interface {
 	InsertDoctorSchedule(ctx context.Context, arg InsertDoctorScheduleParams) (Doctorschedule, error)
 =======
 >>>>>>> 6f3ea8a (update sqlc)
+=======
+	InsertDoctor(ctx context.Context, arg InsertDoctorParams) (Doctor, error)
+>>>>>>> 3003e08 (update sqlc)
 	InsertNotification(ctx context.Context, arg InsertNotificationParams) (Notification, error)
 	InsertPetLog(ctx context.Context, arg InsertPetLogParams) (PetLog, error)
 	InsertProduct(ctx context.Context, arg InsertProductParams) (Product, error)
