@@ -47,18 +47,18 @@ DELETE FROM users
 WHERE id = $1;
 
 
--- -- name: InsertDoctor :one
--- INSERT INTO Doctors (
---     user_id,
---     specialization,
---     years_of_experience,
---     education,
---     certificate_number,
---     bio,
---     consultation_fee
--- ) VALUES (
---     $1, $2, $3, $4, $5, $6, $7
--- ) RETURNING *;
+-- name: InsertDoctor :one
+INSERT INTO Doctors (
+    user_id,
+    specialization,
+    years_of_experience,
+    education,
+    certificate_number,
+    bio,
+    consultation_fee
+) VALUES (
+    $1, $2, $3, $4, $5, $6, $7
+) RETURNING *;
 
 -- -- name: InsertDoctorSchedule :one
 -- INSERT INTO DoctorSchedules (
