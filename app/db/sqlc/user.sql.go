@@ -582,6 +582,9 @@ func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 3003e08 (update sqlc)
 const insertDoctor = `-- name: InsertDoctor :one
 INSERT INTO Doctors (
     user_id,
@@ -616,7 +619,10 @@ func (q *Queries) InsertDoctor(ctx context.Context, arg InsertDoctorParams) (Doc
 		arg.Bio,
 		arg.ConsultationFee,
 	)
+<<<<<<< HEAD
 >>>>>>> 0fb3f30 (user images)
+=======
+>>>>>>> 3003e08 (update sqlc)
 	var i Doctor
 	err := row.Scan(
 		&i.ID,
@@ -631,6 +637,7 @@ func (q *Queries) InsertDoctor(ctx context.Context, arg InsertDoctorParams) (Doc
 	return i, err
 }
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 >>>>>>> cfbe865 (updated service response)
@@ -1271,6 +1278,8 @@ func (q *Queries) UpdateUserPassword(ctx context.Context, arg UpdateUserPassword
 
 =======
 >>>>>>> 6f3ea8a (update sqlc)
+=======
+>>>>>>> 3003e08 (update sqlc)
 const updateAvatarUser = `-- name: UpdateAvatarUser :one
 UPDATE users
 SET data_image = $2, original_image = $3
