@@ -99,6 +99,9 @@ WHERE id = $1;
 
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 3003e08 (update sqlc)
 -- name: InsertDoctor :one
 INSERT INTO Doctors (
     user_id,
@@ -107,15 +110,19 @@ INSERT INTO Doctors (
     education,
     certificate_number,
 <<<<<<< HEAD
+<<<<<<< HEAD
     bio
 ) VALUES (
     $1, $2, $3, $4, $5, $6
 =======
+=======
+>>>>>>> 3003e08 (update sqlc)
     bio,
     consultation_fee
 ) VALUES (
     $1, $2, $3, $4, $5, $6, $7
 ) RETURNING *;
+<<<<<<< HEAD
 
 -- name: InsertDoctorSchedule :one
 INSERT INTO DoctorSchedules (
@@ -160,6 +167,8 @@ WHERE
 -- ) VALUES (
 --     $1, $2, $3, $4, $5, $6, $7
 -- ) RETURNING *;
+=======
+>>>>>>> 3003e08 (update sqlc)
 
 -- -- name: InsertDoctorSchedule :one
 -- INSERT INTO DoctorSchedules (
