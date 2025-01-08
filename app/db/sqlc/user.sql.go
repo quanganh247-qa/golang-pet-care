@@ -162,6 +162,54 @@ func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error
 	return i, err
 }
 
+const insertDoctor = `-- name: InsertDoctor :one
+INSERT INTO Doctors (
+    user_id,
+    specialization,
+    years_of_experience,
+    education,
+    certificate_number,
+    bio,
+    consultation_fee
+) VALUES (
+    $1, $2, $3, $4, $5, $6, $7
+) RETURNING id, user_id, specialization, years_of_experience, education, certificate_number, bio, consultation_fee
+`
+
+type InsertDoctorParams struct {
+	UserID            int64         `json:"user_id"`
+	Specialization    pgtype.Text   `json:"specialization"`
+	YearsOfExperience pgtype.Int4   `json:"years_of_experience"`
+	Education         pgtype.Text   `json:"education"`
+	CertificateNumber pgtype.Text   `json:"certificate_number"`
+	Bio               pgtype.Text   `json:"bio"`
+	ConsultationFee   pgtype.Float8 `json:"consultation_fee"`
+}
+
+func (q *Queries) InsertDoctor(ctx context.Context, arg InsertDoctorParams) (Doctor, error) {
+	row := q.db.QueryRow(ctx, insertDoctor,
+		arg.UserID,
+		arg.Specialization,
+		arg.YearsOfExperience,
+		arg.Education,
+		arg.CertificateNumber,
+		arg.Bio,
+		arg.ConsultationFee,
+	)
+	var i Doctor
+	err := row.Scan(
+		&i.ID,
+		&i.UserID,
+		&i.Specialization,
+		&i.YearsOfExperience,
+		&i.Education,
+		&i.CertificateNumber,
+		&i.Bio,
+		&i.ConsultationFee,
+	)
+	return i, err
+}
+
 const updateAvatarUser = `-- name: UpdateAvatarUser :one
 UPDATE users
 SET data_image = $2, original_image = $3

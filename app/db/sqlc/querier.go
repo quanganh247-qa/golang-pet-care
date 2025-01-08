@@ -68,6 +68,7 @@ type Querier interface {
 	GetUserByEmail(ctx context.Context, email string) (User, error)
 	GetVaccinationByID(ctx context.Context, vaccinationid int64) (Vaccination, error)
 	InsertDeviceToken(ctx context.Context, arg InsertDeviceTokenParams) (Devicetoken, error)
+	InsertDoctor(ctx context.Context, arg InsertDoctorParams) (Doctor, error)
 	InsertNotification(ctx context.Context, arg InsertNotificationParams) (Notification, error)
 	InsertPetLog(ctx context.Context, arg InsertPetLogParams) (PetLog, error)
 	InsertProduct(ctx context.Context, arg InsertProductParams) (Product, error)
