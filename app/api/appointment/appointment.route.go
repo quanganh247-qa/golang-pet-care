@@ -14,17 +14,15 @@ func Routes(routerGroup middleware.RouterGroup) {
 	appointmentApi := &AppointmentApi{
 		&AppointmentController{
 			service: &AppointmentService{
-				storeDB: db.StoreDB, // This should refer to the actual instance
-				// emailQueue: rabbitmq.Client.Email,
+				storeDB: db.StoreDB,
 			},
 		},
 	}
 
 	{
-		authRoute.POST("/create", appointmentApi.controller.createAppointment)
+		authRoute.POST("/", appointmentApi.controller.createAppointment)
 		authRoute.PUT("/:appointment_id", appointmentApi.controller.updateAppointmentStatus)
-		authRoute.GET("/doctor/:doctor_id", appointmentApi.controller.getAppointmentsOfDoctor)
-		authRoute.GET("/", appointmentApi.controller.getAppointmentsByPetOfUser)
+		authRoute.GET("/", appointmentApi.controller.getAppointmentsByUser)
 		authRoute.GET("/:appointment_id", appointmentApi.controller.getAppointmentByID)
 
 	}
