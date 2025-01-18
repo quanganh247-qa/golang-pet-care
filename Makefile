@@ -38,6 +38,7 @@ server:
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	gin -p 8089 -i run /Users/dhquanganh/Documents/TLCN/golang-pet-care/main.go
 =======
 	gin -p 8081 -i run main.go
@@ -50,6 +51,9 @@ server:
 =======
 	gin -p 8089 -i run main.go
 >>>>>>> c3c833d (login api)
+=======
+	gin -p 8089 -i run /Users/dhquanganh/Documents/TLCN/golang-pet-care/main.go
+>>>>>>> 685da65 (latest update)
 
 <<<<<<< HEAD
 <<<<<<< HEAD

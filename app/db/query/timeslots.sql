@@ -1,6 +1,7 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 -- name: CreateTimeSlot :one
 INSERT INTO time_slots 
 (doctor_id, "date", start_time, end_time, max_patients, booked_patients, created_at, updated_at)
@@ -139,20 +140,29 @@ SET
 WHERE id = $3
 RETURNING *;
 
+=======
+>>>>>>> 685da65 (latest update)
 -- name: CreateTimeSlot :one
-INSERT INTO timeslots (
-    doctor_id,
-    schedule_id,
-    date,
-    start_time,
-    end_time,
-    max_patients,
-    slot_status
-) VALUES (
-    $1, $2, $3, $4, $5, $6, $7
+INSERT INTO TimeSlots
+( doctor_id, "date", start_time, end_time, created_at, updated_at, status)
+VALUES( 
+    $1, $2, $3, $4, now(), now(), 'available'
 ) RETURNING *;
 
+<<<<<<< HEAD
 -- name: GetDoctorTimeSlots :many
 SELECT * FROM timeslots
 WHERE doctor_id = $1 AND date = $2;
 >>>>>>> e9037c6 (update sqlc)
+=======
+-- name: GetTimeSlotsByDoctorAndDate :many
+SELECT * from TimeSlots WHERE doctor_id = $1 AND "date" = $2 ORDER BY start_time ASC;
+
+-- name: GetTimeSlotById :one
+SELECT * from TimeSlots WHERE id = $1;
+
+-- name: UpdateTimeSlotStatus :exec
+UPDATE TimeSlots
+SET status = $2
+WHERE id = $1;
+>>>>>>> 685da65 (latest update)

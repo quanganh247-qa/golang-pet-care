@@ -17,6 +17,7 @@ const createTimeSlot = `-- name: CreateTimeSlot :one
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> ffc9071 (AI suggestion)
 INSERT INTO time_slots 
@@ -91,21 +92,26 @@ func (q *Queries) CreateTimeSlot(ctx context.Context, arg CreateTimeSlotParams) 
 		arg.ScheduleID,
 >>>>>>> e9037c6 (update sqlc)
 =======
+=======
+INSERT INTO TimeSlots
+( doctor_id, "date", start_time, end_time, created_at, updated_at, status)
+VALUES( 
+    $1, $2, $3, $4, now(), now(), 'available'
+) RETURNING id, doctor_id, date, start_time, end_time, status, created_at, updated_at
+>>>>>>> 685da65 (latest update)
 `
 
 type CreateTimeSlotParams struct {
-	DoctorID    int32       `json:"doctor_id"`
-	ScheduleID  int32       `json:"schedule_id"`
-	Date        pgtype.Date `json:"date"`
-	StartTime   pgtype.Time `json:"start_time"`
-	EndTime     pgtype.Time `json:"end_time"`
-	MaxPatients pgtype.Int4 `json:"max_patients"`
-	SlotStatus  pgtype.Bool `json:"slot_status"`
+	DoctorID  int32       `json:"doctor_id"`
+	Date      pgtype.Date `json:"date"`
+	StartTime pgtype.Time `json:"start_time"`
+	EndTime   pgtype.Time `json:"end_time"`
 }
 
 func (q *Queries) CreateTimeSlot(ctx context.Context, arg CreateTimeSlotParams) (Timeslot, error) {
 	row := q.db.QueryRow(ctx, createTimeSlot,
 		arg.DoctorID,
+<<<<<<< HEAD
 		arg.ScheduleID,
 >>>>>>> e9037c6 (update sqlc)
 		arg.Date,
@@ -140,11 +146,17 @@ func (q *Queries) CreateTimeSlot(ctx context.Context, arg CreateTimeSlotParams) 
 >>>>>>> e9037c6 (update sqlc)
 =======
 		arg.SlotStatus,
+=======
+		arg.Date,
+		arg.StartTime,
+		arg.EndTime,
+>>>>>>> 685da65 (latest update)
 	)
 	var i Timeslot
 	err := row.Scan(
 		&i.ID,
 		&i.DoctorID,
+<<<<<<< HEAD
 		&i.ScheduleID,
 >>>>>>> e9037c6 (update sqlc)
 		&i.Date,
@@ -170,6 +182,12 @@ func (q *Queries) CreateTimeSlot(ctx context.Context, arg CreateTimeSlotParams) 
 >>>>>>> e9037c6 (update sqlc)
 =======
 		&i.SlotStatus,
+=======
+		&i.Date,
+		&i.StartTime,
+		&i.EndTime,
+		&i.Status,
+>>>>>>> 685da65 (latest update)
 		&i.CreatedAt,
 		&i.UpdatedAt,
 >>>>>>> e9037c6 (update sqlc)
@@ -177,6 +195,7 @@ func (q *Queries) CreateTimeSlot(ctx context.Context, arg CreateTimeSlotParams) 
 	return i, err
 }
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -423,12 +442,22 @@ SELECT id, doctor_id, date, start_time, end_time, max_patients, booked_patients,
 func (q *Queries) GetTimeSlotById(ctx context.Context, id int64) (TimeSlot, error) {
 	row := q.db.QueryRow(ctx, getTimeSlotById, id)
 	var i TimeSlot
+=======
+const getTimeSlotById = `-- name: GetTimeSlotById :one
+SELECT id, doctor_id, date, start_time, end_time, status, created_at, updated_at from TimeSlots WHERE id = $1
+`
+
+func (q *Queries) GetTimeSlotById(ctx context.Context, id int64) (Timeslot, error) {
+	row := q.db.QueryRow(ctx, getTimeSlotById, id)
+	var i Timeslot
+>>>>>>> 685da65 (latest update)
 	err := row.Scan(
 		&i.ID,
 		&i.DoctorID,
 		&i.Date,
 		&i.StartTime,
 		&i.EndTime,
+<<<<<<< HEAD
 		&i.MaxPatients,
 		&i.BookedPatients,
 		&i.CreatedAt,
@@ -472,29 +501,26 @@ func (q *Queries) DeleteDoctorSchedule(ctx context.Context, id int64) error {
 	_, err := q.db.Exec(ctx, deleteDoctorSchedule, id)
 	return err
 >>>>>>> e9037c6 (update sqlc)
+=======
+		&i.Status,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+>>>>>>> 685da65 (latest update)
 }
 
-const deleteTimeSlot = `-- name: DeleteTimeSlot :exec
-DELETE FROM timeslots WHERE id = $1
+const getTimeSlotsByDoctorAndDate = `-- name: GetTimeSlotsByDoctorAndDate :many
+SELECT id, doctor_id, date, start_time, end_time, status, created_at, updated_at from TimeSlots WHERE doctor_id = $1 AND "date" = $2 ORDER BY start_time ASC
 `
 
-func (q *Queries) DeleteTimeSlot(ctx context.Context, id int64) error {
-	_, err := q.db.Exec(ctx, deleteTimeSlot, id)
-	return err
-}
-
-const getDoctorTimeSlots = `-- name: GetDoctorTimeSlots :many
-SELECT id, doctor_id, schedule_id, date, start_time, end_time, max_patients, slot_status, created_at, updated_at FROM timeslots
-WHERE doctor_id = $1 AND date = $2
-`
-
-type GetDoctorTimeSlotsParams struct {
+type GetTimeSlotsByDoctorAndDateParams struct {
 	DoctorID int32       `json:"doctor_id"`
 	Date     pgtype.Date `json:"date"`
 }
 
-func (q *Queries) GetDoctorTimeSlots(ctx context.Context, arg GetDoctorTimeSlotsParams) ([]Timeslot, error) {
-	rows, err := q.db.Query(ctx, getDoctorTimeSlots, arg.DoctorID, arg.Date)
+func (q *Queries) GetTimeSlotsByDoctorAndDate(ctx context.Context, arg GetTimeSlotsByDoctorAndDateParams) ([]Timeslot, error) {
+	rows, err := q.db.Query(ctx, getTimeSlotsByDoctorAndDate, arg.DoctorID, arg.Date)
 	if err != nil {
 		return nil, err
 	}
@@ -505,12 +531,10 @@ func (q *Queries) GetDoctorTimeSlots(ctx context.Context, arg GetDoctorTimeSlots
 		if err := rows.Scan(
 			&i.ID,
 			&i.DoctorID,
-			&i.ScheduleID,
 			&i.Date,
 			&i.StartTime,
 			&i.EndTime,
-			&i.MaxPatients,
-			&i.SlotStatus,
+			&i.Status,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 		); err != nil {
@@ -524,36 +548,18 @@ func (q *Queries) GetDoctorTimeSlots(ctx context.Context, arg GetDoctorTimeSlots
 	return items, nil
 }
 
-const updateTimeSlot = `-- name: UpdateTimeSlot :one
-UPDATE timeslots
-SET 
-    max_patients = COALESCE($1, max_patients),
-    slot_status = COALESCE($2, slot_status),
-    updated_at = CURRENT_TIMESTAMP
-WHERE id = $3
-RETURNING id, doctor_id, schedule_id, date, start_time, end_time, max_patients, slot_status, created_at, updated_at
+const updateTimeSlotStatus = `-- name: UpdateTimeSlotStatus :exec
+UPDATE TimeSlots
+SET status = $2
+WHERE id = $1
 `
 
-type UpdateTimeSlotParams struct {
-	MaxPatients pgtype.Int4 `json:"max_patients"`
-	SlotStatus  pgtype.Bool `json:"slot_status"`
-	ID          int64       `json:"id"`
+type UpdateTimeSlotStatusParams struct {
+	ID     int64       `json:"id"`
+	Status pgtype.Text `json:"status"`
 }
 
-func (q *Queries) UpdateTimeSlot(ctx context.Context, arg UpdateTimeSlotParams) (Timeslot, error) {
-	row := q.db.QueryRow(ctx, updateTimeSlot, arg.MaxPatients, arg.SlotStatus, arg.ID)
-	var i Timeslot
-	err := row.Scan(
-		&i.ID,
-		&i.DoctorID,
-		&i.ScheduleID,
-		&i.Date,
-		&i.StartTime,
-		&i.EndTime,
-		&i.MaxPatients,
-		&i.SlotStatus,
-		&i.CreatedAt,
-		&i.UpdatedAt,
-	)
-	return i, err
+func (q *Queries) UpdateTimeSlotStatus(ctx context.Context, arg UpdateTimeSlotStatusParams) error {
+	_, err := q.db.Exec(ctx, updateTimeSlotStatus, arg.ID, arg.Status)
+	return err
 }

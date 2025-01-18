@@ -24,6 +24,7 @@ func Routes(routerGroup middleware.RouterGroup, taskDistributor worker.TaskDistr
 			service: &AppointmentService{
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 				storeDB:         db.StoreDB,
 				taskDistributor: taskDistributor,
 =======
@@ -33,11 +34,15 @@ func Routes(routerGroup middleware.RouterGroup, taskDistributor worker.TaskDistr
 				storeDB:         db.StoreDB,
 				taskDistributor: taskDistributor,
 >>>>>>> e859654 (Elastic search)
+=======
+				storeDB: db.StoreDB,
+>>>>>>> 685da65 (latest update)
 			},
 		},
 	}
 
 	{
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -72,6 +77,11 @@ func Routes(routerGroup middleware.RouterGroup, taskDistributor worker.TaskDistr
 =======
 		authRoute.GET("/doctor/:doctor_id", appointmentApi.controller.getAppointmentsOfDoctor)
 		authRoute.GET("/", appointmentApi.controller.getAppointmentsByPetOfUser)
+=======
+		authRoute.POST("/", appointmentApi.controller.createAppointment)
+		authRoute.PUT("/:appointment_id", appointmentApi.controller.updateAppointmentStatus)
+		authRoute.GET("/", appointmentApi.controller.getAppointmentsByUser)
+>>>>>>> 685da65 (latest update)
 		authRoute.GET("/:appointment_id", appointmentApi.controller.getAppointmentByID)
 >>>>>>> 7e35c2e (get appointment detail)
 

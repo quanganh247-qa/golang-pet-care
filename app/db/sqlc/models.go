@@ -182,9 +182,12 @@ type Department struct {
 	Name        string           `json:"name"`
 	Description pgtype.Text      `json:"description"`
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 	IsActive    pgtype.Bool      `json:"is_active"`
 >>>>>>> e9037c6 (update sqlc)
+=======
+>>>>>>> 685da65 (latest update)
 	CreatedAt   pgtype.Timestamp `json:"created_at"`
 	UpdatedAt   pgtype.Timestamp `json:"updated_at"`
 }
@@ -318,6 +321,7 @@ type MedicalHistory struct {
 	ConsultationFee   pgtype.Float8 `json:"consultation_fee"`
 }
 
+<<<<<<< HEAD
 type Doctorschedule struct {
 	ID        int64            `json:"id"`
 	DoctorID  int32            `json:"doctor_id"`
@@ -457,6 +461,8 @@ type Order struct {
 
 =======
 >>>>>>> 272832d (redis cache)
+=======
+>>>>>>> 685da65 (latest update)
 type Medicine struct {
 	ID          int64              `json:"id"`
 	Name        string             `json:"name"`
@@ -847,6 +853,7 @@ type State struct {
 type Timeslot struct {
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 type Timeslot struct {
 >>>>>>> e9037c6 (update sqlc)
@@ -863,6 +870,8 @@ type Timeslot struct {
 <<<<<<< HEAD
 >>>>>>> e9037c6 (update sqlc)
 =======
+=======
+>>>>>>> 685da65 (latest update)
 	ID        int64            `json:"id"`
 	DoctorID  int32            `json:"doctor_id"`
 	Date      pgtype.Date      `json:"date"`
@@ -871,6 +880,7 @@ type Timeslot struct {
 	Status    pgtype.Text      `json:"status"`
 	CreatedAt pgtype.Timestamp `json:"created_at"`
 	UpdatedAt pgtype.Timestamp `json:"updated_at"`
+<<<<<<< HEAD
 >>>>>>> 685da65 (latest update)
 =======
 =======
@@ -888,6 +898,8 @@ type TimeSlot struct {
 >>>>>>> b393bb9 (add service and add permission)
 =======
 >>>>>>> e9037c6 (update sqlc)
+=======
+>>>>>>> 685da65 (latest update)
 }
 
 <<<<<<< HEAD

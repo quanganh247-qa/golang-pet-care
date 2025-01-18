@@ -6,6 +6,8 @@ package db
 
 import (
 	"context"
+
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 type Querier interface {
@@ -134,7 +136,6 @@ type Querier interface {
 >>>>>>> 21608b5 (cart and order api)
 	CreateAppointment(ctx context.Context, arg CreateAppointmentParams) (Appointment, error)
 	CreateCartForUser(ctx context.Context, userID int64) (int64, error)
-	CreateDoctorSchedule(ctx context.Context, arg CreateDoctorScheduleParams) (Doctorschedule, error)
 	CreateOrder(ctx context.Context, arg CreateOrderParams) (Order, error)
 	CreatePet(ctx context.Context, arg CreatePetParams) (Pet, error)
 	CreatePetSchedule(ctx context.Context, arg CreatePetScheduleParams) error
@@ -211,7 +212,6 @@ type Querier interface {
 >>>>>>> 4a16bfc (remove item in cart)
 	DeleteAllNotificationsByUser(ctx context.Context, username string) error
 	DeleteDeviceToken(ctx context.Context, arg DeleteDeviceTokenParams) error
-	DeleteDoctorSchedule(ctx context.Context, id int64) error
 	DeleteNotificationByID(ctx context.Context, notificationid int64) error
 >>>>>>> 9fd7fc8 (feat: validate notification schema and APIs)
 	DeletePet(ctx context.Context, petid int64) error
@@ -266,6 +266,7 @@ type Querier interface {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> 7e616af (add pet log schema)
 =======
 =======
@@ -279,6 +280,8 @@ type Querier interface {
 =======
 	DeleteTimeSlot(ctx context.Context, id int64) error
 >>>>>>> e9037c6 (update sqlc)
+=======
+>>>>>>> 685da65 (latest update)
 	DeleteUser(ctx context.Context, id int64) error
 >>>>>>> 1f24c18 (feat: OTP with redis)
 =======
@@ -386,6 +389,7 @@ type Querier interface {
 	GetAppointmentDetailById(ctx context.Context, appointmentID int64) (Appointment, error)
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> 3bf345d (happy new year)
 	GetAppointmentsByDoctor(ctx context.Context, doctorID pgtype.Int8) ([]GetAppointmentsByDoctorRow, error)
 =======
@@ -424,6 +428,10 @@ type Querier interface {
 =======
 	GetAppointmentsByPetOfUser(ctx context.Context, username string) ([]Appointment, error)
 >>>>>>> e30b070 (Get list appoinment by user)
+=======
+	GetAppointmentsByDoctor(ctx context.Context, arg GetAppointmentsByDoctorParams) (int64, error)
+	GetAppointmentsByUser(ctx context.Context, username pgtype.Text) ([]GetAppointmentsByUserRow, error)
+>>>>>>> 685da65 (latest update)
 	GetAppointmentsOfDoctorWithDetails(ctx context.Context, id int64) ([]GetAppointmentsOfDoctorWithDetailsRow, error)
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -519,6 +527,7 @@ type Querier interface {
 	GetDiceaseAndMedicinesInfo(ctx context.Context, lower string) ([]GetDiceaseAndMedicinesInfoRow, error)
 	GetDiseaseTreatmentPlanWithPhases(ctx context.Context, lower string) ([]GetDiseaseTreatmentPlanWithPhasesRow, error)
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> 6c35562 (dicease and treatment plan)
 	GetDoctor(ctx context.Context, id int64) (GetDoctorRow, error)
 <<<<<<< HEAD
@@ -586,6 +595,11 @@ type Querier interface {
 	GetDoctorSchedules(ctx context.Context, doctorID int32) ([]Doctorschedule, error)
 	GetDoctorTimeSlots(ctx context.Context, arg GetDoctorTimeSlotsParams) ([]Timeslot, error)
 >>>>>>> 6f3ea8a (update sqlc)
+=======
+	GetDoctor(ctx context.Context, id int64) (GetDoctorRow, error)
+	GetDoctorById(ctx context.Context, id int64) (Doctor, error)
+	GetDoctors(ctx context.Context) ([]GetDoctorsRow, error)
+>>>>>>> 685da65 (latest update)
 	GetNotificationsByUsername(ctx context.Context, arg GetNotificationsByUsernameParams) ([]Notification, error)
 <<<<<<< HEAD
 >>>>>>> 6f3ea8a (update sqlc)
@@ -730,6 +744,7 @@ type Querier interface {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	GetTimeSlotByID(ctx context.Context, id int64) (GetTimeSlotByIDRow, error)
 	GetTimeslotsAvailable(ctx context.Context, arg GetTimeslotsAvailableParams) ([]GetTimeslotsAvailableRow, error)
 <<<<<<< HEAD
@@ -762,6 +777,10 @@ type Querier interface {
 >>>>>>> 685da65 (latest update)
 =======
 >>>>>>> e9037c6 (update sqlc)
+=======
+	GetTimeSlotById(ctx context.Context, id int64) (Timeslot, error)
+	GetTimeSlotsByDoctorAndDate(ctx context.Context, arg GetTimeSlotsByDoctorAndDateParams) ([]Timeslot, error)
+>>>>>>> 685da65 (latest update)
 	GetTreatmentByDiseaseId(ctx context.Context, arg GetTreatmentByDiseaseIdParams) ([]GetTreatmentByDiseaseIdRow, error)
 >>>>>>> 6a85052 (get treatment by disease)
 =======
@@ -968,6 +987,7 @@ type Querier interface {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	UpdateCartItemQuantity(ctx context.Context, arg UpdateCartItemQuantityParams) error
 	UpdateDoctor(ctx context.Context, arg UpdateDoctorParams) (Doctor, error)
 <<<<<<< HEAD
@@ -1029,6 +1049,8 @@ type Querier interface {
 =======
 	UpdateDoctorSchedule(ctx context.Context, arg UpdateDoctorScheduleParams) (Doctorschedule, error)
 >>>>>>> e9037c6 (update sqlc)
+=======
+>>>>>>> 685da65 (latest update)
 	UpdateNotification(ctx context.Context, appointmentID int64) error
 	UpdateOrderPaymentStatus(ctx context.Context, id int64) (Order, error)
 	UpdatePet(ctx context.Context, arg UpdatePetParams) error
@@ -1071,6 +1093,7 @@ type Querier interface {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	UpdateTimeSlot(ctx context.Context, arg UpdateTimeSlotParams) (Timeslot, error)
 >>>>>>> e9037c6 (update sqlc)
 =======
@@ -1091,6 +1114,9 @@ type Querier interface {
 =======
 	UpdateTimeSlot(ctx context.Context, arg UpdateTimeSlotParams) (Timeslot, error)
 >>>>>>> e9037c6 (update sqlc)
+=======
+	UpdateTimeSlotStatus(ctx context.Context, arg UpdateTimeSlotStatusParams) error
+>>>>>>> 685da65 (latest update)
 	UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error)
 	UpdateUserPassword(ctx context.Context, arg UpdateUserPasswordParams) (User, error)
 =======

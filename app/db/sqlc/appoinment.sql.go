@@ -59,6 +59,7 @@ const createAppointment = `-- name: CreateAppointment :one
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> 4ccd381 (Update appointment flow)
 INSERT INTO public.appointments (
@@ -140,6 +141,16 @@ VALUES(
 type CreateAppointmentParams struct {
 <<<<<<< HEAD
 <<<<<<< HEAD
+=======
+INSERT INTO Appointment
+( petid, doctor_id, service_id, "date", status, notes, reminder_send, time_slot_id, created_at)
+VALUES( 
+    $1, $2, $3, $4, $5, $6, $7, $8, now()
+) RETURNING appointment_id, petid, username, doctor_id, service_id, date, status, notes, reminder_send, time_slot_id, created_at
+`
+
+type CreateAppointmentParams struct {
+>>>>>>> 685da65 (latest update)
 	Petid        pgtype.Int8      `json:"petid"`
 	DoctorID     pgtype.Int8      `json:"doctor_id"`
 	ServiceID    pgtype.Int8      `json:"service_id"`
@@ -148,6 +159,7 @@ type CreateAppointmentParams struct {
 	Notes        pgtype.Text      `json:"notes"`
 	ReminderSend pgtype.Bool      `json:"reminder_send"`
 	TimeSlotID   pgtype.Int8      `json:"time_slot_id"`
+<<<<<<< HEAD
 >>>>>>> 685da65 (latest update)
 =======
 	Petid         pgtype.Int8      `json:"petid"`
@@ -212,11 +224,14 @@ type CreateAppointmentParams struct {
 >>>>>>> 4ccd381 (Update appointment flow)
 =======
 >>>>>>> cfbe865 (updated service response)
+=======
+>>>>>>> 685da65 (latest update)
 }
 
 func (q *Queries) CreateAppointment(ctx context.Context, arg CreateAppointmentParams) (Appointment, error) {
 	row := q.db.QueryRow(ctx, createAppointment,
 		arg.Petid,
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 		arg.Username,
@@ -264,6 +279,15 @@ func (q *Queries) CreateAppointment(ctx context.Context, arg CreateAppointmentPa
 =======
 		arg.Date,
 >>>>>>> cfbe865 (updated service response)
+=======
+		arg.DoctorID,
+		arg.ServiceID,
+		arg.Date,
+		arg.Status,
+		arg.Notes,
+		arg.ReminderSend,
+		arg.TimeSlotID,
+>>>>>>> 685da65 (latest update)
 	)
 	var i Appointment
 	err := row.Scan(
@@ -1147,7 +1171,7 @@ func (q *Queries) GetAppointmentDetailByAppointmentID(ctx context.Context, appoi
 >>>>>>> 71b74e9 (feat(appointment): add room management and update appointment functionality.)
 =======
 const getAppointmentDetailById = `-- name: GetAppointmentDetailById :one
-SELECT appointment_id, petid, doctor_id, service_id, date, status, notes, reminder_send, time_slot_id, created_at from Appointment WHERE appointment_id = $1
+SELECT appointment_id, petid, username, doctor_id, service_id, date, status, notes, reminder_send, time_slot_id, created_at from Appointment WHERE appointment_id = $1
 `
 
 func (q *Queries) GetAppointmentDetailById(ctx context.Context, appointmentID int64) (Appointment, error) {
@@ -1156,6 +1180,7 @@ func (q *Queries) GetAppointmentDetailById(ctx context.Context, appointmentID in
 	err := row.Scan(
 		&i.AppointmentID,
 		&i.Petid,
+		&i.Username,
 		&i.DoctorID,
 		&i.ServiceID,
 		&i.Date,
@@ -1169,6 +1194,7 @@ func (q *Queries) GetAppointmentDetailById(ctx context.Context, appointmentID in
 	return i, err
 }
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -1340,10 +1366,93 @@ func (q *Queries) GetAppointmentsByDoctor(ctx context.Context, doctorID pgtype.I
 	rows, err := q.db.Query(ctx, getAppointmentsByDoctor, doctorID)
 =======
 >>>>>>> e30b070 (Get list appoinment by user)
+=======
+const getAppointmentsByDoctor = `-- name: GetAppointmentsByDoctor :one
+SELECT COUNT(*) 
+FROM appointment as a
+WHERE date = $1 AND doctor_id = $2 AND status = 'completed'
+`
+
+type GetAppointmentsByDoctorParams struct {
+	Date     pgtype.Timestamp `json:"date"`
+	DoctorID pgtype.Int8      `json:"doctor_id"`
+}
+
+func (q *Queries) GetAppointmentsByDoctor(ctx context.Context, arg GetAppointmentsByDoctorParams) (int64, error) {
+	row := q.db.QueryRow(ctx, getAppointmentsByDoctor, arg.Date, arg.DoctorID)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
+}
+
+const getAppointmentsByUser = `-- name: GetAppointmentsByUser :many
+SELECT 
+    p.petid, p.name, p.type, p.breed, p.age, p.gender, p.healthnotes, p.weight, p.birth_date, p.username, p.microchip_number, p.last_checkup_date, p.is_active, p.data_image, p.original_image, s.serviceid, s.typeid, s.name, s.price, s.duration, s.description, s.isavailable, s.removed_at, a.appointment_id, a.petid, a.username, a.doctor_id, a.service_id, a.date, a.status, a.notes, a.reminder_send, a.time_slot_id, a.created_at, ts.id, ts.doctor_id, ts.date, ts.start_time, ts.end_time, ts.status, ts.created_at, ts.updated_at
+FROM 
+    appointment a
+JOIN 
+    pet p ON a.petid = p.petid 
+JOIN 
+    service s ON a.service_id = s.serviceid 
+JOIN 
+    timeslots ts ON a.time_slot_id = ts.id
+WHERE 
+    a.username = $1 and a.status <> 'completed'
+`
+
+type GetAppointmentsByUserRow struct {
+	Petid           int64            `json:"petid"`
+	Name            string           `json:"name"`
+	Type            string           `json:"type"`
+	Breed           pgtype.Text      `json:"breed"`
+	Age             pgtype.Int4      `json:"age"`
+	Gender          pgtype.Text      `json:"gender"`
+	Healthnotes     pgtype.Text      `json:"healthnotes"`
+	Weight          pgtype.Float8    `json:"weight"`
+	BirthDate       pgtype.Date      `json:"birth_date"`
+	Username        string           `json:"username"`
+	MicrochipNumber pgtype.Text      `json:"microchip_number"`
+	LastCheckupDate pgtype.Date      `json:"last_checkup_date"`
+	IsActive        pgtype.Bool      `json:"is_active"`
+	DataImage       []byte           `json:"data_image"`
+	OriginalImage   pgtype.Text      `json:"original_image"`
+	Serviceid       int64            `json:"serviceid"`
+	Typeid          pgtype.Int8      `json:"typeid"`
+	Name_2          string           `json:"name_2"`
+	Price           pgtype.Float8    `json:"price"`
+	Duration        pgtype.Interval  `json:"duration"`
+	Description     pgtype.Text      `json:"description"`
+	Isavailable     pgtype.Bool      `json:"isavailable"`
+	RemovedAt       pgtype.Timestamp `json:"removed_at"`
+	AppointmentID   int64            `json:"appointment_id"`
+	Petid_2         pgtype.Int8      `json:"petid_2"`
+	Username_2      pgtype.Text      `json:"username_2"`
+	DoctorID        pgtype.Int8      `json:"doctor_id"`
+	ServiceID       pgtype.Int8      `json:"service_id"`
+	Date            pgtype.Timestamp `json:"date"`
+	Status          pgtype.Text      `json:"status"`
+	Notes           pgtype.Text      `json:"notes"`
+	ReminderSend    pgtype.Bool      `json:"reminder_send"`
+	TimeSlotID      pgtype.Int8      `json:"time_slot_id"`
+	CreatedAt       pgtype.Timestamp `json:"created_at"`
+	ID              int64            `json:"id"`
+	DoctorID_2      int32            `json:"doctor_id_2"`
+	Date_2          pgtype.Date      `json:"date_2"`
+	StartTime       pgtype.Time      `json:"start_time"`
+	EndTime         pgtype.Time      `json:"end_time"`
+	Status_2        pgtype.Text      `json:"status_2"`
+	CreatedAt_2     pgtype.Timestamp `json:"created_at_2"`
+	UpdatedAt       pgtype.Timestamp `json:"updated_at"`
+}
+
+func (q *Queries) GetAppointmentsByUser(ctx context.Context, username pgtype.Text) ([]GetAppointmentsByUserRow, error) {
+	rows, err := q.db.Query(ctx, getAppointmentsByUser, username)
+>>>>>>> 685da65 (latest update)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
+<<<<<<< HEAD
 <<<<<<< HEAD
 	items := []GetAppointmentsByDoctorRow{}
 	for rows.Next() {
@@ -1571,11 +1680,38 @@ func (q *Queries) GetAppointmentsByUser(ctx context.Context, username pgtype.Tex
 >>>>>>> dc47646 (Optimize SQL query)
 =======
 	items := []Appointment{}
+=======
+	items := []GetAppointmentsByUserRow{}
+>>>>>>> 685da65 (latest update)
 	for rows.Next() {
-		var i Appointment
+		var i GetAppointmentsByUserRow
 		if err := rows.Scan(
-			&i.AppointmentID,
 			&i.Petid,
+			&i.Name,
+			&i.Type,
+			&i.Breed,
+			&i.Age,
+			&i.Gender,
+			&i.Healthnotes,
+			&i.Weight,
+			&i.BirthDate,
+			&i.Username,
+			&i.MicrochipNumber,
+			&i.LastCheckupDate,
+			&i.IsActive,
+			&i.DataImage,
+			&i.OriginalImage,
+			&i.Serviceid,
+			&i.Typeid,
+			&i.Name_2,
+			&i.Price,
+			&i.Duration,
+			&i.Description,
+			&i.Isavailable,
+			&i.RemovedAt,
+			&i.AppointmentID,
+			&i.Petid_2,
+			&i.Username_2,
 			&i.DoctorID,
 			&i.ServiceID,
 			&i.Date,
@@ -1584,7 +1720,18 @@ func (q *Queries) GetAppointmentsByUser(ctx context.Context, username pgtype.Tex
 			&i.ReminderSend,
 			&i.TimeSlotID,
 			&i.CreatedAt,
+<<<<<<< HEAD
 >>>>>>> e30b070 (Get list appoinment by user)
+=======
+			&i.ID,
+			&i.DoctorID_2,
+			&i.Date_2,
+			&i.StartTime,
+			&i.EndTime,
+			&i.Status_2,
+			&i.CreatedAt_2,
+			&i.UpdatedAt,
+>>>>>>> 685da65 (latest update)
 		); err != nil {
 			return nil, err
 		}
