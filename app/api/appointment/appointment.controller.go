@@ -33,13 +33,16 @@ type AppointmentControllerInterface interface {
 	getSOAPByAppointmentID(ctx *gin.Context)
 =======
 	updateAppointmentStatus(ctx *gin.Context)
-	getAppointmentsOfDoctor(ctx *gin.Context)
 	getAppointmentByID(ctx *gin.Context)
+<<<<<<< HEAD
 <<<<<<< HEAD
 >>>>>>> 7e35c2e (get appointment detail)
 =======
 	getAppointmentsByPetOfUser(ctx *gin.Context)
 >>>>>>> e30b070 (Get list appoinment by user)
+=======
+	getAppointmentsByUser(ctx *gin.Context)
+>>>>>>> 685da65 (latest update)
 }
 
 func (c *AppointmentController) createAppointment(ctx *gin.Context) {
@@ -82,6 +85,7 @@ func (c *AppointmentController) confirmAppointment(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, util.SuccessResponse("confirm appointment successful", nil))
 }
 
+<<<<<<< HEAD
 func (c *AppointmentController) checkinAppointment(ctx *gin.Context) {
 	roomID, err := strconv.ParseInt(ctx.Query("room_id"), 10, 64)
 	if err != nil {
@@ -382,6 +386,8 @@ func (c *AppointmentController) getSOAPByAppointmentID(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, soap)
 }
 
+=======
+>>>>>>> 685da65 (latest update)
 func (c *AppointmentController) getAppointmentByID(ctx *gin.Context) {
 	appointmentID := ctx.Param("appointment_id")
 	if appointmentID == "" {
@@ -402,13 +408,13 @@ func (c *AppointmentController) getAppointmentByID(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, util.SuccessResponse("get appointment by id successful", res))
 }
 
-func (c *AppointmentController) getAppointmentsByPetOfUser(ctx *gin.Context) {
+func (c *AppointmentController) getAppointmentsByUser(ctx *gin.Context) {
 	payload, err := middleware.GetAuthorizationPayload(ctx)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
 		return
 	}
-	res, err := c.service.GetAppointmentsByPetOfUser(ctx, payload.Username)
+	res, err := c.service.GetAppointmentsByUser(ctx, payload.Username)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
 		return

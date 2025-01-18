@@ -874,6 +874,7 @@ CREATE TABLE Service (
 CREATE TABLE Appointment (
   appointment_id BIGSERIAL PRIMARY KEY,
   petid BIGINT,
+  username VARCHAR,
   doctor_id BIGINT,
   service_id BIGINT,
   date timestamp DEFAULT (now()),
@@ -903,9 +904,6 @@ CREATE TABLE CheckoutService (
   unitPrice float8,
   subtotal float8
 );
-
-
-
 
 
 -- Create device tokens table with proper foreign key reference
