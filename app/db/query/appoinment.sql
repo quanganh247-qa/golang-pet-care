@@ -1,13 +1,8 @@
 -- name: CreateAppointment :one
-INSERT INTO Appointment (
-    doctor_id,
-    petid,
-    service_id,
-    time_slot_id,
-    date,
-    status
-) VALUES (
-    $1, $2, $3, $4, $5,'pending'
+INSERT INTO Appointment
+( petid, doctor_id, service_id, "date", status, notes, reminder_send, time_slot_id, created_at)
+VALUES( 
+    $1, $2, $3, $4, $5, $6, $7, $8, now()
 ) RETURNING *;
 
 -- name: UpdateNotification :exec
@@ -39,25 +34,21 @@ ORDER BY ts.start_time ASC;
 -- name: GetAppointmentDetailById :one
 SELECT * from Appointment WHERE appointment_id = $1;
 
--- name: GetAppointmentsByPetOfUser :many
+-- name: GetAppointmentsByUser :many
 SELECT 
-    a.appointment_id,
-    a.petid,
-    a.doctor_id,
-    a.service_id,
-    a.date,
-    a.status,
-    a.notes,
-    a.reminder_send,
-    a.time_slot_id,
-    a.created_at
+    p.*, s.*, a.*, ts.*
 FROM 
-    Appointment a
+    appointment a
 JOIN 
-    Pet p ON a.petid = p.petid
+    pet p ON a.petid = p.petid 
 JOIN 
-    users u ON p.username = u.username
+    service s ON a.service_id = s.serviceid 
+JOIN 
+    timeslots ts ON a.time_slot_id = ts.id
 WHERE 
-    u.username = $1 and p.is_active is true
-ORDER BY 
-    a.date DESC;
+    a.username = $1 and a.status <> 'completed';
+
+-- name: GetAppointmentsByDoctor :one
+SELECT COUNT(*) 
+FROM appointment 
+WHERE date = $1 AND doctor_id = $2 AND status = 'completed';

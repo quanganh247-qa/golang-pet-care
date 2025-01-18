@@ -60,74 +60,43 @@ INSERT INTO Doctors (
     $1, $2, $3, $4, $5, $6, $7
 ) RETURNING *;
 
--- -- name: InsertDoctorSchedule :one
--- INSERT INTO DoctorSchedules (
---     doctor_id,
---     day_of_week,
---     start_time,
---     end_time,
---     is_active
---   ) VALUES (
---     $1, $2, $3, $4, $5
--- ) RETURNING *;
 
--- -- name: GetDoctor :one
--- SELECT 
---   d.id,
---   u.full_name AS name,
---   d.specialization,
---   d.years_of_experience,
---   d.education,
---   d.certificate_number,
---   d.bio,
---   d.consultation_fee
--- FROM
---   Doctors d
--- JOIN
---   users u ON d.user_id = u.id
--- WHERE
---   d.id = $1;
+-- name: GetDoctor :one
+SELECT 
+  d.id,
+  u.full_name AS name,
+  d.specialization,
+  d.years_of_experience,
+  d.education,
+  d.certificate_number,
+  d.bio,
+  d.consultation_fee
+FROM
+  Doctors d
+JOIN
+  users u ON d.user_id = u.id
+WHERE
+  d.id = $1;
 
--- -- name: GetDoctorById :one
--- select * from Doctors where id = $1;
-
--- -- name: GetActiveDoctors :many
--- SELECT 
---   d.id,
---   u.full_name AS name,
---   d.specialization,
---   d.years_of_experience,
---   d.consultation_fee
--- FROM 
---   Doctors d
--- JOIN 
---   users u ON d.user_id = u.id
--- LEFT JOIN 
---   DoctorSchedules ds ON d.id = ds.doctor_id
--- WHERE 
---   d.is_active = true
---   AND (ds.is_active = true OR ds.is_active IS NULL)
---   AND ($1::VARCHAR IS NULL OR d.specialization = $1)
---   AND ($2::INT IS NULL OR ds.day_of_week = $2)
--- ORDER BY 
---   u.full_name;
+-- name: GetDoctorById :one
+select * from Doctors where id = $1;
 
 
--- -- name: GetDoctors :many
--- SELECT 
---     d.id AS doctor_id,
---     u.username,
---     u.full_name,
---     u.role,
---     d.specialization,
---     d.years_of_experience,
---     d.education,
---     d.certificate_number,
---     d.bio,
---     d.consultation_fee
--- FROM 
---     Doctors d
--- JOIN 
---     users u ON d.user_id = u.id
--- ORDER BY 
---     u.full_name;
+-- name: GetDoctors :many
+SELECT 
+    d.id AS doctor_id,
+    u.username,
+    u.full_name,
+    u.role,
+    d.specialization,
+    d.years_of_experience,
+    d.education,
+    d.certificate_number,
+    d.bio,
+    d.consultation_fee
+FROM 
+    Doctors d
+JOIN 
+    users u ON d.user_id = u.id
+ORDER BY 
+    u.full_name;

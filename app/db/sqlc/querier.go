@@ -6,6 +6,8 @@ package db
 
 import (
 	"context"
+
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 type Querier interface {
@@ -13,7 +15,6 @@ type Querier interface {
 	AddItemToCart(ctx context.Context, arg AddItemToCartParams) (Cartitem, error)
 	CreateAppointment(ctx context.Context, arg CreateAppointmentParams) (Appointment, error)
 	CreateCartForUser(ctx context.Context, userID int64) (int64, error)
-	CreateDoctorSchedule(ctx context.Context, arg CreateDoctorScheduleParams) (Doctorschedule, error)
 	CreateOrder(ctx context.Context, arg CreateOrderParams) (Order, error)
 	CreatePet(ctx context.Context, arg CreatePetParams) (Pet, error)
 	CreatePetSchedule(ctx context.Context, arg CreatePetScheduleParams) error
@@ -26,14 +27,12 @@ type Querier interface {
 	DecreaseItemQuantity(ctx context.Context, arg DecreaseItemQuantityParams) error
 	DeleteAllNotificationsByUser(ctx context.Context, username string) error
 	DeleteDeviceToken(ctx context.Context, arg DeleteDeviceTokenParams) error
-	DeleteDoctorSchedule(ctx context.Context, id int64) error
 	DeleteNotificationByID(ctx context.Context, notificationid int64) error
 	DeletePet(ctx context.Context, petid int64) error
 	DeletePetLog(ctx context.Context, logID int64) error
 	DeletePetSchedule(ctx context.Context, id int64) error
 	DeleteService(ctx context.Context, serviceid int64) error
 	DeleteServiceType(ctx context.Context, typeid int64) error
-	DeleteTimeSlot(ctx context.Context, id int64) error
 	DeleteUser(ctx context.Context, id int64) error
 	DeleteVaccination(ctx context.Context, vaccinationid int64) error
 	GetAllProducts(ctx context.Context, arg GetAllProductsParams) ([]Product, error)
@@ -41,7 +40,8 @@ type Querier interface {
 	GetAllServices(ctx context.Context, arg GetAllServicesParams) ([]Service, error)
 	GetAllUsers(ctx context.Context) ([]User, error)
 	GetAppointmentDetailById(ctx context.Context, appointmentID int64) (Appointment, error)
-	GetAppointmentsByPetOfUser(ctx context.Context, username string) ([]Appointment, error)
+	GetAppointmentsByDoctor(ctx context.Context, arg GetAppointmentsByDoctorParams) (int64, error)
+	GetAppointmentsByUser(ctx context.Context, username pgtype.Text) ([]GetAppointmentsByUserRow, error)
 	GetAppointmentsOfDoctorWithDetails(ctx context.Context, id int64) ([]GetAppointmentsOfDoctorWithDetailsRow, error)
 	GetCartByUserId(ctx context.Context, userID int64) ([]Cart, error)
 	GetCartItems(ctx context.Context, cartID int64) ([]GetCartItemsRow, error)
@@ -50,8 +50,9 @@ type Querier interface {
 	// 1. Query cơ bản để lấy thông tin bệnh và thuốc điều trị
 	GetDiceaseAndMedicinesInfo(ctx context.Context, lower string) ([]GetDiceaseAndMedicinesInfoRow, error)
 	GetDiseaseTreatmentPlanWithPhases(ctx context.Context, lower string) ([]GetDiseaseTreatmentPlanWithPhasesRow, error)
-	GetDoctorSchedules(ctx context.Context, doctorID int32) ([]Doctorschedule, error)
-	GetDoctorTimeSlots(ctx context.Context, arg GetDoctorTimeSlotsParams) ([]Timeslot, error)
+	GetDoctor(ctx context.Context, id int64) (GetDoctorRow, error)
+	GetDoctorById(ctx context.Context, id int64) (Doctor, error)
+	GetDoctors(ctx context.Context) ([]GetDoctorsRow, error)
 	GetNotificationsByUsername(ctx context.Context, arg GetNotificationsByUsernameParams) ([]Notification, error)
 	GetOrderById(ctx context.Context, id int64) (Order, error)
 	// Returning fields you may want to use
@@ -63,6 +64,8 @@ type Querier interface {
 	GetProductByID(ctx context.Context, productID int64) (Product, error)
 	GetServiceByID(ctx context.Context, serviceid int64) (Service, error)
 	GetServiceType(ctx context.Context, typeid int64) (Servicetype, error)
+	GetTimeSlotById(ctx context.Context, id int64) (Timeslot, error)
+	GetTimeSlotsByDoctorAndDate(ctx context.Context, arg GetTimeSlotsByDoctorAndDateParams) ([]Timeslot, error)
 	GetTreatmentByDiseaseId(ctx context.Context, arg GetTreatmentByDiseaseIdParams) ([]GetTreatmentByDiseaseIdRow, error)
 	GetUser(ctx context.Context, username string) (GetUserRow, error)
 	GetUserByEmail(ctx context.Context, email string) (User, error)
@@ -82,7 +85,6 @@ type Querier interface {
 	SetPetInactive(ctx context.Context, arg SetPetInactiveParams) error
 	UpdateAppointmentStatus(ctx context.Context, arg UpdateAppointmentStatusParams) error
 	UpdateAvatarUser(ctx context.Context, arg UpdateAvatarUserParams) (User, error)
-	UpdateDoctorSchedule(ctx context.Context, arg UpdateDoctorScheduleParams) (Doctorschedule, error)
 	UpdateNotification(ctx context.Context, appointmentID int64) error
 	UpdateOrderPaymentStatus(ctx context.Context, id int64) (Order, error)
 	UpdatePet(ctx context.Context, arg UpdatePetParams) error
@@ -90,7 +92,7 @@ type Querier interface {
 	UpdatePetLog(ctx context.Context, arg UpdatePetLogParams) error
 	UpdatePetSchedule(ctx context.Context, arg UpdatePetScheduleParams) error
 	UpdateService(ctx context.Context, arg UpdateServiceParams) error
-	UpdateTimeSlot(ctx context.Context, arg UpdateTimeSlotParams) (Timeslot, error)
+	UpdateTimeSlotStatus(ctx context.Context, arg UpdateTimeSlotStatusParams) error
 	UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error)
 	UpdateUserPassword(ctx context.Context, arg UpdateUserPasswordParams) (User, error)
 	UpdateVaccination(ctx context.Context, arg UpdateVaccinationParams) error
