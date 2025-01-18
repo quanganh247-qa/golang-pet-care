@@ -46,6 +46,7 @@ type CartItem struct {
 =======
 	AppointmentID int64            `json:"appointment_id"`
 	Petid         pgtype.Int8      `json:"petid"`
+	Username      pgtype.Text      `json:"username"`
 	DoctorID      pgtype.Int8      `json:"doctor_id"`
 	ServiceID     pgtype.Int8      `json:"service_id"`
 	Date          pgtype.Timestamp `json:"date"`
@@ -119,7 +120,6 @@ type Department struct {
 	ID          int64            `json:"id"`
 	Name        string           `json:"name"`
 	Description pgtype.Text      `json:"description"`
-	IsActive    pgtype.Bool      `json:"is_active"`
 	CreatedAt   pgtype.Timestamp `json:"created_at"`
 	UpdatedAt   pgtype.Timestamp `json:"updated_at"`
 }
@@ -200,6 +200,7 @@ type MedicalHistory struct {
 	ConsultationFee   pgtype.Float8 `json:"consultation_fee"`
 }
 
+<<<<<<< HEAD
 type Doctorschedule struct {
 	ID        int64            `json:"id"`
 	DoctorID  int32            `json:"doctor_id"`
@@ -287,6 +288,8 @@ type Medication struct {
 =======
 =======
 >>>>>>> 272832d (redis cache)
+=======
+>>>>>>> 685da65 (latest update)
 type Medicine struct {
 	ID          int64              `json:"id"`
 	Name        string             `json:"name"`
@@ -539,6 +542,7 @@ type State struct {
 	UpdatedAt pgtype.Timestamp `json:"updated_at"`
 =======
 type Timeslot struct {
+<<<<<<< HEAD
 	ID          int64            `json:"id"`
 	DoctorID    int32            `json:"doctor_id"`
 	ScheduleID  int32            `json:"schedule_id"`
@@ -550,6 +554,16 @@ type Timeslot struct {
 	CreatedAt   pgtype.Timestamp `json:"created_at"`
 	UpdatedAt   pgtype.Timestamp `json:"updated_at"`
 >>>>>>> e9037c6 (update sqlc)
+=======
+	ID        int64            `json:"id"`
+	DoctorID  int32            `json:"doctor_id"`
+	Date      pgtype.Date      `json:"date"`
+	StartTime pgtype.Time      `json:"start_time"`
+	EndTime   pgtype.Time      `json:"end_time"`
+	Status    pgtype.Text      `json:"status"`
+	CreatedAt pgtype.Timestamp `json:"created_at"`
+	UpdatedAt pgtype.Timestamp `json:"updated_at"`
+>>>>>>> 685da65 (latest update)
 }
 
 <<<<<<< HEAD

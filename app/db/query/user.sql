@@ -170,17 +170,8 @@ WHERE
 =======
 >>>>>>> 3003e08 (update sqlc)
 
--- -- name: InsertDoctorSchedule :one
--- INSERT INTO DoctorSchedules (
---     doctor_id,
---     day_of_week,
---     start_time,
---     end_time,
---     is_active
---   ) VALUES (
---     $1, $2, $3, $4, $5
--- ) RETURNING *;
 
+<<<<<<< HEAD
 -- -- name: GetDoctor :one
 -- SELECT 
 --   d.id,
@@ -246,6 +237,27 @@ ORDER BY
 -- ORDER BY 
 --   u.full_name;
 >>>>>>> 6f3ea8a (update sqlc)
+=======
+-- name: GetDoctor :one
+SELECT 
+  d.id,
+  u.full_name AS name,
+  d.specialization,
+  d.years_of_experience,
+  d.education,
+  d.certificate_number,
+  d.bio,
+  d.consultation_fee
+FROM
+  Doctors d
+JOIN
+  users u ON d.user_id = u.id
+WHERE
+  d.id = $1;
+
+-- name: GetDoctorById :one
+select * from Doctors where id = $1;
+>>>>>>> 685da65 (latest update)
 
 <<<<<<< HEAD
 -- name: GetAllRole :many
@@ -253,6 +265,9 @@ SELECT distinct (role) FROM users;
 =======
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 685da65 (latest update)
 -- name: GetDoctors :many
 SELECT 
     d.id AS doctor_id,
@@ -270,6 +285,7 @@ FROM
 JOIN 
     users u ON d.user_id = u.id
 ORDER BY 
+<<<<<<< HEAD
     u.full_name;
 >>>>>>> e30b070 (Get list appoinment by user)
 =======
@@ -292,3 +308,6 @@ ORDER BY
 -- ORDER BY 
 --     u.full_name;
 >>>>>>> 6f3ea8a (update sqlc)
+=======
+    u.full_name;
+>>>>>>> 685da65 (latest update)

@@ -228,7 +228,10 @@ func (q *Queries) GetAllUsers(ctx context.Context) ([]User, error) {
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> 685da65 (latest update)
 const getDoctor = `-- name: GetDoctor :one
 SELECT 
   d.id,
@@ -295,8 +298,11 @@ func (q *Queries) GetDoctorById(ctx context.Context, id int64) (Doctor, error) {
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> cfbe865 (updated service response)
 =======
+=======
+>>>>>>> 685da65 (latest update)
 const getDoctors = `-- name: GetDoctors :many
 SELECT 
     d.id AS doctor_id,
@@ -361,9 +367,12 @@ func (q *Queries) GetDoctors(ctx context.Context) ([]GetDoctorsRow, error) {
 	return items, nil
 }
 
+<<<<<<< HEAD
 >>>>>>> e30b070 (Get list appoinment by user)
 =======
 >>>>>>> 6f3ea8a (update sqlc)
+=======
+>>>>>>> 685da65 (latest update)
 const getUser = `-- name: GetUser :one
 SELECT id, username, hashed_password, full_name, email, phone_number, address, data_image, original_image, role, created_at, is_verified_email
 FROM users

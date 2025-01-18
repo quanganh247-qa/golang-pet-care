@@ -14,13 +14,18 @@ func Routes(routerGroup middleware.RouterGroup, taskDistributor worker.TaskDistr
 	appointmentApi := &AppointmentApi{
 		&AppointmentController{
 			service: &AppointmentService{
+<<<<<<< HEAD
 				storeDB:         db.StoreDB,
 				taskDistributor: taskDistributor,
+=======
+				storeDB: db.StoreDB,
+>>>>>>> 685da65 (latest update)
 			},
 		},
 	}
 
 	{
+<<<<<<< HEAD
 <<<<<<< HEAD
 		authRoute.POST("appointment/", appointmentApi.controller.createAppointment)
 		authRoute.POST("appointment/confirm/:id", appointmentApi.controller.confirmAppointment)
@@ -36,9 +41,11 @@ func Routes(routerGroup middleware.RouterGroup, taskDistributor worker.TaskDistr
 		authRoute.PUT("appointments/queue/:id/status", appointmentApi.controller.updateQueueItemStatus)
 =======
 		authRoute.POST("/create", appointmentApi.controller.createAppointment)
+=======
+		authRoute.POST("/", appointmentApi.controller.createAppointment)
+>>>>>>> 685da65 (latest update)
 		authRoute.PUT("/:appointment_id", appointmentApi.controller.updateAppointmentStatus)
-		authRoute.GET("/doctor/:doctor_id", appointmentApi.controller.getAppointmentsOfDoctor)
-		authRoute.GET("/", appointmentApi.controller.getAppointmentsByPetOfUser)
+		authRoute.GET("/", appointmentApi.controller.getAppointmentsByUser)
 		authRoute.GET("/:appointment_id", appointmentApi.controller.getAppointmentByID)
 >>>>>>> 7e35c2e (get appointment detail)
 
