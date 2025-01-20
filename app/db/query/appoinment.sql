@@ -31,14 +31,19 @@ INSERT INTO Appointment (
 >>>>>>> cfbe865 (updated service response)
 =======
 INSERT INTO Appointment
-( petid, doctor_id, service_id, "date", status, notes, reminder_send, time_slot_id, created_at)
+( petid, doctor_id,username, service_id, "date", payment_status, notes, reminder_send, time_slot_id, created_at)
 VALUES( 
+<<<<<<< HEAD
     $1, $2, $3, $4, $5, $6, $7, $8, now()
 >>>>>>> 685da65 (latest update)
+=======
+    $1, $2, $3, $4, $5, $6, $7, $8, $9,now()
+>>>>>>> b393bb9 (add service and add permission)
 ) RETURNING *;
 
 
 -- name: UpdateTimeSlotBookedPatients :exec
+<<<<<<< HEAD
 UPDATE time_slots
 SET booked_patients = booked_patients + 1
 WHERE id = $1;
@@ -60,6 +65,12 @@ UPDATE appointments SET
     updated_at = now(),
     notes = $9
 WHERE appointment_id = $1;
+=======
+UPDATE timeslots
+SET booked_patients = booked_patients + 1
+WHERE id = $1 AND  doctor_id = $2;
+
+>>>>>>> b393bb9 (add service and add permission)
 
 -- name: UpdateNotification :exec
 UPDATE appointments
@@ -67,8 +78,13 @@ SET reminder_send = true
 WHERE appointment_id = $1;
 
 -- name: UpdateAppointmentStatus :exec
+<<<<<<< HEAD
 UPDATE appointments
 SET state_id = $2
+=======
+UPDATE Appointment
+SET payment_status = $2
+>>>>>>> b393bb9 (add service and add permission)
 WHERE appointment_id = $1;
 
 -- name: GetAppointmentsOfDoctorWithDetails :many
@@ -78,11 +94,19 @@ SELECT
     s.name as service_name,
     ts.start_time,
     ts.end_time
+<<<<<<< HEAD
 FROM appointments a
     LEFT JOIN doctors d ON a.doctor_id = d.id
     LEFT JOIN pets p ON a.petid = p.petid
     LEFT JOIN services s ON a.service_id = s.id
     LEFT JOIN time_slots ts ON a.time_slot_id = ts.id
+=======
+FROM Appointment a
+    LEFT JOIN Doctors d ON a.doctor_id = d.id
+    LEFT JOIN Pet p ON a.petid = p.petid
+    LEFT JOIN services s ON a.service_id = s.id
+    LEFT JOIN TimeSlots ts ON a.time_slot_id = ts.id
+>>>>>>> b393bb9 (add service and add permission)
 WHERE d.id = $1
 AND LOWER(a.status) <> 'completed'
 ORDER BY ts.start_time ASC;
@@ -306,7 +330,7 @@ FROM
 JOIN 
     pet p ON a.petid = p.petid 
 JOIN 
-    service s ON a.service_id = s.serviceid 
+    services s ON a.service_id = s.id 
 JOIN 
     timeslots ts ON a.time_slot_id = ts.id
 WHERE 
@@ -318,8 +342,32 @@ ORDER BY
 =======
     a.username = $1 and a.status <> 'completed';
 
--- name: GetAppointmentsByDoctor :one
+-- name: CountAppointmentsByDateAndTimeSlot :one
 SELECT COUNT(*) 
 FROM appointment 
 WHERE date = $1 AND doctor_id = $2 AND status = 'completed';
+<<<<<<< HEAD
 >>>>>>> 685da65 (latest update)
+=======
+
+-- name: GetAppointmentsByDoctor :many
+SELECT 
+    a.*,
+    d.id AS doctor_id,
+    p.name AS pet_name,
+    s.name AS service_name,
+    ts.start_time,
+    ts.end_time
+FROM 
+    appointment a
+JOIN 
+    doctors d ON a.doctor_id = d.id
+JOIN 
+    pet p ON a.petid = p.petid
+JOIN 
+    services as s ON a.service_id = s.id
+JOIN 
+    timeslots ts ON a.time_slot_id = ts.id
+WHERE 
+    a.doctor_id = $1;
+>>>>>>> b393bb9 (add service and add permission)

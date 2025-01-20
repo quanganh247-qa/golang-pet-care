@@ -13,11 +13,19 @@ import (
 
 const createService = `-- name: CreateService :one
 INSERT INTO services (
+<<<<<<< HEAD
     name, description, duration, cost, category
 ) VALUES (
     $1, $2, $3, $4, $5
 )
 RETURNING id, name, description, duration, cost, category, priority, created_at
+=======
+    name, description, duration, cost, category, notes
+) VALUES (
+    $1, $2, $3, $4, $5, $6
+)
+RETURNING id, name, description, duration, cost, category, notes, created_at, updated_at
+>>>>>>> b393bb9 (add service and add permission)
 `
 
 type CreateServiceParams struct {
@@ -26,6 +34,10 @@ type CreateServiceParams struct {
 	Duration    pgtype.Int2   `json:"duration"`
 	Cost        pgtype.Float8 `json:"cost"`
 	Category    pgtype.Text   `json:"category"`
+<<<<<<< HEAD
+=======
+	Notes       pgtype.Text   `json:"notes"`
+>>>>>>> b393bb9 (add service and add permission)
 }
 
 func (q *Queries) CreateService(ctx context.Context, arg CreateServiceParams) (Service, error) {
@@ -35,6 +47,10 @@ func (q *Queries) CreateService(ctx context.Context, arg CreateServiceParams) (S
 		arg.Duration,
 		arg.Cost,
 		arg.Category,
+<<<<<<< HEAD
+=======
+		arg.Notes,
+>>>>>>> b393bb9 (add service and add permission)
 	)
 	var i Service
 	err := row.Scan(
@@ -44,8 +60,14 @@ func (q *Queries) CreateService(ctx context.Context, arg CreateServiceParams) (S
 		&i.Duration,
 		&i.Cost,
 		&i.Category,
+<<<<<<< HEAD
 		&i.Priority,
 		&i.CreatedAt,
+=======
+		&i.Notes,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+>>>>>>> b393bb9 (add service and add permission)
 	)
 	return i, err
 }
@@ -53,7 +75,11 @@ func (q *Queries) CreateService(ctx context.Context, arg CreateServiceParams) (S
 const deleteService = `-- name: DeleteService :exec
 UPDATE services
 SET removed_at = NOW()
+<<<<<<< HEAD
 WHERE id = $1
+=======
+WHERE id = $1 and removed_at is NULL
+>>>>>>> b393bb9 (add service and add permission)
 `
 
 func (q *Queries) DeleteService(ctx context.Context, id int64) error {
@@ -62,6 +88,7 @@ func (q *Queries) DeleteService(ctx context.Context, id int64) error {
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 const getServiceByID = `-- name: GetServiceByID :one
 SELECT id, name, description, duration, cost, category, priority, created_at FROM services
 WHERE id = $1
@@ -69,6 +96,11 @@ WHERE id = $1
 const getAllServices = `-- name: GetAllServices :many
 SELECT serviceid, typeid, name, price, duration, description, isavailable, removed_at FROM Service ORDER BY name LIMIT $1 OFFSET $2
 >>>>>>> 5e493e4 (get all services)
+=======
+const getServiceByID = `-- name: GetServiceByID :one
+SELECT id, name, description, duration, cost, category, notes, created_at, updated_at FROM services
+WHERE id = $1 and removed_at is NULL
+>>>>>>> b393bb9 (add service and add permission)
 `
 
 func (q *Queries) GetServiceByID(ctx context.Context, id int64) (Service, error) {
@@ -81,14 +113,24 @@ func (q *Queries) GetServiceByID(ctx context.Context, id int64) (Service, error)
 		&i.Duration,
 		&i.Cost,
 		&i.Category,
+<<<<<<< HEAD
 		&i.Priority,
 		&i.CreatedAt,
+=======
+		&i.Notes,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+>>>>>>> b393bb9 (add service and add permission)
 	)
 	return i, err
 }
 
 const getServices = `-- name: GetServices :many
+<<<<<<< HEAD
 SELECT id, name, description, duration, cost, category, priority, created_at FROM services where removed_at is NULL ORDER BY name LIMIT $1 OFFSET $2
+=======
+SELECT id, name, description, duration, cost, category, notes, created_at, updated_at FROM services where removed_at is NULL ORDER BY name LIMIT $1 OFFSET $2
+>>>>>>> b393bb9 (add service and add permission)
 `
 
 type GetServicesParams struct {
@@ -112,8 +154,14 @@ func (q *Queries) GetServices(ctx context.Context, arg GetServicesParams) ([]Ser
 			&i.Duration,
 			&i.Cost,
 			&i.Category,
+<<<<<<< HEAD
 			&i.Priority,
 			&i.CreatedAt,
+=======
+			&i.Notes,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+>>>>>>> b393bb9 (add service and add permission)
 		); err != nil {
 			return nil, err
 		}
@@ -126,6 +174,9 @@ func (q *Queries) GetServices(ctx context.Context, arg GetServicesParams) ([]Ser
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> b393bb9 (add service and add permission)
 const updateService = `-- name: UpdateService :one
 UPDATE services
 SET 
@@ -134,6 +185,7 @@ SET
     duration = $4,
     cost = $5,
     category = $6,
+<<<<<<< HEAD
     updated_at = NOW()
 WHERE id = $1
 RETURNING id, name, description, duration, cost, category, priority, created_at
@@ -169,6 +221,12 @@ UPDATE Service Set
   isAvailable = $7
 WHERE serviceID = $1
 >>>>>>> 5ea33aa (PUT pet info)
+=======
+    notes = $7,
+    updated_at = NOW()
+WHERE id = $1 and removed_at is NULL
+RETURNING id, name, description, duration, cost, category, notes, created_at, updated_at
+>>>>>>> b393bb9 (add service and add permission)
 `
 
 type UpdateServiceParams struct {
@@ -178,6 +236,10 @@ type UpdateServiceParams struct {
 	Duration    pgtype.Int2   `json:"duration"`
 	Cost        pgtype.Float8 `json:"cost"`
 	Category    pgtype.Text   `json:"category"`
+<<<<<<< HEAD
+=======
+	Notes       pgtype.Text   `json:"notes"`
+>>>>>>> b393bb9 (add service and add permission)
 }
 
 func (q *Queries) UpdateService(ctx context.Context, arg UpdateServiceParams) (Service, error) {
@@ -188,6 +250,10 @@ func (q *Queries) UpdateService(ctx context.Context, arg UpdateServiceParams) (S
 		arg.Duration,
 		arg.Cost,
 		arg.Category,
+<<<<<<< HEAD
+=======
+		arg.Notes,
+>>>>>>> b393bb9 (add service and add permission)
 	)
 	var i Service
 	err := row.Scan(
@@ -197,8 +263,14 @@ func (q *Queries) UpdateService(ctx context.Context, arg UpdateServiceParams) (S
 		&i.Duration,
 		&i.Cost,
 		&i.Category,
+<<<<<<< HEAD
 		&i.Priority,
 		&i.CreatedAt,
+=======
+		&i.Notes,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+>>>>>>> b393bb9 (add service and add permission)
 	)
 	return i, err
 }

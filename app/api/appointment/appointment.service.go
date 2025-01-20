@@ -2,7 +2,10 @@ package appointment
 
 import (
 	"context"
+<<<<<<< HEAD
 	"errors"
+=======
+>>>>>>> b393bb9 (add service and add permission)
 	"fmt"
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -24,6 +27,7 @@ import (
 )
 
 type AppointmentServiceInterface interface {
+<<<<<<< HEAD
 <<<<<<< HEAD
 	CreateSOAPService(ctx *gin.Context, soap CreateSOAPRequest, appointmentID int64) (*SOAPResponse, error)
 	UpdateSOAPService(ctx *gin.Context, soap UpdateSOAPRequest, appointmentID int64) (*SOAPResponse, error)
@@ -127,16 +131,26 @@ func (s *AppointmentService) CreateAppointment(ctx *gin.Context, req createAppoi
 	if err != nil {
 		return nil, fmt.Errorf("error while converting doctor id: %w", err)
 =======
+=======
+	CreateAppointment(ctx *gin.Context, req createAppointmentRequest, username string) (*createAppointmentResponse, error)
+	ConfirmPayment(ctx context.Context, appointmentID int64) error
+>>>>>>> b393bb9 (add service and add permission)
 	GetAppointmentByID(ctx *gin.Context, id int64) (*createAppointmentResponse, error)
 	GetAppointmentsByUser(ctx *gin.Context, username string) ([]createAppointmentResponse, error)
+	GetAppointmentsByDoctor(ctx *gin.Context, doctorID int64) ([]createAppointmentResponse, error)
+	GetAvailableTimeSlots(ctx *gin.Context, doctorID int64, date string) ([]timeSlotResponse, error)
 }
 
+<<<<<<< HEAD
 func (s *AppointmentService) CreateAppointment(ctx *gin.Context, req createAppointmentRequest) (*createAppointmentResponse, error) {
 	// Validate input
 	if req.DoctorID == 0 || req.PetID == 0 || req.ServiceID == 0 || req.TimeSlotID == 0 || req.Date == "" {
 		return nil, fmt.Errorf("missing required fields: doctor_id, pet_id, service_id, time_slot_id, or date")
 >>>>>>> 685da65 (latest update)
 	}
+=======
+func (s *AppointmentService) CreateAppointment(ctx *gin.Context, req createAppointmentRequest, username string) (*createAppointmentResponse, error) {
+>>>>>>> b393bb9 (add service and add permission)
 
 	// Fetch doctor details
 	doctor, err := s.storeDB.GetDoctor(ctx, req.DoctorID)
@@ -185,32 +199,17 @@ func (s *AppointmentService) CreateAppointment(ctx *gin.Context, req createAppoi
 		dateTime, err := time.Parse("2006-01-02T15:04:05Z", req.Date)
 =======
 	// Parse and validate the date
-	dateTime, err := time.Parse("2006-01-02T15:04:05Z", req.Date)
+	dateTime, err := time.Parse("2006-01-02", req.Date)
 	if err != nil {
 		return nil, fmt.Errorf("invalid date format: %w", err)
 	}
-
-	// Fetch the time slot
-	timeSlot, err := s.storeDB.GetTimeSlotById(ctx, req.TimeSlotID)
-	if err != nil {
-		return nil, fmt.Errorf("failed to fetch time slot: %w", err)
-	}
-
-	// Prepare appointment parameters
-	arg := db.CreateAppointmentParams{
-		DoctorID:     pgtype.Int8{Int64: doctor.ID, Valid: true},
-		Petid:        pgtype.Int8{Int64: req.PetID, Valid: true},
-		ServiceID:    pgtype.Int8{Int64: req.ServiceID, Valid: true},
-		Date:         pgtype.Timestamp{Time: dateTime, Valid: true},
-		TimeSlotID:   pgtype.Int8{Int64: req.TimeSlotID, Valid: true},
-		Notes:        pgtype.Text{String: req.Note, Valid: true},
-		Status:       pgtype.Text{String: "pending", Valid: true},
-		ReminderSend: pgtype.Bool{Bool: false, Valid: true},
-	}
+	var startTimeFormatted string
+	var endTimeFormatted string
 
 	// Create the appointment within a transaction
 	var appointment db.Appointment
 	err = s.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
+<<<<<<< HEAD
 		// Create the appointment
 		appointment, err = q.CreateAppointment(ctx, arg)
 >>>>>>> 685da65 (latest update)
@@ -226,9 +225,45 @@ func (s *AppointmentService) CreateAppointment(ctx *gin.Context, req createAppoi
 		err = q.UpdateTimeSlotStatus(ctx, db.UpdateTimeSlotStatusParams{
 			ID:     req.TimeSlotID,
 			Status: pgtype.Text{String: "pending", Valid: true},
+=======
+
+		// Lấy thông tin khung giờ và khóa bản ghi
+		timeSlot, err := q.GetTimeSlot(ctx, db.GetTimeSlotParams{
+			ID:       req.TimeSlotID,
+			Date:     pgtype.Date{Time: dateTime, Valid: true},
+			DoctorID: int32(req.DoctorID),
+>>>>>>> b393bb9 (add service and add permission)
 		})
 		if err != nil {
-			return fmt.Errorf("failed to update time slot status: %w", err)
+			return fmt.Errorf("failed to get time slot: %w", err)
+		}
+
+		startTime := time.UnixMicro(timeSlot.StartTime.Microseconds).UTC()
+		startTimeFormatted = startTime.Format("15:04:05")
+
+		// Format the end time
+		endTime := time.UnixMicro(timeSlot.EndTime.Microseconds).UTC()
+		endTimeFormatted = endTime.Format("15:04:05")
+
+		// Kiểm tra xem khung giờ còn chỗ trống không
+		if timeSlot.BookedPatients.Int32 >= timeSlot.MaxPatients.Int32 {
+			return fmt.Errorf("time slot is fully booked")
+		}
+
+		// Tạo cuộc hẹn với trạng thái "pending"
+		appointment, err = q.CreateAppointment(ctx, db.CreateAppointmentParams{
+			DoctorID:      pgtype.Int8{Int64: doctor.ID, Valid: true},
+			Petid:         pgtype.Int8{Int64: req.PetID, Valid: true},
+			ServiceID:     pgtype.Int8{Int64: req.ServiceID, Valid: true},
+			Date:          pgtype.Timestamp{Time: dateTime, Valid: true},
+			TimeSlotID:    pgtype.Int8{Int64: req.TimeSlotID, Valid: true},
+			Notes:         pgtype.Text{String: req.Note, Valid: true},
+			PaymentStatus: pgtype.Text{String: "pending", Valid: true},
+			ReminderSend:  pgtype.Bool{Bool: false, Valid: true},
+			Username:      pgtype.Text{String: username, Valid: true},
+		})
+		if err != nil {
+			return fmt.Errorf("failed to create appointment: %w", err)
 		}
 
 		return nil
@@ -277,19 +312,13 @@ func (s *AppointmentService) CreateAppointment(ctx *gin.Context, req createAppoi
 		return nil, fmt.Errorf("failed to fetch pet: %w", err)
 	}
 
-	startTime := time.UnixMicro(timeSlot.StartTime.Microseconds).UTC()
-	startTimeFormatted := startTime.Format("15:04:05")
-
-	// Format the end time
-	endTime := time.UnixMicro(timeSlot.EndTime.Microseconds).UTC()
-	endTimeFormatted := endTime.Format("15:04:05")
-
 	// Prepare the response
 	return &createAppointmentResponse{
 		ID:          appointment.AppointmentID,
 		DoctorName:  doctor.Name,
 		PetName:     pet.Name,
 		Date:        appointment.Date.Time.Format(time.RFC3339),
+<<<<<<< HEAD
 		ServiceName: service.Name,
 <<<<<<< HEAD
 		Note:        req.Note,
@@ -337,18 +366,22 @@ func (s *AppointmentService) ConfirmPayment(ctx context.Context, appointmentID i
 		return nil
 	})
 =======
+=======
+		ServiceName: service.Name.String,
+>>>>>>> b393bb9 (add service and add permission)
 		TimeSlot: timeslot{
 			StartTime: startTimeFormatted,
 			EndTime:   endTimeFormatted,
 		},
-		Status:       appointment.Status.String,
-		Notes:        appointment.Notes.String,
-		ReminderSend: appointment.ReminderSend.Bool,
-		CreatedAt:    appointment.CreatedAt.Time.Format(time.RFC3339),
+		PaymentStatus: appointment.PaymentStatus.String,
+		Notes:         appointment.Notes.String,
+		ReminderSend:  appointment.ReminderSend.Bool,
+		CreatedAt:     appointment.CreatedAt.Time.Format("2006-01-02 15:04:05"),
 	}, nil
 >>>>>>> 685da65 (latest update)
 }
 
+<<<<<<< HEAD
 func (s *AppointmentService) CheckInAppoinment(ctx *gin.Context, id, roomID int64, priority string) error {
 	return s.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
 		// Fetch appointment details
@@ -542,17 +575,57 @@ func (s *AppointmentService) GetAvailableTimeSlots(ctx *gin.Context, doctorID in
 			AppointmentID: id,
 			Status:        pgtype.Text{String: req.Status, Valid: true},
 		})
+=======
+func (s *AppointmentService) ConfirmPayment(ctx context.Context, appointmentID int64) error {
+	// Bắt đầu transaction
+	err := s.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
+		// Lấy thông tin cuộc hẹn
+		appointment, err := q.GetAppointmentDetailById(ctx, appointmentID)
+>>>>>>> b393bb9 (add service and add permission)
 		if err != nil {
-			return fmt.Errorf("error while updating appointment status: %w", err)
+			return fmt.Errorf("failed to get appointment: %w", err)
 		}
 
-		// Notify the user (optional)
-		// You can implement a notification system here (e.g., email, SMS, in-app notification)
-		log.Printf("Appointment %d has been approved. Notifying user...", id)
+		// Kiểm tra xem cuộc hẹn đã được thanh toán chưa
+		if appointment.PaymentStatus.String == "paid" {
+			return fmt.Errorf("appointment is already paid")
+		}
+
+		// Lấy thông tin khung giờ và khóa bản ghi
+		timeSlot, err := q.GetTimeSlot(ctx, db.GetTimeSlotParams{
+			ID:       appointment.TimeSlotID.Int64,
+			Date:     pgtype.Date{Time: appointment.Date.Time, Valid: true},
+			DoctorID: int32(appointment.DoctorID.Int64),
+		})
+		if err != nil {
+			return fmt.Errorf("failed to get time slot: %w", err)
+		}
+
+		if timeSlot.BookedPatients.Int32 >= timeSlot.MaxPatients.Int32 {
+			return fmt.Errorf("time slot is fully booked")
+		}
+
+		// Cập nhật trạng thái thanh toán và cuộc hẹn
+		err = q.UpdateAppointmentStatus(ctx, db.UpdateAppointmentStatusParams{
+			AppointmentID: appointmentID,
+			PaymentStatus: pgtype.Text{String: "paid", Valid: true},
+		})
+		if err != nil {
+			log.Printf("Failed to update appointment payment status: %v", err)
+			return fmt.Errorf("failed to update payment status: %w", err)
+		}
+
+		// Tăng số lượng bệnh nhân đã đặt lịch trong khung giờ
+		err = q.UpdateTimeSlotBookedPatients(ctx, db.UpdateTimeSlotBookedPatientsParams{
+			ID:       appointment.TimeSlotID.Int64,
+			DoctorID: int32(appointment.DoctorID.Int64),
+		})
+		if err != nil {
+			return fmt.Errorf("failed to update time slot: %w", err)
+		}
 
 		return nil
 	})
-
 	if err != nil {
 		return fmt.Errorf("transaction failed: %w", err)
 >>>>>>> 685da65 (latest update)
@@ -1025,15 +1098,15 @@ func (s *AppointmentService) GetAppointmentByID(ctx *gin.Context, id int64) (*cr
 		DoctorName:  doctor.Name,
 		PetName:     pet.Name,
 		Date:        appointment.Date.Time.Format(time.RFC3339),
-		ServiceName: service.Name,
+		ServiceName: service.Name.String,
 		TimeSlot: timeslot{
 			StartTime: startTimeFormatted,
 			EndTime:   endTimeFormatted,
 		},
-		Status:       appointment.Status.String,
-		Notes:        appointment.Notes.String,
-		ReminderSend: appointment.ReminderSend.Bool,
-		CreatedAt:    appointment.CreatedAt.Time.Format(time.RFC3339),
+		Notes:         appointment.Notes.String,
+		ReminderSend:  appointment.ReminderSend.Bool,
+		PaymentStatus: appointment.PaymentStatus.String,
+		CreatedAt:     appointment.CreatedAt.Time.Format(time.RFC3339),
 	}, nil
 }
 func (s *AppointmentService) GetAppointmentsByUser(ctx *gin.Context, username string) ([]createAppointmentResponse, error) {
@@ -1088,14 +1161,14 @@ func (s *AppointmentService) GetAppointmentsByUser(ctx *gin.Context, username st
 				ID:          row.AppointmentID,
 				PetName:     pet.Name,
 				DoctorName:  doc.Name,
-				ServiceName: service.Name,
+				ServiceName: service.Name.String,
 				TimeSlot: timeslot{
 					StartTime: startTimeFormatted,
 					EndTime:   endTimeFormatted,
 				},
-				Date:      row.Date.Time.Format(time.RFC3339),
-				Status:    row.Status.String,
-				CreatedAt: row.CreatedAt.Time.Format(time.RFC3339),
+				PaymentStatus: row.PaymentStatus.String,
+				Date:          row.Date.Time.Format(time.RFC3339),
+				CreatedAt:     row.CreatedAt.Time.Format(time.RFC3339),
 			})
 			mu.Unlock()
 		}(row)
@@ -1105,45 +1178,139 @@ func (s *AppointmentService) GetAppointmentsByUser(ctx *gin.Context, username st
 	return a, nil
 }
 
-// cancle appointment
-func (s *AppointmentService) CancelAppointment(ctx *gin.Context, id int64) error {
-	// Fetch the appointment details
-	appointment, err := s.storeDB.GetAppointmentDetailById(ctx, id)
+func (s *AppointmentService) GetAppointmentsByDoctor(ctx *gin.Context, doctorID int64) ([]createAppointmentResponse, error) {
+	// Lấy danh sách lịch hẹn theo doctor_id
+	appointments, err := s.storeDB.GetAppointmentsByDoctor(ctx, pgtype.Int8{Int64: doctorID, Valid: true})
 	if err != nil {
-		return fmt.Errorf("error while fetching appointment: %w", err)
+		return nil, fmt.Errorf("failed to get appointments: %w", err)
 	}
 
-	// Check if the appointment is already cancelled
-	if appointment.Status.String == "cancelled" {
-		return fmt.Errorf("appointment is already cancelled")
-	}
+	// Format danh sách lịch hẹn
+	var response []createAppointmentResponse
+	for _, appointment := range appointments {
 
-	// Perform the cancellation within a transaction
-	err = s.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
-		// Update the appointment status to "cancelled"
-		err := q.UpdateAppointmentStatus(ctx, db.UpdateAppointmentStatusParams{
-			AppointmentID: id,
-			Status:        pgtype.Text{String: "cancelled", Valid: true},
-		})
+		doc, err := s.storeDB.GetDoctor(ctx, appointment.DoctorID.Int64)
 		if err != nil {
-			return fmt.Errorf("error while updating appointment status: %w", err)
+			log.Printf("Failed to get doctor for appointment %d: %v", appointment.AppointmentID, err)
+			return nil, fmt.Errorf("failed to get doctor: %w", err)
 		}
 
-		// Free the associated time slot by updating its status to "available"
-		err = q.UpdateTimeSlotStatus(ctx, db.UpdateTimeSlotStatusParams{
-			ID:     appointment.TimeSlotID.Int64,
-			Status: pgtype.Text{String: "available", Valid: true},
+		// Format start and end times
+		startTime := time.UnixMicro(appointment.StartTime.Microseconds).UTC()
+		startTimeFormatted := startTime.Format("15:04:05")
+
+		endTime := time.UnixMicro(appointment.EndTime.Microseconds).UTC()
+		endTimeFormatted := endTime.Format("15:04:05")
+
+		response = append(response, createAppointmentResponse{
+			ID:          appointment.AppointmentID,
+			DoctorName:  doc.Name,
+			PetName:     appointment.PetName,
+			Date:        appointment.Date.Time.Format(time.RFC3339),
+			ServiceName: appointment.ServiceName.String,
+			TimeSlot: timeslot{
+				StartTime: startTimeFormatted,
+				EndTime:   endTimeFormatted,
+			},
+			Notes:         appointment.Notes.String,
+			PaymentStatus: appointment.PaymentStatus.String,
+			ReminderSend:  appointment.ReminderSend.Bool,
+			CreatedAt:     appointment.CreatedAt.Time.Format(time.RFC3339),
 		})
-		if err != nil {
-			return fmt.Errorf("error while updating time slot status: %w", err)
-		}
-
-		return nil
-	})
-
-	if err != nil {
-		return fmt.Errorf("transaction failed: %w", err)
 	}
 
-	return nil
+	return response, nil
 }
+
+func (s *AppointmentService) GetAvailableTimeSlots(ctx *gin.Context, doctorID int64, date string) ([]timeSlotResponse, error) {
+	// Parse ngày
+	dateTime, err := time.Parse("2006-01-02", date)
+	if err != nil {
+		return nil, fmt.Errorf("invalid date format: %w", err)
+	}
+
+	// Lấy danh sách khung giờ của bác sĩ trong ngày cụ thể
+	timeSlots, err := s.storeDB.GetTimeSlotsByDoctorAndDate(ctx, db.GetTimeSlotsByDoctorAndDateParams{
+		DoctorID: int32(doctorID),
+		Date:     pgtype.Date{Time: dateTime, Valid: true},
+	})
+	if err != nil {
+		return nil, fmt.Errorf("failed to get time slots: %w", err)
+	}
+
+	// Lọc ra các khung giờ còn chỗ trống
+	var availableTimeSlots []timeSlotResponse
+	var slotRes timeSlotResponse
+	for _, slot := range timeSlots {
+		// Format start and end times
+		startTime := time.UnixMicro(slot.StartTime.Microseconds).UTC()
+		startTimeFormatted := startTime.Format("15:04:05")
+
+		endTime := time.UnixMicro(slot.EndTime.Microseconds).UTC()
+		endTimeFormatted := endTime.Format("15:04:05")
+
+		if slot.BookedPatients.Int32 < slot.MaxPatients.Int32 {
+			slotRes = timeSlotResponse{
+				ID:        int32(slot.ID),
+				StartTime: startTimeFormatted,
+				EndTime:   endTimeFormatted,
+				Status:    "available",
+			}
+		} else {
+			slotRes = timeSlotResponse{
+				ID:        int32(slot.ID),
+				StartTime: startTimeFormatted,
+				EndTime:   endTimeFormatted,
+				Status:    "full",
+			}
+		}
+
+		availableTimeSlots = append(availableTimeSlots, slotRes)
+	}
+
+	return availableTimeSlots, nil
+}
+
+// func (s *AppointmentService) CancelAppointment(ctx *gin.Context, appointmentID int64, username string) error {
+//     // Lấy thông tin cuộc hẹn
+//     appointment, err := s.storeDB.GetAppointmentByID(ctx, appointmentID)
+//     if err != nil {
+//         return fmt.Errorf("failed to get appointment: %w", err)
+//     }
+
+//     // Kiểm tra xem cuộc hẹn thuộc về người dùng
+//     if appointment.Username != username {
+//         return fmt.Errorf("unauthorized to cancel this appointment")
+//     }
+
+//     // Bắt đầu transaction
+//     err = s.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
+//         // Cập nhật trạng thái lịch hẹn thành "cancelled"
+//         err := q.UpdateAppointmentStatus(ctx, db.UpdateAppointmentStatusParams{
+//             ID:     appointmentID,
+//             Status: pgtype.Text{String: "cancelled", Valid: true},
+//         })
+//         if err != nil {
+//             return fmt.Errorf("failed to update appointment status: %w", err)
+//         }
+
+//         // Nếu lịch hẹn đã được xác nhận, giảm số lượng booked_patients
+//         if appointment.Status.String == "confirmed" {
+//             err = q.DecreaseTimeSlotBookedPatients(ctx, db.DecreaseTimeSlotBookedPatientsParams{
+//                 ID:       appointment.TimeSlotID.Int64,
+//                 Date:     pgtype.Date{Time: appointment.Date.Time, Valid: true},
+//                 DoctorID: int32(appointment.DoctorID.Int64),
+//             })
+//             if err != nil {
+//                 return fmt.Errorf("failed to decrease booked patients: %w", err)
+//             }
+//         }
+
+//         return nil
+//     })
+//     if err != nil {
+//         return fmt.Errorf("transaction failed: %w", err)
+//     }
+
+//     return nil
+// }

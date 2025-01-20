@@ -43,6 +43,7 @@ func Routes(routerGroup middleware.RouterGroup, taskDistributor worker.TaskDistr
 		authRoute.POST("/create", appointmentApi.controller.createAppointment)
 =======
 		authRoute.POST("/", appointmentApi.controller.createAppointment)
+<<<<<<< HEAD
 >>>>>>> 685da65 (latest update)
 		authRoute.PUT("/:appointment_id", appointmentApi.controller.updateAppointmentStatus)
 		authRoute.GET("/", appointmentApi.controller.getAppointmentsByUser)
@@ -53,6 +54,14 @@ func Routes(routerGroup middleware.RouterGroup, taskDistributor worker.TaskDistr
 		authRoute.POST("appointment/:id/soap", appointmentApi.controller.createSOAP)
 		authRoute.PUT("appointment/:id/soap", appointmentApi.controller.updateSOAP)
 		authRoute.GET("appointment/:id/soap", appointmentApi.controller.getSOAPByAppointmentID)
+=======
+		authRoute.POST("/confirm/:appointment_id", appointmentApi.controller.confirmAppointment)
+		authRoute.GET("/", appointmentApi.controller.getAppointmentsByUser)
+		authRoute.GET("/:appointment_id", appointmentApi.controller.getAppointmentByID)
+		authRoute.GET("/doctor/:doctor_id", appointmentApi.controller.getAppointmentsByDoctor)
+		// time slot
+		authRoute.GET("/doctor/:doctor_id/time-slot", appointmentApi.controller.getAvailableTimeSlots)
+>>>>>>> b393bb9 (add service and add permission)
 	}
 
 }
