@@ -72,6 +72,7 @@ type Querier interface {
 =======
 	AddItemToCart(ctx context.Context, arg AddItemToCartParams) (Cartitem, error)
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> 21608b5 (cart and order api)
 =======
 	CountAppointmentsByDateAndTimeSlot(ctx context.Context, arg CountAppointmentsByDateAndTimeSlotParams) (int64, error)
@@ -134,6 +135,9 @@ type Querier interface {
 =======
 	AddItemToCart(ctx context.Context, arg AddItemToCartParams) (Cartitem, error)
 >>>>>>> 21608b5 (cart and order api)
+=======
+	CountAppointmentsByDateAndTimeSlot(ctx context.Context, arg CountAppointmentsByDateAndTimeSlotParams) (int64, error)
+>>>>>>> b393bb9 (add service and add permission)
 	CreateAppointment(ctx context.Context, arg CreateAppointmentParams) (Appointment, error)
 	CreateCartForUser(ctx context.Context, userID int64) (int64, error)
 	CreateOrder(ctx context.Context, arg CreateOrderParams) (Order, error)
@@ -141,7 +145,6 @@ type Querier interface {
 	CreatePetSchedule(ctx context.Context, arg CreatePetScheduleParams) error
 >>>>>>> 272832d (redis cache)
 	CreateService(ctx context.Context, arg CreateServiceParams) (Service, error)
-	CreateServiceType(ctx context.Context, arg CreateServiceTypeParams) (Servicetype, error)
 	CreateTimeSlot(ctx context.Context, arg CreateTimeSlotParams) (Timeslot, error)
 	CreateUser(ctx context.Context, arg CreateUserParams) (int64, error)
 >>>>>>> 0fb3f30 (user images)
@@ -226,6 +229,7 @@ type Querier interface {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 	DeletePetAllergy(ctx context.Context, id int64) error
 	DeletePetLog(ctx context.Context, logID int64) error
@@ -282,6 +286,9 @@ type Querier interface {
 >>>>>>> e9037c6 (update sqlc)
 =======
 >>>>>>> 685da65 (latest update)
+=======
+	DeleteService(ctx context.Context, id int64) error
+>>>>>>> b393bb9 (add service and add permission)
 	DeleteUser(ctx context.Context, id int64) error
 >>>>>>> 1f24c18 (feat: OTP with redis)
 =======
@@ -345,6 +352,7 @@ type Querier interface {
 	GetAllProducts(ctx context.Context, arg GetAllProductsParams) ([]Product, error)
 	GetAllSchedulesByPet(ctx context.Context, arg GetAllSchedulesByPetParams) ([]PetSchedule, error)
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 	GetActivityLogByID(ctx context.Context, logid int64) (Activitylog, error)
 <<<<<<< HEAD
@@ -368,6 +376,8 @@ type Querier interface {
 >>>>>>> 6b24d88 (feat(payment): add PayOS payment integration and enhance treatment module)
 =======
 >>>>>>> e9037c6 (update sqlc)
+=======
+>>>>>>> b393bb9 (add service and add permission)
 	GetAllUsers(ctx context.Context) ([]User, error)
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -387,6 +397,7 @@ type Querier interface {
 	// Đếm số lượng lịch hẹn theo từng ngày trong khoảng thời gian
 	GetAppointmentCountByDateRange(ctx context.Context, arg GetAppointmentCountByDateRangeParams) ([]GetAppointmentCountByDateRangeRow, error)
 	GetAppointmentDetailById(ctx context.Context, appointmentID int64) (Appointment, error)
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -430,9 +441,13 @@ type Querier interface {
 >>>>>>> e30b070 (Get list appoinment by user)
 =======
 	GetAppointmentsByDoctor(ctx context.Context, arg GetAppointmentsByDoctorParams) (int64, error)
+=======
+	GetAppointmentsByDoctor(ctx context.Context, doctorID pgtype.Int8) ([]GetAppointmentsByDoctorRow, error)
+>>>>>>> b393bb9 (add service and add permission)
 	GetAppointmentsByUser(ctx context.Context, username pgtype.Text) ([]GetAppointmentsByUserRow, error)
 >>>>>>> 685da65 (latest update)
 	GetAppointmentsOfDoctorWithDetails(ctx context.Context, id int64) ([]GetAppointmentsOfDoctorWithDetailsRow, error)
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -463,6 +478,8 @@ type Querier interface {
 	GetAvailableRooms(ctx context.Context, arg GetAvailableRoomsParams) ([]Room, error)
 	GetAvailableRoomsForDuration(ctx context.Context, arg GetAvailableRoomsForDurationParams) ([]Room, error)
 >>>>>>> c8bec46 (feat: add chatbot, room management, and pet allergy features)
+=======
+>>>>>>> b393bb9 (add service and add permission)
 	GetAvailableTimeSlots(ctx context.Context, arg GetAvailableTimeSlotsParams) ([]GetAvailableTimeSlotsRow, error)
 	GetCartByUserId(ctx context.Context, userID int64) ([]Cart, error)
 <<<<<<< HEAD
@@ -653,6 +670,7 @@ type Querier interface {
 	GetPetProfileSummary(ctx context.Context, petid int64) ([]GetPetProfileSummaryRow, error)
 	GetPetScheduleById(ctx context.Context, id int64) (PetSchedule, error)
 	GetProductByID(ctx context.Context, productID int64) (Product, error)
+<<<<<<< HEAD
 	GetRoomByID(ctx context.Context, id int64) (Room, error)
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -768,6 +786,12 @@ type Querier interface {
 	GetServices(ctx context.Context, arg GetServicesParams) ([]Service, error)
 <<<<<<< HEAD
 <<<<<<< HEAD
+	GetTimeSlot(ctx context.Context, arg GetTimeSlotParams) (Timeslot, error)
+	// Khóa bản ghi để tránh race condition
+>>>>>>> b393bb9 (add service and add permission)
+=======
+	GetServiceByID(ctx context.Context, id int64) (Service, error)
+	GetServices(ctx context.Context, arg GetServicesParams) ([]Service, error)
 	GetTimeSlot(ctx context.Context, arg GetTimeSlotParams) (Timeslot, error)
 	// Khóa bản ghi để tránh race condition
 >>>>>>> b393bb9 (add service and add permission)
@@ -1073,6 +1097,7 @@ type Querier interface {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 	UpdatePetAllergy(ctx context.Context, arg UpdatePetAllergyParams) (PetAllergy, error)
 	UpdatePetAvatar(ctx context.Context, arg UpdatePetAvatarParams) error
@@ -1117,6 +1142,10 @@ type Querier interface {
 =======
 	UpdateTimeSlotStatus(ctx context.Context, arg UpdateTimeSlotStatusParams) error
 >>>>>>> 685da65 (latest update)
+=======
+	UpdateService(ctx context.Context, arg UpdateServiceParams) (Service, error)
+	UpdateTimeSlotBookedPatients(ctx context.Context, arg UpdateTimeSlotBookedPatientsParams) error
+>>>>>>> b393bb9 (add service and add permission)
 	UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error)
 	UpdateUserPassword(ctx context.Context, arg UpdateUserPasswordParams) (User, error)
 =======

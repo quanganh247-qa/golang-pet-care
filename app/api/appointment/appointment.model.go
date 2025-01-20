@@ -202,6 +202,7 @@ type AppointmentWithDetails struct {
 }
 
 type createAppointmentResponse struct {
+<<<<<<< HEAD
 	ID           int64    `json:"id"`
 	PetName      string   `json:"pet_name"`
 	ServiceName  string   `json:"service_name"`
@@ -292,11 +293,25 @@ type QueueItem struct {
 	RoomType     string   `json:"room_type"`
 >>>>>>> 71b74e9 (feat(appointment): add room management and update appointment functionality.)
 }
+=======
+	ID            int64    `json:"id"`
+	PetName       string   `json:"pet_name"`
+	ServiceName   string   `json:"service_name"`
+	DoctorName    string   `json:"doctor_name"`
+	Date          string   `json:"date"`
+	TimeSlot      timeslot `json:"time_slot"`
+	PaymentStatus string   `json:"payment_status"`
+	Notes         string   `json:"notes"`
+	ReminderSend  bool     `json:"reminder_send"`
+	CreatedAt     string   `json:"created_at"`
+}
+>>>>>>> b393bb9 (add service and add permission)
 type timeSlotResponse struct {
 	ID        int32  `json:"id"`
 	StartTime string `json:"start_time"`
 	EndTime   string `json:"end_time"`
 	Status    string `json:"status"`
+<<<<<<< HEAD
 <<<<<<< HEAD
 	// BookedPatients int32  `json:"booked_patients"`
 	// MaxPatients    int32  `json:"max_patients"`
@@ -350,4 +365,8 @@ type QueueItem struct {
 	Doctor          string `json:"doctor"`
 	WaitingSince    string `json:"waitingSince"`
 	ActualWaitTime  string `json:"actualWaitTime"`
+=======
+	// BookedPatients int32  `json:"booked_patients"`
+	// MaxPatients    int32  `json:"max_patients"`
+>>>>>>> b393bb9 (add service and add permission)
 }

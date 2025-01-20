@@ -296,6 +296,7 @@ func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor, config
 >>>>>>> 4ccd381 (Update appointment flow)
 	user.Routes(routerGroup, taskDistributor, config)
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 =======
 
@@ -315,6 +316,8 @@ func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor, config
 >>>>>>> 1a9e82a (reset password api)
 	service_type.Routes(routerGroup)
 >>>>>>> 9d28896 (image pet)
+=======
+>>>>>>> b393bb9 (add service and add permission)
 =======
 >>>>>>> b393bb9 (add service and add permission)
 	pet.Routes(routerGroup)

@@ -636,6 +636,9 @@ func (service *UserService) loginUserService(ctx *gin.Context, req loginUserRequ
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> b393bb9 (add service and add permission)
 =======
 >>>>>>> b393bb9 (add service and add permission)
 	_, err = service.redis.UserInfoLoadCache(req.Username)
@@ -644,6 +647,7 @@ func (service *UserService) loginUserService(ctx *gin.Context, req loginUserRequ
 			ctx.JSON(http.StatusNotFound, "user not found")
 			return nil, fmt.Errorf("user not found")
 		}
+<<<<<<< HEAD
 <<<<<<< HEAD
 =======
 	device_tokens, err := service.storeDB.GetDeviceTokenByUsername(ctx, req.Username)
@@ -679,6 +683,11 @@ func (service *UserService) loginUserService(ctx *gin.Context, req loginUserRequ
 		return nil, fmt.Errorf("internal server error: %v", err)
 	}
 >>>>>>> b393bb9 (add service and add permission)
+=======
+		ctx.JSON(http.StatusInternalServerError, "internal server error")
+		return nil, fmt.Errorf("internal server error: %v", err)
+	}
+>>>>>>> b393bb9 (add service and add permission)
 
 >>>>>>> 21608b5 (cart and order api)
 =======
@@ -689,8 +698,6 @@ func (service *UserService) loginUserService(ctx *gin.Context, req loginUserRequ
 		ctx.JSON(http.StatusInternalServerError, "Incorrect passward")
 		return nil, fmt.Errorf("Incorrect passward")
 	}
-
-	fmt.Println(user.IsVerifiedEmail.Bool)
 
 	if !user.IsVerifiedEmail.Bool {
 		ctx.JSON(http.StatusForbidden, "email not verified")

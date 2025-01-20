@@ -26,6 +26,9 @@ func Routes(routerGroup middleware.RouterGroup) {
 	{
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> b393bb9 (add service and add permission)
 =======
 >>>>>>> b393bb9 (add service and add permission)
 		// authRoute.POST("/", SVApi.controller.CreateServiceController)
@@ -40,6 +43,7 @@ func Routes(routerGroup middleware.RouterGroup) {
 		perRoute([]perms.Permission{perms.ManageServices}).POST("/", SVApi.controller.CreateServiceController)
 		perRoute([]perms.Permission{perms.ManageServices}).DELETE("/:id", SVApi.controller.DeleteService)
 		perRoute([]perms.Permission{perms.ManageServices}).PUT("/:id", SVApi.controller.UpdateService)
+<<<<<<< HEAD
 <<<<<<< HEAD
 =======
 		authRoute.POST("/create", SVApi.controller.CreateService)
@@ -65,6 +69,8 @@ func Routes(routerGroup middleware.RouterGroup) {
 =======
 		authRoute.GET("/", SVApi.controller.getAllServices)
 >>>>>>> 5e493e4 (get all services)
+=======
+>>>>>>> b393bb9 (add service and add permission)
 
 	}
 

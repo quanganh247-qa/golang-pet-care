@@ -61,6 +61,7 @@ type CartItem struct {
 	Notes         pgtype.Text      `json:"notes"`
 	ReminderSend  pgtype.Bool      `json:"reminder_send"`
 	TimeSlotID    pgtype.Int8      `json:"time_slot_id"`
+	PaymentStatus pgtype.Text      `json:"payment_status"`
 	CreatedAt     pgtype.Timestamp `json:"created_at"`
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -821,6 +822,7 @@ type Service struct {
 	Category    pgtype.Text      `json:"category"`
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	Priority    pgtype.Int2      `json:"priority"`
 	CreatedAt   pgtype.Timestamp `json:"created_at"`
 }
@@ -833,6 +835,11 @@ type Shift struct {
 	MaxPatients      pgtype.Int4      `json:"max_patients"`
 	AssignedPatients pgtype.Int4      `json:"assigned_patients"`
 	CreatedAt        pgtype.Timestamp `json:"created_at"`
+=======
+	Notes       pgtype.Text      `json:"notes"`
+	CreatedAt   pgtype.Timestamp `json:"created_at"`
+	UpdatedAt   pgtype.Timestamp `json:"updated_at"`
+>>>>>>> b393bb9 (add service and add permission)
 =======
 	Notes       pgtype.Text      `json:"notes"`
 	CreatedAt   pgtype.Timestamp `json:"created_at"`
@@ -851,6 +858,7 @@ type State struct {
 	UpdatedAt pgtype.Timestamp `json:"updated_at"`
 =======
 type Timeslot struct {
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -886,6 +894,8 @@ type Timeslot struct {
 =======
 type TimeSlot struct {
 >>>>>>> 33fcf96 (Big update)
+=======
+>>>>>>> b393bb9 (add service and add permission)
 	ID             int64            `json:"id"`
 	DoctorID       int32            `json:"doctor_id"`
 	Date           pgtype.Date      `json:"date"`
@@ -895,11 +905,14 @@ type TimeSlot struct {
 	BookedPatients pgtype.Int4      `json:"booked_patients"`
 	CreatedAt      pgtype.Timestamp `json:"created_at"`
 	UpdatedAt      pgtype.Timestamp `json:"updated_at"`
+<<<<<<< HEAD
 >>>>>>> b393bb9 (add service and add permission)
 =======
 >>>>>>> e9037c6 (update sqlc)
 =======
 >>>>>>> 685da65 (latest update)
+=======
+>>>>>>> b393bb9 (add service and add permission)
 }
 
 <<<<<<< HEAD

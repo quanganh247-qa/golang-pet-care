@@ -17,6 +17,9 @@ type ServiceApi struct {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> b393bb9 (add service and add permission)
 =======
 >>>>>>> b393bb9 (add service and add permission)
 type CreateServiceRequest struct {
@@ -26,6 +29,7 @@ type CreateServiceRequest struct {
 	Cost        float64 `json:"cost" binding:"required"`
 	Category    string  `json:"category" binding:"required"`
 	Notes       string  `json:"notes"`
+<<<<<<< HEAD
 <<<<<<< HEAD
 }
 
@@ -70,13 +74,21 @@ type ServiceRepsonse struct {
 
 <<<<<<< HEAD
 =======
+=======
+>>>>>>> b393bb9 (add service and add permission)
 }
 
-type ServiceTypeKey struct {
-	ID       int64  `json:"id"`
-	TypeName string `json:"type_name"`
+type ServiceRepsonse struct {
+	ID          int64   `json:"id"`
+	Name        string  `json:"name"`
+	Description string  `json:"description"`
+	Duration    int     `json:"duration"`
+	Cost        float64 `json:"cost"`
+	Category    string  `json:"category"`
+	Notes       string  `json:"notes"`
 }
 
+<<<<<<< HEAD
 >>>>>>> cfbe865 (updated service response)
 type GroupedServiceResponse struct {
 	ID       int64                   `json:"id"`
@@ -85,6 +97,8 @@ type GroupedServiceResponse struct {
 <<<<<<< HEAD
 >>>>>>> cfbe865 (updated service response)
 =======
+=======
+>>>>>>> b393bb9 (add service and add permission)
 type UpdateServiceRequest struct {
 	Name        string  `json:"name"`
 	Description string  `json:"description"`
@@ -92,7 +106,10 @@ type UpdateServiceRequest struct {
 	Cost        float64 `json:"cost"`
 	Category    string  `json:"category"`
 	Notes       string  `json:"notes"`
+<<<<<<< HEAD
 >>>>>>> b393bb9 (add service and add permission)
 =======
 >>>>>>> cfbe865 (updated service response)
+=======
+>>>>>>> b393bb9 (add service and add permission)
 }

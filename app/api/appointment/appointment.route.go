@@ -79,10 +79,11 @@ func Routes(routerGroup middleware.RouterGroup, taskDistributor worker.TaskDistr
 		authRoute.GET("/", appointmentApi.controller.getAppointmentsByPetOfUser)
 =======
 		authRoute.POST("/", appointmentApi.controller.createAppointment)
-		authRoute.PUT("/:appointment_id", appointmentApi.controller.updateAppointmentStatus)
+		authRoute.POST("/confirm/:appointment_id", appointmentApi.controller.confirmAppointment)
 		authRoute.GET("/", appointmentApi.controller.getAppointmentsByUser)
 >>>>>>> 685da65 (latest update)
 		authRoute.GET("/:appointment_id", appointmentApi.controller.getAppointmentByID)
+<<<<<<< HEAD
 >>>>>>> 7e35c2e (get appointment detail)
 
 		// soap
@@ -130,6 +131,11 @@ func Routes(routerGroup middleware.RouterGroup, taskDistributor worker.TaskDistr
 		authRoute.PUT("appointment/:id/soap", appointmentApi.controller.updateSOAP)
 		authRoute.GET("appointment/:id/soap", appointmentApi.controller.getSOAPByAppointmentID)
 >>>>>>> c8bec46 (feat: add chatbot, room management, and pet allergy features)
+=======
+		authRoute.GET("/doctor/:doctor_id", appointmentApi.controller.getAppointmentsByDoctor)
+		// time slot
+		authRoute.GET("/doctor/:doctor_id/time-slot", appointmentApi.controller.getAvailableTimeSlots)
+>>>>>>> b393bb9 (add service and add permission)
 	}
 
 }

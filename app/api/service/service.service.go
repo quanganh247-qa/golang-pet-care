@@ -13,6 +13,9 @@ type ServiceServiceInterface interface {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> b393bb9 (add service and add permission)
 =======
 >>>>>>> b393bb9 (add service and add permission)
 	CreateService(ctx *gin.Context, req CreateServiceRequest) (*ServiceRepsonse, error)
@@ -21,6 +24,7 @@ type ServiceServiceInterface interface {
 	UpdateService(ctx *gin.Context, id int64, req UpdateServiceRequest) (*ServiceRepsonse, error)
 	DeleteService(ctx *gin.Context, id int64) error
 <<<<<<< HEAD
+<<<<<<< HEAD
 }
 
 func (s *ServiceService) CreateService(ctx *gin.Context, req CreateServiceRequest) (*ServiceRepsonse, error) {
@@ -45,11 +49,13 @@ func (s *ServiceService) CreateService(ctx *gin.Context, req CreateServiceReques
 	updateServiceService(ctx *gin.Context, serviceid int64, req updateServiceRequest) error
 	getServiceByIDService(ctx *gin.Context, serviceid int64) (*createServiceResponse, error)
 	getAllServices(ctx *gin.Context, pagination *util.Pagination) ([]createServiceResponse, error)
+=======
+>>>>>>> b393bb9 (add service and add permission)
 }
 
-func (server *ServiceService) createServiceService(ctx *gin.Context, req createServiceRequest) (*db.Service, error) {
-	var result db.Service
+func (s *ServiceService) CreateService(ctx *gin.Context, req CreateServiceRequest) (*ServiceRepsonse, error) {
 
+<<<<<<< HEAD
 >>>>>>> c73e2dc (pagination function)
 	if req.Name == "" || req.Price == 0 {
 		return nil, fmt.Errorf("input name is empty")
@@ -65,6 +71,11 @@ func (server *ServiceService) createServiceService(ctx *gin.Context, req createS
 	var err error
 
 >>>>>>> b393bb9 (add service and add permission)
+=======
+	var service db.Service
+	var err error
+
+>>>>>>> b393bb9 (add service and add permission)
 	err = s.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
 		service, err = q.CreateService(ctx, db.CreateServiceParams{
 			Name:        pgtype.Text{String: req.Name, Valid: true},
@@ -74,16 +85,21 @@ func (server *ServiceService) createServiceService(ctx *gin.Context, req createS
 			Category:    pgtype.Text{String: req.Category, Valid: true},
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 			Notes:       pgtype.Text{String: req.Notes, Valid: true},
 >>>>>>> b393bb9 (add service and add permission)
 =======
 >>>>>>> ada3717 (Docker file)
+=======
+			Notes:       pgtype.Text{String: req.Notes, Valid: true},
+>>>>>>> b393bb9 (add service and add permission)
 		})
 		if err != nil {
 			return fmt.Errorf("failed to create service: %w", err)
 		}
 		return nil
+<<<<<<< HEAD
 <<<<<<< HEAD
 	})
 
@@ -109,11 +125,14 @@ func (server *ServiceService) createServiceService(ctx *gin.Context, req createS
 	}
 <<<<<<< HEAD
 =======
+=======
+>>>>>>> b393bb9 (add service and add permission)
 	})
 
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to create service: %w", err)
 	}
+<<<<<<< HEAD
 >>>>>>> cfbe865 (updated service response)
 
 	return &result, nil
@@ -126,6 +145,8 @@ func (server *ServiceService) deleteServiceService(ctx *gin.Context, serviceID i
 	}
 =======
 >>>>>>> b393bb9 (add service and add permission)
+=======
+>>>>>>> b393bb9 (add service and add permission)
 	return &ServiceRepsonse{
 		ID:          service.ID,
 		Name:        service.Name.String,
@@ -133,6 +154,7 @@ func (server *ServiceService) deleteServiceService(ctx *gin.Context, serviceID i
 		Duration:    int(service.Duration.Int16),
 		Cost:        service.Cost.Float64,
 		Category:    service.Category.String,
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 =======
@@ -187,11 +209,20 @@ func (server *ServiceService) getAllServicesService(ctx *gin.Context, pagination
 func (server *ServiceService) getAllServicesService(ctx *gin.Context, pagination *util.Pagination) ([]GroupedServiceResponse, error) {
 >>>>>>> cfbe865 (updated service response)
 
+=======
+		Notes:       service.Notes.String,
+	}, nil
+}
+
+// Get all services
+func (s *ServiceService) GetAllServices(ctx *gin.Context, pagination *util.Pagination) ([]*ServiceRepsonse, error) {
+>>>>>>> b393bb9 (add service and add permission)
 	offset := (pagination.Page - 1) * pagination.PageSize
 
-	params := db.GetAllServicesParams{
+	services, err := s.storeDB.GetServices(ctx, db.GetServicesParams{
 		Limit:  int32(pagination.PageSize),
 		Offset: int32(offset),
+<<<<<<< HEAD
 	}
 >>>>>>> c73e2dc (pagination function)
 
@@ -232,24 +263,20 @@ func (server *ServiceService) getAllServicesService(ctx *gin.Context, pagination
 =======
 	serviceMap := make(map[ServiceTypeKey][]createServiceResponse)
 
+=======
+	})
+
+	if err != nil {
+		return nil, fmt.Errorf("failed to get all services: %w", err)
+	}
+	var serviceResponses []*ServiceRepsonse
+>>>>>>> b393bb9 (add service and add permission)
 	for _, service := range services {
-
-		serviceType, err := server.storeDB.GetServiceType(ctx, service.Typeid.Int64)
-		if err != nil {
-			return nil, fmt.Errorf("failed to get service type: %w", err)
-		}
-
-		serviceTypeKey := ServiceTypeKey{
-			ID:       serviceType.Typeid,
-			TypeName: serviceType.Servicetypename,
-		}
-		serviceResponse := createServiceResponse{
-			ServiceID:   service.Serviceid,
-			TypeID:      serviceType.Typeid,
-			Name:        service.Name,
-			Price:       service.Price.Float64,
-			Duration:    service.Duration.Microseconds,
+		serviceResponses = append(serviceResponses, &ServiceRepsonse{
+			ID:          service.ID,
+			Name:        service.Name.String,
 			Description: service.Description.String,
+<<<<<<< HEAD
 			Isavailable: service.Isavailable.Bool,
 		}
 		serviceMap[serviceTypeKey] = append(serviceMap[serviceTypeKey], serviceResponse)
@@ -265,15 +292,20 @@ func (server *ServiceService) getAllServicesService(ctx *gin.Context, pagination
 <<<<<<< HEAD
 >>>>>>> cfbe865 (updated service response)
 =======
+=======
+>>>>>>> b393bb9 (add service and add permission)
 			Duration:    int(service.Duration.Int16),
 			Cost:        service.Cost.Float64,
 			Category:    service.Category.String,
 			Notes:       service.Notes.String,
+<<<<<<< HEAD
 >>>>>>> b393bb9 (add service and add permission)
 =======
 >>>>>>> ada3717 (Docker file)
 =======
 >>>>>>> cfbe865 (updated service response)
+=======
+>>>>>>> b393bb9 (add service and add permission)
 		})
 	}
 	return serviceResponses, nil
@@ -293,11 +325,15 @@ func (s *ServiceService) GetServiceByID(ctx *gin.Context, id int64) (*ServiceRep
 		Category:    service.Category.String,
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 		Notes:       service.Notes.String,
 >>>>>>> b393bb9 (add service and add permission)
 =======
 >>>>>>> ada3717 (Docker file)
+=======
+		Notes:       service.Notes.String,
+>>>>>>> b393bb9 (add service and add permission)
 	}, nil
 }
 
@@ -315,11 +351,15 @@ func (s *ServiceService) UpdateService(ctx *gin.Context, id int64, req UpdateSer
 			Category:    pgtype.Text{String: req.Category, Valid: true},
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 			Notes:       pgtype.Text{String: req.Notes, Valid: true},
 >>>>>>> b393bb9 (add service and add permission)
 =======
 >>>>>>> ada3717 (Docker file)
+=======
+			Notes:       pgtype.Text{String: req.Notes, Valid: true},
+>>>>>>> b393bb9 (add service and add permission)
 		})
 		if err != nil {
 			return fmt.Errorf("failed to update service: %w", err)
@@ -338,11 +378,15 @@ func (s *ServiceService) UpdateService(ctx *gin.Context, id int64, req UpdateSer
 		Category:    service.Category.String,
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 		Notes:       service.Notes.String,
 >>>>>>> b393bb9 (add service and add permission)
 =======
 >>>>>>> ada3717 (Docker file)
+=======
+		Notes:       service.Notes.String,
+>>>>>>> b393bb9 (add service and add permission)
 	}, nil
 }
 
@@ -353,6 +397,7 @@ func (s *ServiceService) DeleteService(ctx *gin.Context, id int64) error {
 			return fmt.Errorf("failed to delete service: %w", err)
 		}
 		return nil
+<<<<<<< HEAD
 <<<<<<< HEAD
 	})
 	if err != nil {
@@ -382,22 +427,11 @@ func (server *ServiceService) getAllServices(ctx *gin.Context, pagination *util.
 	rows, err := server.storeDB.GetAllServices(ctx, db.GetAllServicesParams{
 		Limit:  int32(pagination.PageSize),
 		Offset: int32(offset),
+=======
+>>>>>>> b393bb9 (add service and add permission)
 	})
-
-	for _, row := range rows {
-		service := createServiceResponse{
-			ServiceID:   row.Serviceid,
-			TypeID:      row.Typeid.Int64,
-			Name:        row.Name,
-			Price:       row.Price.Float64,
-			Duration:    row.Duration.Microseconds,
-			Description: row.Description.String,
-			Isavailable: row.Isavailable.Bool,
-		}
-		services = append(services, service)
-	}
 	if err != nil {
-		return nil, fmt.Errorf("transaction failed: %w", err)
+		return fmt.Errorf("failed to delete service: %w", err)
 	}
-	return services, nil
+	return nil
 }

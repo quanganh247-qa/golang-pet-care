@@ -158,11 +158,32 @@ WHERE doctor_id = $1 AND date = $2;
 -- name: GetTimeSlotsByDoctorAndDate :many
 SELECT * from TimeSlots WHERE doctor_id = $1 AND "date" = $2 ORDER BY start_time ASC;
 
+-- name: GetTimeSlot :one
+SELECT * FROM timeslots
+WHERE id = $1 AND date = $2 AND doctor_id = $3
+FOR UPDATE; -- Khóa bản ghi để tránh race condition
+
 -- name: GetTimeSlotById :one
 SELECT * from TimeSlots WHERE id = $1;
 
+<<<<<<< HEAD
 -- name: UpdateTimeSlotStatus :exec
 UPDATE TimeSlots
 SET status = $2
 WHERE id = $1;
 >>>>>>> 685da65 (latest update)
+=======
+-- name: GetAvailableTimeSlots :many
+SELECT 
+    id,
+    start_time,
+    end_time,
+    booked_patients,
+    max_patients
+FROM 
+    timeslots
+WHERE 
+    doctor_id = $1 
+    AND date = $2 
+    AND booked_patients < max_patients;
+>>>>>>> b393bb9 (add service and add permission)

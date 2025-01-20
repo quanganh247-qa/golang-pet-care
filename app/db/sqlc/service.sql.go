@@ -15,6 +15,7 @@ const createService = `-- name: CreateService :one
 INSERT INTO services (
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     name, description, duration, cost, category
 ) VALUES (
     $1, $2, $3, $4, $5
@@ -34,6 +35,13 @@ RETURNING id, name, description, duration, cost, category, notes, created_at, up
 =======
 RETURNING id, name, description, duration, cost, category, priority, created_at
 >>>>>>> ada3717 (Docker file)
+=======
+    name, description, duration, cost, category, notes
+) VALUES (
+    $1, $2, $3, $4, $5, $6
+)
+RETURNING id, name, description, duration, cost, category, notes, created_at, updated_at
+>>>>>>> b393bb9 (add service and add permission)
 `
 
 type CreateServiceParams struct {
@@ -44,11 +52,15 @@ type CreateServiceParams struct {
 	Category    pgtype.Text   `json:"category"`
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 	Notes       pgtype.Text   `json:"notes"`
 >>>>>>> b393bb9 (add service and add permission)
 =======
 >>>>>>> ada3717 (Docker file)
+=======
+	Notes       pgtype.Text   `json:"notes"`
+>>>>>>> b393bb9 (add service and add permission)
 }
 
 func (q *Queries) CreateService(ctx context.Context, arg CreateServiceParams) (Service, error) {
@@ -60,11 +72,15 @@ func (q *Queries) CreateService(ctx context.Context, arg CreateServiceParams) (S
 		arg.Category,
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 		arg.Notes,
 >>>>>>> b393bb9 (add service and add permission)
 =======
 >>>>>>> ada3717 (Docker file)
+=======
+		arg.Notes,
+>>>>>>> b393bb9 (add service and add permission)
 	)
 	var i Service
 	err := row.Scan(
@@ -74,6 +90,7 @@ func (q *Queries) CreateService(ctx context.Context, arg CreateServiceParams) (S
 		&i.Duration,
 		&i.Cost,
 		&i.Category,
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 		&i.Priority,
@@ -87,6 +104,11 @@ func (q *Queries) CreateService(ctx context.Context, arg CreateServiceParams) (S
 		&i.Priority,
 		&i.CreatedAt,
 >>>>>>> ada3717 (Docker file)
+=======
+		&i.Notes,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+>>>>>>> b393bb9 (add service and add permission)
 	)
 	return i, err
 }
@@ -96,6 +118,7 @@ UPDATE services
 SET removed_at = NOW()
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 WHERE id = $1
 =======
 WHERE id = $1 and removed_at is NULL
@@ -103,6 +126,9 @@ WHERE id = $1 and removed_at is NULL
 =======
 WHERE id = $1
 >>>>>>> ffc9071 (AI suggestion)
+=======
+WHERE id = $1 and removed_at is NULL
+>>>>>>> b393bb9 (add service and add permission)
 `
 
 func (q *Queries) DeleteService(ctx context.Context, id int64) error {
@@ -110,6 +136,7 @@ func (q *Queries) DeleteService(ctx context.Context, id int64) error {
 	return err
 }
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 const getServiceByID = `-- name: GetServiceByID :one
@@ -135,6 +162,11 @@ WHERE id = $1
 >>>>>>> ffc9071 (AI suggestion)
 =======
 >>>>>>> 5e493e4 (get all services)
+=======
+const getServiceByID = `-- name: GetServiceByID :one
+SELECT id, name, description, duration, cost, category, notes, created_at, updated_at FROM services
+WHERE id = $1 and removed_at is NULL
+>>>>>>> b393bb9 (add service and add permission)
 `
 
 func (q *Queries) GetServiceByID(ctx context.Context, id int64) (Service, error) {
@@ -149,6 +181,7 @@ func (q *Queries) GetServiceByID(ctx context.Context, id int64) (Service, error)
 		&i.Category,
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 		&i.Priority,
 		&i.CreatedAt,
 =======
@@ -160,11 +193,17 @@ func (q *Queries) GetServiceByID(ctx context.Context, id int64) (Service, error)
 		&i.Priority,
 		&i.CreatedAt,
 >>>>>>> ada3717 (Docker file)
+=======
+		&i.Notes,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+>>>>>>> b393bb9 (add service and add permission)
 	)
 	return i, err
 }
 
 const getServices = `-- name: GetServices :many
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 SELECT id, name, description, duration, cost, category, priority, created_at FROM services where removed_at is NULL ORDER BY name LIMIT $1 OFFSET $2
@@ -174,6 +213,9 @@ SELECT id, name, description, duration, cost, category, notes, created_at, updat
 =======
 SELECT id, name, description, duration, cost, category, priority, created_at FROM services where removed_at is NULL ORDER BY name LIMIT $1 OFFSET $2
 >>>>>>> ada3717 (Docker file)
+=======
+SELECT id, name, description, duration, cost, category, notes, created_at, updated_at FROM services where removed_at is NULL ORDER BY name LIMIT $1 OFFSET $2
+>>>>>>> b393bb9 (add service and add permission)
 `
 
 type GetServicesParams struct {
@@ -199,6 +241,7 @@ func (q *Queries) GetServices(ctx context.Context, arg GetServicesParams) ([]Ser
 			&i.Category,
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 			&i.Priority,
 			&i.CreatedAt,
 =======
@@ -210,6 +253,11 @@ func (q *Queries) GetServices(ctx context.Context, arg GetServicesParams) ([]Ser
 			&i.Priority,
 			&i.CreatedAt,
 >>>>>>> ada3717 (Docker file)
+=======
+			&i.Notes,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+>>>>>>> b393bb9 (add service and add permission)
 		); err != nil {
 			return nil, err
 		}
@@ -223,6 +271,9 @@ func (q *Queries) GetServices(ctx context.Context, arg GetServicesParams) ([]Ser
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> b393bb9 (add service and add permission)
 =======
 >>>>>>> b393bb9 (add service and add permission)
 const updateService = `-- name: UpdateService :one
@@ -233,6 +284,7 @@ SET
     duration = $4,
     cost = $5,
     category = $6,
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
     updated_at = NOW()
@@ -281,6 +333,12 @@ RETURNING id, name, description, duration, cost, category, notes, created_at, up
 WHERE id = $1
 RETURNING id, name, description, duration, cost, category, priority, created_at
 >>>>>>> ada3717 (Docker file)
+=======
+    notes = $7,
+    updated_at = NOW()
+WHERE id = $1 and removed_at is NULL
+RETURNING id, name, description, duration, cost, category, notes, created_at, updated_at
+>>>>>>> b393bb9 (add service and add permission)
 `
 
 type UpdateServiceParams struct {
@@ -292,11 +350,15 @@ type UpdateServiceParams struct {
 	Category    pgtype.Text   `json:"category"`
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 	Notes       pgtype.Text   `json:"notes"`
 >>>>>>> b393bb9 (add service and add permission)
 =======
 >>>>>>> ada3717 (Docker file)
+=======
+	Notes       pgtype.Text   `json:"notes"`
+>>>>>>> b393bb9 (add service and add permission)
 }
 
 func (q *Queries) UpdateService(ctx context.Context, arg UpdateServiceParams) (Service, error) {
@@ -309,11 +371,15 @@ func (q *Queries) UpdateService(ctx context.Context, arg UpdateServiceParams) (S
 		arg.Category,
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 		arg.Notes,
 >>>>>>> b393bb9 (add service and add permission)
 =======
 >>>>>>> ada3717 (Docker file)
+=======
+		arg.Notes,
+>>>>>>> b393bb9 (add service and add permission)
 	)
 	var i Service
 	err := row.Scan(
@@ -323,6 +389,7 @@ func (q *Queries) UpdateService(ctx context.Context, arg UpdateServiceParams) (S
 		&i.Duration,
 		&i.Cost,
 		&i.Category,
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 		&i.Priority,
@@ -336,6 +403,11 @@ func (q *Queries) UpdateService(ctx context.Context, arg UpdateServiceParams) (S
 		&i.Priority,
 		&i.CreatedAt,
 >>>>>>> ada3717 (Docker file)
+=======
+		&i.Notes,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+>>>>>>> b393bb9 (add service and add permission)
 	)
 	return i, err
 }

@@ -13,6 +13,7 @@ type AppointmentControllerInterface interface {
 	createAppointment(ctx *gin.Context)
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	confirmAppointment(ctx *gin.Context)
 	checkinAppointment(ctx *gin.Context)
 	getAppointmentByID(ctx *gin.Context)
@@ -85,6 +86,14 @@ type AppointmentControllerInterface interface {
 	getAppointmentByID(ctx *gin.Context)
 	getAppointmentsByUser(ctx *gin.Context)
 >>>>>>> 685da65 (latest update)
+=======
+	confirmAppointment(ctx *gin.Context)
+	getAppointmentByID(ctx *gin.Context)
+	getAppointmentsByUser(ctx *gin.Context)
+	getAppointmentsByDoctor(ctx *gin.Context)
+	//time slot
+	getAvailableTimeSlots(ctx *gin.Context)
+>>>>>>> b393bb9 (add service and add permission)
 }
 
 func (c *AppointmentController) createAppointment(ctx *gin.Context) {
@@ -109,8 +118,11 @@ func (c *AppointmentController) createAppointment(ctx *gin.Context) {
 func (c *AppointmentController) confirmAppointment(ctx *gin.Context) {
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	appointmentID := ctx.Param("id")
 =======
+=======
+>>>>>>> b393bb9 (add service and add permission)
 	appointmentID := ctx.Param("appointment_id")
 >>>>>>> b393bb9 (add service and add permission)
 =======
@@ -128,12 +140,15 @@ func (c *AppointmentController) confirmAppointment(ctx *gin.Context) {
 	}
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 =======
 >>>>>>> b393bb9 (add service and add permission)
 =======
 
 >>>>>>> e859654 (Elastic search)
+=======
+>>>>>>> b393bb9 (add service and add permission)
 	err = c.service.ConfirmPayment(ctx, id)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
@@ -779,4 +794,48 @@ func (c *AppointmentController) getAppointmentsByUser(ctx *gin.Context) {
 		return
 	}
 	ctx.JSON(http.StatusOK, util.SuccessResponse("get appointment successful", res))
+}
+
+func (c *AppointmentController) getAppointmentsByDoctor(ctx *gin.Context) {
+	doctorID := ctx.Param("doctor_id")
+	if doctorID == "" {
+		ctx.JSON(http.StatusBadRequest, nil)
+		return
+	}
+	// convert string to int64
+	id, err := strconv.ParseInt(doctorID, 10, 64)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
+		return
+	}
+	res, err := c.service.GetAppointmentsByDoctor(ctx, id)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
+		return
+	}
+	ctx.JSON(http.StatusOK, util.SuccessResponse("get appointment successful", res))
+}
+
+func (c *AppointmentController) getAvailableTimeSlots(ctx *gin.Context) {
+
+	doctorID := ctx.Param("doctor_id")
+	if doctorID == "" {
+		ctx.JSON(http.StatusBadRequest, nil)
+		return
+	}
+
+	date := ctx.Query("date")
+
+	id, err := strconv.ParseInt(doctorID, 10, 64)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
+		return
+	}
+
+	res, err := c.service.GetAvailableTimeSlots(ctx, id, date)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
+		return
+	}
+	ctx.JSON(http.StatusOK, util.SuccessResponse("get time slot successful", res))
 }

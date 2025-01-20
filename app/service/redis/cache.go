@@ -64,6 +64,7 @@ func (c *ClientType) UserInfoLoadCache(username string) (*UserInfo, error) {
 	// log.Printf("User key: %s", userKey)
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	userInformation := UserInfo{}
 =======
 	userInformation := userInfo{}
@@ -71,6 +72,9 @@ func (c *ClientType) UserInfoLoadCache(username string) (*UserInfo, error) {
 =======
 	userInformation := UserInfo{}
 >>>>>>> dc47646 (Optimize SQL query)
+=======
+	userInformation := userInfo{}
+>>>>>>> b393bb9 (add service and add permission)
 	err := c.GetWithBackground(userKey, &userInformation)
 	if err != nil {
 		// log.Printf("Error when get cache for key %s: %v", userKey, err)

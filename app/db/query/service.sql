@@ -2,6 +2,7 @@
 INSERT INTO services (
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     name, description, duration, cost, category
 ) VALUES (
     $1, $2, $3, $4, $5
@@ -15,6 +16,11 @@ INSERT INTO services (
 ) VALUES (
     $1, $2, $3, $4, $5
 >>>>>>> ada3717 (Docker file)
+=======
+    name, description, duration, cost, category, notes
+) VALUES (
+    $1, $2, $3, $4, $5, $6
+>>>>>>> b393bb9 (add service and add permission)
 )
 RETURNING *;
 
@@ -22,6 +28,7 @@ RETURNING *;
 SELECT * FROM services where removed_at is NULL ORDER BY name LIMIT $1 OFFSET $2;
 
 -- name: GetServiceByID :one
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -52,13 +59,21 @@ WHERE id = $1;
 =======
 SELECT * FROM Service ORDER BY name LIMIT $1 OFFSET $2;
 >>>>>>> 5e493e4 (get all services)
+=======
+SELECT * FROM services
+WHERE id = $1 and removed_at is NULL;
+>>>>>>> b393bb9 (add service and add permission)
 
 -- name: DeleteService :exec
 UPDATE services
 SET removed_at = NOW()
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 WHERE id = $1;
+=======
+WHERE id = $1 and removed_at is NULL;
+>>>>>>> b393bb9 (add service and add permission)
 
 -- name: UpdateService :one
 UPDATE services
@@ -68,6 +83,7 @@ SET
     duration = $4,
     cost = $5,
     category = $6,
+<<<<<<< HEAD
 <<<<<<< HEAD
     updated_at = NOW()
 WHERE id = $1
@@ -103,3 +119,9 @@ RETURNING *;
 =======
 
 >>>>>>> ada3717 (Docker file)
+=======
+    notes = $7,
+    updated_at = NOW()
+WHERE id = $1 and removed_at is NULL
+RETURNING *;
+>>>>>>> b393bb9 (add service and add permission)

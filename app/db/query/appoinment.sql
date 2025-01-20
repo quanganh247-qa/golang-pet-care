@@ -86,14 +86,19 @@ INSERT INTO public.appointments (
 >>>>>>> cfbe865 (updated service response)
 =======
 INSERT INTO Appointment
-( petid, doctor_id, service_id, "date", status, notes, reminder_send, time_slot_id, created_at)
+( petid, doctor_id,username, service_id, "date", payment_status, notes, reminder_send, time_slot_id, created_at)
 VALUES( 
+<<<<<<< HEAD
     $1, $2, $3, $4, $5, $6, $7, $8, now()
 >>>>>>> 685da65 (latest update)
+=======
+    $1, $2, $3, $4, $5, $6, $7, $8, $9,now()
+>>>>>>> b393bb9 (add service and add permission)
 ) RETURNING *;
 
 
 -- name: UpdateTimeSlotBookedPatients :exec
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 UPDATE time_slots
@@ -147,6 +152,12 @@ UPDATE appointments SET
     notes = $9
 WHERE appointment_id = $1;
 >>>>>>> e859654 (Elastic search)
+=======
+UPDATE timeslots
+SET booked_patients = booked_patients + 1
+WHERE id = $1 AND  doctor_id = $2;
+
+>>>>>>> b393bb9 (add service and add permission)
 
 -- name: UpdateNotification :exec
 UPDATE appointments
@@ -161,6 +172,7 @@ SET state_id = $2
 <<<<<<< HEAD
 =======
 UPDATE Appointment
+<<<<<<< HEAD
 =======
 UPDATE appointments
 >>>>>>> 33fcf96 (Big update)
@@ -168,6 +180,9 @@ SET payment_status = $2
 >>>>>>> b393bb9 (add service and add permission)
 =======
 >>>>>>> e859654 (Elastic search)
+=======
+SET payment_status = $2
+>>>>>>> b393bb9 (add service and add permission)
 WHERE appointment_id = $1;
 
 -- name: GetAppointmentsOfDoctorWithDetails :many
@@ -696,7 +711,7 @@ FROM
 JOIN 
     pet p ON a.petid = p.petid 
 JOIN 
-    service s ON a.service_id = s.serviceid 
+    services s ON a.service_id = s.id 
 JOIN 
     timeslots ts ON a.time_slot_id = ts.id
 WHERE 
@@ -708,8 +723,32 @@ ORDER BY
 =======
     a.username = $1 and a.status <> 'completed';
 
--- name: GetAppointmentsByDoctor :one
+-- name: CountAppointmentsByDateAndTimeSlot :one
 SELECT COUNT(*) 
 FROM appointment 
 WHERE date = $1 AND doctor_id = $2 AND status = 'completed';
+<<<<<<< HEAD
 >>>>>>> 685da65 (latest update)
+=======
+
+-- name: GetAppointmentsByDoctor :many
+SELECT 
+    a.*,
+    d.id AS doctor_id,
+    p.name AS pet_name,
+    s.name AS service_name,
+    ts.start_time,
+    ts.end_time
+FROM 
+    appointment a
+JOIN 
+    doctors d ON a.doctor_id = d.id
+JOIN 
+    pet p ON a.petid = p.petid
+JOIN 
+    services as s ON a.service_id = s.id
+JOIN 
+    timeslots ts ON a.time_slot_id = ts.id
+WHERE 
+    a.doctor_id = $1;
+>>>>>>> b393bb9 (add service and add permission)

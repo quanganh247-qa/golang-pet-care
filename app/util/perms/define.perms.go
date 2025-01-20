@@ -15,6 +15,7 @@ const (
 const (
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> 4ccd381 (Update appointment flow)
 	// Doctor
@@ -26,6 +27,8 @@ const (
 >>>>>>> b393bb9 (add service and add permission)
 =======
 >>>>>>> 4ccd381 (Update appointment flow)
+=======
+>>>>>>> b393bb9 (add service and add permission)
 	CreateAppointment Permission = "CREATE_APPOINTMENT"
 	ReadAppointment   Permission = "READ_APPOINTMENT"
 	UpdateAppointment Permission = "UPDATE_APPOINTMENT"
@@ -40,6 +43,7 @@ const (
 	UpdateService  Permission = "UPDATE_SERVICE"
 	DeleteService  Permission = "DELETE_SERVICE"
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 =======
@@ -57,6 +61,8 @@ const (
 >>>>>>> b393bb9 (add service and add permission)
 =======
 >>>>>>> 3bf345d (happy new year)
+=======
+>>>>>>> b393bb9 (add service and add permission)
 	// Pet
 	ManagePets Permission = "MANAGE_PETS"
 	ReadPet    Permission = "READ_PET"
@@ -69,6 +75,7 @@ const (
 
 // RolePermissions maps roles to their respective permissions
 var RolePermissions = map[string][]Permission{
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -96,6 +103,11 @@ var RolePermissions = map[string][]Permission{
 >>>>>>> 3bf345d (happy new year)
 =======
 >>>>>>> 4ccd381 (Update appointment flow)
+=======
+	RoleAdmin:  {CreateAppointment, ReadAppointment, UpdateAppointment, DeleteAppointment, ManageUsers, ManageDoctors, ViewReports, ManageServices},
+	RoleDoctor: {CreateAppointment, ReadAppointment, UpdateAppointment, ViewReports, ManageServices},
+	RoleUser:   {CreateAppointment, ReadAppointment},
+>>>>>>> b393bb9 (add service and add permission)
 }
 
 // CheckPermission checks if the user's role has the required permissions
