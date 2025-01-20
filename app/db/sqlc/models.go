@@ -50,10 +50,10 @@ type CartItem struct {
 	DoctorID      pgtype.Int8      `json:"doctor_id"`
 	ServiceID     pgtype.Int8      `json:"service_id"`
 	Date          pgtype.Timestamp `json:"date"`
-	Status        pgtype.Text      `json:"status"`
 	Notes         pgtype.Text      `json:"notes"`
 	ReminderSend  pgtype.Bool      `json:"reminder_send"`
 	TimeSlotID    pgtype.Int8      `json:"time_slot_id"`
+	PaymentStatus pgtype.Text      `json:"payment_status"`
 	CreatedAt     pgtype.Timestamp `json:"created_at"`
 >>>>>>> 272832d (redis cache)
 }
@@ -495,6 +495,7 @@ type Service struct {
 	Duration    pgtype.Int2      `json:"duration"`
 	Cost        pgtype.Float8    `json:"cost"`
 	Category    pgtype.Text      `json:"category"`
+<<<<<<< HEAD
 	Priority    pgtype.Int2      `json:"priority"`
 	CreatedAt   pgtype.Timestamp `json:"created_at"`
 }
@@ -507,6 +508,11 @@ type Shift struct {
 	MaxPatients      pgtype.Int4      `json:"max_patients"`
 	AssignedPatients pgtype.Int4      `json:"assigned_patients"`
 	CreatedAt        pgtype.Timestamp `json:"created_at"`
+=======
+	Notes       pgtype.Text      `json:"notes"`
+	CreatedAt   pgtype.Timestamp `json:"created_at"`
+	UpdatedAt   pgtype.Timestamp `json:"updated_at"`
+>>>>>>> b393bb9 (add service and add permission)
 }
 
 <<<<<<< HEAD
@@ -517,6 +523,7 @@ type State struct {
 	UpdatedAt pgtype.Timestamp `json:"updated_at"`
 =======
 type Timeslot struct {
+<<<<<<< HEAD
 <<<<<<< HEAD
 	ID          int64            `json:"id"`
 	DoctorID    int32            `json:"doctor_id"`
@@ -539,6 +546,17 @@ type Timeslot struct {
 	CreatedAt pgtype.Timestamp `json:"created_at"`
 	UpdatedAt pgtype.Timestamp `json:"updated_at"`
 >>>>>>> 685da65 (latest update)
+=======
+	ID             int64            `json:"id"`
+	DoctorID       int32            `json:"doctor_id"`
+	Date           pgtype.Date      `json:"date"`
+	StartTime      pgtype.Time      `json:"start_time"`
+	EndTime        pgtype.Time      `json:"end_time"`
+	MaxPatients    pgtype.Int4      `json:"max_patients"`
+	BookedPatients pgtype.Int4      `json:"booked_patients"`
+	CreatedAt      pgtype.Timestamp `json:"created_at"`
+	UpdatedAt      pgtype.Timestamp `json:"updated_at"`
+>>>>>>> b393bb9 (add service and add permission)
 }
 
 <<<<<<< HEAD

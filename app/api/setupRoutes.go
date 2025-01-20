@@ -141,8 +141,11 @@ func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor, config
 	})
 
 	user.Routes(routerGroup, taskDistributor, config)
+<<<<<<< HEAD
 	service_type.Routes(routerGroup)
 >>>>>>> 9d28896 (image pet)
+=======
+>>>>>>> b393bb9 (add service and add permission)
 	pet.Routes(routerGroup)
 	service.Routes(routerGroup)
 <<<<<<< HEAD

@@ -853,23 +853,20 @@ CREATE TABLE pet_schedule (
 );
 
 
-CREATE TABLE ServiceType (
-  typeID BIGSERIAL PRIMARY KEY,
-  serviceTypeName varchar NOT NULL,
-  description TEXT,
-  iconURL VARCHAR(255)
+
+
+CREATE TABLE services (
+	id bigserial PRIMARY KEY,
+	"name" varchar(255) NULL,
+	description text NULL,
+	duration int2 NULL,
+	"cost" float8 NULL,
+	category varchar(255) NULL,
+	notes text NULL,
+	created_at timestamp DEFAULT now() NULL,
+	updated_at timestamp NULL
 );
 
-CREATE TABLE Service (
-  serviceID BIGSERIAL PRIMARY KEY,
-  typeID BIGINT,
-  name varchar NOT NULL,
-  price float8,
-  duration INTERVAL,
-  description TEXT,
-  isAvailable BOOLEAN DEFAULT true,
-  removed_at timestamp
-);
 
 CREATE TABLE Appointment (
   appointment_id BIGSERIAL PRIMARY KEY,
@@ -878,10 +875,10 @@ CREATE TABLE Appointment (
   doctor_id BIGINT,
   service_id BIGINT,
   date timestamp DEFAULT (now()),
-  status VARCHAR(20),
   notes TEXT,
   reminder_send BOOLEAN DEFAULT false,
   time_slot_id BIGINT,
+  payment_status VARCHAR(20),
   created_at timestamp DEFAULT (now())
 );
 
@@ -1030,8 +1027,6 @@ ALTER TABLE Pet ADD CONSTRAINT pet_users_fk FOREIGN KEY (username) REFERENCES us
 
 ALTER TABLE Vaccination ADD CONSTRAINT vaccination_pet_fk FOREIGN KEY (petID) REFERENCES Pet (petid);
 
-ALTER TABLE Service ADD CONSTRAINT service_type_fk FOREIGN KEY (typeID) REFERENCES ServiceType (typeID);
-
 ALTER TABLE Appointment ADD CONSTRAINT appointment_pet_fk FOREIGN KEY (petid) REFERENCES Pet (petid);
 
 ALTER TABLE Appointment ADD CONSTRAINT appointment_service_fk FOREIGN KEY (service_id) REFERENCES Service (serviceID);
@@ -1125,18 +1120,7 @@ VALUES
     ('Rocky', 'Chó', 'Golden Retriever', 5, 'Đực', 'Khỏe mạnh, không có vấn đề sức khỏe', 28.0, '2018-08-05', 'hoangduong', 'MICRO112233', '2023-11-15', 'rocky.png'),
     ('Bella', 'Mèo', 'Maine Coon', 4, 'Cái', 'Viêm da dị ứng nhẹ', 6.5, '2019-12-25', 'linhtran', 'MICRO445566', '2023-11-10', 'bella.png');
 
--- Insert sample services
-INSERT INTO ServiceType (serviceTypeName, description, iconURL)
-VALUES
-    ('Khám bệnh', 'Khám và chẩn đoán tình trạng sức khỏe của thú cưng', 'https://example.com/icon/khambenh.png'),
-    ('Tiêm phòng', 'Tiêm phòng các bệnh truyền nhiễm cho thú cưng', 'https://example.com/icon/tiemphong.png');
 
--- Insert sample services
-INSERT INTO Service (typeID, name, price, duration, description, isAvailable)
-VALUES
-    (1, 'Khám tổng quát', 300000, '00:30:00', 'Khám sức khỏe tổng quát cho thú cưng', true),
-    (2, 'Tiêm phòng dại', 150000, '00:15:00', 'Tiêm phòng dại cho chó', true),
-    (2, 'Tiêm phòng Parvo', 200000, '00:15:00', 'Tiêm phòng bệnh Parvovirus cho chó', true);
 
 -- Insert sample appointments
 INSERT INTO Appointment (petid, doctor_id, service_id, status, notes)

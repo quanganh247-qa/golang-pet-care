@@ -408,12 +408,16 @@ func (service *UserService) loginUserService(ctx *gin.Context, req loginUserRequ
 <<<<<<< HEAD
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> b393bb9 (add service and add permission)
 	_, err = service.redis.UserInfoLoadCache(req.Username)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			ctx.JSON(http.StatusNotFound, "user not found")
 			return nil, fmt.Errorf("user not found")
 		}
+<<<<<<< HEAD
 =======
 	device_tokens, err := service.storeDB.GetDeviceTokenByUsername(ctx, req.Username)
 	if err != nil {
@@ -435,6 +439,11 @@ func (service *UserService) loginUserService(ctx *gin.Context, req loginUserRequ
 	// 	ctx.JSON(http.StatusInternalServerError, "internal server error")
 	// 	return nil, fmt.Errorf("internal server error: %v", err)
 	// }
+=======
+		ctx.JSON(http.StatusInternalServerError, "internal server error")
+		return nil, fmt.Errorf("internal server error: %v", err)
+	}
+>>>>>>> b393bb9 (add service and add permission)
 
 >>>>>>> 21608b5 (cart and order api)
 	err = util.CheckPassword(req.Password, user.HashedPassword)
@@ -442,8 +451,6 @@ func (service *UserService) loginUserService(ctx *gin.Context, req loginUserRequ
 		ctx.JSON(http.StatusInternalServerError, "Incorrect passward")
 		return nil, fmt.Errorf("Incorrect passward")
 	}
-
-	fmt.Println(user.IsVerifiedEmail.Bool)
 
 	if !user.IsVerifiedEmail.Bool {
 		ctx.JSON(http.StatusForbidden, "email not verified")

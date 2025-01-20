@@ -48,7 +48,11 @@ type userInfo struct {
 func (c *ClientType) UserInfoLoadCache(username string) (*UserInfo, error) {
 	userKey := fmt.Sprintf("%s:%s", USER_INFO_KEY, username)
 	// log.Printf("User key: %s", userKey)
+<<<<<<< HEAD
 	userInformation := UserInfo{}
+=======
+	userInformation := userInfo{}
+>>>>>>> b393bb9 (add service and add permission)
 	err := c.GetWithBackground(userKey, &userInformation)
 	if err != nil {
 		// log.Printf("Error when get cache for key %s: %v", userKey, err)

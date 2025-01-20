@@ -57,7 +57,11 @@ type Querier interface {
 >>>>>>> c449ffc (feat: cart api)
 =======
 	AddItemToCart(ctx context.Context, arg AddItemToCartParams) (Cartitem, error)
+<<<<<<< HEAD
 >>>>>>> 21608b5 (cart and order api)
+=======
+	CountAppointmentsByDateAndTimeSlot(ctx context.Context, arg CountAppointmentsByDateAndTimeSlotParams) (int64, error)
+>>>>>>> b393bb9 (add service and add permission)
 	CreateAppointment(ctx context.Context, arg CreateAppointmentParams) (Appointment, error)
 	CreateCartForUser(ctx context.Context, userID int64) (int64, error)
 	CreateOrder(ctx context.Context, arg CreateOrderParams) (Order, error)
@@ -65,7 +69,6 @@ type Querier interface {
 	CreatePetSchedule(ctx context.Context, arg CreatePetScheduleParams) error
 >>>>>>> 272832d (redis cache)
 	CreateService(ctx context.Context, arg CreateServiceParams) (Service, error)
-	CreateServiceType(ctx context.Context, arg CreateServiceTypeParams) (Servicetype, error)
 	CreateTimeSlot(ctx context.Context, arg CreateTimeSlotParams) (Timeslot, error)
 	CreateUser(ctx context.Context, arg CreateUserParams) (int64, error)
 >>>>>>> 0fb3f30 (user images)
@@ -110,6 +113,7 @@ type Querier interface {
 	DeletePetLog(ctx context.Context, logID int64) error
 	DeletePetSchedule(ctx context.Context, id int64) error
 <<<<<<< HEAD
+<<<<<<< HEAD
 	DeleteRoom(ctx context.Context, id int64) error
 	DeleteService(ctx context.Context, id int64) error
 	DeleteShiftsByDate(ctx context.Context, arg DeleteShiftsByDateParams) error
@@ -135,6 +139,9 @@ type Querier interface {
 >>>>>>> e9037c6 (update sqlc)
 =======
 >>>>>>> 685da65 (latest update)
+=======
+	DeleteService(ctx context.Context, id int64) error
+>>>>>>> b393bb9 (add service and add permission)
 	DeleteUser(ctx context.Context, id int64) error
 >>>>>>> 1f24c18 (feat: OTP with redis)
 	DeleteVaccination(ctx context.Context, vaccinationid int64) error
@@ -155,12 +162,15 @@ type Querier interface {
 >>>>>>> 6f3ea8a (update sqlc)
 	GetAllProducts(ctx context.Context, arg GetAllProductsParams) ([]Product, error)
 	GetAllSchedulesByPet(ctx context.Context, arg GetAllSchedulesByPetParams) ([]PetSchedule, error)
+<<<<<<< HEAD
 	GetAllServices(ctx context.Context, arg GetAllServicesParams) ([]Service, error)
 <<<<<<< HEAD
 	GetAllTimeSlots(ctx context.Context, arg GetAllTimeSlotsParams) ([]GetAllTimeSlotsRow, error)
 >>>>>>> 79a3bcc (medicine api)
 =======
 >>>>>>> e9037c6 (update sqlc)
+=======
+>>>>>>> b393bb9 (add service and add permission)
 	GetAllUsers(ctx context.Context) ([]User, error)
 <<<<<<< HEAD
 	GetAppointmentByStateId(ctx context.Context, stateID pgtype.Int4) ([]Appointment, error)
@@ -173,21 +183,28 @@ type Querier interface {
 	GetAppointmentDetailById(ctx context.Context, appointmentID int64) (Appointment, error)
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> 7e35c2e (get appointment detail)
 =======
 	GetAppointmentsByPetOfUser(ctx context.Context, username string) ([]Appointment, error)
 >>>>>>> e30b070 (Get list appoinment by user)
 =======
 	GetAppointmentsByDoctor(ctx context.Context, arg GetAppointmentsByDoctorParams) (int64, error)
+=======
+	GetAppointmentsByDoctor(ctx context.Context, doctorID pgtype.Int8) ([]GetAppointmentsByDoctorRow, error)
+>>>>>>> b393bb9 (add service and add permission)
 	GetAppointmentsByUser(ctx context.Context, username pgtype.Text) ([]GetAppointmentsByUserRow, error)
 >>>>>>> 685da65 (latest update)
 	GetAppointmentsOfDoctorWithDetails(ctx context.Context, id int64) ([]GetAppointmentsOfDoctorWithDetailsRow, error)
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 	GetAppointmentsQueue(ctx context.Context, doctorID pgtype.Int8) ([]Appointment, error)
 	GetAvailableDoctors(ctx context.Context, date pgtype.Date) ([]GetAvailableDoctorsRow, error)
 	GetAvailableRooms(ctx context.Context, arg GetAvailableRoomsParams) ([]Room, error)
 	GetAvailableRoomsForDuration(ctx context.Context, arg GetAvailableRoomsForDurationParams) ([]Room, error)
+=======
+>>>>>>> b393bb9 (add service and add permission)
 	GetAvailableTimeSlots(ctx context.Context, arg GetAvailableTimeSlotsParams) ([]GetAvailableTimeSlotsRow, error)
 	GetCartByUserId(ctx context.Context, userID int64) ([]Cart, error)
 	GetCartItems(ctx context.Context, cartID int64) ([]GetCartItemsRow, error)
@@ -308,6 +325,7 @@ type Querier interface {
 	GetPetLogsByPetID(ctx context.Context, arg GetPetLogsByPetIDParams) ([]GetPetLogsByPetIDRow, error)
 	GetPetScheduleById(ctx context.Context, id int64) (PetSchedule, error)
 	GetProductByID(ctx context.Context, productID int64) (Product, error)
+<<<<<<< HEAD
 	GetServiceByID(ctx context.Context, serviceid int64) (Service, error)
 	GetServiceType(ctx context.Context, typeid int64) (Servicetype, error)
 <<<<<<< HEAD
@@ -325,6 +343,12 @@ type Querier interface {
 =======
 >>>>>>> e9037c6 (update sqlc)
 =======
+=======
+	GetServiceByID(ctx context.Context, id int64) (Service, error)
+	GetServices(ctx context.Context, arg GetServicesParams) ([]Service, error)
+	GetTimeSlot(ctx context.Context, arg GetTimeSlotParams) (Timeslot, error)
+	// Khóa bản ghi để tránh race condition
+>>>>>>> b393bb9 (add service and add permission)
 	GetTimeSlotById(ctx context.Context, id int64) (Timeslot, error)
 	GetTimeSlotsByDoctorAndDate(ctx context.Context, arg GetTimeSlotsByDoctorAndDateParams) ([]Timeslot, error)
 >>>>>>> 685da65 (latest update)
@@ -441,6 +465,7 @@ type Querier interface {
 	UpdatePetSchedule(ctx context.Context, arg UpdatePetScheduleParams) error
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	UpdateRoom(ctx context.Context, arg UpdateRoomParams) error
 	UpdateSOAP(ctx context.Context, arg UpdateSOAPParams) (Consultation, error)
 	UpdateService(ctx context.Context, arg UpdateServiceParams) (Service, error)
@@ -455,6 +480,10 @@ type Querier interface {
 =======
 	UpdateTimeSlotStatus(ctx context.Context, arg UpdateTimeSlotStatusParams) error
 >>>>>>> 685da65 (latest update)
+=======
+	UpdateService(ctx context.Context, arg UpdateServiceParams) (Service, error)
+	UpdateTimeSlotBookedPatients(ctx context.Context, arg UpdateTimeSlotBookedPatientsParams) error
+>>>>>>> b393bb9 (add service and add permission)
 	UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error)
 	UpdateUserPassword(ctx context.Context, arg UpdateUserPasswordParams) (User, error)
 =======
