@@ -168,25 +168,21 @@ func (service *UserService) loginUserService(ctx *gin.Context, req loginUserRequ
 		return nil, fmt.Errorf("internal server error: %v", err)
 	}
 
-	fmt.Println(user.Username)
-
-	// user, err := service.redis.UserInfoLoadCache(req.Username)
-	// if err != nil {
-	// 	if err == sql.ErrNoRows {
-	// 		ctx.JSON(http.StatusNotFound, "user not found")
-	// 		return nil, fmt.Errorf("user not found")
-	// 	}
-	// 	ctx.JSON(http.StatusInternalServerError, "internal server error")
-	// 	return nil, fmt.Errorf("internal server error: %v", err)
-	// }
+	_, err = service.redis.UserInfoLoadCache(req.Username)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			ctx.JSON(http.StatusNotFound, "user not found")
+			return nil, fmt.Errorf("user not found")
+		}
+		ctx.JSON(http.StatusInternalServerError, "internal server error")
+		return nil, fmt.Errorf("internal server error: %v", err)
+	}
 
 	err = util.CheckPassword(req.Password, user.HashedPassword)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, "Incorrect passward")
 		return nil, fmt.Errorf("Incorrect passward")
 	}
-
-	fmt.Println(user.IsVerifiedEmail.Bool)
 
 	if !user.IsVerifiedEmail.Bool {
 		ctx.JSON(http.StatusForbidden, "email not verified")

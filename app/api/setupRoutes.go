@@ -17,7 +17,6 @@ import (
 	petschedule "github.com/quanganh247-qa/go-blog-be/app/api/pet_schedule"
 	"github.com/quanganh247-qa/go-blog-be/app/api/products"
 	"github.com/quanganh247-qa/go-blog-be/app/api/service"
-	"github.com/quanganh247-qa/go-blog-be/app/api/service_type"
 	"github.com/quanganh247-qa/go-blog-be/app/api/user"
 	"github.com/quanganh247-qa/go-blog-be/app/api/vaccination"
 	"github.com/quanganh247-qa/go-blog-be/app/middleware"
@@ -66,7 +65,6 @@ func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor, config
 	})
 
 	user.Routes(routerGroup, taskDistributor, config)
-	service_type.Routes(routerGroup)
 	pet.Routes(routerGroup)
 	service.Routes(routerGroup)
 	appointment.Routes(routerGroup)

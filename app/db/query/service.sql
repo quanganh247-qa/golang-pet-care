@@ -1,31 +1,32 @@
 -- name: CreateService :one
-INSERT INTO Service (
-  typeID,
-  name,
-  price,
-  duration,
-  description,
-  isAvailable
+INSERT INTO services (
+    name, description, duration, cost, category, notes
 ) VALUES (
-  $1, $2, $3, $4, $5, $6
-) RETURNING *;
+    $1, $2, $3, $4, $5, $6
+)
+RETURNING *;
+
+-- name: GetServices :many
+SELECT * FROM services where removed_at is NULL ORDER BY name LIMIT $1 OFFSET $2;
 
 -- name: GetServiceByID :one
-SELECT * FROM Service 
-WHERE serviceID = $1 LIMIT 1;
-
--- name: GetAllServices :many
-SELECT * FROM Service ORDER BY name LIMIT $1 OFFSET $2;
+SELECT * FROM services
+WHERE id = $1 and removed_at is NULL;
 
 -- name: DeleteService :exec
-DELETE FROM Service WHERE serviceID = $1;
+UPDATE services
+SET removed_at = NOW()
+WHERE id = $1 and removed_at is NULL;
 
--- name: UpdateService :exec
-UPDATE Service Set
-  typeID = $2,
-  name = $3,
-  price = $4,
-  duration = $5,
-  description = $6,
-  isAvailable = $7
-WHERE serviceID = $1;
+-- name: UpdateService :one
+UPDATE services
+SET 
+    name = $2,
+    description = $3,
+    duration = $4,
+    cost = $5,
+    category = $6,
+    notes = $7,
+    updated_at = NOW()
+WHERE id = $1 and removed_at is NULL
+RETURNING *;
