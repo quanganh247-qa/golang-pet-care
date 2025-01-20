@@ -12,70 +12,91 @@ import (
 )
 
 const createService = `-- name: CreateService :one
-INSERT INTO Service (
-  typeID,
-  name,
-  price,
-  duration,
-  description,
-  isAvailable
+INSERT INTO services (
+    name, description, duration, cost, category, notes
 ) VALUES (
-  $1, $2, $3, $4, $5, $6
-) RETURNING serviceid, typeid, name, price, duration, description, isavailable, removed_at
+    $1, $2, $3, $4, $5, $6
+)
+RETURNING id, name, description, duration, cost, category, notes, created_at, updated_at
 `
 
 type CreateServiceParams struct {
-	Typeid      pgtype.Int8     `json:"typeid"`
-	Name        string          `json:"name"`
-	Price       pgtype.Float8   `json:"price"`
-	Duration    pgtype.Interval `json:"duration"`
-	Description pgtype.Text     `json:"description"`
-	Isavailable pgtype.Bool     `json:"isavailable"`
+	Name        pgtype.Text   `json:"name"`
+	Description pgtype.Text   `json:"description"`
+	Duration    pgtype.Int2   `json:"duration"`
+	Cost        pgtype.Float8 `json:"cost"`
+	Category    pgtype.Text   `json:"category"`
+	Notes       pgtype.Text   `json:"notes"`
 }
 
 func (q *Queries) CreateService(ctx context.Context, arg CreateServiceParams) (Service, error) {
 	row := q.db.QueryRow(ctx, createService,
-		arg.Typeid,
 		arg.Name,
-		arg.Price,
-		arg.Duration,
 		arg.Description,
-		arg.Isavailable,
+		arg.Duration,
+		arg.Cost,
+		arg.Category,
+		arg.Notes,
 	)
 	var i Service
 	err := row.Scan(
-		&i.Serviceid,
-		&i.Typeid,
+		&i.ID,
 		&i.Name,
-		&i.Price,
-		&i.Duration,
 		&i.Description,
-		&i.Isavailable,
-		&i.RemovedAt,
+		&i.Duration,
+		&i.Cost,
+		&i.Category,
+		&i.Notes,
+		&i.CreatedAt,
+		&i.UpdatedAt,
 	)
 	return i, err
 }
 
 const deleteService = `-- name: DeleteService :exec
-DELETE FROM Service WHERE serviceID = $1
+UPDATE services
+SET removed_at = NOW()
+WHERE id = $1 and removed_at is NULL
 `
 
-func (q *Queries) DeleteService(ctx context.Context, serviceid int64) error {
-	_, err := q.db.Exec(ctx, deleteService, serviceid)
+func (q *Queries) DeleteService(ctx context.Context, id int64) error {
+	_, err := q.db.Exec(ctx, deleteService, id)
 	return err
 }
 
-const getAllServices = `-- name: GetAllServices :many
-SELECT serviceid, typeid, name, price, duration, description, isavailable, removed_at FROM Service ORDER BY name LIMIT $1 OFFSET $2
+const getServiceByID = `-- name: GetServiceByID :one
+SELECT id, name, description, duration, cost, category, notes, created_at, updated_at FROM services
+WHERE id = $1 and removed_at is NULL
 `
 
-type GetAllServicesParams struct {
+func (q *Queries) GetServiceByID(ctx context.Context, id int64) (Service, error) {
+	row := q.db.QueryRow(ctx, getServiceByID, id)
+	var i Service
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.Description,
+		&i.Duration,
+		&i.Cost,
+		&i.Category,
+		&i.Notes,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const getServices = `-- name: GetServices :many
+SELECT id, name, description, duration, cost, category, notes, created_at, updated_at FROM services where removed_at is NULL ORDER BY name LIMIT $1 OFFSET $2
+`
+
+type GetServicesParams struct {
 	Limit  int32 `json:"limit"`
 	Offset int32 `json:"offset"`
 }
 
-func (q *Queries) GetAllServices(ctx context.Context, arg GetAllServicesParams) ([]Service, error) {
-	rows, err := q.db.Query(ctx, getAllServices, arg.Limit, arg.Offset)
+func (q *Queries) GetServices(ctx context.Context, arg GetServicesParams) ([]Service, error) {
+	rows, err := q.db.Query(ctx, getServices, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
@@ -84,14 +105,15 @@ func (q *Queries) GetAllServices(ctx context.Context, arg GetAllServicesParams) 
 	for rows.Next() {
 		var i Service
 		if err := rows.Scan(
-			&i.Serviceid,
-			&i.Typeid,
+			&i.ID,
 			&i.Name,
-			&i.Price,
-			&i.Duration,
 			&i.Description,
-			&i.Isavailable,
-			&i.RemovedAt,
+			&i.Duration,
+			&i.Cost,
+			&i.Category,
+			&i.Notes,
+			&i.CreatedAt,
+			&i.UpdatedAt,
 		); err != nil {
 			return nil, err
 		}
@@ -103,57 +125,51 @@ func (q *Queries) GetAllServices(ctx context.Context, arg GetAllServicesParams) 
 	return items, nil
 }
 
-const getServiceByID = `-- name: GetServiceByID :one
-SELECT serviceid, typeid, name, price, duration, description, isavailable, removed_at FROM Service 
-WHERE serviceID = $1 LIMIT 1
-`
-
-func (q *Queries) GetServiceByID(ctx context.Context, serviceid int64) (Service, error) {
-	row := q.db.QueryRow(ctx, getServiceByID, serviceid)
-	var i Service
-	err := row.Scan(
-		&i.Serviceid,
-		&i.Typeid,
-		&i.Name,
-		&i.Price,
-		&i.Duration,
-		&i.Description,
-		&i.Isavailable,
-		&i.RemovedAt,
-	)
-	return i, err
-}
-
-const updateService = `-- name: UpdateService :exec
-UPDATE Service Set
-  typeID = $2,
-  name = $3,
-  price = $4,
-  duration = $5,
-  description = $6,
-  isAvailable = $7
-WHERE serviceID = $1
+const updateService = `-- name: UpdateService :one
+UPDATE services
+SET 
+    name = $2,
+    description = $3,
+    duration = $4,
+    cost = $5,
+    category = $6,
+    notes = $7,
+    updated_at = NOW()
+WHERE id = $1 and removed_at is NULL
+RETURNING id, name, description, duration, cost, category, notes, created_at, updated_at
 `
 
 type UpdateServiceParams struct {
-	Serviceid   int64           `json:"serviceid"`
-	Typeid      pgtype.Int8     `json:"typeid"`
-	Name        string          `json:"name"`
-	Price       pgtype.Float8   `json:"price"`
-	Duration    pgtype.Interval `json:"duration"`
-	Description pgtype.Text     `json:"description"`
-	Isavailable pgtype.Bool     `json:"isavailable"`
+	ID          int64         `json:"id"`
+	Name        pgtype.Text   `json:"name"`
+	Description pgtype.Text   `json:"description"`
+	Duration    pgtype.Int2   `json:"duration"`
+	Cost        pgtype.Float8 `json:"cost"`
+	Category    pgtype.Text   `json:"category"`
+	Notes       pgtype.Text   `json:"notes"`
 }
 
-func (q *Queries) UpdateService(ctx context.Context, arg UpdateServiceParams) error {
-	_, err := q.db.Exec(ctx, updateService,
-		arg.Serviceid,
-		arg.Typeid,
+func (q *Queries) UpdateService(ctx context.Context, arg UpdateServiceParams) (Service, error) {
+	row := q.db.QueryRow(ctx, updateService,
+		arg.ID,
 		arg.Name,
-		arg.Price,
-		arg.Duration,
 		arg.Description,
-		arg.Isavailable,
+		arg.Duration,
+		arg.Cost,
+		arg.Category,
+		arg.Notes,
 	)
-	return err
+	var i Service
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.Description,
+		&i.Duration,
+		&i.Cost,
+		&i.Category,
+		&i.Notes,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
 }

@@ -16,7 +16,7 @@ INSERT INTO TimeSlots
 ( doctor_id, "date", start_time, end_time, created_at, updated_at, status)
 VALUES( 
     $1, $2, $3, $4, now(), now(), 'available'
-) RETURNING id, doctor_id, date, start_time, end_time, status, created_at, updated_at
+) RETURNING id, doctor_id, date, start_time, end_time, max_patients, booked_patients, created_at, updated_at
 `
 
 type CreateTimeSlotParams struct {
@@ -40,7 +40,91 @@ func (q *Queries) CreateTimeSlot(ctx context.Context, arg CreateTimeSlotParams) 
 		&i.Date,
 		&i.StartTime,
 		&i.EndTime,
-		&i.Status,
+		&i.MaxPatients,
+		&i.BookedPatients,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const getAvailableTimeSlots = `-- name: GetAvailableTimeSlots :many
+SELECT 
+    id,
+    start_time,
+    end_time,
+    booked_patients,
+    max_patients
+FROM 
+    timeslots
+WHERE 
+    doctor_id = $1 
+    AND date = $2 
+    AND booked_patients < max_patients
+`
+
+type GetAvailableTimeSlotsParams struct {
+	DoctorID int32       `json:"doctor_id"`
+	Date     pgtype.Date `json:"date"`
+}
+
+type GetAvailableTimeSlotsRow struct {
+	ID             int64       `json:"id"`
+	StartTime      pgtype.Time `json:"start_time"`
+	EndTime        pgtype.Time `json:"end_time"`
+	BookedPatients pgtype.Int4 `json:"booked_patients"`
+	MaxPatients    pgtype.Int4 `json:"max_patients"`
+}
+
+func (q *Queries) GetAvailableTimeSlots(ctx context.Context, arg GetAvailableTimeSlotsParams) ([]GetAvailableTimeSlotsRow, error) {
+	rows, err := q.db.Query(ctx, getAvailableTimeSlots, arg.DoctorID, arg.Date)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetAvailableTimeSlotsRow{}
+	for rows.Next() {
+		var i GetAvailableTimeSlotsRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.StartTime,
+			&i.EndTime,
+			&i.BookedPatients,
+			&i.MaxPatients,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getTimeSlot = `-- name: GetTimeSlot :one
+SELECT id, doctor_id, date, start_time, end_time, max_patients, booked_patients, created_at, updated_at FROM timeslots
+WHERE id = $1 AND date = $2 AND doctor_id = $3
+FOR UPDATE
+`
+
+type GetTimeSlotParams struct {
+	ID       int64       `json:"id"`
+	Date     pgtype.Date `json:"date"`
+	DoctorID int32       `json:"doctor_id"`
+}
+
+func (q *Queries) GetTimeSlot(ctx context.Context, arg GetTimeSlotParams) (Timeslot, error) {
+	row := q.db.QueryRow(ctx, getTimeSlot, arg.ID, arg.Date, arg.DoctorID)
+	var i Timeslot
+	err := row.Scan(
+		&i.ID,
+		&i.DoctorID,
+		&i.Date,
+		&i.StartTime,
+		&i.EndTime,
+		&i.MaxPatients,
+		&i.BookedPatients,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
@@ -48,9 +132,11 @@ func (q *Queries) CreateTimeSlot(ctx context.Context, arg CreateTimeSlotParams) 
 }
 
 const getTimeSlotById = `-- name: GetTimeSlotById :one
-SELECT id, doctor_id, date, start_time, end_time, status, created_at, updated_at from TimeSlots WHERE id = $1
+
+SELECT id, doctor_id, date, start_time, end_time, max_patients, booked_patients, created_at, updated_at from TimeSlots WHERE id = $1
 `
 
+// Khóa bản ghi để tránh race condition
 func (q *Queries) GetTimeSlotById(ctx context.Context, id int64) (Timeslot, error) {
 	row := q.db.QueryRow(ctx, getTimeSlotById, id)
 	var i Timeslot
@@ -60,7 +146,8 @@ func (q *Queries) GetTimeSlotById(ctx context.Context, id int64) (Timeslot, erro
 		&i.Date,
 		&i.StartTime,
 		&i.EndTime,
-		&i.Status,
+		&i.MaxPatients,
+		&i.BookedPatients,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
@@ -68,7 +155,7 @@ func (q *Queries) GetTimeSlotById(ctx context.Context, id int64) (Timeslot, erro
 }
 
 const getTimeSlotsByDoctorAndDate = `-- name: GetTimeSlotsByDoctorAndDate :many
-SELECT id, doctor_id, date, start_time, end_time, status, created_at, updated_at from TimeSlots WHERE doctor_id = $1 AND "date" = $2 ORDER BY start_time ASC
+SELECT id, doctor_id, date, start_time, end_time, max_patients, booked_patients, created_at, updated_at from TimeSlots WHERE doctor_id = $1 AND "date" = $2 ORDER BY start_time ASC
 `
 
 type GetTimeSlotsByDoctorAndDateParams struct {
@@ -91,7 +178,8 @@ func (q *Queries) GetTimeSlotsByDoctorAndDate(ctx context.Context, arg GetTimeSl
 			&i.Date,
 			&i.StartTime,
 			&i.EndTime,
-			&i.Status,
+			&i.MaxPatients,
+			&i.BookedPatients,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 		); err != nil {
@@ -103,20 +191,4 @@ func (q *Queries) GetTimeSlotsByDoctorAndDate(ctx context.Context, arg GetTimeSl
 		return nil, err
 	}
 	return items, nil
-}
-
-const updateTimeSlotStatus = `-- name: UpdateTimeSlotStatus :exec
-UPDATE TimeSlots
-SET status = $2
-WHERE id = $1
-`
-
-type UpdateTimeSlotStatusParams struct {
-	ID     int64       `json:"id"`
-	Status pgtype.Text `json:"status"`
-}
-
-func (q *Queries) UpdateTimeSlotStatus(ctx context.Context, arg UpdateTimeSlotStatusParams) error {
-	_, err := q.db.Exec(ctx, updateTimeSlotStatus, arg.ID, arg.Status)
-	return err
 }

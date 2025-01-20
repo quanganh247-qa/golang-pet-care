@@ -6,35 +6,6 @@ type ServiceService struct {
 	storeDB db.Store
 }
 
-type createServiceRequest struct {
-	TypeID      int8    `json:"type_id"`
-	Name        string  `json:"name"`
-	Price       float64 `json:"price"`
-	Duration    int64   `json:"duration"`
-	Description string  `json:"description"`
-	Isavailable bool    `json:"isavailable"`
-}
-
-type createServiceResponse struct {
-	ServiceID   int64   `json:"service_id"`
-	TypeID      int64   `json:"type_id"`
-	Name        string  `json:"name"`
-	Price       float64 `json:"price"`
-	Duration    int64   `json:"duration"`
-	Description string  `json:"description"`
-	Isavailable bool    `json:"isavailable"`
-}
-
-type updateServiceRequest struct {
-	ServiceID   int64   `json:"service_id"`
-	TypeID      int8    `json:"type_id"`
-	Name        string  `json:"name"`
-	Price       float64 `json:"price"`
-	Duration    int64   `json:"duration"`
-	Description string  `json:"description"`
-	Isavailable bool    `json:"isavailable"`
-}
-
 type ServiceController struct {
 	service ServiceServiceInterface
 }
@@ -43,19 +14,30 @@ type ServiceApi struct {
 	controller ServiceControllerInterface
 }
 
-type ServiceResponse struct {
-	ServiceTypeID string               `json:"service_type_id"`
-	ServiceName   string               `json:"service_name"`
-	Service       createServiceRequest `json:"service"`
+type CreateServiceRequest struct {
+	Name        string  `json:"name" binding:"required"`
+	Description string  `json:"description" binding:"required"`
+	Duration    int     `json:"duration" binding:"required"`
+	Cost        float64 `json:"cost" binding:"required"`
+	Category    string  `json:"category" binding:"required"`
+	Notes       string  `json:"notes"`
 }
 
-type ServiceTypeKey struct {
-	ID       int64  `json:"id"`
-	TypeName string `json:"type_name"`
+type ServiceRepsonse struct {
+	ID          int64   `json:"id"`
+	Name        string  `json:"name"`
+	Description string  `json:"description"`
+	Duration    int     `json:"duration"`
+	Cost        float64 `json:"cost"`
+	Category    string  `json:"category"`
+	Notes       string  `json:"notes"`
 }
 
-type GroupedServiceResponse struct {
-	ID       int64                   `json:"id"`
-	TypeName string                  `json:"type_name"`
-	Services []createServiceResponse `json:"services"`
+type UpdateServiceRequest struct {
+	Name        string  `json:"name"`
+	Description string  `json:"description"`
+	Duration    int     `json:"duration"`
+	Cost        float64 `json:"cost"`
+	Category    string  `json:"category"`
+	Notes       string  `json:"notes"`
 }

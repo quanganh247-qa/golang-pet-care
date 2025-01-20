@@ -36,10 +36,11 @@ type userInfo struct {
 
 func (c *ClientType) UserInfoLoadCache(username string) (*userInfo, error) {
 	userKey := fmt.Sprintf("%s:%s", USER_INFO_KEY, username)
+	// log.Printf("User key: %s", userKey)
 	userInformation := userInfo{}
-	err := c.GetWithBackground(userKey, userInformation)
+	err := c.GetWithBackground(userKey, &userInformation)
 	if err != nil {
-		log.Printf("Error when get cache for key %s: %v", userKey, err)
+		// log.Printf("Error when get cache for key %s: %v", userKey, err)
 		userData, err := db.StoreDB.GetUser(ctxRedis, username)
 		if err != nil {
 			if err == pgx.ErrNoRows {

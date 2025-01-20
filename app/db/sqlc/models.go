@@ -15,10 +15,10 @@ type Appointment struct {
 	DoctorID      pgtype.Int8      `json:"doctor_id"`
 	ServiceID     pgtype.Int8      `json:"service_id"`
 	Date          pgtype.Timestamp `json:"date"`
-	Status        pgtype.Text      `json:"status"`
 	Notes         pgtype.Text      `json:"notes"`
 	ReminderSend  pgtype.Bool      `json:"reminder_send"`
 	TimeSlotID    pgtype.Int8      `json:"time_slot_id"`
+	PaymentStatus pgtype.Text      `json:"payment_status"`
 	CreatedAt     pgtype.Timestamp `json:"created_at"`
 }
 
@@ -209,32 +209,27 @@ type Product struct {
 }
 
 type Service struct {
-	Serviceid   int64            `json:"serviceid"`
-	Typeid      pgtype.Int8      `json:"typeid"`
-	Name        string           `json:"name"`
-	Price       pgtype.Float8    `json:"price"`
-	Duration    pgtype.Interval  `json:"duration"`
+	ID          int64            `json:"id"`
+	Name        pgtype.Text      `json:"name"`
 	Description pgtype.Text      `json:"description"`
-	Isavailable pgtype.Bool      `json:"isavailable"`
-	RemovedAt   pgtype.Timestamp `json:"removed_at"`
-}
-
-type Servicetype struct {
-	Typeid          int64       `json:"typeid"`
-	Servicetypename string      `json:"servicetypename"`
-	Description     pgtype.Text `json:"description"`
-	Iconurl         pgtype.Text `json:"iconurl"`
+	Duration    pgtype.Int2      `json:"duration"`
+	Cost        pgtype.Float8    `json:"cost"`
+	Category    pgtype.Text      `json:"category"`
+	Notes       pgtype.Text      `json:"notes"`
+	CreatedAt   pgtype.Timestamp `json:"created_at"`
+	UpdatedAt   pgtype.Timestamp `json:"updated_at"`
 }
 
 type Timeslot struct {
-	ID        int64            `json:"id"`
-	DoctorID  int32            `json:"doctor_id"`
-	Date      pgtype.Date      `json:"date"`
-	StartTime pgtype.Time      `json:"start_time"`
-	EndTime   pgtype.Time      `json:"end_time"`
-	Status    pgtype.Text      `json:"status"`
-	CreatedAt pgtype.Timestamp `json:"created_at"`
-	UpdatedAt pgtype.Timestamp `json:"updated_at"`
+	ID             int64            `json:"id"`
+	DoctorID       int32            `json:"doctor_id"`
+	Date           pgtype.Date      `json:"date"`
+	StartTime      pgtype.Time      `json:"start_time"`
+	EndTime        pgtype.Time      `json:"end_time"`
+	MaxPatients    pgtype.Int4      `json:"max_patients"`
+	BookedPatients pgtype.Int4      `json:"booked_patients"`
+	CreatedAt      pgtype.Timestamp `json:"created_at"`
+	UpdatedAt      pgtype.Timestamp `json:"updated_at"`
 }
 
 type TreatmentPhase struct {

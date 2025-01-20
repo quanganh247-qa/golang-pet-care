@@ -10,167 +10,133 @@ import (
 )
 
 type ServiceServiceInterface interface {
-	createServiceService(ctx *gin.Context, req createServiceRequest) (*db.Service, error)
-	deleteServiceService(ctx *gin.Context, serviceID int64) error
-	getAllServicesService(ctx *gin.Context, pagination *util.Pagination) ([]GroupedServiceResponse, error)
-	updateServiceService(ctx *gin.Context, serviceid int64, req updateServiceRequest) error
-	getServiceByIDService(ctx *gin.Context, serviceid int64) (*createServiceResponse, error)
-	getAllServices(ctx *gin.Context, pagination *util.Pagination) ([]createServiceResponse, error)
+	CreateService(ctx *gin.Context, req CreateServiceRequest) (*ServiceRepsonse, error)
+	GetAllServices(ctx *gin.Context, pagination *util.Pagination) ([]*ServiceRepsonse, error)
+	GetServiceByID(ctx *gin.Context, id int64) (*ServiceRepsonse, error)
+	UpdateService(ctx *gin.Context, id int64, req UpdateServiceRequest) (*ServiceRepsonse, error)
+	DeleteService(ctx *gin.Context, id int64) error
 }
 
-func (server *ServiceService) createServiceService(ctx *gin.Context, req createServiceRequest) (*db.Service, error) {
-	var result db.Service
+func (s *ServiceService) CreateService(ctx *gin.Context, req CreateServiceRequest) (*ServiceRepsonse, error) {
 
-	if req.Name == "" || req.Price == 0 {
-		return nil, fmt.Errorf("input name is empty")
-	}
+	var service db.Service
+	var err error
 
-	_, err := server.storeDB.GetServiceType(ctx, int64(req.TypeID))
-
-	if err != nil {
-		return nil, fmt.Errorf("service type not found")
-	}
-
-	result, err = server.storeDB.CreateService(ctx, db.CreateServiceParams{
-		Typeid:      pgtype.Int8{Int64: int64(req.TypeID), Valid: true},
-		Name:        req.Name,
-		Price:       pgtype.Float8{Float64: req.Price, Valid: true},
-		Duration:    pgtype.Interval{Microseconds: int64(req.Duration), Valid: true},
-		Description: pgtype.Text{String: req.Description, Valid: true},
-		Isavailable: pgtype.Bool{Bool: req.Isavailable, Valid: true},
+	err = s.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
+		service, err = q.CreateService(ctx, db.CreateServiceParams{
+			Name:        pgtype.Text{String: req.Name, Valid: true},
+			Description: pgtype.Text{String: req.Description, Valid: true},
+			Duration:    pgtype.Int2{Int16: int16(req.Duration), Valid: true},
+			Cost:        pgtype.Float8{Float64: req.Cost, Valid: true},
+			Category:    pgtype.Text{String: req.Category, Valid: true},
+			Notes:       pgtype.Text{String: req.Notes, Valid: true},
+		})
+		if err != nil {
+			return fmt.Errorf("failed to create service: %w", err)
+		}
+		return nil
 	})
 
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to create service: %w", err)
 	}
-
-	return &result, nil
+	return &ServiceRepsonse{
+		ID:          service.ID,
+		Name:        service.Name.String,
+		Description: service.Description.String,
+		Duration:    int(service.Duration.Int16),
+		Cost:        service.Cost.Float64,
+		Category:    service.Category.String,
+		Notes:       service.Notes.String,
+	}, nil
 }
-func (server *ServiceService) deleteServiceService(ctx *gin.Context, serviceID int64) error {
-	err := server.storeDB.DeleteService(ctx, serviceID)
-	if err != nil {
-		return err
-	}
-	return nil
-}
 
-// return all services with format ServiceResponse
-
-func (server *ServiceService) getAllServicesService(ctx *gin.Context, pagination *util.Pagination) ([]GroupedServiceResponse, error) {
-
+// Get all services
+func (s *ServiceService) GetAllServices(ctx *gin.Context, pagination *util.Pagination) ([]*ServiceRepsonse, error) {
 	offset := (pagination.Page - 1) * pagination.PageSize
 
-	params := db.GetAllServicesParams{
+	services, err := s.storeDB.GetServices(ctx, db.GetServicesParams{
 		Limit:  int32(pagination.PageSize),
 		Offset: int32(offset),
-	}
+	})
 
-	services, err := server.storeDB.GetAllServices(ctx, params)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to get all services: %w", err)
 	}
-
-	serviceMap := make(map[ServiceTypeKey][]createServiceResponse)
-
+	var serviceResponses []*ServiceRepsonse
 	for _, service := range services {
-
-		serviceType, err := server.storeDB.GetServiceType(ctx, service.Typeid.Int64)
-		if err != nil {
-			return nil, fmt.Errorf("failed to get service type: %w", err)
-		}
-
-		serviceTypeKey := ServiceTypeKey{
-			ID:       serviceType.Typeid,
-			TypeName: serviceType.Servicetypename,
-		}
-		serviceResponse := createServiceResponse{
-			ServiceID:   service.Serviceid,
-			TypeID:      serviceType.Typeid,
-			Name:        service.Name,
-			Price:       service.Price.Float64,
-			Duration:    service.Duration.Microseconds,
+		serviceResponses = append(serviceResponses, &ServiceRepsonse{
+			ID:          service.ID,
+			Name:        service.Name.String,
 			Description: service.Description.String,
-			Isavailable: service.Isavailable.Bool,
-		}
-		serviceMap[serviceTypeKey] = append(serviceMap[serviceTypeKey], serviceResponse)
-	}
-
-	var result []GroupedServiceResponse
-	for serviceType, services := range serviceMap {
-		result = append(result, GroupedServiceResponse{
-			ID:       serviceType.ID,
-			TypeName: serviceType.TypeName,
-			Services: services,
+			Duration:    int(service.Duration.Int16),
+			Cost:        service.Cost.Float64,
+			Category:    service.Category.String,
+			Notes:       service.Notes.String,
 		})
 	}
-
-	return result, nil
+	return serviceResponses, nil
 }
 
-func (server *ServiceService) getServiceByIDService(ctx *gin.Context, serviceID int64) (*createServiceResponse, error) {
-	var service createServiceResponse
-	err := server.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
-		res, err := q.GetServiceByID(ctx, serviceID)
+func (s *ServiceService) GetServiceByID(ctx *gin.Context, id int64) (*ServiceRepsonse, error) {
+	service, err := s.storeDB.GetServiceByID(ctx, id)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get service: %w", err)
+	}
+	return &ServiceRepsonse{
+		ID:          service.ID,
+		Name:        service.Name.String,
+		Description: service.Description.String,
+		Duration:    int(service.Duration.Int16),
+		Cost:        service.Cost.Float64,
+		Category:    service.Category.String,
+		Notes:       service.Notes.String,
+	}, nil
+}
+
+func (s *ServiceService) UpdateService(ctx *gin.Context, id int64, req UpdateServiceRequest) (*ServiceRepsonse, error) {
+
+	var service db.Service
+	var err error
+	err = s.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
+		service, err = q.UpdateService(ctx, db.UpdateServiceParams{
+			ID:          id,
+			Name:        pgtype.Text{String: req.Name, Valid: true},
+			Description: pgtype.Text{String: req.Description, Valid: true},
+			Duration:    pgtype.Int2{Int16: int16(req.Duration), Valid: true},
+			Cost:        pgtype.Float8{Float64: req.Cost, Valid: true},
+			Category:    pgtype.Text{String: req.Category, Valid: true},
+			Notes:       pgtype.Text{String: req.Notes, Valid: true},
+		})
 		if err != nil {
-			return fmt.Errorf("failed to get service: %w", err)
-		}
-		service = createServiceResponse{
-			ServiceID:   res.Serviceid,
-			TypeID:      res.Typeid.Int64,
-			Name:        res.Name,
-			Price:       res.Price.Float64,
-			Duration:    res.Duration.Microseconds,
-			Description: res.Description.String,
-			Isavailable: res.Isavailable.Bool,
+			return fmt.Errorf("failed to update service: %w", err)
 		}
 		return nil
 	})
 	if err != nil {
-		return nil, fmt.Errorf("transaction failed: %w", err)
+		return nil, fmt.Errorf("failed to update service: %w", err)
 	}
-	return &service, nil
+	return &ServiceRepsonse{
+		ID:          service.ID,
+		Name:        service.Name.String,
+		Description: service.Description.String,
+		Duration:    int(service.Duration.Int16),
+		Cost:        service.Cost.Float64,
+		Category:    service.Category.String,
+		Notes:       service.Notes.String,
+	}, nil
 }
-func (server *ServiceService) updateServiceService(ctx *gin.Context, serviceid int64, req updateServiceRequest) error {
-	_, err := server.storeDB.GetServiceByID(ctx, int64(serviceid))
 
-	if err != nil {
-		return fmt.Errorf("service not found")
-	} else {
-		params := db.UpdateServiceParams{
-			Serviceid:   serviceid,
-			Typeid:      pgtype.Int8{Int64: int64(req.TypeID), Valid: true},
-			Name:        req.Name,
-			Price:       pgtype.Float8{Float64: req.Price, Valid: true},
-			Duration:    pgtype.Interval{Microseconds: int64(req.Duration), Valid: true},
-			Description: pgtype.Text{String: req.Description, Valid: true},
-			Isavailable: pgtype.Bool{Bool: req.Isavailable, Valid: true},
+func (s *ServiceService) DeleteService(ctx *gin.Context, id int64) error {
+	err := s.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
+		err := q.DeleteService(ctx, id)
+		if err != nil {
+			return fmt.Errorf("failed to delete service: %w", err)
 		}
-		return server.storeDB.UpdateService(ctx, params)
-	}
-}
-
-func (server *ServiceService) getAllServices(ctx *gin.Context, pagination *util.Pagination) ([]createServiceResponse, error) {
-	var services []createServiceResponse
-	offset := (pagination.Page - 1) * pagination.PageSize
-	rows, err := server.storeDB.GetAllServices(ctx, db.GetAllServicesParams{
-		Limit:  int32(pagination.PageSize),
-		Offset: int32(offset),
+		return nil
 	})
-
-	for _, row := range rows {
-		service := createServiceResponse{
-			ServiceID:   row.Serviceid,
-			TypeID:      row.Typeid.Int64,
-			Name:        row.Name,
-			Price:       row.Price.Float64,
-			Duration:    row.Duration.Microseconds,
-			Description: row.Description.String,
-			Isavailable: row.Isavailable.Bool,
-		}
-		services = append(services, service)
-	}
 	if err != nil {
-		return nil, fmt.Errorf("transaction failed: %w", err)
+		return fmt.Errorf("failed to delete service: %w", err)
 	}
-	return services, nil
+	return nil
 }

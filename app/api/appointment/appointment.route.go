@@ -21,10 +21,12 @@ func Routes(routerGroup middleware.RouterGroup) {
 
 	{
 		authRoute.POST("/", appointmentApi.controller.createAppointment)
-		authRoute.PUT("/:appointment_id", appointmentApi.controller.updateAppointmentStatus)
+		authRoute.POST("/confirm/:appointment_id", appointmentApi.controller.confirmAppointment)
 		authRoute.GET("/", appointmentApi.controller.getAppointmentsByUser)
 		authRoute.GET("/:appointment_id", appointmentApi.controller.getAppointmentByID)
-
+		authRoute.GET("/doctor/:doctor_id", appointmentApi.controller.getAppointmentsByDoctor)
+		// time slot
+		authRoute.GET("/doctor/:doctor_id/time-slot", appointmentApi.controller.getAvailableTimeSlots)
 	}
 
 }
