@@ -10,17 +10,21 @@ import (
 	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	"github.com/quanganh247-qa/go-blog-be/app/util"
 =======
 >>>>>>> 3bf345d (happy new year)
 =======
 	"github.com/quanganh247-qa/go-blog-be/app/util"
 >>>>>>> e859654 (Elastic search)
+=======
+>>>>>>> 3bf345d (happy new year)
 )
 
 type MedicalRecordServiceInterface interface {
 	CreateMedicalRecord(ctx *gin.Context, petID int64) (*MedicalRecordResponse, error)
 	CreateMedicalHistory(ctx *gin.Context, req *MedicalHistoryRequest, recordID int64) (*MedicalHistoryResponse, error)
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -37,6 +41,8 @@ type MedicalRecordServiceInterface interface {
 	ListMedicalHistory(ctx *gin.Context, recordID int64, pagination *util.Pagination) ([]MedicalHistoryResponse, error)
 	GetMedicalHistoryByID(ctx *gin.Context, medicalHistoryID int64) (*MedicalHistoryResponse, error)
 >>>>>>> e859654 (Elastic search)
+=======
+>>>>>>> 3bf345d (happy new year)
 }
 
 // Quản lý Bệnh án
@@ -103,6 +109,7 @@ func (s *MedicalRecordService) CreateMedicalHistory(ctx *gin.Context, req *Medic
 		UpdatedAt:       rec.UpdatedAt.Time.Format("2006-01-02 15:04:05"),
 	}, nil
 }
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 =======
@@ -211,3 +218,5 @@ func (s *MedicalRecordService) GetMedicalHistoryByID(ctx *gin.Context, medicalHi
 >>>>>>> 3bf345d (happy new year)
 =======
 >>>>>>> e859654 (Elastic search)
+=======
+>>>>>>> 3bf345d (happy new year)

@@ -7,6 +7,7 @@ import (
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> e859654 (Elastic search)
 	"github.com/quanganh247-qa/go-blog-be/app/service/elasticsearch"
@@ -49,11 +50,15 @@ func Routes(routerGroup middleware.RouterGroup) {
 				es:      es,
 >>>>>>> e859654 (Elastic search)
 =======
+=======
+	"github.com/quanganh247-qa/go-blog-be/app/util/perms"
+>>>>>>> 3bf345d (happy new year)
 )
 
 func Routes(routerGroup middleware.RouterGroup) {
-	dicease := routerGroup.RouterDefault.Group("/disease")
+	dicease := routerGroup.RouterDefault.Group("/")
 	authRoute := routerGroup.RouterAuth(dicease)
+	perRoute := routerGroup.RouterPermission(dicease)
 
 	// Khoi tao api
 	diceaseApi := &DiceaseApi{
@@ -66,6 +71,7 @@ func Routes(routerGroup middleware.RouterGroup) {
 	}
 
 	{
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -125,8 +131,15 @@ func Routes(routerGroup middleware.RouterGroup) {
 =======
 		authRoute.GET("/", diceaseApi.controller.getDiceaseAnhMedicinesInfo)
 		authRoute.GET("/treatment-plan", diceaseApi.controller.getDiseaseTreatmentPlanWithPhases)
+=======
+>>>>>>> 3bf345d (happy new year)
 
+		authRoute.GET("/", diceaseApi.controller.getDiceaseAnhMedicinesInfo)
 		authRoute.GET("/treatment/:disease_id", diceaseApi.controller.getTreatmentByDiseaseId)
+	}
+	{
+		perRoute([]perms.Permission{perms.ManageDisease, perms.ManageTreatment}).POST("/treatment", diceaseApi.controller.CreateTreatment)
+		perRoute([]perms.Permission{perms.ManageDisease, perms.ManageTreatment}).POST("/treatment/:treatment_id/phase", diceaseApi.controller.CreateTreatmentPhase)
 	}
 
 >>>>>>> 6c35562 (dicease and treatment plan)

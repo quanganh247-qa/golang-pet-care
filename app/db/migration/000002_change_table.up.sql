@@ -49,15 +49,6 @@ CREATE TABLE Orders (
     FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
 );
 
--- CREATE TABLE OrderItem (
---     id BIGSERIAL PRIMARY KEY,
---     order_id BIGINT NOT NULL, -- Liên kết tới bảng Orders
---     product_id BIGINT NOT NULL, -- Liên kết tới sản phẩm
---     quantity INT NOT NULL, -- Số lượng
---     unit_price FLOAT8 NOT NULL, -- Giá tại thời điểm đặt hàng
---     total_price FLOAT8 GENERATED ALWAYS AS (quantity * unit_price) STORED, -- Tổng giá
---     FOREIGN KEY (order_id) REFERENCES Orders (id) ON DELETE CASCADE
--- );
 
 CREATE INDEX idx_cart_user_id ON Cart (user_id);
 CREATE INDEX idx_cart_item_cart_id ON CartItem (cart_id);

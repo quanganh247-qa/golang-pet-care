@@ -7,11 +7,15 @@ import (
 	"github.com/gin-gonic/gin"
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
 >>>>>>> 3bf345d (happy new year)
 =======
 >>>>>>> e859654 (Elastic search)
+=======
+	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
+>>>>>>> 3bf345d (happy new year)
 	"github.com/quanganh247-qa/go-blog-be/app/util"
 )
 
@@ -20,6 +24,7 @@ type MedicalRecordControllerInterface interface {
 	CreateMedicalHistory(ctx *gin.Context)
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	ListMedicalHistory(ctx *gin.Context)
 	GetMedicalRecord(ctx *gin.Context)
 	GetMedicalHistoryByID(ctx *gin.Context)
@@ -30,6 +35,8 @@ type MedicalRecordControllerInterface interface {
 	GetMedicalRecord(ctx *gin.Context)
 	GetMedicalHistoryByID(ctx *gin.Context)
 >>>>>>> e859654 (Elastic search)
+=======
+>>>>>>> 3bf345d (happy new year)
 }
 
 func (c *MedicalRecordController) CreateMedicalRecord(ctx *gin.Context) {
@@ -51,6 +58,7 @@ func (c *MedicalRecordController) CreateMedicalRecord(ctx *gin.Context) {
 func (c *MedicalRecordController) CreateMedicalHistory(ctx *gin.Context) {
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	petID := ctx.Param("pet_id")
 	id, err := strconv.ParseInt(petID, 10, 64)
 =======
@@ -61,11 +69,16 @@ func (c *MedicalRecordController) CreateMedicalHistory(ctx *gin.Context) {
 	petID := ctx.Param("pet_id")
 	id, err := strconv.ParseInt(petID, 10, 64)
 >>>>>>> e859654 (Elastic search)
+=======
+	diseaseID := ctx.Param("pet_id")
+	id, err := strconv.ParseInt(diseaseID, 10, 64)
+>>>>>>> 3bf345d (happy new year)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
 		return
 	}
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 	medicalRecord, err := c.service.GetMedicalRecord(ctx, id)
@@ -75,6 +88,9 @@ func (c *MedicalRecordController) CreateMedicalHistory(ctx *gin.Context) {
 =======
 	medicalRecord, err := c.service.GetMedicalRecord(ctx, id)
 >>>>>>> e859654 (Elastic search)
+=======
+	medicalRecord, err := db.StoreDB.GetMedicalRecord(ctx, id)
+>>>>>>> 3bf345d (happy new year)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -92,6 +108,7 @@ func (c *MedicalRecordController) CreateMedicalHistory(ctx *gin.Context) {
 	}
 	ctx.JSON(http.StatusOK, util.SuccessResponse("Medical History", res))
 }
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 =======
@@ -181,3 +198,5 @@ func (c *MedicalRecordController) GetMedicalHistoryByID(ctx *gin.Context) {
 >>>>>>> 3bf345d (happy new year)
 =======
 >>>>>>> e859654 (Elastic search)
+=======
+>>>>>>> 3bf345d (happy new year)

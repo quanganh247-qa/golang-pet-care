@@ -988,9 +988,48 @@ func (c *DiseaseController) GetAllergiesByPetID(ctx *gin.Context) {
 	})
 =======
 type DiceaseControllerInterface interface {
+	CreateTreatment(ctx *gin.Context)
+	CreateTreatmentPhase(ctx *gin.Context)
+
 	getDiceaseAnhMedicinesInfo(ctx *gin.Context)
-	getDiseaseTreatmentPlanWithPhases(ctx *gin.Context)
 	getTreatmentByDiseaseId(ctx *gin.Context)
+}
+
+func (c *DiceaseController) CreateTreatment(ctx *gin.Context) {
+	var treatmentPhase CreateTreatmentRequest
+	err := ctx.ShouldBindJSON(&treatmentPhase)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
+		return
+	}
+	treatment, err := c.service.CreateTreatmentService(ctx, treatmentPhase)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	ctx.JSON(http.StatusOK, util.SuccessResponse("Treatment", treatment))
+}
+
+func (c *DiceaseController) CreateTreatmentPhase(ctx *gin.Context) {
+	treatmentID := ctx.Param("treatment_id")
+	id, err := strconv.ParseInt(treatmentID, 10, 64)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
+		return
+	}
+
+	var req []CreateTreatmentPhaseRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, util.ErrorValidator(err))
+		return
+	}
+
+	treatment, err := c.service.CreateTreatmentPhaseService(ctx, req, id)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	ctx.JSON(http.StatusOK, util.SuccessResponse("Treatment", treatment))
 }
 
 func (c *DiceaseController) getDiceaseAnhMedicinesInfo(ctx *gin.Context) {
@@ -1004,6 +1043,7 @@ func (c *DiceaseController) getDiceaseAnhMedicinesInfo(ctx *gin.Context) {
 
 }
 
+<<<<<<< HEAD
 func (c *DiceaseController) getDiseaseTreatmentPlanWithPhases(ctx *gin.Context) {
 	disease := ctx.Query("disease")
 	treatment, err := c.service.GetDiseaseTreatmentPlanWithPhasesService(ctx, disease)
@@ -1016,6 +1056,8 @@ func (c *DiceaseController) getDiseaseTreatmentPlanWithPhases(ctx *gin.Context) 
 >>>>>>> 6c35562 (dicease and treatment plan)
 }
 
+=======
+>>>>>>> 3bf345d (happy new year)
 func (c *DiceaseController) getTreatmentByDiseaseId(ctx *gin.Context) {
 	diseaseID := ctx.Param("disease_id")
 	id, err := strconv.ParseInt(diseaseID, 10, 64)

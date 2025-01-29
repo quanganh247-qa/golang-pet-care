@@ -8,6 +8,17 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+type Allergy struct {
+	ID              int64            `json:"id"`
+	MedicalRecordID pgtype.Int8      `json:"medical_record_id"`
+	Allergen        []byte           `json:"allergen"`
+	Severity        pgtype.Text      `json:"severity"`
+	Reaction        []byte           `json:"reaction"`
+	Notes           pgtype.Text      `json:"notes"`
+	CreatedAt       pgtype.Timestamp `json:"created_at"`
+	UpdatedAt       pgtype.Timestamp `json:"updated_at"`
+}
+
 type Appointment struct {
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -323,6 +334,7 @@ type MedicalHistory struct {
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 type Doctorschedule struct {
 	ID        int64            `json:"id"`
 	DoctorID  int32            `json:"doctor_id"`
@@ -354,6 +366,8 @@ type Doctorschedule struct {
 
 <<<<<<< HEAD
 =======
+=======
+>>>>>>> 3bf345d (happy new year)
 type MedicalHistory struct {
 	ID              int64            `json:"id"`
 	MedicalRecordID pgtype.Int8      `json:"medical_record_id"`
@@ -365,6 +379,9 @@ type MedicalHistory struct {
 	UpdatedAt       pgtype.Timestamp `json:"updated_at"`
 }
 
+<<<<<<< HEAD
+>>>>>>> 3bf345d (happy new year)
+=======
 >>>>>>> 3bf345d (happy new year)
 type MedicalRecord struct {
 	ID        int64            `json:"id"`
@@ -373,6 +390,7 @@ type MedicalRecord struct {
 	UpdatedAt pgtype.Timestamp `json:"updated_at"`
 }
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 type Medicine struct {
 	ID             int64              `json:"id"`
@@ -464,17 +482,23 @@ type Order struct {
 >>>>>>> 272832d (redis cache)
 =======
 >>>>>>> 685da65 (latest update)
+=======
+>>>>>>> 3bf345d (happy new year)
 type Medicine struct {
-	ID          int64              `json:"id"`
-	Name        string             `json:"name"`
-	Description pgtype.Text        `json:"description"`
-	Usage       pgtype.Text        `json:"usage"`
-	Dosage      pgtype.Text        `json:"dosage"`
-	Frequency   pgtype.Text        `json:"frequency"`
-	Duration    pgtype.Text        `json:"duration"`
-	SideEffects pgtype.Text        `json:"side_effects"`
-	CreatedAt   pgtype.Timestamptz `json:"created_at"`
-	UpdatedAt   pgtype.Timestamptz `json:"updated_at"`
+	ID              int64              `json:"id"`
+	Name            string             `json:"name"`
+	Description     pgtype.Text        `json:"description"`
+	Usage           pgtype.Text        `json:"usage"`
+	Dosage          pgtype.Text        `json:"dosage"`
+	Frequency       pgtype.Text        `json:"frequency"`
+	Duration        pgtype.Text        `json:"duration"`
+	SideEffects     pgtype.Text        `json:"side_effects"`
+	MedicalRecordID pgtype.Int8        `json:"medical_record_id"`
+	PrescribingVet  pgtype.Text        `json:"prescribing_vet"`
+	StartDate       pgtype.Date        `json:"start_date"`
+	EndDate         pgtype.Date        `json:"end_date"`
+	CreatedAt       pgtype.Timestamptz `json:"created_at"`
+	UpdatedAt       pgtype.Timestamptz `json:"updated_at"`
 }
 
 type Notification struct {
@@ -992,23 +1016,11 @@ type TreatmentPhase struct {
 =======
 type TreatmentPhase struct {
 	ID          int64              `json:"id"`
-	DiseaseID   pgtype.Int8        `json:"disease_id"`
-	PhaseNumber pgtype.Int4        `json:"phase_number"`
+	TreatmentID pgtype.Int8        `json:"treatment_id"`
 	PhaseName   pgtype.Text        `json:"phase_name"`
 	Description pgtype.Text        `json:"description"`
-	Duration    pgtype.Text        `json:"duration"`
-	Notes       pgtype.Text        `json:"notes"`
-	CreatedAt   pgtype.Timestamptz `json:"created_at"`
-}
-
-type TreatmentProgress struct {
-	ID          int64              `json:"id"`
-	TreatmentID pgtype.Int8        `json:"treatment_id"`
-	PhaseID     pgtype.Int8        `json:"phase_id"`
-	StartDate   pgtype.Date        `json:"start_date"`
-	EndDate     pgtype.Date        `json:"end_date"`
 	Status      pgtype.Text        `json:"status"`
-	Notes       pgtype.Text        `json:"notes"`
+	StartDate   pgtype.Date        `json:"start_date"`
 	CreatedAt   pgtype.Timestamptz `json:"created_at"`
 }
 

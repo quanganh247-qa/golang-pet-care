@@ -46,6 +46,7 @@ SELECT
     d.description AS disease_description,
     d.symptoms,
 <<<<<<< HEAD
+<<<<<<< HEAD
     tp.phase_name,
     tp.description AS phase_description,
     m.id AS medicine_id,
@@ -81,10 +82,10 @@ SELECT
     pm.phase_id AS phase_id,
 >>>>>>> 9ee4f0a (fix bug ratelimit)
 =======
+=======
+>>>>>>> 3bf345d (happy new year)
     tp.phase_name,
     tp.description AS phase_description,
-    tp.duration AS phase_duration,
-    tp.notes AS phase_notes,
     m.id AS medicine_id,
     m.usage AS medicine_usage,
     m.name AS medicine_name,
@@ -107,6 +108,9 @@ WHERE LOWER(d.name) LIKE LOWER($1)
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 3bf345d (happy new year)
 ORDER BY tp.start_date, m.name;
 
 
@@ -118,6 +122,7 @@ SELECT
     d.description AS disease_description,
     d.symptoms,
     tp.id AS phase_id,
+<<<<<<< HEAD
     tp.phase_name AS phase_name,
     tp.description AS phase_description,
     m.id AS medicine_id,
@@ -202,10 +207,10 @@ ORDER BY tp.phase_number, m.name;
 >>>>>>> 6c35562 (dicease and treatment plan)
 =======
     tp.phase_number AS phase_number,
+=======
+>>>>>>> 3bf345d (happy new year)
     tp.phase_name AS phase_name,
     tp.description AS phase_description,
-    tp.duration AS phase_duration,
-    tp.notes AS phase_notes,
     m.id AS medicine_id,
     m.usage AS medicine_usage,
     m.name AS medicine_name,

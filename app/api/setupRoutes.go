@@ -53,6 +53,7 @@ import (
 	"github.com/quanganh247-qa/go-blog-be/app/api/medical_records"
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 	"github.com/quanganh247-qa/go-blog-be/app/api/device_token"
 >>>>>>> 0fb3f30 (user images)
@@ -68,6 +69,8 @@ import (
 =======
 	"github.com/quanganh247-qa/go-blog-be/app/api/location"
 >>>>>>> 4625843 (added goong maps api)
+=======
+>>>>>>> 3bf345d (happy new year)
 	"github.com/quanganh247-qa/go-blog-be/app/api/notification"
 <<<<<<< HEAD
 >>>>>>> 3bf345d (happy new year)
@@ -336,6 +339,7 @@ func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor, config
 	cart.Routes(routerGroup)
 	products.Routes(routerGroup)
 <<<<<<< HEAD
+<<<<<<< HEAD
 	medical_records.Routes(routerGroup)
 	search.Routes(routerGroup, es)
 	medications.Routes(routerGroup, es)
@@ -409,5 +413,8 @@ func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor, config
 =======
 >>>>>>> bd5945b (get list products)
 
+=======
+	medical_records.Routes(routerGroup)
+>>>>>>> 3bf345d (happy new year)
 	server.Router = routerDefault
 }

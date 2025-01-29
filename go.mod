@@ -198,7 +198,11 @@ require (
 	github.com/gorilla/websocket v1.5.3
 =======
 	github.com/goccy/go-json v0.10.3 // indirect
+<<<<<<< HEAD
 >>>>>>> 9d28896 (image pet)
+=======
+	github.com/gorilla/websocket v1.5.3
+>>>>>>> 3bf345d (happy new year)
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20240606120523-5a60cdf6a761 // indirect

@@ -3,17 +3,21 @@ package medical_records
 import (
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	"errors"
 =======
 >>>>>>> 3bf345d (happy new year)
 =======
 	"errors"
 >>>>>>> e859654 (Elastic search)
+=======
+>>>>>>> 3bf345d (happy new year)
 	"time"
 
 	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
 )
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 =======
@@ -29,6 +33,8 @@ var (
 >>>>>>> 3bf345d (happy new year)
 =======
 >>>>>>> e859654 (Elastic search)
+=======
+>>>>>>> 3bf345d (happy new year)
 type MedicalRecordApi struct {
 	controller MedicalRecordControllerInterface
 }
@@ -57,6 +63,7 @@ type MedicalRecordResponse struct {
 type MedicalHistoryRequest struct {
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	Condition     string `json:"condition" binding:"required"`
 	DiagnosisDate string `json:"diagnosis_date" binding:"required,datetime=2006-01-02 15:04:05"`
 	Treatment     int64  `json:"treatment" binding:"required"`
@@ -70,6 +77,11 @@ type MedicalHistoryRequest struct {
 	DiagnosisDate string `json:"diagnosis_date" binding:"required,datetime=2006-01-02 15:04:05"`
 	Treatment     int64  `json:"treatment" binding:"required"`
 >>>>>>> e859654 (Elastic search)
+=======
+	Condition     string `json:"condition"`
+	DiagnosisDate string `json:"diagnosis_date"`
+	Treatment     int64  `json:"treatment"`
+>>>>>>> 3bf345d (happy new year)
 	Notes         string `json:"notes"`
 }
 
@@ -87,6 +99,7 @@ type MedicalHistoryResponse struct {
 type Allergy struct {
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	ID              int64     `json:"id"`
 	MedicalRecordID int64     `json:"medical_record_id"`
 =======
@@ -97,10 +110,15 @@ type Allergy struct {
 	ID              int64     `json:"id"`
 	MedicalRecordID int64     `json:"medical_record_id"`
 >>>>>>> e859654 (Elastic search)
+=======
+	ID              string    `json:"id"`
+	MedicalRecordID string    `json:"medical_record_id"`
+>>>>>>> 3bf345d (happy new year)
 	Allergen        string    `json:"allergen"`
 	Severity        string    `json:"severity"`
 	Reaction        string    `json:"reaction"`
 	Notes           string    `json:"notes"`
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 =======
@@ -121,4 +139,8 @@ type AllergyRequest struct {
 >>>>>>> 3bf345d (happy new year)
 =======
 >>>>>>> e859654 (Elastic search)
+=======
+	CreatedAt       time.Time `json:"created_at"`
+	UpdatedAt       time.Time `json:"updated_at"`
+>>>>>>> 3bf345d (happy new year)
 }
