@@ -55,3 +55,8 @@ The system integrates third-party services like JWT for token management, Gmail 
 
 
 
+
+
+go install github.com/codegangsta/gin@latest
+export PATH=$PATH:$(go env GOPATH)/bin
+source ~/.zshrc

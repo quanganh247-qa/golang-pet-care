@@ -27,6 +27,14 @@ const (
 	UpdateService  Permission = "UPDATE_SERVICE"
 	DeleteService  Permission = "DELETE_SERVICE"
 
+	// Medical Records
+	ManageMedicalRecords Permission = "MANAGE_MEDICAL_RECORDS"
+	ReadMedicalRecord    Permission = "READ_MEDICAL_RECORD"
+
+	// Disease and Treatment
+	ManageDisease   Permission = "MANAGE_DISEASE"
+	ManageTreatment Permission = "MANAGE_TREATMENT"
+
 	// Pet
 	ManagePets Permission = "MANAGE_PETS"
 	ReadPet    Permission = "READ_PET"
@@ -39,9 +47,9 @@ const (
 
 // RolePermissions maps roles to their respective permissions
 var RolePermissions = map[string][]Permission{
-	RoleAdmin:  {CreateAppointment, ReadAppointment, UpdateAppointment, DeleteAppointment, ManageUsers, ManageDoctors, ViewReports, ManageServices},
-	RoleDoctor: {CreateAppointment, ReadAppointment, UpdateAppointment, ViewReports, ManageServices},
-	RoleUser:   {CreateAppointment, ReadAppointment},
+	RoleAdmin:  {CreateAppointment, ReadAppointment, UpdateAppointment, DeleteAppointment, ManageUsers, ManageDoctors, ViewReports, ManageServices, ManageMedicalRecords},
+	RoleDoctor: {CreateAppointment, ReadAppointment, UpdateAppointment, ViewReports, ManageServices, ManageMedicalRecords, ManageTreatment, ManageDisease},
+	RoleUser:   {CreateAppointment, ReadAppointment, ReadMedicalRecord, ReadService, ReadPet},
 }
 
 // CheckPermission checks if the user's role has the required permissions

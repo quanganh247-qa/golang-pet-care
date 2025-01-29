@@ -8,7 +8,6 @@ import (
 func Routes(routerGroup middleware.RouterGroup) {
 	appointment := routerGroup.RouterDefault.Group("/appointment")
 	authRoute := routerGroup.RouterAuth(appointment)
-	// appointment.Use(middleware.IPbasedRateLimitingMiddleware())
 
 	// Khoi tao api
 	appointmentApi := &AppointmentApi{

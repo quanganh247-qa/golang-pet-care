@@ -83,11 +83,8 @@ SELECT
     d.name AS disease_name,
     d.description AS disease_description,
     d.symptoms,
-    tp.phase_number,
     tp.phase_name,
     tp.description AS phase_description,
-    tp.duration AS phase_duration,
-    tp.notes AS phase_notes,
     m.id AS medicine_id,
     m.usage AS medicine_usage,
     m.name AS medicine_name,
@@ -103,7 +100,7 @@ JOIN treatment_phases tp ON d.id = tp.disease_id
 JOIN phase_medicines pm ON tp.id = pm.phase_id
 JOIN medicines m ON pm.medicine_id = m.id
 WHERE LOWER(d.name) LIKE LOWER($1)
-ORDER BY tp.phase_number, m.name
+ORDER BY tp.start_date, m.name
 `
 
 type GetDiseaseTreatmentPlanWithPhasesRow struct {
@@ -111,11 +108,8 @@ type GetDiseaseTreatmentPlanWithPhasesRow struct {
 	DiseaseName         string      `json:"disease_name"`
 	DiseaseDescription  pgtype.Text `json:"disease_description"`
 	Symptoms            []byte      `json:"symptoms"`
-	PhaseNumber         pgtype.Int4 `json:"phase_number"`
 	PhaseName           pgtype.Text `json:"phase_name"`
 	PhaseDescription    pgtype.Text `json:"phase_description"`
-	PhaseDuration       pgtype.Text `json:"phase_duration"`
-	PhaseNotes          pgtype.Text `json:"phase_notes"`
 	MedicineID          int64       `json:"medicine_id"`
 	MedicineUsage       pgtype.Text `json:"medicine_usage"`
 	MedicineName        string      `json:"medicine_name"`
@@ -142,11 +136,8 @@ func (q *Queries) GetDiseaseTreatmentPlanWithPhases(ctx context.Context, lower s
 			&i.DiseaseName,
 			&i.DiseaseDescription,
 			&i.Symptoms,
-			&i.PhaseNumber,
 			&i.PhaseName,
 			&i.PhaseDescription,
-			&i.PhaseDuration,
-			&i.PhaseNotes,
 			&i.MedicineID,
 			&i.MedicineUsage,
 			&i.MedicineName,
@@ -175,11 +166,8 @@ SELECT
     d.description AS disease_description,
     d.symptoms,
     tp.id AS phase_id,
-    tp.phase_number AS phase_number,
     tp.phase_name AS phase_name,
     tp.description AS phase_description,
-    tp.duration AS phase_duration,
-    tp.notes AS phase_notes,
     m.id AS medicine_id,
     m.usage AS medicine_usage,
     m.name AS medicine_name,
@@ -207,11 +195,8 @@ type GetTreatmentByDiseaseIdRow struct {
 	DiseaseDescription  pgtype.Text `json:"disease_description"`
 	Symptoms            []byte      `json:"symptoms"`
 	PhaseID             int64       `json:"phase_id"`
-	PhaseNumber         pgtype.Int4 `json:"phase_number"`
 	PhaseName           pgtype.Text `json:"phase_name"`
 	PhaseDescription    pgtype.Text `json:"phase_description"`
-	PhaseDuration       pgtype.Text `json:"phase_duration"`
-	PhaseNotes          pgtype.Text `json:"phase_notes"`
 	MedicineID          int64       `json:"medicine_id"`
 	MedicineUsage       pgtype.Text `json:"medicine_usage"`
 	MedicineName        string      `json:"medicine_name"`
@@ -237,11 +222,8 @@ func (q *Queries) GetTreatmentByDiseaseId(ctx context.Context, arg GetTreatmentB
 			&i.DiseaseDescription,
 			&i.Symptoms,
 			&i.PhaseID,
-			&i.PhaseNumber,
 			&i.PhaseName,
 			&i.PhaseDescription,
-			&i.PhaseDuration,
-			&i.PhaseNotes,
 			&i.MedicineID,
 			&i.MedicineUsage,
 			&i.MedicineName,
