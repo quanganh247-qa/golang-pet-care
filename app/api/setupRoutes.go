@@ -27,10 +27,14 @@ import (
 	"github.com/quanganh247-qa/go-blog-be/app/api/doctor"
 	"github.com/quanganh247-qa/go-blog-be/app/api/location"
 	"github.com/quanganh247-qa/go-blog-be/app/api/medical_records"
+<<<<<<< HEAD
 =======
 	"github.com/quanganh247-qa/go-blog-be/app/api/device_token"
 >>>>>>> 0fb3f30 (user images)
 	"github.com/quanganh247-qa/go-blog-be/app/api/medications"
+=======
+	"github.com/quanganh247-qa/go-blog-be/app/api/notification"
+>>>>>>> 3bf345d (happy new year)
 	"github.com/quanganh247-qa/go-blog-be/app/api/payment"
 =======
 	"github.com/quanganh247-qa/go-blog-be/app/api/medications"
@@ -174,7 +178,7 @@ func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor, config
 	payment.Routes(routerGroup, &config)
 	cart.Routes(routerGroup)
 	products.Routes(routerGroup)
-
+	medical_records.Routes(routerGroup)
 	server.Router = routerDefault
 >>>>>>> 79a3bcc (medicine api)
 

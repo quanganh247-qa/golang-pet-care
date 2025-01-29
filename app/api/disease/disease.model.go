@@ -218,4 +218,18 @@ type PhaseDetail struct {
 >>>>>>> 6a85052 (get treatment by disease)
 }
 
-// DiseaseMedicineInfo holds the disease and associated medicine information.
+type CreateTreatmentRequest struct {
+	PetID     int64  `json:"pet_id"`
+	DiseaseID int64  `json:"disease_id"`
+	StartDate string `json:"start_date" validate:"required, datetime=2006-01-02"` // have lay out for date
+	Status    string `json:"status" validate:"required,oneof=ongoing completed paused cancelled"`
+	Notes     string `json:"notes"`
+}
+
+type CreateTreatmentPhaseRequest struct {
+	TreatmetnID int64  `json:"treatment_id"`
+	PhaseName   string `json:"phase_name"`
+	Description string `json:"description"`
+	StartDate   string `json:"start_date"`
+	Status      string `json:"status" validate:"required,oneof=pending active completed"`
+}
