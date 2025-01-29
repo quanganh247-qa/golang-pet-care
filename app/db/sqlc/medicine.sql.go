@@ -12,6 +12,7 @@ import (
 )
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 const createMedicine = `-- name: CreateMedicine :one
 INSERT INTO medicines (name, description, usage, dosage, frequency, duration, side_effects, expiration_date, quantity)
 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
@@ -42,6 +43,112 @@ func (q *Queries) CreateMedicine(ctx context.Context, arg CreateMedicineParams) 
 		arg.ExpirationDate,
 		arg.Quantity,
 	)
+=======
+const createAllergy = `-- name: CreateAllergy :one
+INSERT INTO allergies (medical_record_id, allergen, severity, reaction, notes)
+VALUES ($1, $2, $3, $4, $5)
+RETURNING id, medical_record_id, allergen, severity, reaction, notes, created_at, updated_at
+`
+
+type CreateAllergyParams struct {
+	MedicalRecordID pgtype.Int8 `json:"medical_record_id"`
+	Allergen        []byte      `json:"allergen"`
+	Severity        pgtype.Text `json:"severity"`
+	Reaction        []byte      `json:"reaction"`
+	Notes           pgtype.Text `json:"notes"`
+}
+
+func (q *Queries) CreateAllergy(ctx context.Context, arg CreateAllergyParams) (Allergy, error) {
+	row := q.db.QueryRow(ctx, createAllergy,
+		arg.MedicalRecordID,
+		arg.Allergen,
+		arg.Severity,
+		arg.Reaction,
+		arg.Notes,
+	)
+	var i Allergy
+	err := row.Scan(
+		&i.ID,
+		&i.MedicalRecordID,
+		&i.Allergen,
+		&i.Severity,
+		&i.Reaction,
+		&i.Notes,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const createMedicalHistory = `-- name: CreateMedicalHistory :one
+INSERT INTO medical_history(medical_record_id, condition, diagnosis_date, treatment, notes, created_at,updated_at)
+VALUES ($1, $2, $3, $4, $5, now(), now())
+RETURNING id, medical_record_id, condition, diagnosis_date, notes, treatment, created_at, updated_at
+`
+
+type CreateMedicalHistoryParams struct {
+	MedicalRecordID pgtype.Int8      `json:"medical_record_id"`
+	Condition       pgtype.Text      `json:"condition"`
+	DiagnosisDate   pgtype.Timestamp `json:"diagnosis_date"`
+	Treatment       pgtype.Int8      `json:"treatment"`
+	Notes           pgtype.Text      `json:"notes"`
+}
+
+func (q *Queries) CreateMedicalHistory(ctx context.Context, arg CreateMedicalHistoryParams) (MedicalHistory, error) {
+	row := q.db.QueryRow(ctx, createMedicalHistory,
+		arg.MedicalRecordID,
+		arg.Condition,
+		arg.DiagnosisDate,
+		arg.Treatment,
+		arg.Notes,
+	)
+	var i MedicalHistory
+	err := row.Scan(
+		&i.ID,
+		&i.MedicalRecordID,
+		&i.Condition,
+		&i.DiagnosisDate,
+		&i.Notes,
+		&i.Treatment,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const createMedicalRecord = `-- name: CreateMedicalRecord :one
+INSERT INTO medical_records (pet_id,created_at,updated_at)
+VALUES ($1,now(),now())
+RETURNING id, pet_id, created_at, updated_at
+`
+
+func (q *Queries) CreateMedicalRecord(ctx context.Context, petID pgtype.Int8) (MedicalRecord, error) {
+	row := q.db.QueryRow(ctx, createMedicalRecord, petID)
+	var i MedicalRecord
+	err := row.Scan(
+		&i.ID,
+		&i.PetID,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const createMedicine = `-- name: CreateMedicine :one
+INSERT INTO medicines (name, description, usage, created_at, updated_at)
+VALUES ($1, $2, $3, now(), now())
+RETURNING id, name, description, usage, dosage, frequency, duration, side_effects, medical_record_id, prescribing_vet, start_date, end_date, created_at, updated_at
+`
+
+type CreateMedicineParams struct {
+	Name        string      `json:"name"`
+	Description pgtype.Text `json:"description"`
+	Usage       pgtype.Text `json:"usage"`
+}
+
+func (q *Queries) CreateMedicine(ctx context.Context, arg CreateMedicineParams) (Medicine, error) {
+	row := q.db.QueryRow(ctx, createMedicine, arg.Name, arg.Description, arg.Usage)
+>>>>>>> 3bf345d (happy new year)
 	var i Medicine
 	err := row.Scan(
 		&i.ID,
@@ -52,16 +159,25 @@ func (q *Queries) CreateMedicine(ctx context.Context, arg CreateMedicineParams) 
 		&i.Frequency,
 		&i.Duration,
 		&i.SideEffects,
+<<<<<<< HEAD
+=======
+		&i.MedicalRecordID,
+		&i.PrescribingVet,
+>>>>>>> 3bf345d (happy new year)
 		&i.StartDate,
 		&i.EndDate,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+<<<<<<< HEAD
 		&i.ExpirationDate,
 		&i.Quantity,
+=======
+>>>>>>> 3bf345d (happy new year)
 	)
 	return i, err
 }
 
+<<<<<<< HEAD
 const getMedicineByID = `-- name: GetMedicineByID :one
 SELECT id, name, description, usage, dosage, frequency, duration, side_effects, start_date, end_date, created_at, updated_at, expiration_date, quantity FROM medicines
 WHERE id = $1 LIMIT 1
@@ -85,6 +201,119 @@ func (q *Queries) GetMedicineByID(ctx context.Context, id int64) (Medicine, erro
 		&i.UpdatedAt,
 		&i.ExpirationDate,
 		&i.Quantity,
+=======
+const deleteAllergy = `-- name: DeleteAllergy :exec
+DELETE FROM Allergies
+WHERE id = $1
+`
+
+func (q *Queries) DeleteAllergy(ctx context.Context, id int64) error {
+	_, err := q.db.Exec(ctx, deleteAllergy, id)
+	return err
+}
+
+const deleteMedicalHistory = `-- name: DeleteMedicalHistory :exec
+DELETE FROM medical_history
+WHERE id = $1
+`
+
+func (q *Queries) DeleteMedicalHistory(ctx context.Context, id int64) error {
+	_, err := q.db.Exec(ctx, deleteMedicalHistory, id)
+	return err
+}
+
+const deleteMedicalRecord = `-- name: DeleteMedicalRecord :exec
+DELETE FROM medical_records
+WHERE id = $1
+`
+
+func (q *Queries) DeleteMedicalRecord(ctx context.Context, id int64) error {
+	_, err := q.db.Exec(ctx, deleteMedicalRecord, id)
+	return err
+}
+
+const getAllergies = `-- name: GetAllergies :many
+SELECT id, medical_record_id, allergen, severity, reaction, notes, created_at, updated_at FROM allergies
+WHERE medical_record_id = $1
+`
+
+func (q *Queries) GetAllergies(ctx context.Context, medicalRecordID pgtype.Int8) ([]Allergy, error) {
+	rows, err := q.db.Query(ctx, getAllergies, medicalRecordID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []Allergy{}
+	for rows.Next() {
+		var i Allergy
+		if err := rows.Scan(
+			&i.ID,
+			&i.MedicalRecordID,
+			&i.Allergen,
+			&i.Severity,
+			&i.Reaction,
+			&i.Notes,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getMedicalHistory = `-- name: GetMedicalHistory :many
+SELECT id, medical_record_id, condition, diagnosis_date, notes, treatment, created_at, updated_at FROM medical_history
+WHERE medical_record_id = $1
+`
+
+func (q *Queries) GetMedicalHistory(ctx context.Context, medicalRecordID pgtype.Int8) ([]MedicalHistory, error) {
+	rows, err := q.db.Query(ctx, getMedicalHistory, medicalRecordID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []MedicalHistory{}
+	for rows.Next() {
+		var i MedicalHistory
+		if err := rows.Scan(
+			&i.ID,
+			&i.MedicalRecordID,
+			&i.Condition,
+			&i.DiagnosisDate,
+			&i.Notes,
+			&i.Treatment,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getMedicalRecord = `-- name: GetMedicalRecord :one
+SELECT id, pet_id, created_at, updated_at FROM medical_records
+WHERE id = $1 LIMIT 1
+`
+
+func (q *Queries) GetMedicalRecord(ctx context.Context, id int64) (MedicalRecord, error) {
+	row := q.db.QueryRow(ctx, getMedicalRecord, id)
+	var i MedicalRecord
+	err := row.Scan(
+		&i.ID,
+		&i.PetID,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+>>>>>>> 3bf345d (happy new year)
 	)
 	return i, err
 }
@@ -120,10 +349,14 @@ WHERE
     pt.pet_id = $1 and pt.status = $2 -- Replace with the specific pet_id
 ORDER BY 
 <<<<<<< HEAD
+<<<<<<< HEAD
     tp.start_date, pm.medicine_id LIMIT $3 OFFSET $4
 =======
     tp.phase_number, pm.medicine_id LIMIT $3 OFFSET $4
 >>>>>>> a415f25 (new data)
+=======
+    tp.start_date, pm.medicine_id LIMIT $3 OFFSET $4
+>>>>>>> 3bf345d (happy new year)
 `
 
 type ListMedicinesByPetParams struct {
@@ -194,4 +427,65 @@ func (q *Queries) ListMedicinesByPet(ctx context.Context, arg ListMedicinesByPet
 		return nil, err
 	}
 	return items, nil
+}
+
+const updateAllergy = `-- name: UpdateAllergy :exec
+UPDATE allergies
+SET allergen = $2, severity = $3, reaction = $4, notes = $5, updated_at = NOW()
+WHERE id = $1
+`
+
+type UpdateAllergyParams struct {
+	ID       int64       `json:"id"`
+	Allergen []byte      `json:"allergen"`
+	Severity pgtype.Text `json:"severity"`
+	Reaction []byte      `json:"reaction"`
+	Notes    pgtype.Text `json:"notes"`
+}
+
+func (q *Queries) UpdateAllergy(ctx context.Context, arg UpdateAllergyParams) error {
+	_, err := q.db.Exec(ctx, updateAllergy,
+		arg.ID,
+		arg.Allergen,
+		arg.Severity,
+		arg.Reaction,
+		arg.Notes,
+	)
+	return err
+}
+
+const updateMedicalHistory = `-- name: UpdateMedicalHistory :exec
+UPDATE medical_history
+SET condition = $2, diagnosis_date = $3, treatment = $4, notes = $5, updated_at = NOW()
+WHERE id = $1
+`
+
+type UpdateMedicalHistoryParams struct {
+	ID            int64            `json:"id"`
+	Condition     pgtype.Text      `json:"condition"`
+	DiagnosisDate pgtype.Timestamp `json:"diagnosis_date"`
+	Treatment     pgtype.Int8      `json:"treatment"`
+	Notes         pgtype.Text      `json:"notes"`
+}
+
+func (q *Queries) UpdateMedicalHistory(ctx context.Context, arg UpdateMedicalHistoryParams) error {
+	_, err := q.db.Exec(ctx, updateMedicalHistory,
+		arg.ID,
+		arg.Condition,
+		arg.DiagnosisDate,
+		arg.Treatment,
+		arg.Notes,
+	)
+	return err
+}
+
+const updateMedicalRecord = `-- name: UpdateMedicalRecord :exec
+UPDATE medical_records
+SET updated_at = NOW()
+WHERE id = $1
+`
+
+func (q *Queries) UpdateMedicalRecord(ctx context.Context, id int64) error {
+	_, err := q.db.Exec(ctx, updateMedicalRecord, id)
+	return err
 }

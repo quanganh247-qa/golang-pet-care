@@ -3,12 +3,21 @@ package medical_records
 import (
 	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
 	"github.com/quanganh247-qa/go-blog-be/app/middleware"
+<<<<<<< HEAD
+=======
+	"github.com/quanganh247-qa/go-blog-be/app/util/perms"
+>>>>>>> 3bf345d (happy new year)
 )
 
 func Routes(routerGroup middleware.RouterGroup) {
 	MedicalRecord := routerGroup.RouterDefault.Group("/")
+<<<<<<< HEAD
 	authRoute := routerGroup.RouterAuth(MedicalRecord)
 	// perRoute := routerGroup.RouterPermission(MedicalRecord)
+=======
+	// authRoute := routerGroup.RouterAuth(MedicalRecord)
+	perRoute := routerGroup.RouterPermission(MedicalRecord)
+>>>>>>> 3bf345d (happy new year)
 
 	// Khoi tao api
 	MedicalRecordApi := &MedicalRecordApi{
@@ -20,6 +29,7 @@ func Routes(routerGroup middleware.RouterGroup) {
 	}
 
 	{
+<<<<<<< HEAD
 		authRoute.GET("/pets/:pet_id/medical-records", MedicalRecordApi.controller.GetMedicalRecord)
 		authRoute.POST("/pets/:pet_id/medical-records", MedicalRecordApi.controller.CreateMedicalRecord)
 		authRoute.GET("/pets/:pet_id/medical-histories", MedicalRecordApi.controller.ListMedicalHistory)
@@ -33,4 +43,11 @@ func Routes(routerGroup middleware.RouterGroup) {
 	// 	perRoute([]perms.Permission{perms.ManageMedicalRecords}).POST("/pets/:pet_id/medical-histories", MedicalRecordApi.controller.CreateMedicalHistory)
 	// }
 
+=======
+		// Example: Only users with the "MANAGE_SERVICES" permission can access this route
+		perRoute([]perms.Permission{perms.ManageMedicalRecords}).POST("/pets/:pet_id/medical-records", MedicalRecordApi.controller.CreateMedicalRecord)
+		perRoute([]perms.Permission{perms.ManageMedicalRecords}).POST("/pets/:pet_id/medical-histories", MedicalRecordApi.controller.CreateMedicalHistory)
+	}
+
+>>>>>>> 3bf345d (happy new year)
 }

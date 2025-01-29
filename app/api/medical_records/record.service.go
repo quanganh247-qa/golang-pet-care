@@ -8,15 +8,21 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5/pgtype"
 	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
+<<<<<<< HEAD
 	"github.com/quanganh247-qa/go-blog-be/app/util"
+=======
+>>>>>>> 3bf345d (happy new year)
 )
 
 type MedicalRecordServiceInterface interface {
 	CreateMedicalRecord(ctx *gin.Context, petID int64) (*MedicalRecordResponse, error)
 	CreateMedicalHistory(ctx *gin.Context, req *MedicalHistoryRequest, recordID int64) (*MedicalHistoryResponse, error)
+<<<<<<< HEAD
 	GetMedicalRecord(ctx *gin.Context, petID int64) (*MedicalRecordResponse, error)
 	ListMedicalHistory(ctx *gin.Context, recordID int64, pagination *util.Pagination) ([]MedicalHistoryResponse, error)
 	GetMedicalHistoryByID(ctx *gin.Context, medicalHistoryID int64) (*MedicalHistoryResponse, error)
+=======
+>>>>>>> 3bf345d (happy new year)
 }
 
 // Quản lý Bệnh án
@@ -83,6 +89,7 @@ func (s *MedicalRecordService) CreateMedicalHistory(ctx *gin.Context, req *Medic
 		UpdatedAt:       rec.UpdatedAt.Time.Format("2006-01-02 15:04:05"),
 	}, nil
 }
+<<<<<<< HEAD
 
 func (s *MedicalRecordService) GetMedicalRecord(ctx *gin.Context, petID int64) (*MedicalRecordResponse, error) {
 	// First verify pet exists and is active
@@ -140,3 +147,5 @@ func (s *MedicalRecordService) GetMedicalHistoryByID(ctx *gin.Context, medicalHi
 		MedicalRecordID: medicalHistory.MedicalRecordID.Int64,
 	}, nil
 }
+=======
+>>>>>>> 3bf345d (happy new year)

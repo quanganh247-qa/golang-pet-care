@@ -4,6 +4,7 @@ import (
 	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
 	"github.com/quanganh247-qa/go-blog-be/app/middleware"
 <<<<<<< HEAD
+<<<<<<< HEAD
 	"github.com/quanganh247-qa/go-blog-be/app/service/elasticsearch"
 	"github.com/quanganh247-qa/go-blog-be/app/util/perms"
 )
@@ -20,11 +21,15 @@ func Routes(routerGroup middleware.RouterGroup, es *elasticsearch.ESService) {
 				storeDB: db.StoreDB, // This should refer to the actual instance
 				es:      es,
 =======
+=======
+	"github.com/quanganh247-qa/go-blog-be/app/util/perms"
+>>>>>>> 3bf345d (happy new year)
 )
 
 func Routes(routerGroup middleware.RouterGroup) {
-	dicease := routerGroup.RouterDefault.Group("/disease")
+	dicease := routerGroup.RouterDefault.Group("/")
 	authRoute := routerGroup.RouterAuth(dicease)
+	perRoute := routerGroup.RouterPermission(dicease)
 
 	// Khoi tao api
 	diceaseApi := &DiceaseApi{
@@ -37,6 +42,7 @@ func Routes(routerGroup middleware.RouterGroup) {
 	}
 
 	{
+<<<<<<< HEAD
 <<<<<<< HEAD
 		authRoute.GET("/pet/:pet_id/treatments", diseaseApi.controller.GetTreatmentsByPetID)
 		authRoute.GET("/treatment/:treatment_id/phases", diseaseApi.controller.GetTreatmentPhasesByTreatmentID)
@@ -58,9 +64,19 @@ func Routes(routerGroup middleware.RouterGroup) {
 =======
 		authRoute.GET("/", diceaseApi.controller.getDiceaseAnhMedicinesInfo)
 		authRoute.GET("/treatment-plan", diceaseApi.controller.getDiseaseTreatmentPlanWithPhases)
+=======
+>>>>>>> 3bf345d (happy new year)
 
+		authRoute.GET("/", diceaseApi.controller.getDiceaseAnhMedicinesInfo)
 		authRoute.GET("/treatment/:disease_id", diceaseApi.controller.getTreatmentByDiseaseId)
 	}
+<<<<<<< HEAD
 >>>>>>> 6c35562 (dicease and treatment plan)
+=======
+	{
+		perRoute([]perms.Permission{perms.ManageDisease, perms.ManageTreatment}).POST("/treatment", diceaseApi.controller.CreateTreatment)
+		perRoute([]perms.Permission{perms.ManageDisease, perms.ManageTreatment}).POST("/treatment/:treatment_id/phase", diceaseApi.controller.CreateTreatmentPhase)
+	}
+>>>>>>> 3bf345d (happy new year)
 
 }
