@@ -25,11 +25,8 @@ SELECT
     d.name AS disease_name,
     d.description AS disease_description,
     d.symptoms,
-    tp.phase_number,
     tp.phase_name,
     tp.description AS phase_description,
-    tp.duration AS phase_duration,
-    tp.notes AS phase_notes,
     m.id AS medicine_id,
     m.usage AS medicine_usage,
     m.name AS medicine_name,
@@ -45,7 +42,7 @@ JOIN treatment_phases tp ON d.id = tp.disease_id
 JOIN phase_medicines pm ON tp.id = pm.phase_id
 JOIN medicines m ON pm.medicine_id = m.id
 WHERE LOWER(d.name) LIKE LOWER($1)
-ORDER BY tp.phase_number, m.name;
+ORDER BY tp.start_date, m.name;
 
 
 
@@ -56,11 +53,8 @@ SELECT
     d.description AS disease_description,
     d.symptoms,
     tp.id AS phase_id,
-    tp.phase_number AS phase_number,
     tp.phase_name AS phase_name,
     tp.description AS phase_description,
-    tp.duration AS phase_duration,
-    tp.notes AS phase_notes,
     m.id AS medicine_id,
     m.usage AS medicine_usage,
     m.name AS medicine_name,

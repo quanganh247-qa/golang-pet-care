@@ -171,6 +171,10 @@ CREATE TABLE medicines (
     frequency TEXT,
     duration TEXT,
     side_effects TEXT,
+    medical_record_id int8 NULL,
+	prescribing_vet varchar NULL,
+	start_date date NULL,
+	end_date date NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
@@ -186,12 +190,11 @@ CREATE TABLE disease_medicines (
 -- 2. Query chi tiết hơn với thông tin phác đồ điều trị theo từng giai đoạn
 CREATE TABLE treatment_phases (
     id BIGSERIAL PRIMARY KEY,
-    disease_id BIGINT REFERENCES diseases(id),
-    phase_number INT,
+    treatment_id BIGINT REFERENCES pet_treatments(id),
     phase_name VARCHAR(255),
     description TEXT,
-    duration VARCHAR(100),
-    notes TEXT,
+    status VARCHAR(50), -- CHECK (status IN ('pending', 'active', 'completed')),
+    start_date DATE NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -211,21 +214,12 @@ CREATE TABLE pet_treatments (
     disease_id BIGINT REFERENCES diseases(id),
     start_date DATE,
     end_date DATE,
-    status VARCHAR(50),
+    status VARCHAR(50),  -- CHECK (status IN ('ongoing', 'completed', 'paused', 'cancelled')),
     notes TEXT,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE treatment_progress (
-    id BIGSERIAL PRIMARY KEY,
-    treatment_id BIGINT REFERENCES pet_treatments(id),
-    phase_id BIGINT REFERENCES treatment_phases(id),
-    start_date DATE,
-    end_date DATE,
-    status VARCHAR(50),
-    notes TEXT,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-);
+
 
 CREATE TABLE pet_logs (
     log_id BIGSERIAL PRIMARY KEY,
@@ -311,9 +305,6 @@ CREATE INDEX idx_treatment_phases_disease_id ON treatment_phases (disease_id);
 -- Index for phase_medicines table
 CREATE INDEX idx_phase_medicines_phase_id ON phase_medicines (phase_id);
 CREATE INDEX idx_phase_medicines_medicine_id ON phase_medicines (medicine_id);
-
--- Index for treatment_progress table
-CREATE INDEX idx_treatment_progress_treatment_id ON treatment_progress (treatment_id);
 
 -- Index for pet_logs table
 CREATE INDEX idx_pet_logs_pet_id ON pet_logs (petid);
