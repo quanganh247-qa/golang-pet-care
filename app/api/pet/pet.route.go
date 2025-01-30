@@ -24,6 +24,7 @@ func Routes(routerGroup middleware.RouterGroup) {
 	{
 		authRoute.POST("/create", petApi.controller.CreatePet)
 <<<<<<< HEAD
+<<<<<<< HEAD
 		authRoute.GET("/:pet_id", petApi.controller.GetPetByID)
 =======
 		authRoute.GET("/:petid", petApi.controller.GetPetByID)
@@ -61,9 +62,20 @@ func Routes(routerGroup middleware.RouterGroup) {
 <<<<<<< HEAD
 >>>>>>> 7e616af (add pet log schema)
 =======
+=======
+		authRoute.GET("/:pet_id", petApi.controller.GetPetByID)
+		authRoute.GET("/list", petApi.controller.ListPets)
+		authRoute.GET("/", petApi.controller.ListPetsByUsername)
+		authRoute.PUT("/:pet_id", petApi.controller.UpdatePet)
+		authRoute.DELETE("/delete/:pet_id", petApi.controller.DeletePet)
+		authRoute.PUT("/avatar/:pet_id", petApi.controller.UpdatePetAvatar)
+
+		// Pet logs
+		authRoute.GET("/logs/:pet_id", petApi.controller.GetPetLogsByPetID)
+>>>>>>> 2fe5baf (treatment phase)
 		authRoute.POST("/logs", petApi.controller.InsertPetLog)
-		authRoute.DELETE("/logs/:logid", petApi.controller.DeletePetLog)
-		authRoute.PUT("/logs/:logid", petApi.controller.UpdatePetLog)
+		authRoute.DELETE("/logs/:log_id", petApi.controller.DeletePetLog)
+		authRoute.PUT("/logs/:log_id", petApi.controller.UpdatePetLog)
 
 >>>>>>> 3835eb4 (update pet_schedule api)
 	}

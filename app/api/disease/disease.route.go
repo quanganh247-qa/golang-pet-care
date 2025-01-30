@@ -67,8 +67,11 @@ func Routes(routerGroup middleware.RouterGroup) {
 =======
 >>>>>>> 3bf345d (happy new year)
 
-		authRoute.GET("/", diceaseApi.controller.getDiceaseAnhMedicinesInfo)
-		authRoute.GET("/treatment/:disease_id", diceaseApi.controller.getTreatmentByDiseaseId)
+		// authRoute.GET("/", diceaseApi.controller.getDiceaseAnhMedicinesInfo)
+		// authRoute.GET("/treatment/:disease_id", diceaseApi.controller.getTreatmentByDiseaseId)
+		authRoute.GET("/pet/:pet_id/treatments", diceaseApi.controller.GetTreatmentsByPetID)
+		authRoute.GET("/treatment/:treatment_id/phases", diceaseApi.controller.GetTreatmentPhasesByTreatmentID)
+
 	}
 <<<<<<< HEAD
 >>>>>>> 6c35562 (dicease and treatment plan)
@@ -76,6 +79,7 @@ func Routes(routerGroup middleware.RouterGroup) {
 	{
 		perRoute([]perms.Permission{perms.ManageDisease, perms.ManageTreatment}).POST("/treatment", diceaseApi.controller.CreateTreatment)
 		perRoute([]perms.Permission{perms.ManageDisease, perms.ManageTreatment}).POST("/treatment/:treatment_id/phase", diceaseApi.controller.CreateTreatmentPhase)
+		perRoute([]perms.Permission{perms.ManageDisease, perms.ManageTreatment}).POST("/treatment/:treatment_id/phase/:phase_id/medicine", diceaseApi.controller.AssignMedicineToTreatmentPhase)
 	}
 >>>>>>> 3bf345d (happy new year)
 

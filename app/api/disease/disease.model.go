@@ -226,10 +226,37 @@ type CreateTreatmentRequest struct {
 	Notes     string `json:"notes"`
 }
 
+type CreateTreatmentResponse struct {
+	TreatmentID int64  `json:"treatment_id"`
+	Disease     string `json:"disease"`
+	StartDate   string `json:"start_date"`
+	EndDate     string `json:"end_date"`
+	Status      string `json:"status"`
+}
+
 type CreateTreatmentPhaseRequest struct {
 	TreatmetnID int64  `json:"treatment_id"`
 	PhaseName   string `json:"phase_name"`
 	Description string `json:"description"`
 	StartDate   string `json:"start_date"`
 	Status      string `json:"status" validate:"required,oneof=pending active completed"`
+}
+
+// Assign Medicines to Treatment Phases
+type AssignMedicineRequest struct {
+	MedicineID int64  `json:"medicine_id"`
+	Dosage     string `json:"dosage"`
+	Frequency  string `json:"frequency"`
+	Duration   string `json:"duration"`
+	Notes      string `json:"notes"`
+}
+
+type TreatmentPhase struct {
+	ID          int64  `json:"id"`
+	TreatmentID int64  `json:"treatment_id"`
+	PhaseName   string `json:"phase_name"`
+	Description string `json:"description"`
+	Status      string `json:"status"`
+	StartDate   string `json:"start_date"`
+	CreatedAt   string `json:"created_at"`
 }

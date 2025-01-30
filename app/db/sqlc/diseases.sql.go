@@ -109,6 +109,9 @@ func (q *Queries) GetDiceaseAndMedicinesInfo(ctx context.Context, lower string) 
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 2fe5baf (treatment phase)
 const getDiseaseByID = `-- name: GetDiseaseByID :one
 SELECT id, name, description, symptoms, created_at, updated_at FROM diseases WHERE id = $1 LIMIT 1
 `
