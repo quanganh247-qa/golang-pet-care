@@ -137,23 +137,23 @@ SELECT m.id, m.name, pm.dosage, pm.frequency, pm.duration, pm.notes ,pm.Created_
 >>>>>>> 883d5b3 (update treatment)
 =======
 
-
-
 -- name: AssignMedicationToTreatmentPhase :one
-INSERT INTO phase_medicines (phase_id, medicine_id, dosage, frequency, duration, notes, created_at, updated_at)
-VALUES ($1, $2, $3, $4, $5, $6, now(), now()) RETURNING *;
+INSERT INTO phase_medicines (phase_id, medicine_id, dosage, frequency, duration, notes, created_at)
+VALUES ($1, $2, $3, $4, $5, $6, now()) RETURNING *;
 
 
 -- Get All Treatments for a Pet
 -- name: GetTreatmentsByPet :many
-SELECT t.id, d.name AS disease, t.start_date, t.end_date, t.status
+SELECT t.id as treatment_id, d.name AS disease, t.start_date, t.end_date, t.status
 FROM pet_treatments t
 JOIN diseases d ON t.disease_id = d.id
-WHERE t.pet_id = $1;
+WHERE t.pet_id = $1 LIMIT $2 OFFSET $3;
 
 -- Get Treatment Phases for a Treatment
 -- name: GetTreatmentPhasesByTreatment :many
-SELECT * FROM treatment_phases WHERE id = $1;
+SELECT *  FROM treatment_phases as tp
+JOIN pet_treatments t ON t.id = tp.treatment_id
+WHERE t.id = $1 LIMIT $2 OFFSET $3;
 
 -- Get Medications for a Treatment Phase
 -- name: GetMedicationsByPhase :many
@@ -224,6 +224,9 @@ WHERE tp.id = $1
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 2fe5baf (treatment phase)
 =======
 >>>>>>> 2fe5baf (treatment phase)
 GROUP BY tp.id;
@@ -231,6 +234,7 @@ GROUP BY tp.id;
 -- Assign Carprofen to the Initial Phase
 -- name: AssignCarprofenToInitialPhase :exec
 INSERT INTO phase_medicines (phase_id, medicine_id, dosage, frequency, duration, notes)
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 =======
@@ -263,3 +267,6 @@ VALUES ($1, $2, $3, $4, $5, $6) RETURNING *;
 =======
 GROUP BY tp.id;
 >>>>>>> 3bf345d (happy new year)
+=======
+VALUES ($1, $2, $3, $4, $5, $6) RETURNING *;
+>>>>>>> 2fe5baf (treatment phase)

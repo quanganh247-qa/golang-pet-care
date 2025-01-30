@@ -357,6 +357,7 @@ func (c *PetController) GetPetLogsByPetID(ctx *gin.Context) {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	petidStr := ctx.Param("pet_id")
 =======
 	petidStr := ctx.Param("petid")
@@ -367,6 +368,9 @@ func (c *PetController) GetPetLogsByPetID(ctx *gin.Context) {
 =======
 	petidStr := ctx.Param("petid")
 >>>>>>> 7e616af (add pet log schema)
+=======
+	petidStr := ctx.Param("pet_id")
+>>>>>>> 2fe5baf (treatment phase)
 	petid, err := strconv.ParseInt(petidStr, 10, 64)
 	if err != nil {
 		ctx.JSON(400, gin.H{"error": "Invalid pet ID"})
@@ -418,6 +422,7 @@ func (c *PetController) DeletePetLog(ctx *gin.Context) {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	logidStr := ctx.Param("log_id")
 =======
 =======
@@ -456,6 +461,9 @@ func (c *PetController) DeletePetLog(ctx *gin.Context) {
 >>>>>>> eb8d761 (updated pet schedule)
 	logidStr := ctx.Param("logid")
 >>>>>>> 3835eb4 (update pet_schedule api)
+=======
+	logidStr := ctx.Param("log_id")
+>>>>>>> 2fe5baf (treatment phase)
 	logid, err := strconv.ParseInt(logidStr, 10, 64)
 	if err != nil {
 		ctx.JSON(400, gin.H{"error": "Invalid log ID"})
@@ -497,6 +505,7 @@ func (c *PetController) UpdatePetLog(ctx *gin.Context) {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	logidStr := ctx.Param("log_id")
 =======
 	logidStr := ctx.Param("logid")
@@ -507,6 +516,9 @@ func (c *PetController) UpdatePetLog(ctx *gin.Context) {
 =======
 	logidStr := ctx.Param("logid")
 >>>>>>> 3835eb4 (update pet_schedule api)
+=======
+	logidStr := ctx.Param("log_id")
+>>>>>>> 2fe5baf (treatment phase)
 	logid, err := strconv.ParseInt(logidStr, 10, 64)
 	if err != nil {
 		ctx.JSON(400, gin.H{"error": "Invalid log ID"})
@@ -540,8 +552,12 @@ func (c *PetController) UpdatePetAvatar(ctx *gin.Context) {
 =======
 
 func (c *PetController) UpdatePetAvatar(ctx *gin.Context) {
+<<<<<<< HEAD
 	petidStr := ctx.Param("petid")
 >>>>>>> e30b070 (Get list appoinment by user)
+=======
+	petidStr := ctx.Param("pet_id")
+>>>>>>> 2fe5baf (treatment phase)
 	petid, err := strconv.ParseInt(petidStr, 10, 64)
 	if err != nil {
 		ctx.JSON(400, gin.H{"error": "Invalid pet ID"})

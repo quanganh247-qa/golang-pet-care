@@ -132,6 +132,9 @@ func (q *Queries) GetDiceaseAndMedicinesInfo(ctx context.Context, lower string) 
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 2fe5baf (treatment phase)
 =======
 >>>>>>> 2fe5baf (treatment phase)
 const getDiseaseByID = `-- name: GetDiseaseByID :one

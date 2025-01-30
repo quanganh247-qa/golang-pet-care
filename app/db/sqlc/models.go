@@ -811,12 +811,13 @@ type PetTreatment struct {
 }
 
 type PhaseMedicine struct {
-	PhaseID    int64       `json:"phase_id"`
-	MedicineID int64       `json:"medicine_id"`
-	Dosage     pgtype.Text `json:"dosage"`
-	Frequency  pgtype.Text `json:"frequency"`
-	Duration   pgtype.Text `json:"duration"`
-	Notes      pgtype.Text `json:"notes"`
+	PhaseID    int64              `json:"phase_id"`
+	MedicineID int64              `json:"medicine_id"`
+	Dosage     pgtype.Text        `json:"dosage"`
+	Frequency  pgtype.Text        `json:"frequency"`
+	Duration   pgtype.Text        `json:"duration"`
+	Notes      pgtype.Text        `json:"notes"`
+	CreatedAt  pgtype.Timestamptz `json:"created_at"`
 }
 
 <<<<<<< HEAD

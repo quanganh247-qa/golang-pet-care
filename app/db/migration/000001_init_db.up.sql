@@ -2176,6 +2176,7 @@ CREATE TABLE phase_medicines (
     frequency TEXT,
     duration TEXT,
     notes TEXT,
+    created_at timestamptz NULL,
     PRIMARY KEY (phase_id, medicine_id)
 );
 -- 4. Query để lấy lịch sử điều trị của một thú cưng

@@ -398,7 +398,9 @@ func (s *DiseaseService) GetMedicinesByPhase(ctx *gin.Context, phaseID int64, pa
 type DiceaseServiceInterface interface {
 	CreateTreatmentService(ctx *gin.Context, treatmentPhase CreateTreatmentRequest) (*db.PetTreatment, error)
 	CreateTreatmentPhaseService(ctx *gin.Context, treatmentPhases []CreateTreatmentPhaseRequest, id int64) (*[]db.TreatmentPhase, error)
-
+	AssignMedicinesToTreatmentPhase(ctx *gin.Context, treatmentPhases []AssignMedicineRequest, phaseID int64) (*[]db.PhaseMedicine, error)
+	GetTreatmentsByPetID(ctx *gin.Context, petID int64, pagination *util.Pagination) (*[]CreateTreatmentResponse, error)
+	GetTreatmentPhasesByTreatmentID(ctx *gin.Context, treatmentID int64, pagination *util.Pagination) (*[]TreatmentPhase, error)
 	GetDiceaseAnhMedicinesInfoService(ctx *gin.Context, disease string) ([]DiseaseMedicineInfo, error)
 	GetTreatmentByDiseaseID(ctx *gin.Context, diseaseID int64, pagination *util.Pagination) ([]TreatmentPlan, error)
 }
@@ -470,6 +472,89 @@ func (s *DiceaseService) CreateTreatmentPhaseService(ctx *gin.Context, treatment
 		return nil, err
 	}
 	return &insertedPhases, nil
+}
+
+// Assign Medicines to Treatment Phases
+func (s *DiceaseService) AssignMedicinesToTreatmentPhase(ctx *gin.Context, treatmentPhases []AssignMedicineRequest, phaseID int64) (*[]db.PhaseMedicine, error) {
+	var medicine db.PhaseMedicine
+	var err error
+	err = s.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
+		for _, phase := range treatmentPhases {
+			// Insert each medicine
+			medicine, err = q.AssignMedicationToTreatmentPhase(ctx, db.AssignMedicationToTreatmentPhaseParams{
+				PhaseID:    phaseID,
+				MedicineID: phase.MedicineID,
+				Dosage:     pgtype.Text{String: phase.Dosage, Valid: true},
+				Frequency:  pgtype.Text{String: phase.Frequency, Valid: true},
+				Duration:   pgtype.Text{String: phase.Duration, Valid: true},
+				Notes:      pgtype.Text{String: phase.Notes, Valid: true},
+			})
+			if err != nil {
+				log.Println("error while creating treatment medicines: ", err)
+				return fmt.Errorf("error while creating treatment medicines: %w", err)
+			}
+		}
+		return nil
+
+	})
+	if err != nil {
+		log.Println("error while creating treatment medicines: ", err)
+		return nil, fmt.Errorf("error while creating treatment medicines: %w", err)
+	}
+	return &[]db.PhaseMedicine{medicine}, nil
+
+}
+
+// Get All Treatments for a Pet
+func (s *DiceaseService) GetTreatmentsByPetID(ctx *gin.Context, petID int64, pagination *util.Pagination) (*[]CreateTreatmentResponse, error) {
+	offset := (pagination.Page - 1) * pagination.PageSize
+	treatments, err := s.storeDB.GetTreatmentsByPet(ctx, db.GetTreatmentsByPetParams{
+		PetID:  pgtype.Int8{Int64: petID, Valid: true},
+		Limit:  int32(pagination.PageSize),
+		Offset: int32(offset),
+	})
+	if err != nil {
+		return nil, fmt.Errorf("error while getting treatment by pet id: %w", err)
+	}
+
+	var result []CreateTreatmentResponse
+	for _, treatment := range treatments {
+		result = append(result, CreateTreatmentResponse{
+			TreatmentID: treatment.TreatmentID,
+			Disease:     treatment.Disease,
+			StartDate:   treatment.StartDate.Time.Format("2006-01-02"),
+			EndDate:     treatment.EndDate.Time.Format("2006-01-02"),
+			Status:      treatment.Status.String,
+		})
+	}
+	return &result, nil
+}
+
+// Get Treatment Phases for a Treatment
+func (s *DiceaseService) GetTreatmentPhasesByTreatmentID(ctx *gin.Context, treatmentID int64, pagination *util.Pagination) (*[]TreatmentPhase, error) {
+	offset := (pagination.Page - 1) * pagination.PageSize
+	phases, err := s.storeDB.GetTreatmentPhasesByTreatment(ctx, db.GetTreatmentPhasesByTreatmentParams{
+		ID:     treatmentID,
+		Limit:  int32(pagination.PageSize),
+		Offset: int32(offset),
+	})
+	if err != nil {
+		return nil, fmt.Errorf("error while getting treatment phases by treatment id: %w", err)
+	}
+	var result []TreatmentPhase
+	for _, phase := range phases {
+		result = append(result, TreatmentPhase{
+			ID:          phase.ID,
+			TreatmentID: treatmentID,
+			PhaseName:   phase.PhaseName.String,
+			Description: phase.Description.String,
+			Status:      phase.Status.String,
+			StartDate:   phase.StartDate.Time.Format("2006-01-02"),
+			CreatedAt:   phase.CreatedAt.Time.Format("2006-01-02 15:04:05"),
+		})
+	}
+
+	return &result, nil
 }
 
 // -- Query lấy phác đồ điều trị đầy đủ
