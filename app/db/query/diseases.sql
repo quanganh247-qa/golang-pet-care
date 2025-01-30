@@ -68,3 +68,6 @@ JOIN treatment_phases tp ON d.id = tp.disease_id
 JOIN phase_medicines pm ON tp.id = pm.phase_id
 JOIN medicines m ON pm.medicine_id = m.id
 WHERE d.id = $1  LIMIT $2 OFFSET $3;
+
+-- name: GetDiseaseByID :one
+SELECT * FROM diseases WHERE id = $1 LIMIT 1;

@@ -1,6 +1,7 @@
 package disease
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -11,6 +12,9 @@ import (
 type DiceaseControllerInterface interface {
 	CreateTreatment(ctx *gin.Context)
 	CreateTreatmentPhase(ctx *gin.Context)
+	AssignMedicineToTreatmentPhase(ctx *gin.Context)
+	GetTreatmentsByPetID(ctx *gin.Context)
+	GetTreatmentPhasesByTreatmentID(ctx *gin.Context)
 
 	getDiceaseAnhMedicinesInfo(ctx *gin.Context)
 	getTreatmentByDiseaseId(ctx *gin.Context)
@@ -51,6 +55,73 @@ func (c *DiceaseController) CreateTreatmentPhase(ctx *gin.Context) {
 		return
 	}
 	ctx.JSON(http.StatusOK, util.SuccessResponse("Treatment", treatment))
+}
+
+func (c *DiceaseController) AssignMedicineToTreatmentPhase(ctx *gin.Context) {
+	phaseID := ctx.Param("phase_id")
+	id, err := strconv.ParseInt(phaseID, 10, 64)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
+		return
+	}
+
+	var req []AssignMedicineRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, util.ErrorValidator(err))
+		return
+	}
+
+	phase, err := c.service.AssignMedicinesToTreatmentPhase(ctx, req, id)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	ctx.JSON(http.StatusOK, util.SuccessResponse("Phase", phase))
+}
+
+// Get Treatment By Disease ID
+func (c *DiceaseController) GetTreatmentsByPetID(ctx *gin.Context) {
+
+	petID := ctx.Param("pet_id")
+	id, err := strconv.ParseInt(petID, 10, 64)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
+		return
+	}
+
+	pagination, err := util.GetPageInQuery(ctx.Request.URL.Query())
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
+		return
+	}
+	fmt.Println("pagination", pagination, id)
+
+	treatment, err := c.service.GetTreatmentsByPetID(ctx, id, pagination)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	ctx.JSON(http.StatusOK, util.SuccessResponse("Treatment", treatment))
+}
+
+func (c *DiceaseController) GetTreatmentPhasesByTreatmentID(ctx *gin.Context) {
+	treatmentID := ctx.Param("treatment_id")
+	id, err := strconv.ParseInt(treatmentID, 10, 64)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
+		return
+	}
+	pagination, err := util.GetPageInQuery(ctx.Request.URL.Query())
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
+		return
+	}
+	phases, err := c.service.GetTreatmentPhasesByTreatmentID(ctx, id, pagination)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	ctx.JSON(http.StatusOK, util.SuccessResponse("Phases", phases))
 }
 
 func (c *DiceaseController) getDiceaseAnhMedicinesInfo(ctx *gin.Context) {

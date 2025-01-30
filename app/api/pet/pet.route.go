@@ -23,18 +23,18 @@ func Routes(routerGroup middleware.RouterGroup) {
 
 	{
 		authRoute.POST("/create", petApi.controller.CreatePet)
-		authRoute.GET("/:petid", petApi.controller.GetPetByID)
+		authRoute.GET("/:pet_id", petApi.controller.GetPetByID)
 		authRoute.GET("/list", petApi.controller.ListPets)
 		authRoute.GET("/", petApi.controller.ListPetsByUsername)
-		authRoute.PUT("/:petid", petApi.controller.UpdatePet)
-		authRoute.DELETE("/delete/:petid", petApi.controller.DeletePet)
-		authRoute.PUT("/avatar/:petid", petApi.controller.UpdatePetAvatar)
+		authRoute.PUT("/:pet_id", petApi.controller.UpdatePet)
+		authRoute.DELETE("/delete/:pet_id", petApi.controller.DeletePet)
+		authRoute.PUT("/avatar/:pet_id", petApi.controller.UpdatePetAvatar)
 
 		// Pet logs
-		authRoute.GET("/logs/:petid", petApi.controller.GetPetLogsByPetID)
+		authRoute.GET("/logs/:pet_id", petApi.controller.GetPetLogsByPetID)
 		authRoute.POST("/logs", petApi.controller.InsertPetLog)
-		authRoute.DELETE("/logs/:logid", petApi.controller.DeletePetLog)
-		authRoute.PUT("/logs/:logid", petApi.controller.UpdatePetLog)
+		authRoute.DELETE("/logs/:log_id", petApi.controller.DeletePetLog)
+		authRoute.PUT("/logs/:log_id", petApi.controller.UpdatePetLog)
 
 	}
 

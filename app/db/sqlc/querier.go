@@ -13,6 +13,8 @@ import (
 type Querier interface {
 	ActiveReminder(ctx context.Context, arg ActiveReminderParams) error
 	AddItemToCart(ctx context.Context, arg AddItemToCartParams) (Cartitem, error)
+	// Assign Carprofen to the Initial Phase
+	AssignCarprofenToInitialPhase(ctx context.Context, arg AssignCarprofenToInitialPhaseParams) error
 	AssignMedicationToTreatmentPhase(ctx context.Context, arg AssignMedicationToTreatmentPhaseParams) (PhaseMedicine, error)
 	CountAppointmentsByDateAndTimeSlot(ctx context.Context, arg CountAppointmentsByDateAndTimeSlotParams) (int64, error)
 	CreateAllergy(ctx context.Context, arg CreateAllergyParams) (Allergy, error)
@@ -63,6 +65,7 @@ type Querier interface {
 	GetDeviceTokenByUsername(ctx context.Context, username string) ([]Devicetoken, error)
 	// 1. Query cơ bản để lấy thông tin bệnh và thuốc điều trị
 	GetDiceaseAndMedicinesInfo(ctx context.Context, lower string) ([]GetDiceaseAndMedicinesInfoRow, error)
+	GetDiseaseByID(ctx context.Context, id int64) (Disease, error)
 	GetDiseaseTreatmentPlanWithPhases(ctx context.Context, lower string) ([]GetDiseaseTreatmentPlanWithPhasesRow, error)
 	GetDoctor(ctx context.Context, id int64) (GetDoctorRow, error)
 	GetDoctorById(ctx context.Context, id int64) (Doctor, error)
@@ -90,11 +93,11 @@ type Querier interface {
 	GetTreatmentByDiseaseId(ctx context.Context, arg GetTreatmentByDiseaseIdParams) ([]GetTreatmentByDiseaseIdRow, error)
 	GetTreatmentPhase(ctx context.Context, id int64) (TreatmentPhase, error)
 	// Get Treatment Phases for a Treatment
-	GetTreatmentPhasesByTreatment(ctx context.Context, id int64) ([]TreatmentPhase, error)
+	GetTreatmentPhasesByTreatment(ctx context.Context, arg GetTreatmentPhasesByTreatmentParams) ([]GetTreatmentPhasesByTreatmentRow, error)
 	// Get Treatment Progress
 	GetTreatmentProgress(ctx context.Context, id int64) ([]GetTreatmentProgressRow, error)
 	// Get All Treatments for a Pet
-	GetTreatmentsByPet(ctx context.Context, petID pgtype.Int8) ([]GetTreatmentsByPetRow, error)
+	GetTreatmentsByPet(ctx context.Context, arg GetTreatmentsByPetParams) ([]GetTreatmentsByPetRow, error)
 	GetUser(ctx context.Context, username string) (GetUserRow, error)
 	GetUserByEmail(ctx context.Context, email string) (User, error)
 	GetVaccinationByID(ctx context.Context, vaccinationid int64) (Vaccination, error)
