@@ -11,9 +11,36 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+const assignCarprofenToInitialPhase = `-- name: AssignCarprofenToInitialPhase :exec
+INSERT INTO phase_medicines (phase_id, medicine_id, dosage, frequency, duration, notes)
+VALUES ($1, $2, $3, $4, $5, $6) RETURNING phase_id, medicine_id, dosage, frequency, duration, notes, created_at
+`
+
+type AssignCarprofenToInitialPhaseParams struct {
+	PhaseID    int64       `json:"phase_id"`
+	MedicineID int64       `json:"medicine_id"`
+	Dosage     pgtype.Text `json:"dosage"`
+	Frequency  pgtype.Text `json:"frequency"`
+	Duration   pgtype.Text `json:"duration"`
+	Notes      pgtype.Text `json:"notes"`
+}
+
+// Assign Carprofen to the Initial Phase
+func (q *Queries) AssignCarprofenToInitialPhase(ctx context.Context, arg AssignCarprofenToInitialPhaseParams) error {
+	_, err := q.db.Exec(ctx, assignCarprofenToInitialPhase,
+		arg.PhaseID,
+		arg.MedicineID,
+		arg.Dosage,
+		arg.Frequency,
+		arg.Duration,
+		arg.Notes,
+	)
+	return err
+}
+
 const assignMedicationToTreatmentPhase = `-- name: AssignMedicationToTreatmentPhase :one
-INSERT INTO phase_medicines (phase_id, medicine_id, dosage, frequency, duration, notes, created_at, updated_at)
-VALUES ($1, $2, $3, $4, $5, $6, now(), now()) RETURNING phase_id, medicine_id, dosage, frequency, duration, notes
+INSERT INTO phase_medicines (phase_id, medicine_id, dosage, frequency, duration, notes, created_at)
+VALUES ($1, $2, $3, $4, $5, $6, now()) RETURNING phase_id, medicine_id, dosage, frequency, duration, notes, created_at
 `
 
 type AssignMedicationToTreatmentPhaseParams struct {
@@ -42,6 +69,7 @@ func (q *Queries) AssignMedicationToTreatmentPhase(ctx context.Context, arg Assi
 		&i.Frequency,
 		&i.Duration,
 		&i.Notes,
+		&i.CreatedAt,
 	)
 	return i, err
 }
@@ -268,19 +296,45 @@ func (q *Queries) GetTreatmentPhase(ctx context.Context, id int64) (TreatmentPha
 }
 
 const getTreatmentPhasesByTreatment = `-- name: GetTreatmentPhasesByTreatment :many
-SELECT id, treatment_id, phase_name, description, status, start_date, created_at FROM treatment_phases WHERE id = $1
+SELECT tp.id, treatment_id, phase_name, description, tp.status, tp.start_date, tp.created_at, t.id, pet_id, disease_id, t.start_date, end_date, t.status, notes, t.created_at  FROM treatment_phases as tp
+JOIN pet_treatments t ON t.id = tp.treatment_id
+WHERE t.id = $1 LIMIT $2 OFFSET $3
 `
 
+type GetTreatmentPhasesByTreatmentParams struct {
+	ID     int64 `json:"id"`
+	Limit  int32 `json:"limit"`
+	Offset int32 `json:"offset"`
+}
+
+type GetTreatmentPhasesByTreatmentRow struct {
+	ID          int64              `json:"id"`
+	TreatmentID pgtype.Int8        `json:"treatment_id"`
+	PhaseName   pgtype.Text        `json:"phase_name"`
+	Description pgtype.Text        `json:"description"`
+	Status      pgtype.Text        `json:"status"`
+	StartDate   pgtype.Date        `json:"start_date"`
+	CreatedAt   pgtype.Timestamptz `json:"created_at"`
+	ID_2        int64              `json:"id_2"`
+	PetID       pgtype.Int8        `json:"pet_id"`
+	DiseaseID   pgtype.Int8        `json:"disease_id"`
+	StartDate_2 pgtype.Date        `json:"start_date_2"`
+	EndDate     pgtype.Date        `json:"end_date"`
+	Status_2    pgtype.Text        `json:"status_2"`
+	Notes       pgtype.Text        `json:"notes"`
+	CreatedAt_2 pgtype.Timestamptz `json:"created_at_2"`
+}
+
 // Get Treatment Phases for a Treatment
-func (q *Queries) GetTreatmentPhasesByTreatment(ctx context.Context, id int64) ([]TreatmentPhase, error) {
-	rows, err := q.db.Query(ctx, getTreatmentPhasesByTreatment, id)
+func (q *Queries) GetTreatmentPhasesByTreatment(ctx context.Context, arg GetTreatmentPhasesByTreatmentParams) ([]GetTreatmentPhasesByTreatmentRow, error) {
+	rows, err := q.db.Query(ctx, getTreatmentPhasesByTreatment, arg.ID, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	items := []TreatmentPhase{}
+	items := []GetTreatmentPhasesByTreatmentRow{}
 	for rows.Next() {
-		var i TreatmentPhase
+		var i GetTreatmentPhasesByTreatmentRow
 		if err := rows.Scan(
 			&i.ID,
 			&i.TreatmentID,
@@ -289,6 +343,14 @@ func (q *Queries) GetTreatmentPhasesByTreatment(ctx context.Context, id int64) (
 			&i.Status,
 			&i.StartDate,
 			&i.CreatedAt,
+			&i.ID_2,
+			&i.PetID,
+			&i.DiseaseID,
+			&i.StartDate_2,
+			&i.EndDate,
+			&i.Status_2,
+			&i.Notes,
+			&i.CreatedAt_2,
 		); err != nil {
 			return nil, err
 		}
@@ -342,23 +404,29 @@ func (q *Queries) GetTreatmentProgress(ctx context.Context, id int64) ([]GetTrea
 }
 
 const getTreatmentsByPet = `-- name: GetTreatmentsByPet :many
-SELECT t.id, d.name AS disease, t.start_date, t.end_date, t.status
+SELECT t.id as treatment_id, d.name AS disease, t.start_date, t.end_date, t.status
 FROM pet_treatments t
 JOIN diseases d ON t.disease_id = d.id
-WHERE t.pet_id = $1
+WHERE t.pet_id = $1 LIMIT $2 OFFSET $3
 `
 
+type GetTreatmentsByPetParams struct {
+	PetID  pgtype.Int8 `json:"pet_id"`
+	Limit  int32       `json:"limit"`
+	Offset int32       `json:"offset"`
+}
+
 type GetTreatmentsByPetRow struct {
-	ID        int64       `json:"id"`
-	Disease   string      `json:"disease"`
-	StartDate pgtype.Date `json:"start_date"`
-	EndDate   pgtype.Date `json:"end_date"`
-	Status    pgtype.Text `json:"status"`
+	TreatmentID int64       `json:"treatment_id"`
+	Disease     string      `json:"disease"`
+	StartDate   pgtype.Date `json:"start_date"`
+	EndDate     pgtype.Date `json:"end_date"`
+	Status      pgtype.Text `json:"status"`
 }
 
 // Get All Treatments for a Pet
-func (q *Queries) GetTreatmentsByPet(ctx context.Context, petID pgtype.Int8) ([]GetTreatmentsByPetRow, error) {
-	rows, err := q.db.Query(ctx, getTreatmentsByPet, petID)
+func (q *Queries) GetTreatmentsByPet(ctx context.Context, arg GetTreatmentsByPetParams) ([]GetTreatmentsByPetRow, error) {
+	rows, err := q.db.Query(ctx, getTreatmentsByPet, arg.PetID, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
@@ -367,7 +435,7 @@ func (q *Queries) GetTreatmentsByPet(ctx context.Context, petID pgtype.Int8) ([]
 	for rows.Next() {
 		var i GetTreatmentsByPetRow
 		if err := rows.Scan(
-			&i.ID,
+			&i.TreatmentID,
 			&i.Disease,
 			&i.StartDate,
 			&i.EndDate,

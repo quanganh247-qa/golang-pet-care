@@ -59,7 +59,7 @@ func (c *PetController) CreatePet(ctx *gin.Context) {
 }
 
 func (c *PetController) GetPetByID(ctx *gin.Context) {
-	petidStr := ctx.Param("petid")
+	petidStr := ctx.Param("pet_id")
 	petid, err := strconv.ParseInt(petidStr, 10, 64)
 	if err != nil {
 		ctx.JSON(400, gin.H{"error": "Invalid pet ID"})
@@ -99,7 +99,7 @@ func (c *PetController) ListPets(ctx *gin.Context) {
 }
 
 func (c *PetController) UpdatePet(ctx *gin.Context) {
-	petid, err := strconv.ParseInt(ctx.Param("petid"), 10, 64)
+	petid, err := strconv.ParseInt(ctx.Param("pet_id"), 10, 64)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid pet ID"})
 		return
@@ -121,7 +121,7 @@ func (c *PetController) UpdatePet(ctx *gin.Context) {
 }
 
 func (c *PetController) DeletePet(ctx *gin.Context) {
-	petid, err := strconv.ParseInt(ctx.Param("petid"), 10, 64)
+	petid, err := strconv.ParseInt(ctx.Param("pet_id"), 10, 64)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid pet ID"})
 		return
@@ -158,7 +158,7 @@ func (c *PetController) ListPetsByUsername(ctx *gin.Context) {
 }
 
 func (c *PetController) GetPetLogsByPetID(ctx *gin.Context) {
-	petidStr := ctx.Param("petid")
+	petidStr := ctx.Param("pet_id")
 	petid, err := strconv.ParseInt(petidStr, 10, 64)
 	if err != nil {
 		ctx.JSON(400, gin.H{"error": "Invalid pet ID"})
@@ -195,7 +195,7 @@ func (c *PetController) InsertPetLog(ctx *gin.Context) {
 }
 
 func (c *PetController) DeletePetLog(ctx *gin.Context) {
-	logidStr := ctx.Param("logid")
+	logidStr := ctx.Param("log_id")
 	logid, err := strconv.ParseInt(logidStr, 10, 64)
 	if err != nil {
 		ctx.JSON(400, gin.H{"error": "Invalid log ID"})
@@ -218,7 +218,7 @@ func (c *PetController) UpdatePetLog(ctx *gin.Context) {
 		return
 	}
 
-	logidStr := ctx.Param("logid")
+	logidStr := ctx.Param("log_id")
 	logid, err := strconv.ParseInt(logidStr, 10, 64)
 	if err != nil {
 		ctx.JSON(400, gin.H{"error": "Invalid log ID"})
@@ -235,7 +235,7 @@ func (c *PetController) UpdatePetLog(ctx *gin.Context) {
 }
 
 func (c *PetController) UpdatePetAvatar(ctx *gin.Context) {
-	petidStr := ctx.Param("petid")
+	petidStr := ctx.Param("pet_id")
 	petid, err := strconv.ParseInt(petidStr, 10, 64)
 	if err != nil {
 		ctx.JSON(400, gin.H{"error": "Invalid pet ID"})

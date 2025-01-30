@@ -77,6 +77,24 @@ func (q *Queries) GetDiceaseAndMedicinesInfo(ctx context.Context, lower string) 
 	return items, nil
 }
 
+const getDiseaseByID = `-- name: GetDiseaseByID :one
+SELECT id, name, description, symptoms, created_at, updated_at FROM diseases WHERE id = $1 LIMIT 1
+`
+
+func (q *Queries) GetDiseaseByID(ctx context.Context, id int64) (Disease, error) {
+	row := q.db.QueryRow(ctx, getDiseaseByID, id)
+	var i Disease
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.Description,
+		&i.Symptoms,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
 const getDiseaseTreatmentPlanWithPhases = `-- name: GetDiseaseTreatmentPlanWithPhases :many
 SELECT 
     d.id AS disease_id,
