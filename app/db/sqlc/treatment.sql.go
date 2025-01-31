@@ -395,6 +395,7 @@ FROM pet_treatments t
 JOIN pet p ON t.pet_id = p.petid
 JOIN diseases d ON t.disease_id = d.id
 <<<<<<< HEAD
+<<<<<<< HEAD
 WHERE t.status = 'ongoing' AND p.petid = $1 LIMIT $2 OFFSET $3
 `
 
@@ -413,6 +414,17 @@ WHERE t.status = 'ongoing' AND p.petid
 `
 
 >>>>>>> 3bf345d (happy new year)
+=======
+WHERE t.status = 'ongoing' AND p.petid = $1 LIMIT $2 OFFSET $3
+`
+
+type GetActiveTreatmentsParams struct {
+	Petid  int64 `json:"petid"`
+	Limit  int32 `json:"limit"`
+	Offset int32 `json:"offset"`
+}
+
+>>>>>>> 883d5b3 (update treatment)
 type GetActiveTreatmentsRow struct {
 	ID        int64       `json:"id"`
 	PetName   string      `json:"pet_name"`
@@ -441,9 +453,14 @@ func (q *Queries) GetActiveTreatments(ctx context.Context, arg GetActiveTreatmen
 >>>>>>> 883d5b3 (update treatment)
 =======
 // Get All Active Treatments
+<<<<<<< HEAD
 func (q *Queries) GetActiveTreatments(ctx context.Context) ([]GetActiveTreatmentsRow, error) {
 	rows, err := q.db.Query(ctx, getActiveTreatments)
 >>>>>>> 3bf345d (happy new year)
+=======
+func (q *Queries) GetActiveTreatments(ctx context.Context, arg GetActiveTreatmentsParams) ([]GetActiveTreatmentsRow, error) {
+	rows, err := q.db.Query(ctx, getActiveTreatments, arg.Petid, arg.Limit, arg.Offset)
+>>>>>>> 883d5b3 (update treatment)
 	if err != nil {
 		return nil, err
 	}
@@ -488,24 +505,31 @@ func (q *Queries) GetAllTreatmentPhasesByTreatmentID(ctx context.Context, treatm
 =======
 =======
 const getMedicationsByPhase = `-- name: GetMedicationsByPhase :many
-SELECT m.id, m.name, pm.dosage, pm.frequency, pm.duration, pm.notes
+SELECT m.id, m.name, pm.dosage, pm.frequency, pm.duration, pm.notes ,pm.Created_at
 FROM medicines m
 JOIN phase_medicines pm ON m.id = pm.medicine_id
-WHERE pm.phase_id = $1
+WHERE pm.phase_id = $1 LIMIT $2 OFFSET $3
 `
 
+type GetMedicationsByPhaseParams struct {
+	PhaseID int64 `json:"phase_id"`
+	Limit   int32 `json:"limit"`
+	Offset  int32 `json:"offset"`
+}
+
 type GetMedicationsByPhaseRow struct {
-	ID        int64       `json:"id"`
-	Name      string      `json:"name"`
-	Dosage    pgtype.Text `json:"dosage"`
-	Frequency pgtype.Text `json:"frequency"`
-	Duration  pgtype.Text `json:"duration"`
-	Notes     pgtype.Text `json:"notes"`
+	ID        int64              `json:"id"`
+	Name      string             `json:"name"`
+	Dosage    pgtype.Text        `json:"dosage"`
+	Frequency pgtype.Text        `json:"frequency"`
+	Duration  pgtype.Text        `json:"duration"`
+	Notes     pgtype.Text        `json:"notes"`
+	CreatedAt pgtype.Timestamptz `json:"created_at"`
 }
 
 // Get Medications for a Treatment Phase
-func (q *Queries) GetMedicationsByPhase(ctx context.Context, phaseID int64) ([]GetMedicationsByPhaseRow, error) {
-	rows, err := q.db.Query(ctx, getMedicationsByPhase, phaseID)
+func (q *Queries) GetMedicationsByPhase(ctx context.Context, arg GetMedicationsByPhaseParams) ([]GetMedicationsByPhaseRow, error) {
+	rows, err := q.db.Query(ctx, getMedicationsByPhase, arg.PhaseID, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
@@ -520,6 +544,7 @@ func (q *Queries) GetMedicationsByPhase(ctx context.Context, phaseID int64) ([]G
 			&i.Frequency,
 			&i.Duration,
 			&i.Notes,
+			&i.CreatedAt,
 		); err != nil {
 			return nil, err
 		}

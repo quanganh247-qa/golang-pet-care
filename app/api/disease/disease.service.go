@@ -401,8 +401,13 @@ type DiceaseServiceInterface interface {
 	AssignMedicinesToTreatmentPhase(ctx *gin.Context, treatmentPhases []AssignMedicineRequest, phaseID int64) (*[]db.PhaseMedicine, error)
 	GetTreatmentsByPetID(ctx *gin.Context, petID int64, pagination *util.Pagination) (*[]CreateTreatmentResponse, error)
 	GetTreatmentPhasesByTreatmentID(ctx *gin.Context, treatmentID int64, pagination *util.Pagination) (*[]TreatmentPhase, error)
-	GetDiceaseAnhMedicinesInfoService(ctx *gin.Context, disease string) ([]DiseaseMedicineInfo, error)
-	GetTreatmentByDiseaseID(ctx *gin.Context, diseaseID int64, pagination *util.Pagination) ([]TreatmentPlan, error)
+	GetMedicinesByPhase(ctx *gin.Context, phaseID int64, pagination *util.Pagination) ([]PhaseMedicine, error)
+	UpdateTreatmentPhaseStatus(ctx *gin.Context, phaseID int64, req UpdateTreatmentPhaseStatusRequest) error
+	GetActiveTreatments(ctx *gin.Context, petID int64, pagination *util.Pagination) ([]Treatment, error)
+	GetTreatmentProgress(ctx *gin.Context, id int64) ([]TreatmentProgressDetail, error)
+
+	// GetDiceaseAnhMedicinesInfoService(ctx *gin.Context, disease string) ([]DiseaseMedicineInfo, error)
+	// GetTreatmentByDiseaseID(ctx *gin.Context, diseaseID int64, pagination *util.Pagination) ([]TreatmentPlan, error)
 }
 
 func (s *DiceaseService) CreateTreatmentService(ctx *gin.Context, treatmentPhase CreateTreatmentRequest) (*db.PetTreatment, error) {
@@ -557,11 +562,12 @@ func (s *DiceaseService) GetTreatmentPhasesByTreatmentID(ctx *gin.Context, treat
 	return &result, nil
 }
 
-// -- Query lấy phác đồ điều trị đầy đủ
-func (s *DiceaseService) GetDiceaseAnhMedicinesInfoService(ctx *gin.Context, disease string) ([]DiseaseMedicineInfo, error) {
+// Get Medicines for a Treatment Phase
+func (s *DiceaseService) GetMedicinesByPhase(ctx *gin.Context, phaseID int64, pagination *util.Pagination) ([]PhaseMedicine, error) {
 
-	// 	searchPattern := "%" + disease + "%"
+	offset := (pagination.Page - 1) * pagination.PageSize
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 	rows, err := s.storeDB.GetDiceaseAndMedicinesInfo(ctx, searchPattern)
 >>>>>>> 6c35562 (dicease and treatment plan)
@@ -1309,6 +1315,18 @@ func (s *DiceaseService) GetDiseaseTreatmentPlanWithPhasesService(ctx *gin.Conte
 		return nil, fmt.Errorf("failed to get medications for phase %d: %w", phaseID, err)
 	}
 
+=======
+	medicines, err := s.storeDB.GetMedicationsByPhase(ctx, db.GetMedicationsByPhaseParams{
+		PhaseID: phaseID,
+		Limit:   int32(pagination.PageSize),
+		Offset:  int32(offset),
+	})
+	if err != nil {
+		log.Println("error while getting medications for phase: ", err)
+		return nil, fmt.Errorf("failed to get medications for phase %d: %w", phaseID, err)
+	}
+
+>>>>>>> 883d5b3 (update treatment)
 	result := make([]PhaseMedicine, 0, len(medicines))
 	for _, medicine := range medicines {
 		result = append(result, PhaseMedicine{
@@ -1322,6 +1340,7 @@ func (s *DiceaseService) GetDiseaseTreatmentPlanWithPhasesService(ctx *gin.Conte
 		})
 	}
 	return result, nil
+<<<<<<< HEAD
 >>>>>>> 883d5b3 (update treatment)
 }
 <<<<<<< HEAD
@@ -1928,106 +1947,321 @@ func (s *DiceaseService) GetDiseaseTreatmentPlanWithPhasesService(ctx *gin.Conte
 
 	// return result, nil
 	return nil, nil
+=======
+>>>>>>> 883d5b3 (update treatment)
 }
 <<<<<<< HEAD
 >>>>>>> 6c35562 (dicease and treatment plan)
 =======
 
-// get treatment by disease id
-func (s *DiceaseService) GetTreatmentByDiseaseID(ctx *gin.Context, diseaseID int64, pagination *util.Pagination) ([]TreatmentPlan, error) {
-
-	// offset := (pagination.Page - 1) * pagination.PageSize
-
-	// treatments, err := s.storeDB.GetTreatmentByDiseaseId(ctx, db.GetTreatmentByDiseaseIdParams{
-	// 	ID:     diseaseID,
-	// 	Limit:  int32(pagination.PageSize),
-	// 	Offset: int32(offset),
-	// })
-	// if err != nil {
-	// 	return nil, fmt.Errorf("error while getting treatment by disease id: %w", err)
-	// }
-	// // / Group medicines by disease
-	// diseaseMap := make(map[string]*TreatmentPlan)
-	// phaseMap := make(map[string]map[int]*PhaseDetail) // diseaseID_phaseNumber -> PhaseDetail
-
-	// for _, row := range treatments {
-	// 	var symptoms []string
-	// 	if err := json.Unmarshal(row.Symptoms, &symptoms); err != nil {
-	// 		return nil, fmt.Errorf("failed to unmarshal symptoms: %w", err)
-	// 	}
-
-	// 	// Create or get disease entry
-	// 	if _, exists := diseaseMap[row.DiseaseName]; !exists {
-	// 		diseaseMap[row.DiseaseName] = &TreatmentPlan{
-	// 			DiseaseID:       int(row.DiseaseID),
-	// 			DiseaseName:     row.DiseaseName,
-	// 			Description:     row.DiseaseDescription.String,
-	// 			Symptoms:        symptoms,
-	// 			TreatmentPhases: []PhaseDetail{},
-	// 		}
-	// 	}
-
-	// 	// Create phase map for disease if it doesn't exist
-	// 	diseaseKey := fmt.Sprintf("%s", row.DiseaseName)
-	// 	if _, exists := phaseMap[diseaseKey]; !exists {
-	// 		phaseMap[diseaseKey] = make(map[int]*PhaseDetail)
-	// 	}
-
-	// 	// Create or get phase entry
-	// 	if _, exists := phaseMap[diseaseKey][int(row.PhaseNumber.Int32)]; !exists {
-	// 		phaseMap[diseaseKey][int(row.PhaseNumber.Int32)] = &PhaseDetail{
-	// 			PhaseID:          int(row.PhaseID),
-	// 			PhaseNumber:      int(row.PhaseNumber.Int32),
-	// 			PhaseName:        row.PhaseName.String,
-	// 			PhaseDescription: row.PhaseDescription.String,
-	// 			Duration:         row.PhaseDuration.String,
-	// 			PhaseNotes:       row.PhaseNotes.String,
-	// 			Medicines:        []MedicineInfo{},
-	// 		}
-	// 	}
-
-	// 	// Add medicine to phase
-	// 	medicine := MedicineInfo{
-	// 		MedicineID:   int(row.MedicineID),
-	// 		MedicineName: row.MedicineName,
-	// 		Dosage:       &row.Dosage.String,
-	// 		Usage:        &row.MedicineUsage.String,
-	// 		Frequency:    &row.Frequency.String,
-	// 		Duration:     &row.Duration.String,
-	// 		SideEffects:  &row.SideEffects.String,
-	// 	}
-	// 	phaseMap[diseaseKey][int(row.PhaseNumber.Int32)].Medicines = append(
-	// 		phaseMap[diseaseKey][int(row.PhaseNumber.Int32)].Medicines,
-	// 		medicine,
-	// 	)
-	// }
-
-	// // Convert maps to slice and organize phases
-	// result := make([]TreatmentPlan, 0, len(diseaseMap))
-	// for diseaseName, plan := range diseaseMap {
-	// 	diseaseKey := fmt.Sprintf("%s", diseaseName)
-
-	// 	// Get all phases for this disease
-	// 	phases := make([]PhaseDetail, 0, len(phaseMap[diseaseKey]))
-	// 	for _, phase := range phaseMap[diseaseKey] {
-	// 		phases = append(phases, *phase)
-	// 	}
-
-	// 	// Sort phases by phase number
-	// 	sort.Slice(phases, func(i, j int) bool {
-	// 		return phases[i].PhaseNumber < phases[j].PhaseNumber
-	// 	})
-
-	// 	plan.TreatmentPhases = phases
-	// 	result = append(result, *plan)
-	// }
-
-	// // Sort results by disease name for consistency
-	// sort.Slice(result, func(i, j int) bool {
-	// 	return result[i].DiseaseName < result[j].DiseaseName
-	// })
-
-	// return result, nil
-	return nil, nil
+// Update Treatment Phase Status
+func (s *DiceaseService) UpdateTreatmentPhaseStatus(ctx *gin.Context, phaseID int64, req UpdateTreatmentPhaseStatusRequest) error {
+	err := s.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
+		err := q.UpdateTreatmentPhaseStatus(ctx, db.UpdateTreatmentPhaseStatusParams{
+			ID:     phaseID,
+			Status: pgtype.Text{String: req.Status, Valid: true},
+		})
+		if err != nil {
+			log.Println("error while updating treatment phase status: ", err)
+			return fmt.Errorf("error while updating treatment phase status: %w", err)
+		}
+		return nil
+	})
+	if err != nil {
+		log.Println("error while updating treatment phase status: ", err)
+		return fmt.Errorf("error while updating treatment phase status: %w", err)
+	}
+	return nil
 }
+<<<<<<< HEAD
 >>>>>>> 6a85052 (get treatment by disease)
+=======
+
+// Get All Active Treatments
+func (s *DiceaseService) GetActiveTreatments(ctx *gin.Context, petID int64, pagination *util.Pagination) ([]Treatment, error) {
+	offset := (pagination.Page - 1) * pagination.PageSize
+
+	treatments, err := s.storeDB.GetActiveTreatments(ctx, db.GetActiveTreatmentsParams{
+		Petid:  petID,
+		Limit:  int32(pagination.PageSize),
+		Offset: int32(offset),
+	})
+	if err != nil {
+		log.Println("error while getting active treatments: ", err)
+		return nil, fmt.Errorf("error while getting active treatments: %w", err)
+	}
+
+	var result []Treatment
+	for _, treatment := range treatments {
+		result = append(result, Treatment{
+			ID:        treatment.ID,
+			PetName:   treatment.PetName,
+			Disease:   treatment.Disease,
+			StartDate: treatment.StartDate.Time.Format("2006-01-02"),
+			EndDate:   treatment.EndDate.Time.Format("2006-01-02"),
+			Status:    treatment.Status.String,
+		})
+	}
+	return result, nil
+}
+
+// Get Treatment Progress
+func (s *DiceaseService) GetTreatmentProgress(ctx *gin.Context, id int64) ([]TreatmentProgressDetail, error) {
+	progress, err := s.storeDB.GetTreatmentProgress(ctx, id)
+	if err != nil {
+		log.Println("error while getting treatment progress: ", err)
+		return nil, fmt.Errorf("error while getting treatment progress: %w", err)
+	}
+
+	var result []TreatmentProgressDetail
+	for _, p := range progress {
+		result = append(result, TreatmentProgressDetail{
+			PhaseName:    p.PhaseName.String,
+			Status:       p.Status.String,
+			StartDate:    p.StartDate.Time.Format("2006-01-02"),
+			NumMedicines: int32(p.NumMedicines),
+		})
+	}
+	return result, nil
+}
+
+// // -- Query lấy phác đồ điều trị đầy đủ
+// func (s *DiceaseService) GetDiceaseAnhMedicinesInfoService(ctx *gin.Context, disease string) ([]DiseaseMedicineInfo, error) {
+
+// 	// 	searchPattern := "%" + disease + "%"
+
+// 	// 	rows, err := s.storeDB.GetDiceaseAndMedicinesInfo(ctx, searchPattern)
+// 	// 	if err != nil {
+// 	// 		return nil, err
+// 	// 	}
+
+// 	// 	// Group medicines by disease
+// 	// 	diseaseMap := make(map[int]*DiseaseMedicineInfo)
+
+// 	// 	for _, row := range rows {
+
+// 	// 		var symptoms []string
+// 	// 		if err := json.Unmarshal(row.Symptoms, &symptoms); err != nil {
+// 	// 			return nil, fmt.Errorf("failed to unmarshal symptoms: %w", err)
+// 	// 		}
+
+// 	// 		disease, exists := diseaseMap[int(row.DiseaseID)]
+// 	// 		if !exists {
+// 	// 			disease = &DiseaseMedicineInfo{
+// 	// 				DiseaseID:          int(row.DiseaseID),
+// 	// 				DiseaseName:        row.DiseaseName,
+// 	// 				DiseaseDescription: &row.DiseaseDescription.String,
+// 	// 				Symptoms:           symptoms,
+// 	// 				Medicines:          []MedicineInfo{},
+// 	// 			}
+// 	// 			diseaseMap[int(row.DiseaseID)] = disease
+// 	// 		}
+
+// 	// 		disease.Medicines = append(disease.Medicines, MedicineInfo{
+// 	// 			MedicineID:   int(row.MedicineID.Int64),
+// 	// 			MedicineName: row.MedicineName.String,
+// 	// 			Usage:        &row.MedicineUsage.String,
+// 	// 			Dosage:       &row.Dosage.String,
+// 	// 			Frequency:    &row.Frequency.String,
+// 	// 			Duration:     &row.Duration.String,
+// 	// 			SideEffects:  &row.SideEffects.String,
+// 	// 		})
+// 	// 	}
+// 	// 	// Convert map to slice
+// 	// 	result := make([]DiseaseMedicineInfo, 0, len(diseaseMap))
+// 	// 	for _, disease := range diseaseMap {
+// 	// 		result = append(result, *disease)
+// 	// 	}
+// 	// 	return result, nil
+// 	// }
+
+// 	// func (s *DiceaseService) GetDiseaseTreatmentPlanWithPhasesService(ctx *gin.Context, disease string) ([]TreatmentPlan, error) {
+
+// 	// 	searchPattern := "%" + disease + "%"
+
+// 	// 	rows, err := s.storeDB.GetDiseaseTreatmentPlanWithPhases(ctx, searchPattern)
+// 	// 	if err != nil {
+// 	// 		return nil, fmt.Errorf("failed to get diagnostic")
+// 	// 	}
+
+// 	// 	// Group medicines by disease
+// 	// 	diseaseMap := make(map[string]*TreatmentPlan)
+// 	// 	phaseMap := make(map[string]map[int]*PhaseDetail) // diseaseID_phaseNumber -> PhaseDetail
+
+// 	// 	for _, row := range rows {
+// 	// 		var symptoms []string
+// 	// 		if err := json.Unmarshal(row.Symptoms, &symptoms); err != nil {
+// 	// 			return nil, fmt.Errorf("failed to unmarshal symptoms: %w", err)
+// 	// 		}
+
+// 	// 		// Create or get disease entry
+// 	// 		if _, exists := diseaseMap[row.DiseaseName]; !exists {
+// 	// 			diseaseMap[row.DiseaseName] = &TreatmentPlan{
+// 	// 				DiseaseID:       int(row.DiseaseID),
+// 	// 				DiseaseName:     row.DiseaseName,
+// 	// 				Description:     row.DiseaseDescription.String,
+// 	// 				Symptoms:        symptoms,
+// 	// 				TreatmentPhases: []PhaseDetail{},
+// 	// 			}
+// 	// 		}
+
+// 	// 		// Create phase map for disease if it doesn't exist
+// 	// 		diseaseKey := fmt.Sprintf("%s", row.DiseaseName)
+// 	// 		if _, exists := phaseMap[diseaseKey]; !exists {
+// 	// 			phaseMap[diseaseKey] = make(map[int]*PhaseDetail)
+// 	// 		}
+
+// 	// 		// Create or get phase entry
+// 	// 		if _, exists := phaseMap[diseaseKey][int(row.PhaseNumber.Int32)]; !exists {
+// 	// 			phaseMap[diseaseKey][int(row.PhaseNumber.Int32)] = &PhaseDetail{
+// 	// 				PhaseID:     int(row.PhaseID),
+// 	// 				PhaseNumber: int(row.PhaseNumber.Int32),
+// 	// 				PhaseName:   row.PhaseName.String,
+// 	// 				Duration:    row.PhaseDuration.String,
+// 	// 				Medicines:   []MedicineInfo{},
+// 	// 			}
+// 	// 		}
+
+// 	// 		// Add medicine to phase
+// 	// 		medicine := MedicineInfo{
+// 	// 			MedicineID:   int(row.MedicineID),
+// 	// 			MedicineName: row.MedicineName,
+// 	// 			Dosage:       &row.Dosage.String,
+// 	// 			Usage:        &row.MedicineUsage.String,
+// 	// 			Frequency:    &row.Frequency.String,
+// 	// 			Duration:     &row.Duration.String,
+// 	// 			SideEffects:  &row.SideEffects.String,
+// 	// 		}
+// 	// 		phaseMap[diseaseKey][int(row.PhaseNumber.Int32)].Medicines = append(
+// 	// 			phaseMap[diseaseKey][int(row.PhaseNumber.Int32)].Medicines,
+// 	// 			medicine,
+// 	// 		)
+// 	// 	}
+
+// 	// 	// Convert maps to slice and organize phases
+// 	// 	result := make([]TreatmentPlan, 0, len(diseaseMap))
+// 	// 	for diseaseName, plan := range diseaseMap {
+// 	// 		diseaseKey := fmt.Sprintf("%s", diseaseName)
+
+// 	// 		// Get all phases for this disease
+// 	// 		phases := make([]PhaseDetail, 0, len(phaseMap[diseaseKey]))
+// 	// 		for _, phase := range phaseMap[diseaseKey] {
+// 	// 			phases = append(phases, *phase)
+// 	// 		}
+
+// 	// 		// Sort phases by phase number
+// 	// 		sort.Slice(phases, func(i, j int) bool {
+// 	// 			return phases[i].PhaseNumber < phases[j].PhaseNumber
+// 	// 		})
+
+// 	// 		plan.TreatmentPhases = phases
+// 	// 		result = append(result, *plan)
+// 	// 	}
+
+// 	// 	// Sort results by disease name for consistency
+// 	// 	sort.Slice(result, func(i, j int) bool {
+// 	// 		return result[i].DiseaseName < result[j].DiseaseName
+// 	// 	})
+
+// 	// return result, nil
+// 	return nil, nil
+// }
+
+// // get treatment by disease id
+// func (s *DiceaseService) GetTreatmentByDiseaseID(ctx *gin.Context, diseaseID int64, pagination *util.Pagination) ([]TreatmentPlan, error) {
+
+// 	// offset := (pagination.Page - 1) * pagination.PageSize
+
+// 	// treatments, err := s.storeDB.GetTreatmentByDiseaseId(ctx, db.GetTreatmentByDiseaseIdParams{
+// 	// 	ID:     diseaseID,
+// 	// 	Limit:  int32(pagination.PageSize),
+// 	// 	Offset: int32(offset),
+// 	// })
+// 	// if err != nil {
+// 	// 	return nil, fmt.Errorf("error while getting treatment by disease id: %w", err)
+// 	// }
+// 	// // / Group medicines by disease
+// 	// diseaseMap := make(map[string]*TreatmentPlan)
+// 	// phaseMap := make(map[string]map[int]*PhaseDetail) // diseaseID_phaseNumber -> PhaseDetail
+
+// 	// for _, row := range treatments {
+// 	// 	var symptoms []string
+// 	// 	if err := json.Unmarshal(row.Symptoms, &symptoms); err != nil {
+// 	// 		return nil, fmt.Errorf("failed to unmarshal symptoms: %w", err)
+// 	// 	}
+
+// 	// 	// Create or get disease entry
+// 	// 	if _, exists := diseaseMap[row.DiseaseName]; !exists {
+// 	// 		diseaseMap[row.DiseaseName] = &TreatmentPlan{
+// 	// 			DiseaseID:       int(row.DiseaseID),
+// 	// 			DiseaseName:     row.DiseaseName,
+// 	// 			Description:     row.DiseaseDescription.String,
+// 	// 			Symptoms:        symptoms,
+// 	// 			TreatmentPhases: []PhaseDetail{},
+// 	// 		}
+// 	// 	}
+
+// 	// 	// Create phase map for disease if it doesn't exist
+// 	// 	diseaseKey := fmt.Sprintf("%s", row.DiseaseName)
+// 	// 	if _, exists := phaseMap[diseaseKey]; !exists {
+// 	// 		phaseMap[diseaseKey] = make(map[int]*PhaseDetail)
+// 	// 	}
+
+// 	// 	// Create or get phase entry
+// 	// 	if _, exists := phaseMap[diseaseKey][int(row.PhaseNumber.Int32)]; !exists {
+// 	// 		phaseMap[diseaseKey][int(row.PhaseNumber.Int32)] = &PhaseDetail{
+// 	// 			PhaseID:          int(row.PhaseID),
+// 	// 			PhaseNumber:      int(row.PhaseNumber.Int32),
+// 	// 			PhaseName:        row.PhaseName.String,
+// 	// 			PhaseDescription: row.PhaseDescription.String,
+// 	// 			Duration:         row.PhaseDuration.String,
+// 	// 			PhaseNotes:       row.PhaseNotes.String,
+// 	// 			Medicines:        []MedicineInfo{},
+// 	// 		}
+// 	// 	}
+
+// 	// 	// Add medicine to phase
+// 	// 	medicine := MedicineInfo{
+// 	// 		MedicineID:   int(row.MedicineID),
+// 	// 		MedicineName: row.MedicineName,
+// 	// 		Dosage:       &row.Dosage.String,
+// 	// 		Usage:        &row.MedicineUsage.String,
+// 	// 		Frequency:    &row.Frequency.String,
+// 	// 		Duration:     &row.Duration.String,
+// 	// 		SideEffects:  &row.SideEffects.String,
+// 	// 	}
+// 	// 	phaseMap[diseaseKey][int(row.PhaseNumber.Int32)].Medicines = append(
+// 	// 		phaseMap[diseaseKey][int(row.PhaseNumber.Int32)].Medicines,
+// 	// 		medicine,
+// 	// 	)
+// 	// }
+
+// 	// // Convert maps to slice and organize phases
+// 	// result := make([]TreatmentPlan, 0, len(diseaseMap))
+// 	// for diseaseName, plan := range diseaseMap {
+// 	// 	diseaseKey := fmt.Sprintf("%s", diseaseName)
+
+// 	// 	// Get all phases for this disease
+// 	// 	phases := make([]PhaseDetail, 0, len(phaseMap[diseaseKey]))
+// 	// 	for _, phase := range phaseMap[diseaseKey] {
+// 	// 		phases = append(phases, *phase)
+// 	// 	}
+
+// 	// 	// Sort phases by phase number
+// 	// 	sort.Slice(phases, func(i, j int) bool {
+// 	// 		return phases[i].PhaseNumber < phases[j].PhaseNumber
+// 	// 	})
+
+// 	// 	plan.TreatmentPhases = phases
+// 	// 	result = append(result, *plan)
+// 	// }
+
+// 	// // Sort results by disease name for consistency
+// 	// sort.Slice(result, func(i, j int) bool {
+// 	// 	return result[i].DiseaseName < result[j].DiseaseName
+// 	// })
+
+// 	// return result, nil
+// 	return nil, nil
+// }
+>>>>>>> 883d5b3 (update treatment)

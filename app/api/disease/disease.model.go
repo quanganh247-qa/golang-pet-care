@@ -411,6 +411,16 @@ type CreateTreatmentRequest struct {
 	Notes     string `json:"notes"`
 }
 
+// SELECT t.id, p.name AS pet_name, d.name AS disease, t.start_date, t.end_date, t.status
+type Treatment struct {
+	ID        int64  `json:"id"`
+	PetName   string `json:"pet_name"`
+	Disease   string `json:"disease"`
+	StartDate string `json:"start_date"`
+	EndDate   string `json:"end_date"`
+	Status    string `json:"status"`
+}
+
 type CreateTreatmentResponse struct {
 	TreatmentID int64  `json:"treatment_id"`
 	Disease     string `json:"disease"`
@@ -444,4 +454,26 @@ type TreatmentPhase struct {
 	Status      string `json:"status"`
 	StartDate   string `json:"start_date"`
 	CreatedAt   string `json:"created_at"`
+}
+
+type PhaseMedicine struct {
+	PhaseID      int64  `json:"phase_id"`
+	MedicineName string `json:"medicine_name"`
+	Dosage       string `json:"dosage"`
+	Frequency    string `json:"frequency"`
+	Duration     string `json:"duration"`
+	Notes        string `json:"notes"`
+	CreatedAt    string `json:"created_at"`
+}
+
+type UpdateTreatmentPhaseStatusRequest struct {
+	Status string `json:"status" validate:"required,oneof=pending active completed"`
+}
+
+// SELECT tp.phase_name, tp.status, tp.start_date, tp.end_date, COUNT(pm.medicine_id) AS num_medicines
+type TreatmentProgressDetail struct {
+	PhaseName    string `json:"phase_name"`
+	Status       string `json:"status"`
+	StartDate    string `json:"start_date"`
+	NumMedicines int32  `json:"num_medicines"`
 }

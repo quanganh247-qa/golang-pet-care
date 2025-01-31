@@ -242,6 +242,7 @@ func MapStructs(source interface{}, destination interface{}) error {
 	return nil
 }
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 =======
 >>>>>>> 79a3bcc (medicine api)
@@ -338,3 +339,5 @@ func IntervalToString(interval pgtype.Interval) string {
 >>>>>>> 79a3bcc (medicine api)
 =======
 >>>>>>> 272832d (redis cache)
+=======
+>>>>>>> 883d5b3 (update treatment)

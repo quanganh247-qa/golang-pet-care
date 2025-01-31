@@ -372,8 +372,12 @@ type Querier interface {
 >>>>>>> 33fcf96 (Big update)
 =======
 	// Get All Active Treatments
+<<<<<<< HEAD
 	GetActiveTreatments(ctx context.Context) ([]GetActiveTreatmentsRow, error)
 >>>>>>> 3bf345d (happy new year)
+=======
+	GetActiveTreatments(ctx context.Context, arg GetActiveTreatmentsParams) ([]GetActiveTreatmentsRow, error)
+>>>>>>> 883d5b3 (update treatment)
 	GetAllProducts(ctx context.Context, arg GetAllProductsParams) ([]Product, error)
 	GetAllSchedulesByPet(ctx context.Context, arg GetAllSchedulesByPetParams) ([]PetSchedule, error)
 <<<<<<< HEAD
@@ -652,8 +656,12 @@ type Querier interface {
 	GetMedicalHistory(ctx context.Context, medicalRecordID pgtype.Int8) ([]MedicalHistory, error)
 	GetMedicalRecord(ctx context.Context, id int64) (MedicalRecord, error)
 	// Get Medications for a Treatment Phase
+<<<<<<< HEAD
 	GetMedicationsByPhase(ctx context.Context, phaseID int64) ([]GetMedicationsByPhaseRow, error)
 >>>>>>> 3bf345d (happy new year)
+=======
+	GetMedicationsByPhase(ctx context.Context, arg GetMedicationsByPhaseParams) ([]GetMedicationsByPhaseRow, error)
+>>>>>>> 883d5b3 (update treatment)
 	GetNotificationsByUsername(ctx context.Context, arg GetNotificationsByUsernameParams) ([]Notification, error)
 <<<<<<< HEAD
 >>>>>>> 6f3ea8a (update sqlc)
