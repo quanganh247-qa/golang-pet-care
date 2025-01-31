@@ -57,10 +57,10 @@ WHERE t.id = $1 LIMIT $2 OFFSET $3;
 
 -- Get Medications for a Treatment Phase
 -- name: GetMedicationsByPhase :many
-SELECT m.id, m.name, pm.dosage, pm.frequency, pm.duration, pm.notes
+SELECT m.id, m.name, pm.dosage, pm.frequency, pm.duration, pm.notes ,pm.Created_at
 FROM medicines m
 JOIN phase_medicines pm ON m.id = pm.medicine_id
-WHERE pm.phase_id = $1;
+WHERE pm.phase_id = $1 LIMIT $2 OFFSET $3;
 
 -- Update Treatment Phase Status
 -- name: UpdateTreatmentPhaseStatus :exec
@@ -74,7 +74,7 @@ SELECT t.id, p.name AS pet_name, d.name AS disease, t.start_date, t.end_date, t.
 FROM pet_treatments t
 JOIN pet p ON t.pet_id = p.petid
 JOIN diseases d ON t.disease_id = d.id
-WHERE t.status = 'ongoing' AND p.petid;
+WHERE t.status = 'ongoing' AND p.petid = $1 LIMIT $2 OFFSET $3;
 
 -- Get Treatment Progress
 -- name: GetTreatmentProgress :many

@@ -49,7 +49,7 @@ type Querier interface {
 	DeleteUser(ctx context.Context, id int64) error
 	DeleteVaccination(ctx context.Context, vaccinationid int64) error
 	// Get All Active Treatments
-	GetActiveTreatments(ctx context.Context) ([]GetActiveTreatmentsRow, error)
+	GetActiveTreatments(ctx context.Context, arg GetActiveTreatmentsParams) ([]GetActiveTreatmentsRow, error)
 	GetAllProducts(ctx context.Context, arg GetAllProductsParams) ([]Product, error)
 	GetAllSchedulesByPet(ctx context.Context, arg GetAllSchedulesByPetParams) ([]PetSchedule, error)
 	GetAllUsers(ctx context.Context) ([]User, error)
@@ -73,7 +73,7 @@ type Querier interface {
 	GetMedicalHistory(ctx context.Context, medicalRecordID pgtype.Int8) ([]MedicalHistory, error)
 	GetMedicalRecord(ctx context.Context, id int64) (MedicalRecord, error)
 	// Get Medications for a Treatment Phase
-	GetMedicationsByPhase(ctx context.Context, phaseID int64) ([]GetMedicationsByPhaseRow, error)
+	GetMedicationsByPhase(ctx context.Context, arg GetMedicationsByPhaseParams) ([]GetMedicationsByPhaseRow, error)
 	GetNotificationsByUsername(ctx context.Context, arg GetNotificationsByUsernameParams) ([]Notification, error)
 	GetOrderById(ctx context.Context, id int64) (Order, error)
 	// Returning fields you may want to use
