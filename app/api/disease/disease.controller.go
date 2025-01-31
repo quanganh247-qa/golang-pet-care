@@ -15,9 +15,13 @@ type DiceaseControllerInterface interface {
 	AssignMedicineToTreatmentPhase(ctx *gin.Context)
 	GetTreatmentsByPetID(ctx *gin.Context)
 	GetTreatmentPhasesByTreatmentID(ctx *gin.Context)
+	GetMedicinesByPhaseID(ctx *gin.Context)
+	UpdateTreatmentPhaseStatus(ctx *gin.Context)
+	GetActiveTreatments(ctx *gin.Context)
+	GetTreatmentProgress(ctx *gin.Context)
 
-	getDiceaseAnhMedicinesInfo(ctx *gin.Context)
-	getTreatmentByDiseaseId(ctx *gin.Context)
+	// getDiceaseAnhMedicinesInfo(ctx *gin.Context)
+	// getTreatmentByDiseaseId(ctx *gin.Context)
 }
 
 func (c *DiceaseController) CreateTreatment(ctx *gin.Context) {
@@ -124,20 +128,53 @@ func (c *DiceaseController) GetTreatmentPhasesByTreatmentID(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, util.SuccessResponse("Phases", phases))
 }
 
-func (c *DiceaseController) getDiceaseAnhMedicinesInfo(ctx *gin.Context) {
-	disease := ctx.Query("disease")
-	info, err := c.service.GetDiceaseAnhMedicinesInfoService(ctx, disease)
+func (c *DiceaseController) GetMedicinesByPhaseID(ctx *gin.Context) {
+	phaseID := ctx.Param("phase_id")
+	id, err := strconv.ParseInt(phaseID, 10, 64)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
+		return
+	}
+
+	pagination, err := util.GetPageInQuery(ctx.Request.URL.Query())
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
+		return
+	}
+
+	medicines, err := c.service.GetMedicinesByPhase(ctx, id, pagination)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	ctx.JSON(http.StatusOK, util.SuccessResponse("Information", info))
-
+	ctx.JSON(http.StatusOK, util.SuccessResponse("Medicines", medicines))
 }
 
-func (c *DiceaseController) getTreatmentByDiseaseId(ctx *gin.Context) {
-	diseaseID := ctx.Param("disease_id")
-	id, err := strconv.ParseInt(diseaseID, 10, 64)
+func (c *DiceaseController) UpdateTreatmentPhaseStatus(ctx *gin.Context) {
+	phaseID := ctx.Param("phase_id")
+	id, err := strconv.ParseInt(phaseID, 10, 64)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
+		return
+	}
+
+	var req UpdateTreatmentPhaseStatusRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, util.ErrorValidator(err))
+		return
+	}
+
+	err = c.service.UpdateTreatmentPhaseStatus(ctx, id, req)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	ctx.JSON(http.StatusOK, util.SuccessResponse("Phase", nil))
+}
+
+func (c *DiceaseController) GetActiveTreatments(ctx *gin.Context) {
+	petID := ctx.Query("pet_id")
+	id, err := strconv.ParseInt(petID, 10, 64)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
 		return
@@ -147,10 +184,56 @@ func (c *DiceaseController) getTreatmentByDiseaseId(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
 		return
 	}
-	treatment, err := c.service.GetTreatmentByDiseaseID(ctx, id, pagination)
+	treatments, err := c.service.GetActiveTreatments(ctx, id, pagination)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	ctx.JSON(http.StatusOK, util.SuccessResponse("Treatment", treatment))
+	ctx.JSON(http.StatusOK, util.SuccessResponse("Treatments", treatments))
 }
+
+func (c *DiceaseController) GetTreatmentProgress(ctx *gin.Context) {
+	treatmentID := ctx.Param("treatment_id")
+	id, err := strconv.ParseInt(treatmentID, 10, 64)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
+		return
+	}
+	progress, err := c.service.GetTreatmentProgress(ctx, id)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	ctx.JSON(http.StatusOK, util.SuccessResponse("Progress", progress))
+}
+
+// func (c *DiceaseController) getDiceaseAnhMedicinesInfo(ctx *gin.Context) {
+// 	disease := ctx.Query("disease")
+// 	info, err := c.service.GetDiceaseAnhMedicinesInfoService(ctx, disease)
+// 	if err != nil {
+// 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+// 		return
+// 	}
+// 	ctx.JSON(http.StatusOK, util.SuccessResponse("Information", info))
+
+// }
+
+// func (c *DiceaseController) getTreatmentByDiseaseId(ctx *gin.Context) {
+// 	diseaseID := ctx.Param("disease_id")
+// 	id, err := strconv.ParseInt(diseaseID, 10, 64)
+// 	if err != nil {
+// 		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
+// 		return
+// 	}
+// 	pagination, err := util.GetPageInQuery(ctx.Request.URL.Query())
+// 	if err != nil {
+// 		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
+// 		return
+// 	}
+// 	treatment, err := c.service.GetTreatmentByDiseaseID(ctx, id, pagination)
+// 	if err != nil {
+// 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+// 		return
+// 	}
+// 	ctx.JSON(http.StatusOK, util.SuccessResponse("Treatment", treatment))
+// }

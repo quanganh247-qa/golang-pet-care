@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"reflect"
 	"regexp"
 	"strconv"
 	"strings"
@@ -41,15 +42,6 @@ func ParseInterfaceToString(options ParseOptions) string {
 	}
 	return string(jsonData)
 }
-
-// func ParseInterfaceToStringChannel(options ParseOptions) string {
-// 	jsonData, err := json.Marshal(options.Data)
-// 	if err != nil {
-// 		log.Println("[ ERROR ] ParseInterfaceToString : ", options.Message, err)
-// 		return ""
-// 	}
-// 	return string(jsonData)
-// }
 
 func ParseStringToInterface[T any](options ParseOptions) *T {
 	var jsonData T
@@ -197,4 +189,47 @@ func IntervalToString(interval pgtype.Interval) string {
 	duration += time.Duration(interval.Months) * 30 * 24 * time.Hour
 
 	return duration.String()
+}
+
+// Generic function to map fields from one struct to another
+func MapStructs(source interface{}, destination interface{}) error {
+	srcValue := reflect.ValueOf(source)
+	destValue := reflect.ValueOf(destination)
+
+	// Ensure source and destination are pointers to structs
+	if srcValue.Kind() != reflect.Ptr || srcValue.Elem().Kind() != reflect.Struct {
+		return fmt.Errorf("source must be a pointer to a struct")
+	}
+	if destValue.Kind() != reflect.Ptr || destValue.Elem().Kind() != reflect.Struct {
+		return fmt.Errorf("destination must be a pointer to a struct")
+	}
+
+	// Dereference the pointers
+	srcValue = srcValue.Elem()
+	destValue = destValue.Elem()
+
+	// Iterate over fields in the source struct
+	for i := 0; i < srcValue.NumField(); i++ {
+		srcField := srcValue.Field(i)
+		srcFieldName := srcValue.Type().Field(i).Name
+
+		// Find the corresponding field in the destination struct
+		destField := destValue.FieldByName(srcFieldName)
+		if !destField.IsValid() || !destField.CanSet() {
+			continue // Skip if the field doesn't exist or can't be set
+		}
+
+		// Handle nested structs
+		if srcField.Kind() == reflect.Struct && destField.Kind() == reflect.Struct {
+			err := MapStructs(srcField.Addr().Interface(), destField.Addr().Interface())
+			if err != nil {
+				return err
+			}
+		} else if srcField.Type() == destField.Type() {
+			// Copy the value if the types match
+			destField.Set(srcField)
+		}
+	}
+
+	return nil
 }
