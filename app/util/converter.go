@@ -237,6 +237,7 @@ func MapStructs(source interface{}, destination interface{}) error {
 
 	return nil
 }
+<<<<<<< HEAD
 =======
 	// Parse the EndDate string to time.Time (if provided)
 	parsedEndDate, err := time.Parse("2006-01-02 15:04:05", endDate)
@@ -320,3 +321,5 @@ func IntervalToString(interval pgtype.Interval) string {
 	return duration.String()
 }
 >>>>>>> 272832d (redis cache)
+=======
+>>>>>>> 883d5b3 (update treatment)
