@@ -76,13 +76,13 @@ type Cart struct {
 	UpdatedAt pgtype.Timestamp `json:"updated_at"`
 }
 
-type Cartitem struct {
-	ID         int64         `json:"id"`
-	CartID     int64         `json:"cart_id"`
-	ProductID  int64         `json:"product_id"`
-	Quantity   pgtype.Int4   `json:"quantity"`
-	UnitPrice  float64       `json:"unit_price"`
-	TotalPrice pgtype.Float8 `json:"total_price"`
+type CartItem struct {
+	ID        int64            `json:"id"`
+	CartID    pgtype.Int8      `json:"cart_id"`
+	ProductID pgtype.Int8      `json:"product_id"`
+	Quantity  pgtype.Int4      `json:"quantity"`
+	CreatedAt pgtype.Timestamp `json:"created_at"`
+	UpdatedAt pgtype.Timestamp `json:"updated_at"`
 }
 
 type Checkout struct {
@@ -135,9 +135,13 @@ type Department struct {
 	UpdatedAt   pgtype.Timestamp `json:"updated_at"`
 }
 
+<<<<<<< HEAD
 >>>>>>> e9037c6 (update sqlc)
 type Devicetoken struct {
 >>>>>>> 0fb3f30 (user images)
+=======
+type DeviceToken struct {
+>>>>>>> 33fcf96 (Big update)
 	ID         int64            `json:"id"`
 	Username   string           `json:"username"`
 	Token      string           `json:"token"`
@@ -549,6 +553,7 @@ type Shift struct {
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 type State struct {
 	ID        int64            `json:"id"`
 	State     string           `json:"state"`
@@ -580,6 +585,9 @@ type Timeslot struct {
 	UpdatedAt pgtype.Timestamp `json:"updated_at"`
 >>>>>>> 685da65 (latest update)
 =======
+=======
+type TimeSlot struct {
+>>>>>>> 33fcf96 (Big update)
 	ID             int64            `json:"id"`
 	DoctorID       int32            `json:"doctor_id"`
 	Date           pgtype.Date      `json:"date"`

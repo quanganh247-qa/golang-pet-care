@@ -1,6 +1,7 @@
 -- name: CreateAppointment :one
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 INSERT INTO public.appointments (
     petid, 
     username, 
@@ -39,10 +40,17 @@ VALUES(
 =======
     $1, $2, $3, $4, $5, $6, $7, $8, $9,now()
 >>>>>>> b393bb9 (add service and add permission)
+=======
+INSERT INTO appointments
+( petid, doctor_id, username, service_id, "date", payment_status, notes, reminder_send, time_slot_id, created_at)
+VALUES( 
+    $1, $2, $3, $4, $5, $6, $7, $8, $9, now()
+>>>>>>> 33fcf96 (Big update)
 ) RETURNING *;
 
 
 -- name: UpdateTimeSlotBookedPatients :exec
+<<<<<<< HEAD
 <<<<<<< HEAD
 UPDATE time_slots
 SET booked_patients = booked_patients + 1
@@ -67,8 +75,11 @@ UPDATE appointments SET
 WHERE appointment_id = $1;
 =======
 UPDATE timeslots
+=======
+UPDATE time_slots
+>>>>>>> 33fcf96 (Big update)
 SET booked_patients = booked_patients + 1
-WHERE id = $1 AND  doctor_id = $2;
+WHERE id = $1 AND doctor_id = $2;
 
 >>>>>>> b393bb9 (add service and add permission)
 
@@ -79,10 +90,14 @@ WHERE appointment_id = $1;
 
 -- name: UpdateAppointmentStatus :exec
 <<<<<<< HEAD
+<<<<<<< HEAD
 UPDATE appointments
 SET state_id = $2
 =======
 UPDATE Appointment
+=======
+UPDATE appointments
+>>>>>>> 33fcf96 (Big update)
 SET payment_status = $2
 >>>>>>> b393bb9 (add service and add permission)
 WHERE appointment_id = $1;
@@ -94,6 +109,7 @@ SELECT
     s.name as service_name,
     ts.start_time,
     ts.end_time
+<<<<<<< HEAD
 <<<<<<< HEAD
 FROM appointments a
     LEFT JOIN doctors d ON a.doctor_id = d.id
@@ -107,6 +123,13 @@ FROM Appointment a
     LEFT JOIN services s ON a.service_id = s.id
     LEFT JOIN TimeSlots ts ON a.time_slot_id = ts.id
 >>>>>>> b393bb9 (add service and add permission)
+=======
+FROM appointments a
+    LEFT JOIN doctors d ON a.doctor_id = d.id
+    LEFT JOIN pets p ON a.petid = p.petid
+    LEFT JOIN services s ON a.service_id = s.id
+    LEFT JOIN time_slots ts ON a.time_slot_id = ts.id
+>>>>>>> 33fcf96 (Big update)
 WHERE d.id = $1
 AND LOWER(a.status) <> 'completed'
 ORDER BY ts.start_time ASC;
@@ -317,22 +340,26 @@ WHERE petid = $1 AND state_id = (SELECT id FROM states WHERE state = 'Completed'
 ORDER BY date DESC;
 =======
 -- name: GetAppointmentDetailById :one
+<<<<<<< HEAD
 SELECT * from Appointment WHERE appointment_id = $1;
 <<<<<<< HEAD
 >>>>>>> 7e35c2e (get appointment detail)
 =======
+=======
+SELECT * from appointments WHERE appointment_id = $1;
+>>>>>>> 33fcf96 (Big update)
 
 -- name: GetAppointmentsByUser :many
 SELECT 
     p.*, s.*, a.*, ts.*
 FROM 
-    appointment a
+    appointments a
 JOIN 
-    pet p ON a.petid = p.petid 
+    pets p ON a.petid = p.petid 
 JOIN 
     services s ON a.service_id = s.id 
 JOIN 
-    timeslots ts ON a.time_slot_id = ts.id
+    time_slots ts ON a.time_slot_id = ts.id
 WHERE 
 <<<<<<< HEAD
     u.username = $1 and p.is_active is true
@@ -344,7 +371,7 @@ ORDER BY
 
 -- name: CountAppointmentsByDateAndTimeSlot :one
 SELECT COUNT(*) 
-FROM appointment 
+FROM appointments 
 WHERE date = $1 AND doctor_id = $2 AND status = 'completed';
 <<<<<<< HEAD
 >>>>>>> 685da65 (latest update)
@@ -359,15 +386,21 @@ SELECT
     ts.start_time,
     ts.end_time
 FROM 
-    appointment a
+    appointments a
 JOIN 
     doctors d ON a.doctor_id = d.id
 JOIN 
-    pet p ON a.petid = p.petid
+    pets p ON a.petid = p.petid
 JOIN 
     services as s ON a.service_id = s.id
 JOIN 
-    timeslots ts ON a.time_slot_id = ts.id
+    time_slots ts ON a.time_slot_id = ts.id
 WHERE 
     a.doctor_id = $1;
+<<<<<<< HEAD
 >>>>>>> b393bb9 (add service and add permission)
+=======
+
+-- name: ListAllAppointments :many
+SELECT * FROM appointments;
+>>>>>>> 33fcf96 (Big update)

@@ -82,6 +82,8 @@ migrate-create:
 postgres-ec:
 	docker run -d  --name postgres-ec  -p 5432:5432 -e POSTGRES_PASSWORD=12345678  -e PGDATA=/var/lib/postgresql/data/pgdata  -v postgres_volume:/var/lib/postgresql/data  postgres:15-alpine
 
+createdb:
+	createdb --username=root --owner=root golang_pet_care
 
 .PHONY: mup mdown  mforce sqlc server   postgres  redis  rabbitmq
 >>>>>>> 21608b5 (cart and order api)

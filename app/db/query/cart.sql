@@ -4,14 +4,23 @@
 INSERT INTO cart_items (
     cart_id,
     product_id,
+<<<<<<< HEAD
     unit_price,
     quantity
 ) VALUES (
     $1, $2, $3, $4
+=======
+    quantity,
+    created_at,
+    updated_at
+) VALUES (
+    $1, $2, $3,  $4, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
+>>>>>>> 33fcf96 (Big update)
 ) RETURNING *;
 
 
 -- name: GetCartByUserId :many
+<<<<<<< HEAD
 SELECT 
     c.id,
     c.user_id,
@@ -33,6 +42,11 @@ JOIN products p ON ci.product_id = p.product_id
 LEFT JOIN carts c ON ci.cart_id = c.id
 WHERE c.user_id = $1;
 
+=======
+SELECT * 
+FROM carts
+WHERE user_id = $1;
+>>>>>>> 33fcf96 (Big update)
 
 -- name: CreateCartForUser :one
 INSERT INTO carts (
@@ -81,6 +95,7 @@ SET payment_status = 'paid'
 WHERE id = $1 Returning *;
 
 -- name: RemoveItemFromCart :exec
+<<<<<<< HEAD
 <<<<<<< HEAD
 DELETE FROM cart_items 
 WHERE cart_id = $1 AND product_id = $2;
@@ -185,11 +200,24 @@ WHERE id = $1 Returning *;
 >>>>>>> b0fe977 (place order and make payment)
 =======
 DELETE FROM CartItem
+=======
+DELETE FROM cart_items 
+>>>>>>> 33fcf96 (Big update)
 WHERE cart_id = $1 AND product_id = $2;
 
 -- name: DecreaseItemQuantity :exec
-UPDATE CartItem
+UPDATE cart_items
 SET quantity = quantity - $3
 WHERE cart_id = $1 AND product_id = $2 AND quantity > $3
 RETURNING *;
+<<<<<<< HEAD
 >>>>>>> 4a16bfc (remove item in cart)
+=======
+
+-- name: UpdateCartItemQuantity :exec
+UPDATE cart_items 
+SET 
+    quantity = $3,
+    updated_at = CURRENT_TIMESTAMP
+WHERE cart_id = $1 AND product_id = $2;
+>>>>>>> 33fcf96 (Big update)
