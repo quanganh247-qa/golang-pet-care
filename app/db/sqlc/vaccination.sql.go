@@ -12,9 +12,16 @@ import (
 )
 
 const createVaccination = `-- name: CreateVaccination :one
-INSERT INTO Vaccination (petID, vaccineName, dateAdministered, nextDueDate, vaccineProvider, batchNumber, notes)
-VALUES ($1, $2, $3, $4, $5, $6, $7)
-RETURNING vaccinationID, petID, vaccineName, dateAdministered, nextDueDate, vaccineProvider, batchNumber, notes
+INSERT INTO vaccinations (
+    petID,
+    vaccineName,
+    dateAdministered,
+    nextDueDate,
+    vaccineProvider,
+    batchNumber,
+    notes
+) VALUES ($1, $2, $3, $4, $5, $6, $7)
+RETURNING vaccinationid, petid, vaccinename, dateadministered, nextduedate, vaccineprovider, batchnumber, notes
 `
 
 type CreateVaccinationParams struct {
@@ -52,7 +59,7 @@ func (q *Queries) CreateVaccination(ctx context.Context, arg CreateVaccinationPa
 }
 
 const deleteVaccination = `-- name: DeleteVaccination :exec
-DELETE FROM Vaccination
+DELETE FROM vaccinations
 WHERE vaccinationID = $1
 `
 
@@ -62,8 +69,7 @@ func (q *Queries) DeleteVaccination(ctx context.Context, vaccinationid int64) er
 }
 
 const getVaccinationByID = `-- name: GetVaccinationByID :one
-SELECT vaccinationID, petID, vaccineName, dateAdministered, nextDueDate, vaccineProvider, batchNumber, notes
-FROM Vaccination
+SELECT vaccinationid, petid, vaccinename, dateadministered, nextduedate, vaccineprovider, batchnumber, notes FROM vaccinations 
 WHERE vaccinationID = $1
 `
 
@@ -84,8 +90,7 @@ func (q *Queries) GetVaccinationByID(ctx context.Context, vaccinationid int64) (
 }
 
 const listVaccinationsByPetID = `-- name: ListVaccinationsByPetID :many
-SELECT vaccinationID, petID, vaccineName, dateAdministered, nextDueDate, vaccineProvider, batchNumber, notes
-FROM Vaccination
+SELECT vaccinationid, petid, vaccinename, dateadministered, nextduedate, vaccineprovider, batchnumber, notes FROM vaccinations
 WHERE petID = $1
 ORDER BY dateAdministered DESC LIMIT $2 OFFSET $3
 `
@@ -126,8 +131,9 @@ func (q *Queries) ListVaccinationsByPetID(ctx context.Context, arg ListVaccinati
 }
 
 const updateVaccination = `-- name: UpdateVaccination :exec
-UPDATE Vaccination
-SET vaccineName = $2,
+UPDATE vaccinations
+SET 
+    vaccineName = $2,
     dateAdministered = $3,
     nextDueDate = $4,
     vaccineProvider = $5,

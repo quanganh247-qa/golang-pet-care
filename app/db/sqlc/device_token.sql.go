@@ -12,7 +12,7 @@ import (
 )
 
 const deleteDeviceToken = `-- name: DeleteDeviceToken :exec
-DELETE FROM DeviceTokens WHERE username = $1 AND token = $2
+DELETE FROM device_tokens WHERE username = $1 AND token = $2
 `
 
 type DeleteDeviceTokenParams struct {
@@ -26,18 +26,18 @@ func (q *Queries) DeleteDeviceToken(ctx context.Context, arg DeleteDeviceTokenPa
 }
 
 const getDeviceTokenByUsername = `-- name: GetDeviceTokenByUsername :many
-SELECT id, username, token, device_type, created_at, last_used_at, expired_at FROM DeviceTokens WHERE username = $1
+SELECT id, username, token, device_type, created_at, last_used_at, expired_at FROM device_tokens WHERE username = $1
 `
 
-func (q *Queries) GetDeviceTokenByUsername(ctx context.Context, username string) ([]Devicetoken, error) {
+func (q *Queries) GetDeviceTokenByUsername(ctx context.Context, username string) ([]DeviceToken, error) {
 	rows, err := q.db.Query(ctx, getDeviceTokenByUsername, username)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	items := []Devicetoken{}
+	items := []DeviceToken{}
 	for rows.Next() {
-		var i Devicetoken
+		var i DeviceToken
 		if err := rows.Scan(
 			&i.ID,
 			&i.Username,
@@ -58,9 +58,9 @@ func (q *Queries) GetDeviceTokenByUsername(ctx context.Context, username string)
 }
 
 const insertDeviceToken = `-- name: InsertDeviceToken :one
-INSERT INTO DeviceTokens (
-    username,token,device_type,last_used_at,expired_at
-)VALUES ($1,$2,$3,$4,$5) RETURNING id, username, token, device_type, created_at, last_used_at, expired_at
+INSERT INTO device_tokens (
+    username, token, device_type, last_used_at, expired_at
+) VALUES ($1, $2, $3, $4, $5) RETURNING id, username, token, device_type, created_at, last_used_at, expired_at
 `
 
 type InsertDeviceTokenParams struct {
@@ -71,7 +71,7 @@ type InsertDeviceTokenParams struct {
 	ExpiredAt  pgtype.Timestamp `json:"expired_at"`
 }
 
-func (q *Queries) InsertDeviceToken(ctx context.Context, arg InsertDeviceTokenParams) (Devicetoken, error) {
+func (q *Queries) InsertDeviceToken(ctx context.Context, arg InsertDeviceTokenParams) (DeviceToken, error) {
 	row := q.db.QueryRow(ctx, insertDeviceToken,
 		arg.Username,
 		arg.Token,
@@ -79,7 +79,7 @@ func (q *Queries) InsertDeviceToken(ctx context.Context, arg InsertDeviceTokenPa
 		arg.LastUsedAt,
 		arg.ExpiredAt,
 	)
-	var i Devicetoken
+	var i DeviceToken
 	err := row.Scan(
 		&i.ID,
 		&i.Username,

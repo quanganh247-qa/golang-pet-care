@@ -268,14 +268,8 @@ func (s *PetService) ListPetsByUsername(ctx *gin.Context, username string, pagin
 }
 
 func (s *PetService) SetPetInactive(ctx context.Context, petid int64) error {
-	params := db.SetPetInactiveParams{
-		Petid:    petid,
-		IsActive: pgtype.Bool{Bool: false, Valid: true},
-	}
-	return s.storeDB.SetPetInactive(ctx, params)
+	return s.storeDB.SetPetInactive(ctx, petid)
 }
-
-// Log for pet
 
 func (s *PetService) GetPetLogsByPetIDService(ctx *gin.Context, pet_id int64, pagination *util.Pagination) ([]PetLog, error) {
 	var pets []PetLog
@@ -308,7 +302,7 @@ func (s *PetService) GetPetLogsByPetIDService(ctx *gin.Context, pet_id int64, pa
 // Add log for pet
 func (s *PetService) InsertPetLogService(ctx context.Context, req PetLog) error {
 
-	log := db.InsertPetLogParams{
+	log := db.CreatePetLogParams{
 		Petid: req.PetID,
 		Title: pgtype.Text{String: req.Title, Valid: true},
 		Notes: pgtype.Text{String: req.Notes, Valid: true},
@@ -324,7 +318,7 @@ func (s *PetService) InsertPetLogService(ctx context.Context, req PetLog) error 
 	}
 
 	err := s.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
-		_, err := q.InsertPetLog(ctx, log)
+		_, err := q.CreatePetLog(ctx, log)
 		if err != nil {
 			return fmt.Errorf("failed to insert pet log: %w", err)
 		}

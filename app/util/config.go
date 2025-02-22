@@ -11,10 +11,9 @@ import (
 type Config struct {
 	Host              string `mapstructure:"HOST"`
 	DBDriver          string `mapstructure:"DB_DRIVER"`
+	DATABASE_URL      string `mapstructure:"DATABASE_URL"`
 	DBSource          string `mapstructure:"DB_SOURCE"`
-	DBSourceTesting   string `mapstructure:"DB_SOURCE_TEST"`
 	RedisAddress      string `mapstructure:"REDIS_ADDRESS"`
-	RabbitMQAddress   string `mapstructure:"RABBITMQ_ADDRESS"`
 	HTTPServerAddress string `mapstructure:"HTTP_SERVER_ADDRESS"`
 
 	SymmetricKey  string `mapstructure:"SYMMETRIC_KEY"`

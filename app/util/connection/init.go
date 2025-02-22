@@ -27,7 +27,7 @@ func Init(config util.Config) (*Connection, error) {
 	}
 
 	// Initialize database connection pool
-	connPool, err := pgxpool.New(context.Background(), config.DBSource)
+	connPool, err := pgxpool.New(context.Background(), config.DATABASE_URL)
 	if err != nil {
 		return nil, fmt.Errorf("cannot connect to db: %w", err)
 	}

@@ -1,27 +1,68 @@
 -- name: CreatePet :one
-INSERT INTO Pet (username, Name, Type, Breed, Age, Weight, Gender, HealthNotes, data_image, original_image, birth_date, microchip_number, is_active)
-VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, true)
-RETURNING *;
+INSERT INTO pets (
+    name,
+    type,
+    breed,
+    age,
+    gender,
+    healthnotes,
+    weight,
+    birth_date,
+    username,
+    microchip_number,
+    last_checkup_date,
+    is_active,
+    data_image,
+    original_image
+) VALUES (
+    $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, true, $12, $13
+) RETURNING *;
 
 -- name: GetPetByID :one
-SELECT * FROM Pet WHERE PetID = $1 AND is_active is true;
-
--- name: UpdatePet :exec
-UPDATE Pet
-SET Name = $2, Type = $3, Breed = $4, Age = $5, Weight = $6, Gender = $7, HealthNotes = $8, birth_date = $9
-WHERE PetID = $1;
-
--- name: DeletePet :exec
-DELETE FROM Pet WHERE PetID = $1;
+SELECT * FROM pets 
+WHERE petid = $1;
 
 -- name: ListPets :many
-SELECT * FROM Pet WHERE is_active is true ORDER BY PetID LIMIT $1 OFFSET $2;
+SELECT * FROM pets
+WHERE is_active = true 
+ORDER BY name LIMIT $1 OFFSET $2;
 
 -- name: ListPetsByUsername :many
-SELECT * FROM Pet WHERE username = $1 and is_active is true ORDER BY PetID LIMIT $2 OFFSET $3;
+SELECT * FROM pets
+WHERE username = $1 AND is_active = true
+ORDER BY name LIMIT $2 OFFSET $3;
+
+-- name: UpdatePet :exec
+UPDATE pets
+SET 
+    name = $2,
+    type = $3,
+    breed = $4,
+    age = $5,
+    gender = $6,
+    healthnotes = $7,
+    weight = $8,
+    birth_date = $9,
+    microchip_number = $10,
+    last_checkup_date = $11
+WHERE petid = $1;
+
+-- name: DeletePet :exec
+DELETE FROM pets WHERE petid = $1;
 
 -- name: SetPetInactive :exec
-UPDATE Pet SET is_active = $2 WHERE PetID = $1 AND is_active is true;
+UPDATE pets
+SET is_active = false
+WHERE petid = $1;
 
 -- name: UpdatePetAvatar :exec
-UPDATE Pet SET data_image = $2, original_image = $3 WHERE PetID = $1 and is_active is true;
+UPDATE pets
+SET 
+    data_image = $2,
+    original_image = $3
+WHERE petid = $1;
+
+-- name: GetAllPets :many
+SELECT * FROM pets WHERE is_active is true;
+
+
