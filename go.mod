@@ -16,7 +16,9 @@ require (
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/fatih/color v1.14.1
 	github.com/fsnotify/fsnotify v1.7.0
+	github.com/galeone/tensorflow/tensorflow/go v0.0.0-20240119075110-6ad3cf65adfe
 	github.com/gin-gonic/gin v1.10.0
+	github.com/go-redis/redis/v8 v8.11.5
 	github.com/google/uuid v1.6.0
 <<<<<<< HEAD
 	github.com/gorilla/websocket v1.5.3
@@ -94,6 +96,7 @@ require (
 	github.com/go-openapi/swag v0.23.0 // indirect
 	github.com/gofrs/uuid v4.4.0+incompatible // indirect
 <<<<<<< HEAD
+<<<<<<< HEAD
 	github.com/golang-migrate/migrate/v4 v4.18.1 // indirect
 	github.com/golang/groupcache v0.0.0-20241129210726-2c02b8208cf8 // indirect
 	github.com/golang/protobuf v1.5.4 // indirect
@@ -159,15 +162,26 @@ require (
 >>>>>>> 1ec1fee (create product api)
 =======
 >>>>>>> 685da65 (latest update)
+=======
+	github.com/gonum/blas v0.0.0-20181208220705-f22b278b28ac // indirect
+	github.com/google/go-cmp v0.6.0 // indirect
+	github.com/guptarohit/asciigraph v0.5.1 // indirect
+>>>>>>> 33fcf96 (Big update)
 	github.com/jackc/fake v0.0.0-20150926172116-812a484cc733 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
+	github.com/mattn/go-runewidth v0.0.7 // indirect
+	github.com/olekukonko/tablewriter v0.0.4 // indirect
 	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
 	github.com/robfig/cron/v3 v3.0.1 // indirect
+	github.com/rocketlaunchr/dataframe-go v0.0.0-20201007021539-67b046771f0b // indirect
 	github.com/shopspring/decimal v1.4.0 // indirect
+	github.com/sjwhitworth/golearn v0.0.0-20221228163002-74ae077eafb2 // indirect
+	github.com/stretchr/objx v0.5.2 // indirect
 	github.com/swaggo/swag v1.16.4 // indirect
 	golang.org/x/tools v0.27.0 // indirect
+	gonum.org/v1/gonum v0.8.1 // indirect
 )
 
 require (

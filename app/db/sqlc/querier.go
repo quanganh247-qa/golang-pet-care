@@ -17,6 +17,7 @@ type Querier interface {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	AddItemToCart(ctx context.Context, arg AddItemToCartParams) (CartItem, error)
 	// Assign Carprofen to the Initial Phase
 	AssignCarprofenToInitialPhase(ctx context.Context, arg AssignCarprofenToInitialPhaseParams) error
@@ -65,6 +66,9 @@ type Querier interface {
 >>>>>>> b393bb9 (add service and add permission)
 =======
 	AddItemToCart(ctx context.Context, arg AddItemToCartParams) (Cartitem, error)
+=======
+	AddItemToCart(ctx context.Context, arg AddItemToCartParams) (CartItem, error)
+>>>>>>> 33fcf96 (Big update)
 	// Assign Carprofen to the Initial Phase
 	AssignCarprofenToInitialPhase(ctx context.Context, arg AssignCarprofenToInitialPhaseParams) error
 	AssignMedicationToTreatmentPhase(ctx context.Context, arg AssignMedicationToTreatmentPhaseParams) (PhaseMedicine, error)
@@ -72,16 +76,17 @@ type Querier interface {
 	CreateAllergy(ctx context.Context, arg CreateAllergyParams) (Allergy, error)
 >>>>>>> 3bf345d (happy new year)
 	CreateAppointment(ctx context.Context, arg CreateAppointmentParams) (Appointment, error)
-	CreateCartForUser(ctx context.Context, userID int64) (int64, error)
+	CreateCartForUser(ctx context.Context, userID int64) (Cart, error)
 	CreateMedicalHistory(ctx context.Context, arg CreateMedicalHistoryParams) (MedicalHistory, error)
 	CreateMedicalRecord(ctx context.Context, petID pgtype.Int8) (MedicalRecord, error)
 	CreateMedicine(ctx context.Context, arg CreateMedicineParams) (Medicine, error)
 	CreateOrder(ctx context.Context, arg CreateOrderParams) (Order, error)
 	CreatePet(ctx context.Context, arg CreatePetParams) (Pet, error)
+	CreatePetLog(ctx context.Context, arg CreatePetLogParams) (PetLog, error)
 	CreatePetSchedule(ctx context.Context, arg CreatePetScheduleParams) error
 >>>>>>> 272832d (redis cache)
 	CreateService(ctx context.Context, arg CreateServiceParams) (Service, error)
-	CreateTimeSlot(ctx context.Context, arg CreateTimeSlotParams) (Timeslot, error)
+	CreateTimeSlot(ctx context.Context, arg CreateTimeSlotParams) (TimeSlot, error)
 	CreateTreatment(ctx context.Context, arg CreateTreatmentParams) (PetTreatment, error)
 	CreateTreatmentPhase(ctx context.Context, arg CreateTreatmentPhaseParams) (TreatmentPhase, error)
 	CreateUser(ctx context.Context, arg CreateUserParams) (int64, error)
@@ -169,6 +174,7 @@ type Querier interface {
 <<<<<<< HEAD
 <<<<<<< HEAD
 	GetActiveTreatments(ctx context.Context, arg GetActiveTreatmentsParams) ([]GetActiveTreatmentsRow, error)
+<<<<<<< HEAD
 	GetAllAppointments(ctx context.Context, arg GetAllAppointmentsParams) ([]GetAllAppointmentsRow, error)
 	GetAllAppointmentsByDate(ctx context.Context, arg GetAllAppointmentsByDateParams) ([]GetAllAppointmentsByDateRow, error)
 	GetAllOrders(ctx context.Context, arg GetAllOrdersParams) ([]Order, error)
@@ -189,6 +195,10 @@ type Querier interface {
 =======
 	GetActiveTreatments(ctx context.Context, arg GetActiveTreatmentsParams) ([]GetActiveTreatmentsRow, error)
 >>>>>>> 883d5b3 (update treatment)
+=======
+	GetAllDoctors(ctx context.Context) ([]Doctor, error)
+	GetAllPets(ctx context.Context) ([]Pet, error)
+>>>>>>> 33fcf96 (Big update)
 	GetAllProducts(ctx context.Context, arg GetAllProductsParams) ([]Product, error)
 	GetAllSchedulesByPet(ctx context.Context, arg GetAllSchedulesByPetParams) ([]PetSchedule, error)
 <<<<<<< HEAD
@@ -241,11 +251,16 @@ type Querier interface {
 >>>>>>> b393bb9 (add service and add permission)
 	GetAvailableTimeSlots(ctx context.Context, arg GetAvailableTimeSlotsParams) ([]GetAvailableTimeSlotsRow, error)
 	GetCartByUserId(ctx context.Context, userID int64) ([]Cart, error)
+<<<<<<< HEAD
 	GetCartItems(ctx context.Context, cartID int64) ([]GetCartItemsRow, error)
 <<<<<<< HEAD
 	GetCartItemsByUserId(ctx context.Context, userID int64) ([]GetCartItemsByUserIdRow, error)
 	GetCartTotal(ctx context.Context, cartID int64) (float64, error)
 	GetClinicInfo(ctx context.Context, id int64) (GetClinicInfoRow, error)
+=======
+	GetCartItems(ctx context.Context, cartID pgtype.Int8) ([]GetCartItemsRow, error)
+	GetCartTotal(ctx context.Context, cartID pgtype.Int8) (float64, error)
+>>>>>>> 33fcf96 (Big update)
 	GetDeviceTokenByUsername(ctx context.Context, username string) ([]DeviceToken, error)
 	// 1. Query cơ bản để lấy thông tin bệnh và thuốc điều trị
 	GetDiceaseAndMedicinesInfo(ctx context.Context, lower string) ([]GetDiceaseAndMedicinesInfoRow, error)
@@ -368,7 +383,7 @@ type Querier interface {
 >>>>>>> b0fe977 (place order and make payment)
 	GetPetByID(ctx context.Context, petid int64) (Pet, error)
 	GetPetLogByID(ctx context.Context, arg GetPetLogByIDParams) (GetPetLogByIDRow, error)
-	GetPetLogsByPetID(ctx context.Context, arg GetPetLogsByPetIDParams) ([]GetPetLogsByPetIDRow, error)
+	GetPetLogsByPetID(ctx context.Context, arg GetPetLogsByPetIDParams) ([]PetLog, error)
 	GetPetScheduleById(ctx context.Context, id int64) (PetSchedule, error)
 	GetProductByID(ctx context.Context, productID int64) (Product, error)
 <<<<<<< HEAD
@@ -392,6 +407,7 @@ type Querier interface {
 =======
 	GetServiceByID(ctx context.Context, id int64) (Service, error)
 	GetServices(ctx context.Context, arg GetServicesParams) ([]Service, error)
+<<<<<<< HEAD
 	GetTimeSlot(ctx context.Context, arg GetTimeSlotParams) (Timeslot, error)
 	// Khóa bản ghi để tránh race condition
 >>>>>>> b393bb9 (add service and add permission)
@@ -402,6 +418,12 @@ type Querier interface {
 	GetTreatmentByDiseaseId(ctx context.Context, arg GetTreatmentByDiseaseIdParams) ([]GetTreatmentByDiseaseIdRow, error)
 >>>>>>> 6a85052 (get treatment by disease)
 =======
+=======
+	GetTimeSlot(ctx context.Context, arg GetTimeSlotParams) (TimeSlot, error)
+	// Lock record to avoid race condition
+	GetTimeSlotById(ctx context.Context, id int64) (TimeSlot, error)
+	GetTimeSlotsByDoctorAndDate(ctx context.Context, arg GetTimeSlotsByDoctorAndDateParams) ([]TimeSlot, error)
+>>>>>>> 33fcf96 (Big update)
 	GetTreatment(ctx context.Context, id int64) (PetTreatment, error)
 	GetTreatmentByDiseaseId(ctx context.Context, arg GetTreatmentByDiseaseIdParams) ([]GetTreatmentByDiseaseIdRow, error)
 	GetTreatmentPhase(ctx context.Context, id int64) (TreatmentPhase, error)
@@ -419,10 +441,14 @@ type Querier interface {
 	GetUser(ctx context.Context, username string) (GetUserRow, error)
 	GetUserByEmail(ctx context.Context, email string) (User, error)
 	GetVaccinationByID(ctx context.Context, vaccinationid int64) (Vaccination, error)
+<<<<<<< HEAD
 	InsertDeviceToken(ctx context.Context, arg InsertDeviceTokenParams) (Devicetoken, error)
 <<<<<<< HEAD
 <<<<<<< HEAD
 >>>>>>> 0fb3f30 (user images)
+=======
+	InsertDeviceToken(ctx context.Context, arg InsertDeviceTokenParams) (DeviceToken, error)
+>>>>>>> 33fcf96 (Big update)
 	InsertDoctor(ctx context.Context, arg InsertDoctorParams) (Doctor, error)
 <<<<<<< HEAD
 	InsertProduct(ctx context.Context, arg InsertProductParams) (Product, error)
@@ -440,7 +466,6 @@ type Querier interface {
 	InsertDoctor(ctx context.Context, arg InsertDoctorParams) (Doctor, error)
 >>>>>>> 3003e08 (update sqlc)
 	InsertNotification(ctx context.Context, arg InsertNotificationParams) (Notification, error)
-	InsertPetLog(ctx context.Context, arg InsertPetLogParams) (PetLog, error)
 	InsertProduct(ctx context.Context, arg InsertProductParams) (Product, error)
 <<<<<<< HEAD
 	InsertTimeslot(ctx context.Context, arg InsertTimeslotParams) (Timeslot, error)
@@ -466,8 +491,12 @@ type Querier interface {
 >>>>>>> e9037c6 (update sqlc)
 	IsReadNotification(ctx context.Context, notificationid int64) error
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> 9fd7fc8 (feat: validate notification schema and APIs)
 =======
+=======
+	ListAllAppointments(ctx context.Context) ([]Appointment, error)
+>>>>>>> 33fcf96 (Big update)
 	ListMedicinesByPet(ctx context.Context, arg ListMedicinesByPetParams) ([]ListMedicinesByPetRow, error)
 >>>>>>> a415f25 (new data)
 	ListPetSchedulesByUsername(ctx context.Context, username string) ([]ListPetSchedulesByUsernameRow, error)
@@ -477,10 +506,14 @@ type Querier interface {
 	ListTreatmentsByPet(ctx context.Context, arg ListTreatmentsByPetParams) ([]PetTreatment, error)
 	ListVaccinationsByPetID(ctx context.Context, arg ListVaccinationsByPetIDParams) ([]Vaccination, error)
 	RemoveItemFromCart(ctx context.Context, arg RemoveItemFromCartParams) error
+<<<<<<< HEAD
 	SetPetInactive(ctx context.Context, arg SetPetInactiveParams) error
 <<<<<<< HEAD
 >>>>>>> 272832d (redis cache)
 =======
+=======
+	SetPetInactive(ctx context.Context, petid int64) error
+>>>>>>> 33fcf96 (Big update)
 	UpdateAllergy(ctx context.Context, arg UpdateAllergyParams) error
 >>>>>>> 3bf345d (happy new year)
 	UpdateAppointmentStatus(ctx context.Context, arg UpdateAppointmentStatusParams) error
@@ -490,9 +523,13 @@ type Querier interface {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	UpdateCartItemQuantity(ctx context.Context, arg UpdateCartItemQuantityParams) error
 	UpdateDoctor(ctx context.Context, arg UpdateDoctorParams) (Doctor, error)
 	UpdateFile(ctx context.Context, arg UpdateFileParams) (File, error)
+=======
+	UpdateCartItemQuantity(ctx context.Context, arg UpdateCartItemQuantityParams) error
+>>>>>>> 33fcf96 (Big update)
 	UpdateMedicalHistory(ctx context.Context, arg UpdateMedicalHistoryParams) error
 	UpdateMedicalRecord(ctx context.Context, id int64) error
 =======

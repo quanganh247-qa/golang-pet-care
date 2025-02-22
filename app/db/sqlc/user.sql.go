@@ -119,6 +119,7 @@ func (q *Queries) DeleteUser(ctx context.Context, id int64) error {
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 const getActiveDoctors = `-- name: GetActiveDoctors :many
 SELECT 
   d.id,
@@ -163,10 +164,19 @@ type GetActiveDoctorsRow struct {
 
 func (q *Queries) GetAllRole(ctx context.Context) ([]pgtype.Text, error) {
 	rows, err := q.db.Query(ctx, getAllRole)
+=======
+const getAllDoctors = `-- name: GetAllDoctors :many
+SELECT id, user_id, specialization, years_of_experience, education, certificate_number, bio, consultation_fee FROM Doctors WHERE is_active is true
+`
+
+func (q *Queries) GetAllDoctors(ctx context.Context) ([]Doctor, error) {
+	rows, err := q.db.Query(ctx, getAllDoctors)
+>>>>>>> 33fcf96 (Big update)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
+<<<<<<< HEAD
 	items := []pgtype.Text{}
 	for rows.Next() {
 		var role pgtype.Text
@@ -174,6 +184,24 @@ func (q *Queries) GetAllRole(ctx context.Context) ([]pgtype.Text, error) {
 			return nil, err
 		}
 		items = append(items, role)
+=======
+	items := []Doctor{}
+	for rows.Next() {
+		var i Doctor
+		if err := rows.Scan(
+			&i.ID,
+			&i.UserID,
+			&i.Specialization,
+			&i.YearsOfExperience,
+			&i.Education,
+			&i.CertificateNumber,
+			&i.Bio,
+			&i.ConsultationFee,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+>>>>>>> 33fcf96 (Big update)
 	}
 	if err := rows.Err(); err != nil {
 		return nil, err
@@ -181,8 +209,11 @@ func (q *Queries) GetAllRole(ctx context.Context) ([]pgtype.Text, error) {
 	return items, nil
 }
 
+<<<<<<< HEAD
 =======
 >>>>>>> 6f3ea8a (update sqlc)
+=======
+>>>>>>> 33fcf96 (Big update)
 const getAllUsers = `-- name: GetAllUsers :many
 <<<<<<< HEAD
 SELECT id, username, hashed_password, full_name, email, phone_number, address, data_image, original_image, role, status, created_at, is_verified_email, removed_at FROM users

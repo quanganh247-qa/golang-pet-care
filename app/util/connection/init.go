@@ -39,6 +39,7 @@ func Init(config util.Config) (*Connection, error) {
 		return nil, fmt.Errorf("can't create token maker: %w", err)
 	}
 
+<<<<<<< HEAD
 	// Configure connection pool with reasonable defaults
 	poolConfig, err := pgxpool.ParseConfig(config.DATABASE_URL)
 	if err != nil {
@@ -52,6 +53,10 @@ func Init(config util.Config) (*Connection, error) {
 	poolConfig.MaxConnIdleTime = 30 * time.Minute
 
 	connPool, err := pgxpool.NewWithConfig(context.Background(), poolConfig)
+=======
+	// Initialize database connection pool
+	connPool, err := pgxpool.New(context.Background(), config.DATABASE_URL)
+>>>>>>> 33fcf96 (Big update)
 	if err != nil {
 		return nil, fmt.Errorf("cannot connect to db: %w", err)
 	}

@@ -235,6 +235,9 @@ func (q *Queries) DeleteTreatmentPhase(ctx context.Context, id int64) error {
 
 const getActiveTreatments = `-- name: GetActiveTreatments :many
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 33fcf96 (Big update)
 SELECT t.id, pets.name AS pet_name, d.name AS disease, t.start_date, t.end_date, t.status
 FROM pet_treatments t
 JOIN pets ON t.pet_id = pets.petid

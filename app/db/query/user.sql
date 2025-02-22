@@ -286,6 +286,7 @@ JOIN
     users u ON d.user_id = u.id
 ORDER BY 
 <<<<<<< HEAD
+<<<<<<< HEAD
     u.full_name;
 >>>>>>> e30b070 (Get list appoinment by user)
 =======
@@ -311,3 +312,10 @@ ORDER BY
 =======
     u.full_name;
 >>>>>>> 685da65 (latest update)
+=======
+    u.full_name;
+
+
+-- name: GetAllDoctors :many
+SELECT * FROM Doctors WHERE is_active is true;
+>>>>>>> 33fcf96 (Big update)

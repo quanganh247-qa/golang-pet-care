@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 
 
@@ -763,6 +764,9 @@ CREATE INDEX idx_shifts_start_time ON public.shifts (start_time);
 CREATE INDEX idx_shifts_end_time ON public.shifts (end_time);
 =======
 -- Create users table with proper constraints
+=======
+-- 1. Core User Management Tables
+>>>>>>> 33fcf96 (Big update)
 CREATE TABLE users (
     id BIGSERIAL NOT NULL,
     username VARCHAR NOT NULL,
@@ -781,7 +785,6 @@ CREATE TABLE users (
     CONSTRAINT users_username_key UNIQUE (username)
 );
 
-
 CREATE TABLE verify_emails (
   id BIGSERIAL NOT NULL,
   username varchar NOT NULL,
@@ -793,7 +796,65 @@ CREATE TABLE verify_emails (
   PRIMARY KEY (id)
 );
 
-CREATE TABLE Pet (
+CREATE TABLE device_tokens (
+  id BIGSERIAL PRIMARY KEY,
+  username VARCHAR NOT NULL,
+  token VARCHAR NOT NULL UNIQUE,
+  device_type VARCHAR(50),
+  created_at TIMESTAMP NOT NULL DEFAULT now(),
+  last_used_at TIMESTAMP,
+  expired_at TIMESTAMP,
+  CONSTRAINT fk_device_tokens_username 
+      FOREIGN KEY (username) 
+      REFERENCES users(username) 
+      ON DELETE CASCADE
+);
+
+CREATE TABLE notifications (
+  notificationID BIGSERIAL PRIMARY KEY,
+  username varchar NOT NULL,
+  title VARCHAR(100) NOT NULL,
+  description TEXT,
+  datetime TIMESTAMP NOT NULL,
+  is_read BOOLEAN DEFAULT false
+);
+
+-- 2. Medical Staff Tables
+CREATE TABLE doctors (
+  id BIGSERIAL PRIMARY KEY,
+  user_id BIGINT NOT NULL,
+  specialization VARCHAR(100),
+  years_of_experience INT,
+  education TEXT,
+  certificate_number VARCHAR(50),
+  bio TEXT,
+  consultation_fee FLOAT8
+);
+
+CREATE TABLE departments (
+    id BIGSERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    description TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE time_slots (
+    id BIGSERIAL PRIMARY KEY,
+    doctor_id INT NOT NULL,
+    date DATE NOT NULL,
+    start_time TIME NOT NULL,
+    end_time TIME NOT NULL,
+    max_patients INT NULL,
+    booked_patients INT DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (doctor_id) REFERENCES doctors(id),
+    CONSTRAINT unique_slot UNIQUE (doctor_id, date, start_time)
+);
+
+-- 3. Pet Management Tables
+CREATE TABLE pets (
   petid BIGSERIAL NOT NULL,
   name varchar(100) NOT NULL,
   type varchar(50) NOT NULL,
@@ -812,8 +873,16 @@ CREATE TABLE Pet (
   PRIMARY KEY (petid)
 );
 
+CREATE TABLE pet_logs (
+    log_id BIGSERIAL PRIMARY KEY,
+	petid int8 NOT NULL,
+	datetime timestamp NULL,
+	title varchar NULL,
+	notes text NULL,
+	CONSTRAINT newtable_pet_fk FOREIGN KEY (petid) REFERENCES pets(petid)
+);
 
-CREATE TABLE Vaccination (
+CREATE TABLE vaccinations (
   vaccinationID BIGSERIAL PRIMARY KEY,
   petID BIGINT,
   vaccineName VARCHAR(100) NOT NULL,
@@ -826,7 +895,7 @@ CREATE TABLE Vaccination (
 
 CREATE TABLE pet_schedule (
     id BIGSERIAL PRIMARY KEY,
-    pet_id BIGINT REFERENCES Pet(petid),
+    pet_id BIGINT REFERENCES pets(petid),
     title VARCHAR(255),
     reminder_datetime timestamp,
     event_repeat VARCHAR(50),
@@ -838,84 +907,39 @@ CREATE TABLE pet_schedule (
     removedat TIMESTAMP DEFAULT NULL
 );
 
+-- 4. Medical Records & Treatment Tables
+CREATE TABLE medical_records (
+	id bigserial NOT NULL,
+	pet_id bigint NULL,
+	created_at timestamp NULL,
+	updated_at timestamp NULL,
+	CONSTRAINT medical_records_pk PRIMARY KEY (id)
+);
 
-
-
-CREATE TABLE services (
-	id bigserial PRIMARY KEY,
-	"name" varchar(255) NULL,
-	description text NULL,
-	duration int2 NULL,
-	"cost" float8 NULL,
-	category varchar(255) NULL,
+CREATE TABLE medical_history (
+	id bigserial NOT NULL,
+	medical_record_id bigint NULL,
+	"condition" varchar NULL,
+	diagnosis_date timestamp NULL,
 	notes text NULL,
-	created_at timestamp DEFAULT now() NULL,
-	updated_at timestamp NULL
+  treatment int8 NULL,
+	created_at timestamp NULL,
+	updated_at timestamp NULL,
+	CONSTRAINT medical_history_pk PRIMARY KEY (id)
 );
 
-
-CREATE TABLE Appointment (
-  appointment_id BIGSERIAL PRIMARY KEY,
-  petid BIGINT,
-  username VARCHAR,
-  doctor_id BIGINT,
-  service_id BIGINT,
-  date timestamp DEFAULT (now()),
-  notes TEXT,
-  reminder_send BOOLEAN DEFAULT false,
-  time_slot_id BIGINT,
-  payment_status VARCHAR(20),
-  created_at timestamp DEFAULT (now())
+CREATE TABLE allergies (
+	id bigserial NOT NULL,
+	medical_record_id bigint NULL,
+	allergen jsonb NULL,
+	severity varchar NULL,
+	reaction jsonb NULL,
+	notes text NULL,
+	created_at timestamp NULL,
+	updated_at timestamp NULL,
+	CONSTRAINT allergies_pk PRIMARY KEY (id)
 );
 
-CREATE TABLE Checkout (
-  checkout_id BIGSERIAL PRIMARY KEY,
-  petid BIGINT,
-  doctor_id BIGINT,
-  date timestamp DEFAULT (now()),
-  total_tmount float8 NOT NULL,
-  payment_status VARCHAR(20),
-  payment_method VARCHAR(50),
-  notes TEXT
-);
-
-CREATE TABLE CheckoutService (
-  checkoutService_ID BIGSERIAL PRIMARY KEY,
-  checkoutID BIGINT,
-  serviceID BIGINT,
-  quantity INT DEFAULT 1,
-  unitPrice float8,
-  subtotal float8
-);
-
-
--- Create device tokens table with proper foreign key reference
-CREATE TABLE DeviceTokens (
-  id BIGSERIAL PRIMARY KEY,
-  username VARCHAR NOT NULL,
-  token VARCHAR NOT NULL UNIQUE,
-  device_type VARCHAR(50),
-  created_at TIMESTAMP NOT NULL DEFAULT now(),
-  last_used_at TIMESTAMP,
-  expired_at TIMESTAMP,
-  CONSTRAINT fk_device_tokens_username 
-      FOREIGN KEY (username) 
-      REFERENCES users(username) 
-      ON DELETE CASCADE
-);
-
--- Create notifications table with necessary fields
-CREATE TABLE notifications (
-  notificationID BIGSERIAL PRIMARY KEY,
-  username varchar NOT NULL,
-  title VARCHAR(100) NOT NULL,
-  description TEXT,
-  datetime TIMESTAMP NOT NULL,
-  is_read BOOLEAN DEFAULT false
-);
-
-
--- Create diseases table
 CREATE TABLE diseases (
     id BIGSERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
@@ -926,6 +950,7 @@ CREATE TABLE diseases (
 );
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 -- -- Create indexes for better query performance
 -- CREATE INDEX idx_device_tokens_user ON DeviceTokens(user_id, username);
 -- CREATE INDEX idx_users_username ON users(username);
@@ -933,6 +958,8 @@ CREATE TABLE diseases (
 >>>>>>> 0fb3f30 (user images)
 =======
 -- Create medicines table
+=======
+>>>>>>> 33fcf96 (Big update)
 CREATE TABLE medicines (
     id BIGSERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
@@ -950,15 +977,23 @@ CREATE TABLE medicines (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
--- Create junction table for many-to-many relationship
 CREATE TABLE disease_medicines (
     disease_id BIGINT REFERENCES diseases(id),
     medicine_id BIGINT REFERENCES medicines(id),
     PRIMARY KEY (disease_id, medicine_id)
 );
 
+CREATE TABLE pet_treatments (
+    id BIGSERIAL PRIMARY KEY,
+    pet_id BIGINT REFERENCES pets(petid),
+    disease_id BIGINT REFERENCES diseases(id),
+    start_date DATE,
+    end_date DATE,
+    status VARCHAR(50),  -- CHECK (status IN ('ongoing', 'completed', 'paused', 'cancelled')),
+    notes TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
 
--- 2. Query chi tiết hơn với thông tin phác đồ điều trị theo từng giai đoạn
 CREATE TABLE treatment_phases (
     id BIGSERIAL PRIMARY KEY,
     treatment_id BIGINT REFERENCES pet_treatments(id),
@@ -979,51 +1014,110 @@ CREATE TABLE phase_medicines (
     created_at timestamptz NULL,
     PRIMARY KEY (phase_id, medicine_id)
 );
--- 4. Query để lấy lịch sử điều trị của một thú cưng
-CREATE TABLE pet_treatments (
-    id BIGSERIAL PRIMARY KEY,
-    pet_id BIGINT REFERENCES Pet(petid),
-    disease_id BIGINT REFERENCES diseases(id),
-    start_date DATE,
-    end_date DATE,
-    status VARCHAR(50),  -- CHECK (status IN ('ongoing', 'completed', 'paused', 'cancelled')),
-    notes TEXT,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-);
 
-
-
-CREATE TABLE pet_logs (
-    log_id BIGSERIAL PRIMARY KEY,
-	petid int8 NOT NULL,
-	datetime timestamp NULL,
-	title varchar NULL,
+-- 5. Services and Appointments
+CREATE TABLE services (
+	id bigserial PRIMARY KEY,
+	"name" varchar(255) NULL,
+	description text NULL,
+	duration int2 NULL,
+	"cost" float8 NULL,
+	category varchar(255) NULL,
 	notes text NULL,
-	CONSTRAINT newtable_pet_fk FOREIGN KEY (petid) REFERENCES pet(petid)
+	created_at timestamp DEFAULT now() NULL,
+	updated_at timestamp NULL
 );
 
+CREATE TABLE appointments (
+  appointment_id BIGSERIAL PRIMARY KEY,
+  petid BIGINT,
+  username VARCHAR,
+  doctor_id BIGINT,
+  service_id BIGINT,
+  date timestamp DEFAULT (now()),
+  notes TEXT,
+  reminder_send BOOLEAN DEFAULT false,
+  time_slot_id BIGINT,
+  payment_status VARCHAR(20),
+  created_at timestamp DEFAULT (now())
+);
 
+-- 6. Billing and Payments
+CREATE TABLE checkouts (
+  checkout_id BIGSERIAL PRIMARY KEY,
+  petid BIGINT,
+  doctor_id BIGINT,
+  date timestamp DEFAULT (now()),
+  total_tmount float8 NOT NULL,
+  payment_status VARCHAR(20),
+  payment_method VARCHAR(50),
+  notes TEXT
+);
 
-ALTER TABLE Pet ADD CONSTRAINT pet_users_fk FOREIGN KEY (username) REFERENCES users (username);
+CREATE TABLE checkout_services (
+  checkoutService_ID BIGSERIAL PRIMARY KEY,
+  checkoutID BIGINT,
+  serviceID BIGINT,
+  quantity INT DEFAULT 1,
+  unitPrice float8,
+  subtotal float8
+);
 
-ALTER TABLE Vaccination ADD CONSTRAINT vaccination_pet_fk FOREIGN KEY (petID) REFERENCES Pet (petid);
+-- 7. E-commerce Tables
+CREATE TABLE products (
+    product_id BIGSERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    description TEXT,
+    price float8 NOT NULL,
+    stock_quantity INT DEFAULT 0,
+    category VARCHAR(100),
+    data_image BYTEA,
+    original_image VARCHAR(255),
+    created_at TIMESTAMP DEFAULT now(),
+    is_available BOOLEAN DEFAULT true,
+    removed_at TIMESTAMP DEFAULT NULL
+);
 
-ALTER TABLE Appointment ADD CONSTRAINT appointment_pet_fk FOREIGN KEY (petid) REFERENCES Pet (petid);
+CREATE TABLE carts (
+    id BIGSERIAL PRIMARY KEY,
+    user_id BIGINT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
 
-ALTER TABLE Appointment ADD CONSTRAINT appointment_service_fk FOREIGN KEY (service_id) REFERENCES Service (serviceID);
+CREATE TABLE cart_items (
+    id BIGSERIAL PRIMARY KEY,
+    cart_id BIGINT REFERENCES carts(id),
+    product_id BIGINT,
+    quantity INT DEFAULT 1,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
 
-ALTER TABLE CheckoutService ADD CONSTRAINT cs_checkout_fk FOREIGN KEY (checkoutID) REFERENCES Checkout (checkout_id);
+CREATE TABLE orders (
+    id BIGSERIAL PRIMARY KEY,
+    user_id BIGINT NOT NULL, -- Liên kết tới bảng Users
+    order_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- Ngày đặt hàng
+    total_amount FLOAT8 NOT NULL, -- Tổng tiền của đơn hàng
+    payment_status VARCHAR(20) DEFAULT 'pending', -- Trạng thái thanh toán (pending, paid, canceled)
+    cart_items JSONB,
+    shipping_address VARCHAR(255), -- Địa chỉ giao hàng
+    notes TEXT, -- Ghi chú khách hàng
+    FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
+);
 
-ALTER TABLE CheckoutService ADD CONSTRAINT cs_service_fk FOREIGN KEY (serviceID) REFERENCES Service (serviceID);
+-- 8. Foreign Key Constraints
+ALTER TABLE pets ADD CONSTRAINT pet_users_fk FOREIGN KEY (username) REFERENCES users (username);
 
-ALTER TABLE Doctors ADD CONSTRAINT fk_doctor_user FOREIGN KEY (user_id) REFERENCES users (id);
+ALTER TABLE vaccinations ADD CONSTRAINT vaccination_pet_fk FOREIGN KEY (petID) REFERENCES pets (petid);
 
-ALTER TABLE DoctorSchedules ADD CONSTRAINT fk_schedule_doctor FOREIGN KEY (doctor_id) REFERENCES Doctors (id);
+ALTER TABLE appointments ADD CONSTRAINT appointment_pet_fk FOREIGN KEY (petid) REFERENCES pets (petid);
 
+ALTER TABLE appointments ADD CONSTRAINT appointment_service_fk FOREIGN KEY (service_id) REFERENCES services (id);
 
--- Index for users table
-CREATE INDEX idx_users_created_at ON users (created_at);
+ALTER TABLE checkout_services ADD CONSTRAINT cs_checkout_fk FOREIGN KEY (checkoutID) REFERENCES checkouts (checkout_id);
 
+<<<<<<< HEAD
 -- Index for Pet table
 CREATE INDEX idx_pet_username ON Pet (username);
 CREATE INDEX idx_pet_is_active ON Pet (is_active);
@@ -1336,3 +1430,8 @@ VALUES
 =======
 
 >>>>>>> b0fe977 (place order and make payment)
+=======
+ALTER TABLE checkout_services ADD CONSTRAINT cs_service_fk FOREIGN KEY (serviceID) REFERENCES services (id);
+
+ALTER TABLE doctors ADD CONSTRAINT fk_doctor_user FOREIGN KEY (user_id) REFERENCES users (id);
+>>>>>>> 33fcf96 (Big update)
