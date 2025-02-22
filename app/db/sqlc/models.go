@@ -40,13 +40,13 @@ type Cart struct {
 	UpdatedAt pgtype.Timestamp `json:"updated_at"`
 }
 
-type Cartitem struct {
-	ID         int64         `json:"id"`
-	CartID     int64         `json:"cart_id"`
-	ProductID  int64         `json:"product_id"`
-	Quantity   pgtype.Int4   `json:"quantity"`
-	UnitPrice  float64       `json:"unit_price"`
-	TotalPrice pgtype.Float8 `json:"total_price"`
+type CartItem struct {
+	ID        int64            `json:"id"`
+	CartID    pgtype.Int8      `json:"cart_id"`
+	ProductID pgtype.Int8      `json:"product_id"`
+	Quantity  pgtype.Int4      `json:"quantity"`
+	CreatedAt pgtype.Timestamp `json:"created_at"`
+	UpdatedAt pgtype.Timestamp `json:"updated_at"`
 }
 
 type Checkout struct {
@@ -60,7 +60,7 @@ type Checkout struct {
 	Notes         pgtype.Text      `json:"notes"`
 }
 
-type Checkoutservice struct {
+type CheckoutService struct {
 	CheckoutserviceID int64         `json:"checkoutservice_id"`
 	Checkoutid        pgtype.Int8   `json:"checkoutid"`
 	Serviceid         pgtype.Int8   `json:"serviceid"`
@@ -77,7 +77,7 @@ type Department struct {
 	UpdatedAt   pgtype.Timestamp `json:"updated_at"`
 }
 
-type Devicetoken struct {
+type DeviceToken struct {
 	ID         int64            `json:"id"`
 	Username   string           `json:"username"`
 	Token      string           `json:"token"`
@@ -254,7 +254,7 @@ type Service struct {
 	UpdatedAt   pgtype.Timestamp `json:"updated_at"`
 }
 
-type Timeslot struct {
+type TimeSlot struct {
 	ID             int64            `json:"id"`
 	DoctorID       int32            `json:"doctor_id"`
 	Date           pgtype.Date      `json:"date"`

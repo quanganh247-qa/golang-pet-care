@@ -100,3 +100,7 @@ JOIN
     users u ON d.user_id = u.id
 ORDER BY 
     u.full_name;
+
+
+-- name: GetAllDoctors :many
+SELECT * FROM Doctors WHERE is_active is true;

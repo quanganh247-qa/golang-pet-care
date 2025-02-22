@@ -166,11 +166,11 @@ func (q *Queries) DeleteTreatmentPhase(ctx context.Context, id int64) error {
 }
 
 const getActiveTreatments = `-- name: GetActiveTreatments :many
-SELECT t.id, p.name AS pet_name, d.name AS disease, t.start_date, t.end_date, t.status
+SELECT t.id, pets.name AS pet_name, d.name AS disease, t.start_date, t.end_date, t.status
 FROM pet_treatments t
-JOIN pet p ON t.pet_id = p.petid
+JOIN pets ON t.pet_id = pets.petid
 JOIN diseases d ON t.disease_id = d.id
-WHERE t.status = 'ongoing' AND p.petid = $1 LIMIT $2 OFFSET $3
+WHERE t.status = 'ongoing' AND pets.petid = $1 LIMIT $2 OFFSET $3
 `
 
 type GetActiveTreatmentsParams struct {
