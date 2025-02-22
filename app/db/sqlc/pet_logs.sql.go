@@ -14,6 +14,9 @@ import (
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 33fcf96 (Big update)
 =======
 >>>>>>> 33fcf96 (Big update)
 const createPetLog = `-- name: CreatePetLog :one
@@ -96,6 +99,7 @@ FROM pet_logs
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 LEFT JOIN pets ON pet_logs.petid = pets.petid
 WHERE pet_logs.petid = $1 AND pet_logs.log_id = $2 AND pets.is_active = true 
 ORDER BY pet_logs.datetime DESC
@@ -112,6 +116,11 @@ ORDER BY pet_logs.datetime DESC
 LEFT JOIN pet ON pet_logs.petid = pet.petid
 WHERE pet_logs.petid = $1 AND pet_logs.log_id = $2 AND pet.is_active = true
 >>>>>>> 7e616af (add pet log schema)
+=======
+LEFT JOIN pets ON pet_logs.petid = pets.petid
+WHERE pet_logs.petid = $1 AND pet_logs.log_id = $2 AND pets.is_active = true 
+ORDER BY pet_logs.datetime DESC
+>>>>>>> 33fcf96 (Big update)
 `
 
 type GetPetLogByIDParams struct {
@@ -139,6 +148,7 @@ func (q *Queries) GetPetLogByID(ctx context.Context, arg GetPetLogByIDParams) (G
 }
 
 const getPetLogsByPetID = `-- name: GetPetLogsByPetID :many
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -172,6 +182,11 @@ ORDER BY datetime DESC LIMIT $2 OFFSET $3
 >>>>>>> 33fcf96 (Big update)
 =======
 >>>>>>> 7e616af (add pet log schema)
+=======
+SELECT log_id, petid, datetime, title, notes FROM pet_logs
+WHERE petid = $1
+ORDER BY datetime DESC LIMIT $2 OFFSET $3
+>>>>>>> 33fcf96 (Big update)
 `
 
 type GetPetLogsByPetIDParams struct {
@@ -180,6 +195,7 @@ type GetPetLogsByPetIDParams struct {
 	Offset int32 `json:"offset"`
 }
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -209,6 +225,9 @@ func (q *Queries) GetPetLogsByPetID(ctx context.Context, arg GetPetLogsByPetIDPa
 
 func (q *Queries) GetPetLogsByPetID(ctx context.Context, arg GetPetLogsByPetIDParams) ([]GetPetLogsByPetIDRow, error) {
 >>>>>>> 7e616af (add pet log schema)
+=======
+func (q *Queries) GetPetLogsByPetID(ctx context.Context, arg GetPetLogsByPetIDParams) ([]PetLog, error) {
+>>>>>>> 33fcf96 (Big update)
 	rows, err := q.db.Query(ctx, getPetLogsByPetID, arg.Petid, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
@@ -217,6 +236,7 @@ func (q *Queries) GetPetLogsByPetID(ctx context.Context, arg GetPetLogsByPetIDPa
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	items := []PetLog{}
 	for rows.Next() {
 		var i PetLog
@@ -237,15 +257,21 @@ func (q *Queries) GetPetLogsByPetID(ctx context.Context, arg GetPetLogsByPetIDPa
 >>>>>>> 33fcf96 (Big update)
 =======
 	items := []GetPetLogsByPetIDRow{}
+=======
+	items := []PetLog{}
+>>>>>>> 33fcf96 (Big update)
 	for rows.Next() {
-		var i GetPetLogsByPetIDRow
+		var i PetLog
 		if err := rows.Scan(
+<<<<<<< HEAD
 >>>>>>> 7e616af (add pet log schema)
+=======
+			&i.LogID,
+>>>>>>> 33fcf96 (Big update)
 			&i.Petid,
 			&i.Datetime,
 			&i.Title,
 			&i.Notes,
-			&i.LogID,
 		); err != nil {
 			return nil, err
 		}
@@ -257,6 +283,7 @@ func (q *Queries) GetPetLogsByPetID(ctx context.Context, arg GetPetLogsByPetIDPa
 	return items, nil
 }
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -331,9 +358,13 @@ func (q *Queries) UpdatePetLog(ctx context.Context, arg UpdatePetLogParams) erro
 	_, err := q.db.Exec(ctx, updatePetLog,
 		arg.LogID,
 =======
+=======
+>>>>>>> 33fcf96 (Big update)
 const updatePetLog = `-- name: UpdatePetLog :exec
 UPDATE pet_logs
-SET title = $2, notes = $3
+SET 
+    title = $2,
+    notes = $3
 WHERE log_id = $1
 `
 

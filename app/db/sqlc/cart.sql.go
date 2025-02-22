@@ -19,6 +19,7 @@ const addItemToCart = `-- name: AddItemToCart :one
 INSERT INTO cart_items (
     cart_id,
     product_id,
+<<<<<<< HEAD
     unit_price,
     quantity
 <<<<<<< HEAD
@@ -412,34 +413,60 @@ WHERE c.user_id = $1
 GROUP BY c.id, c.user_id, c.created_at, c.updated_at
 >>>>>>> dc47646 (Optimize SQL query)
 =======
+=======
+    quantity,
+    created_at,
+    updated_at
+) VALUES (
+    $1, $2, $3,
+    CURRENT_TIMESTAMP,
+    CURRENT_TIMESTAMP
+) RETURNING id, cart_id, product_id, quantity, created_at, updated_at
+`
+
+type AddItemToCartParams struct {
+	CartID    pgtype.Int8 `json:"cart_id"`
+	ProductID pgtype.Int8 `json:"product_id"`
+>>>>>>> 33fcf96 (Big update)
 	Quantity  pgtype.Int4 `json:"quantity"`
 }
 
-func (q *Queries) AddItemToCart(ctx context.Context, arg AddItemToCartParams) (Cartitem, error) {
+func (q *Queries) AddItemToCart(ctx context.Context, arg AddItemToCartParams) (CartItem, error) {
 	row := q.db.QueryRow(ctx, addItemToCart, arg.CartID, arg.ProductID, arg.Quantity)
-	var i Cartitem
+	var i CartItem
 	err := row.Scan(
 		&i.ID,
 		&i.CartID,
 		&i.ProductID,
 		&i.Quantity,
-		&i.UnitPrice,
-		&i.TotalPrice,
+		&i.CreatedAt,
+		&i.UpdatedAt,
 	)
 	return i, err
 }
 
 const createCartForUser = `-- name: CreateCartForUser :one
-INSERT INTO Cart (user_id)
-VALUES ($1)
-RETURNING id AS cart_id
+INSERT INTO carts (
+    user_id,
+    created_at,
+    updated_at
+) VALUES (
+    $1,
+    CURRENT_TIMESTAMP,
+    CURRENT_TIMESTAMP
+) RETURNING id, user_id, created_at, updated_at
 `
 
-func (q *Queries) CreateCartForUser(ctx context.Context, userID int64) (int64, error) {
+func (q *Queries) CreateCartForUser(ctx context.Context, userID int64) (Cart, error) {
 	row := q.db.QueryRow(ctx, createCartForUser, userID)
-	var cart_id int64
-	err := row.Scan(&cart_id)
-	return cart_id, err
+	var i Cart
+	err := row.Scan(
+		&i.ID,
+		&i.UserID,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
 }
 
 const createOrder = `-- name: CreateOrder :one
@@ -479,15 +506,15 @@ func (q *Queries) CreateOrder(ctx context.Context, arg CreateOrderParams) (Order
 }
 
 const decreaseItemQuantity = `-- name: DecreaseItemQuantity :exec
-UPDATE CartItem
+UPDATE cart_items
 SET quantity = quantity - $3
 WHERE cart_id = $1 AND product_id = $2 AND quantity > $3
-RETURNING id, cart_id, product_id, quantity, unit_price, total_price
+RETURNING id, cart_id, product_id, quantity, created_at, updated_at
 `
 
 type DecreaseItemQuantityParams struct {
-	CartID    int64       `json:"cart_id"`
-	ProductID int64       `json:"product_id"`
+	CartID    pgtype.Int8 `json:"cart_id"`
+	ProductID pgtype.Int8 `json:"product_id"`
 	Quantity  pgtype.Int4 `json:"quantity"`
 }
 
@@ -498,7 +525,7 @@ func (q *Queries) DecreaseItemQuantity(ctx context.Context, arg DecreaseItemQuan
 
 const getCartByUserId = `-- name: GetCartByUserId :many
 SELECT id, user_id, created_at, updated_at 
-FROM Cart
+FROM carts
 WHERE user_id = $1
 >>>>>>> c449ffc (feat: cart api)
 `
@@ -573,14 +600,17 @@ type GetCartItemsRow struct {
 
 const getCartItems = `-- name: GetCartItems :many
 SELECT 
-    cartitem.id, cartitem.cart_id, cartitem.product_id, cartitem.quantity, cartitem.unit_price, cartitem.total_price,
-    Products.name AS product_name
-FROM CartItem
-JOIN Products ON CartItem.product_id = Products.product_id
-WHERE CartItem.cart_id = $1
+    ci.id, ci.cart_id, ci.product_id, ci.quantity, ci.created_at, ci.updated_at,
+    p.name as product_name,
+    p.price as unit_price,
+    (p.price * ci.quantity) as total_price
+FROM cart_items ci
+JOIN products p ON ci.product_id = p.product_id
+WHERE ci.cart_id = $1
 `
 
 type GetCartItemsRow struct {
+<<<<<<< HEAD
 >>>>>>> 21608b5 (cart and order api)
 	ID          int64         `json:"id"`
 	CartID      int64         `json:"cart_id"`
@@ -592,6 +622,8 @@ type GetCartItemsRow struct {
 <<<<<<< HEAD
 >>>>>>> 21608b5 (cart and order api)
 =======
+=======
+>>>>>>> 33fcf96 (Big update)
 	ID          int64            `json:"id"`
 	CartID      pgtype.Int8      `json:"cart_id"`
 	ProductID   pgtype.Int8      `json:"product_id"`
@@ -601,6 +633,7 @@ type GetCartItemsRow struct {
 	ProductName string           `json:"product_name"`
 	UnitPrice   float64          `json:"unit_price"`
 	TotalPrice  int32            `json:"total_price"`
+<<<<<<< HEAD
 >>>>>>> 33fcf96 (Big update)
 =======
 	ID           int64         `json:"id"`
@@ -615,9 +648,11 @@ type GetCartItemsRow struct {
 >>>>>>> ada3717 (Docker file)
 =======
 >>>>>>> 21608b5 (cart and order api)
+=======
+>>>>>>> 33fcf96 (Big update)
 }
 
-func (q *Queries) GetCartItems(ctx context.Context, cartID int64) ([]GetCartItemsRow, error) {
+func (q *Queries) GetCartItems(ctx context.Context, cartID pgtype.Int8) ([]GetCartItemsRow, error) {
 	rows, err := q.db.Query(ctx, getCartItems, cartID)
 	if err != nil {
 		return nil, err
@@ -631,8 +666,12 @@ func (q *Queries) GetCartItems(ctx context.Context, cartID int64) ([]GetCartItem
 			&i.CartID,
 			&i.ProductID,
 			&i.Quantity,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.ProductName,
 			&i.UnitPrice,
 			&i.TotalPrice,
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -709,6 +748,8 @@ func (q *Queries) GetCartItemsByUserId(ctx context.Context, userID int64) ([]Get
 =======
 			&i.ProductName,
 >>>>>>> 21608b5 (cart and order api)
+=======
+>>>>>>> 33fcf96 (Big update)
 		); err != nil {
 			return nil, err
 		}
@@ -725,6 +766,7 @@ SELECT SUM(total_price)::FLOAT8
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 FROM cart_items
 =======
 FROM CartItem
@@ -735,10 +777,13 @@ FROM cart_items
 =======
 FROM CartItem
 >>>>>>> 21608b5 (cart and order api)
+=======
+FROM cart_items
+>>>>>>> 33fcf96 (Big update)
 WHERE cart_id = $1
 `
 
-func (q *Queries) GetCartTotal(ctx context.Context, cartID int64) (float64, error) {
+func (q *Queries) GetCartTotal(ctx context.Context, cartID pgtype.Int8) (float64, error) {
 	row := q.db.QueryRow(ctx, getCartTotal, cartID)
 	var column_1 float64
 	err := row.Scan(&column_1)
@@ -828,14 +873,18 @@ DELETE FROM cart_items
 >>>>>>> 33fcf96 (Big update)
 =======
 const removeItemFromCart = `-- name: RemoveItemFromCart :exec
+<<<<<<< HEAD
 DELETE FROM CartItem
 >>>>>>> 4a16bfc (remove item in cart)
+=======
+DELETE FROM cart_items 
+>>>>>>> 33fcf96 (Big update)
 WHERE cart_id = $1 AND product_id = $2
 `
 
 type RemoveItemFromCartParams struct {
-	CartID    int64 `json:"cart_id"`
-	ProductID int64 `json:"product_id"`
+	CartID    pgtype.Int8 `json:"cart_id"`
+	ProductID pgtype.Int8 `json:"product_id"`
 }
 
 func (q *Queries) RemoveItemFromCart(ctx context.Context, arg RemoveItemFromCartParams) error {
@@ -846,6 +895,9 @@ func (q *Queries) RemoveItemFromCart(ctx context.Context, arg RemoveItemFromCart
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 33fcf96 (Big update)
 =======
 >>>>>>> 33fcf96 (Big update)
 const updateCartItemQuantity = `-- name: UpdateCartItemQuantity :exec
@@ -859,6 +911,7 @@ WHERE cart_id = $1 AND product_id = $2
 type UpdateCartItemQuantityParams struct {
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	CartID    int64       `json:"cart_id"`
 	ProductID int64       `json:"product_id"`
 =======
@@ -869,6 +922,10 @@ type UpdateCartItemQuantityParams struct {
 	CartID    int64       `json:"cart_id"`
 	ProductID int64       `json:"product_id"`
 >>>>>>> ada3717 (Docker file)
+=======
+	CartID    pgtype.Int8 `json:"cart_id"`
+	ProductID pgtype.Int8 `json:"product_id"`
+>>>>>>> 33fcf96 (Big update)
 	Quantity  pgtype.Int4 `json:"quantity"`
 }
 
@@ -877,6 +934,7 @@ func (q *Queries) UpdateCartItemQuantity(ctx context.Context, arg UpdateCartItem
 	return err
 }
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 =======
 >>>>>>> b0fe977 (place order and make payment)
@@ -888,6 +946,8 @@ func (q *Queries) UpdateCartItemQuantity(ctx context.Context, arg UpdateCartItem
 >>>>>>> b0fe977 (place order and make payment)
 =======
 >>>>>>> 4a16bfc (remove item in cart)
+=======
+>>>>>>> 33fcf96 (Big update)
 const updateOrderPaymentStatus = `-- name: UpdateOrderPaymentStatus :one
 UPDATE Orders
 SET payment_status = 'paid'

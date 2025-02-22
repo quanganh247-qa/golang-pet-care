@@ -372,6 +372,7 @@ const getActiveTreatments = `-- name: GetActiveTreatments :many
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> 33fcf96 (Big update)
 SELECT t.id, pets.name AS pet_name, d.name AS disease, t.start_date, t.end_date, t.status
@@ -391,9 +392,13 @@ type GetActiveTreatmentsParams struct {
 =======
 >>>>>>> 3bf345d (happy new year)
 SELECT t.id, p.name AS pet_name, d.name AS disease, t.start_date, t.end_date, t.status
+=======
+SELECT t.id, pets.name AS pet_name, d.name AS disease, t.start_date, t.end_date, t.status
+>>>>>>> 33fcf96 (Big update)
 FROM pet_treatments t
-JOIN pet p ON t.pet_id = p.petid
+JOIN pets ON t.pet_id = pets.petid
 JOIN diseases d ON t.disease_id = d.id
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 WHERE t.status = 'ongoing' AND p.petid = $1 LIMIT $2 OFFSET $3
@@ -416,6 +421,9 @@ WHERE t.status = 'ongoing' AND p.petid
 >>>>>>> 3bf345d (happy new year)
 =======
 WHERE t.status = 'ongoing' AND p.petid = $1 LIMIT $2 OFFSET $3
+=======
+WHERE t.status = 'ongoing' AND pets.petid = $1 LIMIT $2 OFFSET $3
+>>>>>>> 33fcf96 (Big update)
 `
 
 type GetActiveTreatmentsParams struct {

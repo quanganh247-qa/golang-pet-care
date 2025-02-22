@@ -197,6 +197,7 @@ func (q *Queries) DeleteUser(ctx context.Context, id int64) error {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> 1f24c18 (feat: OTP with redis)
 const getActiveDoctors = `-- name: GetActiveDoctors :many
@@ -244,12 +245,15 @@ type GetActiveDoctorsRow struct {
 func (q *Queries) GetAllRole(ctx context.Context) ([]pgtype.Text, error) {
 	rows, err := q.db.Query(ctx, getAllRole)
 =======
+=======
+>>>>>>> 33fcf96 (Big update)
 const getAllDoctors = `-- name: GetAllDoctors :many
 SELECT id, user_id, specialization, years_of_experience, education, certificate_number, bio, consultation_fee FROM Doctors WHERE is_active is true
 `
 
 func (q *Queries) GetAllDoctors(ctx context.Context) ([]Doctor, error) {
 	rows, err := q.db.Query(ctx, getAllDoctors)
+<<<<<<< HEAD
 >>>>>>> 33fcf96 (Big update)
 =======
 const getAllRole = `-- name: GetAllRole :many
@@ -259,10 +263,13 @@ SELECT distinct (role) FROM users
 func (q *Queries) GetAllRole(ctx context.Context) ([]pgtype.Text, error) {
 	rows, err := q.db.Query(ctx, getAllRole)
 >>>>>>> 4ccd381 (Update appointment flow)
+=======
+>>>>>>> 33fcf96 (Big update)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 =======
@@ -276,6 +283,8 @@ func (q *Queries) GetAllRole(ctx context.Context) ([]pgtype.Text, error) {
 		items = append(items, role)
 <<<<<<< HEAD
 =======
+=======
+>>>>>>> 33fcf96 (Big update)
 	items := []Doctor{}
 	for rows.Next() {
 		var i Doctor
@@ -292,9 +301,12 @@ func (q *Queries) GetAllRole(ctx context.Context) ([]pgtype.Text, error) {
 			return nil, err
 		}
 		items = append(items, i)
+<<<<<<< HEAD
 >>>>>>> 33fcf96 (Big update)
 =======
 >>>>>>> 4ccd381 (Update appointment flow)
+=======
+>>>>>>> 33fcf96 (Big update)
 	}
 	if err := rows.Err(); err != nil {
 		return nil, err
@@ -302,6 +314,7 @@ func (q *Queries) GetAllRole(ctx context.Context) ([]pgtype.Text, error) {
 	return items, nil
 }
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 =======
@@ -312,6 +325,8 @@ func (q *Queries) GetAllRole(ctx context.Context) ([]pgtype.Text, error) {
 >>>>>>> ffc9071 (AI suggestion)
 =======
 >>>>>>> 6f3ea8a (update sqlc)
+=======
+>>>>>>> 33fcf96 (Big update)
 const getAllUsers = `-- name: GetAllUsers :many
 <<<<<<< HEAD
 <<<<<<< HEAD

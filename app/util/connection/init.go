@@ -81,9 +81,12 @@ func Init(config util.Config) (*Connection, error) {
 =======
 	// Initialize database connection pool
 	connPool, err := pgxpool.New(context.Background(), config.DATABASE_URL)
+<<<<<<< HEAD
 >>>>>>> 33fcf96 (Big update)
 =======
 >>>>>>> ada3717 (Docker file)
+=======
+>>>>>>> 33fcf96 (Big update)
 	if err != nil {
 		return nil, fmt.Errorf("cannot connect to db: %w", err)
 	}

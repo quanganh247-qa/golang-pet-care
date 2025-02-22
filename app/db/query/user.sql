@@ -426,6 +426,7 @@ ORDER BY
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     u.full_name;
 >>>>>>> e30b070 (Get list appoinment by user)
 =======
@@ -455,10 +456,13 @@ ORDER BY
     u.full_name;
 >>>>>>> 685da65 (latest update)
 =======
+=======
+>>>>>>> 33fcf96 (Big update)
     u.full_name;
 
 
 -- name: GetAllDoctors :many
+<<<<<<< HEAD
 SELECT * FROM Doctors WHERE is_active is true;
 >>>>>>> 33fcf96 (Big update)
 =======
@@ -479,3 +483,6 @@ SELECT distinct (role) FROM users;
 =======
     u.full_name;
 >>>>>>> 685da65 (latest update)
+=======
+SELECT * FROM Doctors WHERE is_active is true;
+>>>>>>> 33fcf96 (Big update)

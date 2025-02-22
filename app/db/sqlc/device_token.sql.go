@@ -27,8 +27,12 @@ DELETE FROM device_tokens WHERE username = $1 AND token = $2
 >>>>>>> 33fcf96 (Big update)
 =======
 const deleteDeviceToken = `-- name: DeleteDeviceToken :exec
+<<<<<<< HEAD
 DELETE FROM DeviceTokens WHERE username = $1 AND token = $2
 >>>>>>> 9d28896 (image pet)
+=======
+DELETE FROM device_tokens WHERE username = $1 AND token = $2
+>>>>>>> 33fcf96 (Big update)
 `
 
 type DeleteDeviceTokenParams struct {
@@ -65,16 +69,21 @@ func (q *Queries) GetDeviceTokenByUsername(ctx context.Context, username string)
 =======
 >>>>>>> 9d28896 (image pet)
 const getDeviceTokenByUsername = `-- name: GetDeviceTokenByUsername :many
-SELECT id, username, token, device_type, created_at, last_used_at, expired_at FROM DeviceTokens WHERE username = $1
+SELECT id, username, token, device_type, created_at, last_used_at, expired_at FROM device_tokens WHERE username = $1
 `
 
+<<<<<<< HEAD
 func (q *Queries) GetDeviceTokenByUsername(ctx context.Context, username string) ([]Devicetoken, error) {
 >>>>>>> 0fb3f30 (user images)
+=======
+func (q *Queries) GetDeviceTokenByUsername(ctx context.Context, username string) ([]DeviceToken, error) {
+>>>>>>> 33fcf96 (Big update)
 	rows, err := q.db.Query(ctx, getDeviceTokenByUsername, username)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -96,6 +105,11 @@ func (q *Queries) GetDeviceTokenByUsername(ctx context.Context, username string)
 	for rows.Next() {
 		var i Devicetoken
 >>>>>>> 0fb3f30 (user images)
+=======
+	items := []DeviceToken{}
+	for rows.Next() {
+		var i DeviceToken
+>>>>>>> 33fcf96 (Big update)
 		if err := rows.Scan(
 			&i.ID,
 			&i.Username,
@@ -119,6 +133,7 @@ const insertDeviceToken = `-- name: InsertDeviceToken :one
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 INSERT INTO device_tokens (
     username, token, device_type, last_used_at, expired_at
 ) VALUES ($1, $2, $3, $4, $5) RETURNING id, username, token, device_type, created_at, last_used_at, expired_at
@@ -137,6 +152,11 @@ INSERT INTO DeviceTokens (
     username,token,device_type,last_used_at,expired_at
 )VALUES ($1,$2,$3,$4,$5) RETURNING id, username, token, device_type, created_at, last_used_at, expired_at
 >>>>>>> 0fb3f30 (user images)
+=======
+INSERT INTO device_tokens (
+    username, token, device_type, last_used_at, expired_at
+) VALUES ($1, $2, $3, $4, $5) RETURNING id, username, token, device_type, created_at, last_used_at, expired_at
+>>>>>>> 33fcf96 (Big update)
 `
 
 type InsertDeviceTokenParams struct {
@@ -150,6 +170,7 @@ type InsertDeviceTokenParams struct {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 func (q *Queries) InsertDeviceToken(ctx context.Context, arg InsertDeviceTokenParams) (DeviceToken, error) {
 =======
 func (q *Queries) InsertDeviceToken(ctx context.Context, arg InsertDeviceTokenParams) (Devicetoken, error) {
@@ -160,6 +181,9 @@ func (q *Queries) InsertDeviceToken(ctx context.Context, arg InsertDeviceTokenPa
 =======
 func (q *Queries) InsertDeviceToken(ctx context.Context, arg InsertDeviceTokenParams) (Devicetoken, error) {
 >>>>>>> 0fb3f30 (user images)
+=======
+func (q *Queries) InsertDeviceToken(ctx context.Context, arg InsertDeviceTokenParams) (DeviceToken, error) {
+>>>>>>> 33fcf96 (Big update)
 	row := q.db.QueryRow(ctx, insertDeviceToken,
 		arg.Username,
 		arg.Token,
@@ -170,6 +194,7 @@ func (q *Queries) InsertDeviceToken(ctx context.Context, arg InsertDeviceTokenPa
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	var i DeviceToken
 =======
 	var i Devicetoken
@@ -180,6 +205,9 @@ func (q *Queries) InsertDeviceToken(ctx context.Context, arg InsertDeviceTokenPa
 =======
 	var i Devicetoken
 >>>>>>> 0fb3f30 (user images)
+=======
+	var i DeviceToken
+>>>>>>> 33fcf96 (Big update)
 	err := row.Scan(
 		&i.ID,
 		&i.Username,

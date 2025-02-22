@@ -42,8 +42,12 @@ FROM appointments
 =======
 const countAppointmentsByDateAndTimeSlot = `-- name: CountAppointmentsByDateAndTimeSlot :one
 SELECT COUNT(*) 
+<<<<<<< HEAD
 FROM appointment 
 >>>>>>> b393bb9 (add service and add permission)
+=======
+FROM appointments 
+>>>>>>> 33fcf96 (Big update)
 WHERE date = $1 AND doctor_id = $2 AND status = 'completed'
 `
 
@@ -60,6 +64,7 @@ func (q *Queries) CountAppointmentsByDateAndTimeSlot(ctx context.Context, arg Co
 }
 
 const createAppointment = `-- name: CreateAppointment :one
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -150,8 +155,12 @@ type CreateAppointmentParams struct {
 =======
 INSERT INTO Appointment
 ( petid, doctor_id,username, service_id, "date", payment_status, notes, reminder_send, time_slot_id, created_at)
+=======
+INSERT INTO appointments
+( petid, doctor_id, username, service_id, "date", payment_status, notes, reminder_send, time_slot_id, created_at)
+>>>>>>> 33fcf96 (Big update)
 VALUES( 
-    $1, $2, $3, $4, $5, $6, $7, $8, $9,now()
+    $1, $2, $3, $4, $5, $6, $7, $8, $9, now()
 ) RETURNING appointment_id, petid, username, doctor_id, service_id, date, notes, reminder_send, time_slot_id, payment_status, created_at
 `
 
@@ -1188,7 +1197,7 @@ func (q *Queries) GetAppointmentDetailByAppointmentID(ctx context.Context, appoi
 >>>>>>> 71b74e9 (feat(appointment): add room management and update appointment functionality.)
 =======
 const getAppointmentDetailById = `-- name: GetAppointmentDetailById :one
-SELECT appointment_id, petid, username, doctor_id, service_id, date, notes, reminder_send, time_slot_id, payment_status, created_at from Appointment WHERE appointment_id = $1
+SELECT appointment_id, petid, username, doctor_id, service_id, date, notes, reminder_send, time_slot_id, payment_status, created_at from appointments WHERE appointment_id = $1
 `
 
 func (q *Queries) GetAppointmentDetailById(ctx context.Context, appointmentID int64) (Appointment, error) {
@@ -1398,15 +1407,15 @@ WHERE date = $1 AND doctor_id = $2 AND status = 'completed'
 =======
     ts.end_time
 FROM 
-    appointment a
+    appointments a
 JOIN 
     doctors d ON a.doctor_id = d.id
 JOIN 
-    pet p ON a.petid = p.petid
+    pets p ON a.petid = p.petid
 JOIN 
     services as s ON a.service_id = s.id
 JOIN 
-    timeslots ts ON a.time_slot_id = ts.id
+    time_slots ts ON a.time_slot_id = ts.id
 WHERE 
     a.doctor_id = $1
 >>>>>>> b393bb9 (add service and add permission)
@@ -1472,13 +1481,13 @@ const getAppointmentsByUser = `-- name: GetAppointmentsByUser :many
 SELECT 
     p.petid, p.name, p.type, p.breed, p.age, p.gender, p.healthnotes, p.weight, p.birth_date, p.username, p.microchip_number, p.last_checkup_date, p.is_active, p.data_image, p.original_image, s.id, s.name, s.description, s.duration, s.cost, s.category, s.notes, s.created_at, s.updated_at, a.appointment_id, a.petid, a.username, a.doctor_id, a.service_id, a.date, a.notes, a.reminder_send, a.time_slot_id, a.payment_status, a.created_at, ts.id, ts.doctor_id, ts.date, ts.start_time, ts.end_time, ts.max_patients, ts.booked_patients, ts.created_at, ts.updated_at
 FROM 
-    appointment a
+    appointments a
 JOIN 
-    pet p ON a.petid = p.petid 
+    pets p ON a.petid = p.petid 
 JOIN 
     services s ON a.service_id = s.id 
 JOIN 
-    timeslots ts ON a.time_slot_id = ts.id
+    time_slots ts ON a.time_slot_id = ts.id
 WHERE 
     a.username = $1 and a.status <> 'completed'
 `
@@ -1860,6 +1869,7 @@ SELECT
     ts.end_time
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 FROM appointments a
     LEFT JOIN doctors d ON a.doctor_id = d.id
     LEFT JOIN pets p ON a.petid = p.petid
@@ -1872,6 +1882,13 @@ FROM Appointment a
     LEFT JOIN services s ON a.service_id = s.id
     LEFT JOIN TimeSlots ts ON a.time_slot_id = ts.id
 >>>>>>> b393bb9 (add service and add permission)
+=======
+FROM appointments a
+    LEFT JOIN doctors d ON a.doctor_id = d.id
+    LEFT JOIN pets p ON a.petid = p.petid
+    LEFT JOIN services s ON a.service_id = s.id
+    LEFT JOIN time_slots ts ON a.time_slot_id = ts.id
+>>>>>>> 33fcf96 (Big update)
 =======
 FROM appointments a
     LEFT JOIN doctors d ON a.doctor_id = d.id
@@ -1918,6 +1935,7 @@ func (q *Queries) GetAppointmentsOfDoctorWithDetails(ctx context.Context, id int
 	return items, nil
 }
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -2250,6 +2268,10 @@ SELECT appointment_id, petid, username, doctor_id, service_id, date, reminder_se
 =======
 SELECT appointment_id, petid, username, doctor_id, service_id, date, reminder_send, time_slot_id, created_at, state_id, appointment_reason, priority, arrival_time, room_id, confirmation_sent, notes, updated_at FROM appointments
 >>>>>>> 71b74e9 (feat(appointment): add room management and update appointment functionality.)
+=======
+const listAllAppointments = `-- name: ListAllAppointments :many
+SELECT appointment_id, petid, username, doctor_id, service_id, date, notes, reminder_send, time_slot_id, payment_status, created_at FROM appointments
+>>>>>>> 33fcf96 (Big update)
 `
 
 func (q *Queries) ListAllAppointments(ctx context.Context) ([]Appointment, error) {
@@ -2268,6 +2290,7 @@ func (q *Queries) ListAllAppointments(ctx context.Context) ([]Appointment, error
 			&i.DoctorID,
 			&i.ServiceID,
 			&i.Date,
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 =======
@@ -2301,6 +2324,13 @@ func (q *Queries) ListAllAppointments(ctx context.Context) ([]Appointment, error
 			&i.Notes,
 			&i.UpdatedAt,
 >>>>>>> 71b74e9 (feat(appointment): add room management and update appointment functionality.)
+=======
+			&i.Notes,
+			&i.ReminderSend,
+			&i.TimeSlotID,
+			&i.PaymentStatus,
+			&i.CreatedAt,
+>>>>>>> 33fcf96 (Big update)
 		); err != nil {
 			return nil, err
 		}
@@ -2312,6 +2342,7 @@ func (q *Queries) ListAllAppointments(ctx context.Context) ([]Appointment, error
 	return items, nil
 }
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 const updateAppointmentByID = `-- name: UpdateAppointmentByID :exec
@@ -2418,6 +2449,10 @@ UPDATE Appointment
 const updateAppointmentStatus = `-- name: UpdateAppointmentStatus :exec
 UPDATE appointments
 >>>>>>> 33fcf96 (Big update)
+=======
+const updateAppointmentStatus = `-- name: UpdateAppointmentStatus :exec
+UPDATE appointments
+>>>>>>> 33fcf96 (Big update)
 SET payment_status = $2
 >>>>>>> b393bb9 (add service and add permission)
 =======
@@ -2480,6 +2515,7 @@ const updateTimeSlotBookedPatients = `-- name: UpdateTimeSlotBookedPatients :exe
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 UPDATE time_slots
 SET booked_patients = booked_patients + 1
 WHERE id = $1
@@ -2500,6 +2536,11 @@ UPDATE timeslots
 SET booked_patients = booked_patients + 1
 WHERE id = $1 AND  doctor_id = $2
 >>>>>>> b393bb9 (add service and add permission)
+=======
+UPDATE time_slots
+SET booked_patients = booked_patients + 1
+WHERE id = $1 AND doctor_id = $2
+>>>>>>> 33fcf96 (Big update)
 `
 
 type UpdateTimeSlotBookedPatientsParams struct {

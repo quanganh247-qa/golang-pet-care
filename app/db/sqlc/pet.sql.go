@@ -17,6 +17,9 @@ const createPet = `-- name: CreatePet :one
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 33fcf96 (Big update)
 =======
 >>>>>>> 33fcf96 (Big update)
 INSERT INTO pets (
@@ -38,6 +41,9 @@ INSERT INTO pets (
     $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, true, $12, $13
 ) RETURNING petid, name, type, breed, age, gender, healthnotes, weight, birth_date, username, microchip_number, last_checkup_date, is_active, data_image, original_image
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 33fcf96 (Big update)
 `
 
 type CreatePetParams struct {
@@ -45,6 +51,7 @@ type CreatePetParams struct {
 	Type            string        `json:"type"`
 	Breed           pgtype.Text   `json:"breed"`
 	Age             pgtype.Int4   `json:"age"`
+<<<<<<< HEAD
 	Gender          pgtype.Text   `json:"gender"`
 	Healthnotes     pgtype.Text   `json:"healthnotes"`
 	Weight          pgtype.Float8 `json:"weight"`
@@ -125,13 +132,23 @@ type CreatePetParams struct {
 >>>>>>> 0fb3f30 (user images)
 =======
 	Weight          pgtype.Float8 `json:"weight"`
+=======
+>>>>>>> 33fcf96 (Big update)
 	Gender          pgtype.Text   `json:"gender"`
 	Healthnotes     pgtype.Text   `json:"healthnotes"`
+	Weight          pgtype.Float8 `json:"weight"`
+	BirthDate       pgtype.Date   `json:"birth_date"`
+	Username        string        `json:"username"`
+	MicrochipNumber pgtype.Text   `json:"microchip_number"`
+	LastCheckupDate pgtype.Date   `json:"last_checkup_date"`
 	DataImage       []byte        `json:"data_image"`
 	OriginalImage   pgtype.Text   `json:"original_image"`
+<<<<<<< HEAD
 	BirthDate       pgtype.Date   `json:"birth_date"`
 	MicrochipNumber pgtype.Text   `json:"microchip_number"`
 >>>>>>> 9d28896 (image pet)
+=======
+>>>>>>> 33fcf96 (Big update)
 }
 
 func (q *Queries) CreatePet(ctx context.Context, arg CreatePetParams) (Pet, error) {
@@ -145,6 +162,9 @@ func (q *Queries) CreatePet(ctx context.Context, arg CreatePetParams) (Pet, erro
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 33fcf96 (Big update)
 =======
 >>>>>>> 33fcf96 (Big update)
 		arg.Weight,
@@ -154,6 +174,7 @@ func (q *Queries) CreatePet(ctx context.Context, arg CreatePetParams) (Pet, erro
 		arg.LastCheckupDate,
 		arg.DataImage,
 		arg.OriginalImage,
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 =======
@@ -175,6 +196,8 @@ func (q *Queries) CreatePet(ctx context.Context, arg CreatePetParams) (Pet, erro
 		arg.BirthDate,
 		arg.MicrochipNumber,
 >>>>>>> 9d28896 (image pet)
+=======
+>>>>>>> 33fcf96 (Big update)
 	)
 	var i Pet
 	err := row.Scan(
@@ -252,6 +275,7 @@ const getPetByID = `-- name: GetPetByID :one
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 SELECT petid, name, type, breed, age, gender, healthnotes, weight, birth_date, username, microchip_number, last_checkup_date, is_active, data_image, original_image FROM pets 
 WHERE petid = $1
 =======
@@ -270,6 +294,10 @@ SELECT petid, name, type, breed, age, gender, healthnotes, weight, birth_date, u
 =======
 SELECT petid, name, type, breed, age, gender, healthnotes, weight, birth_date, username, microchip_number, last_checkup_date, is_active, data_image, original_image FROM Pet WHERE PetID = $1 AND is_active is true
 >>>>>>> 3fdf0ad (updated pet status)
+=======
+SELECT petid, name, type, breed, age, gender, healthnotes, weight, birth_date, username, microchip_number, last_checkup_date, is_active, data_image, original_image FROM pets 
+WHERE petid = $1
+>>>>>>> 33fcf96 (Big update)
 `
 
 func (q *Queries) GetPetByID(ctx context.Context, petid int64) (Pet, error) {
@@ -530,6 +558,7 @@ const listPets = `-- name: ListPets :many
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 SELECT petid, name, type, breed, age, gender, healthnotes, weight, birth_date, username, microchip_number, last_checkup_date, is_active, data_image, original_image FROM pets
 WHERE is_active = true 
 ORDER BY name LIMIT $1 OFFSET $2
@@ -550,6 +579,11 @@ SELECT petid, name, type, breed, age, gender, healthnotes, weight, birth_date, u
 =======
 SELECT petid, name, type, breed, age, gender, healthnotes, weight, birth_date, username, microchip_number, last_checkup_date, is_active, data_image, original_image FROM Pet WHERE is_active is true ORDER BY PetID LIMIT $1 OFFSET $2
 >>>>>>> 3fdf0ad (updated pet status)
+=======
+SELECT petid, name, type, breed, age, gender, healthnotes, weight, birth_date, username, microchip_number, last_checkup_date, is_active, data_image, original_image FROM pets
+WHERE is_active = true 
+ORDER BY name LIMIT $1 OFFSET $2
+>>>>>>> 33fcf96 (Big update)
 `
 
 type ListPetsParams struct {
@@ -599,6 +633,7 @@ const listPetsByUsername = `-- name: ListPetsByUsername :many
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 SELECT petid, name, type, breed, age, gender, healthnotes, weight, birth_date, username, microchip_number, last_checkup_date, is_active, data_image, original_image FROM pets
 WHERE username = $1 AND is_active = true
 ORDER BY name LIMIT $2 OFFSET $3
@@ -619,6 +654,11 @@ SELECT petid, name, type, breed, age, gender, healthnotes, weight, birth_date, u
 =======
 SELECT petid, name, type, breed, age, gender, healthnotes, weight, birth_date, username, microchip_number, last_checkup_date, is_active, data_image, original_image FROM Pet WHERE username = $1 and is_active is true ORDER BY PetID LIMIT $2 OFFSET $3
 >>>>>>> c97bf6c (updated remove pet cache)
+=======
+SELECT petid, name, type, breed, age, gender, healthnotes, weight, birth_date, username, microchip_number, last_checkup_date, is_active, data_image, original_image FROM pets
+WHERE username = $1 AND is_active = true
+ORDER BY name LIMIT $2 OFFSET $3
+>>>>>>> 33fcf96 (Big update)
 `
 
 type ListPetsByUsernameParams struct {
@@ -667,6 +707,7 @@ const setPetInactive = `-- name: SetPetInactive :exec
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 UPDATE pets
 SET is_active = false
 WHERE petid = $1
@@ -681,6 +722,11 @@ WHERE petid = $1
 =======
 UPDATE Pet SET is_active = $2 WHERE PetID = $1 AND is_active is true
 >>>>>>> 3fdf0ad (updated pet status)
+=======
+UPDATE pets
+SET is_active = false
+WHERE petid = $1
+>>>>>>> 33fcf96 (Big update)
 `
 
 func (q *Queries) SetPetInactive(ctx context.Context, petid int64) error {
@@ -691,6 +737,9 @@ func (q *Queries) SetPetInactive(ctx context.Context, petid int64) error {
 const updatePet = `-- name: UpdatePet :exec
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 33fcf96 (Big update)
 =======
 >>>>>>> 33fcf96 (Big update)
 UPDATE pets
@@ -706,6 +755,7 @@ SET
     microchip_number = $10,
     last_checkup_date = $11
 WHERE petid = $1
+<<<<<<< HEAD
 <<<<<<< HEAD
 `
 
@@ -757,6 +807,11 @@ type UpdatePetParams struct {
 `
 
 type UpdatePetParams struct {
+=======
+`
+
+type UpdatePetParams struct {
+>>>>>>> 33fcf96 (Big update)
 	Petid           int64         `json:"petid"`
 	Name            string        `json:"name"`
 	Type            string        `json:"type"`
@@ -768,6 +823,7 @@ type UpdatePetParams struct {
 	BirthDate       pgtype.Date   `json:"birth_date"`
 	MicrochipNumber pgtype.Text   `json:"microchip_number"`
 	LastCheckupDate pgtype.Date   `json:"last_checkup_date"`
+<<<<<<< HEAD
 >>>>>>> 33fcf96 (Big update)
 =======
 	DataImage   []byte        `json:"data_image"`
@@ -776,6 +832,8 @@ type UpdatePetParams struct {
 =======
 	BirthDate   pgtype.Date   `json:"birth_date"`
 >>>>>>> 5ea33aa (PUT pet info)
+=======
+>>>>>>> 33fcf96 (Big update)
 }
 
 func (q *Queries) UpdatePet(ctx context.Context, arg UpdatePetParams) error {
@@ -792,12 +850,16 @@ func (q *Queries) UpdatePet(ctx context.Context, arg UpdatePetParams) error {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 33fcf96 (Big update)
 =======
 >>>>>>> 33fcf96 (Big update)
 		arg.Weight,
 		arg.BirthDate,
 		arg.MicrochipNumber,
 		arg.LastCheckupDate,
+<<<<<<< HEAD
 <<<<<<< HEAD
 =======
 =======
@@ -813,6 +875,8 @@ func (q *Queries) UpdatePet(ctx context.Context, arg UpdatePetParams) error {
 =======
 		arg.BirthDate,
 >>>>>>> 5ea33aa (PUT pet info)
+=======
+>>>>>>> 33fcf96 (Big update)
 	)
 	return err
 }
@@ -821,6 +885,9 @@ const updatePetAvatar = `-- name: UpdatePetAvatar :exec
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 33fcf96 (Big update)
 =======
 >>>>>>> 33fcf96 (Big update)
 UPDATE pets
@@ -828,6 +895,7 @@ SET
     data_image = $2,
     original_image = $3
 WHERE petid = $1
+<<<<<<< HEAD
 <<<<<<< HEAD
 =======
 UPDATE Pet SET data_image = $2, original_image = $3 WHERE PetID = $1 and is_active is true
@@ -837,6 +905,8 @@ UPDATE Pet SET data_image = $2, original_image = $3 WHERE PetID = $1 and is_acti
 =======
 UPDATE Pet SET data_image = $2, original_image = $3 WHERE PetID = $1 and is_active is true
 >>>>>>> 5ea33aa (PUT pet info)
+=======
+>>>>>>> 33fcf96 (Big update)
 `
 
 type UpdatePetAvatarParams struct {

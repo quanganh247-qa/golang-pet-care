@@ -4,6 +4,9 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 33fcf96 (Big update)
 =======
 >>>>>>> 33fcf96 (Big update)
 INSERT INTO pets (
@@ -24,6 +27,7 @@ INSERT INTO pets (
 ) VALUES (
     $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, true, $12, $13
 ) RETURNING *;
+<<<<<<< HEAD
 <<<<<<< HEAD
 
 -- name: GetPetByID :one
@@ -93,6 +97,19 @@ ORDER BY name LIMIT $1 OFFSET $2;
 
 -- name: ListPetsByUsername :many
 >>>>>>> 33fcf96 (Big update)
+=======
+
+-- name: GetPetByID :one
+SELECT * FROM pets 
+WHERE petid = $1;
+
+-- name: ListPets :many
+SELECT * FROM pets
+WHERE is_active = true 
+ORDER BY name LIMIT $1 OFFSET $2;
+
+-- name: ListPetsByUsername :many
+>>>>>>> 33fcf96 (Big update)
 SELECT * FROM pets
 WHERE username = $1 AND is_active = true
 ORDER BY name LIMIT $2 OFFSET $3;
@@ -115,6 +132,7 @@ WHERE petid = $1;
 -- name: DeletePet :exec
 DELETE FROM pets WHERE petid = $1;
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 SELECT * FROM Pet WHERE username = $1 and is_active is true ORDER BY PetID LIMIT $2 OFFSET $3;
 >>>>>>> 6d9728e (updated remove pet cache)
@@ -125,6 +143,10 @@ SELECT * FROM Pet WHERE username = $1 and is_active is true ORDER BY PetID LIMIT
 -- name: SetPetInactive :exec
 <<<<<<< HEAD
 <<<<<<< HEAD
+=======
+
+-- name: SetPetInactive :exec
+>>>>>>> 33fcf96 (Big update)
 =======
 
 -- name: SetPetInactive :exec
@@ -144,6 +166,7 @@ WHERE petid = $1;
 SELECT * FROM pets WHERE is_active is true;
 
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 =======
@@ -190,3 +213,5 @@ UPDATE Pet SET is_active = $2 WHERE PetID = $1 AND is_active is true;
 -- name: UpdatePetAvatar :exec
 UPDATE Pet SET data_image = $2, original_image = $3 WHERE PetID = $1 and is_active is true;
 >>>>>>> 5ea33aa (PUT pet info)
+=======
+>>>>>>> 33fcf96 (Big update)
