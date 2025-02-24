@@ -4,4 +4,9 @@ app/static/images/
 .idea/
 
 app.env
+gin-bin
 
+llm-service
+go.work.sum
+
+vendor

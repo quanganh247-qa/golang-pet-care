@@ -12,18 +12,20 @@ import (
 )
 
 const createTimeSlot = `-- name: CreateTimeSlot :one
-INSERT INTO time_slots
-( doctor_id, "date", start_time, end_time, created_at, updated_at, status)
-VALUES( 
-    $1, $2, $3, $4, now(), now(), 'available'
+INSERT INTO time_slots 
+(doctor_id, "date", start_time, end_time, max_patients, booked_patients, created_at, updated_at)
+VALUES (
+   $1, $2, $3, $4, $5, $6, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
 ) RETURNING id, doctor_id, date, start_time, end_time, max_patients, booked_patients, created_at, updated_at
 `
 
 type CreateTimeSlotParams struct {
-	DoctorID  int32       `json:"doctor_id"`
-	Date      pgtype.Date `json:"date"`
-	StartTime pgtype.Time `json:"start_time"`
-	EndTime   pgtype.Time `json:"end_time"`
+	DoctorID       int32       `json:"doctor_id"`
+	Date           pgtype.Date `json:"date"`
+	StartTime      pgtype.Time `json:"start_time"`
+	EndTime        pgtype.Time `json:"end_time"`
+	MaxPatients    pgtype.Int4 `json:"max_patients"`
+	BookedPatients pgtype.Int4 `json:"booked_patients"`
 }
 
 func (q *Queries) CreateTimeSlot(ctx context.Context, arg CreateTimeSlotParams) (TimeSlot, error) {
@@ -32,6 +34,8 @@ func (q *Queries) CreateTimeSlot(ctx context.Context, arg CreateTimeSlotParams) 
 		arg.Date,
 		arg.StartTime,
 		arg.EndTime,
+		arg.MaxPatients,
+		arg.BookedPatients,
 	)
 	var i TimeSlot
 	err := row.Scan(

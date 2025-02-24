@@ -8,6 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/quanganh247-qa/go-blog-be/app/api/appointment"
 	"github.com/quanganh247-qa/go-blog-be/app/api/cart"
+	"github.com/quanganh247-qa/go-blog-be/app/api/clinic_reporting"
 	"github.com/quanganh247-qa/go-blog-be/app/api/device_token"
 	"github.com/quanganh247-qa/go-blog-be/app/api/disease"
 	"github.com/quanganh247-qa/go-blog-be/app/api/location"
@@ -79,6 +80,7 @@ func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor, config
 	cart.Routes(routerGroup)
 	products.Routes(routerGroup)
 	medical_records.Routes(routerGroup)
+	clinic_reporting.Routes(routerGroup)
 	server.Router = routerDefault
 
 }

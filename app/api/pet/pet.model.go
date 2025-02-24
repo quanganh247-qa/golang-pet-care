@@ -78,3 +78,7 @@ type updatePetAvatarRequest struct {
 	DataImage     []byte `json:"-"`
 	OriginalImage string `json:"original_name"`
 }
+
+type PetProfileSummary struct {
+	Summary string `json:"summary"`
+}
