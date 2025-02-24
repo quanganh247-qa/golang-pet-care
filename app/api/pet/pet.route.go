@@ -43,6 +43,7 @@ func Routes(routerGroup middleware.RouterGroup) {
 		authRoute.DELETE("/logs/:log_id", petApi.controller.DeletePetLog)
 		authRoute.PUT("/logs/:log_id", petApi.controller.UpdatePetLog)
 
+<<<<<<< HEAD
 =======
 		authRoute.PUT("/update/:petid", petApi.controller.UpdatePet)
 =======
@@ -78,6 +79,10 @@ func Routes(routerGroup middleware.RouterGroup) {
 		authRoute.PUT("/logs/:log_id", petApi.controller.UpdatePetLog)
 
 >>>>>>> 3835eb4 (update pet_schedule api)
+=======
+		// Pet summary
+		Pet.GET("/summary/:pet_id", petApi.controller.GetPetProfileSummary)
+>>>>>>> ffc9071 (AI suggestion)
 	}
 
 }

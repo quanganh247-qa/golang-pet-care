@@ -6,6 +6,7 @@ app/static/images/
 app.env
 gin-bin
 
+<<<<<<< HEAD
 
 # Thêm vào .gitignore
 *.log
@@ -43,3 +44,9 @@ docker-compose.override.yml
 
 .github/
 .github/workflows/
+=======
+llm-service
+go.work.sum
+
+vendor
+>>>>>>> ffc9071 (AI suggestion)

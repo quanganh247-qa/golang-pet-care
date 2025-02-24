@@ -66,7 +66,11 @@ type CartItem struct {
 	TimeSlotID    pgtype.Int8      `json:"time_slot_id"`
 	PaymentStatus pgtype.Text      `json:"payment_status"`
 	CreatedAt     pgtype.Timestamp `json:"created_at"`
+<<<<<<< HEAD
 >>>>>>> 272832d (redis cache)
+=======
+	StateID       pgtype.UUID      `json:"state_id"`
+>>>>>>> ffc9071 (AI suggestion)
 }
 
 type Cart struct {
@@ -554,6 +558,7 @@ type Shift struct {
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 type State struct {
 	ID        int64            `json:"id"`
 	State     string           `json:"state"`
@@ -602,6 +607,24 @@ type TimeSlot struct {
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+=======
+type SoapNote struct {
+	ID            pgtype.UUID      `json:"id"`
+	AppointmentID int32            `json:"appointment_id"`
+	Note          []byte           `json:"note"`
+	CreatedAt     pgtype.Timestamp `json:"created_at"`
+	UpdatedAt     pgtype.Timestamp `json:"updated_at"`
+}
+
+type TaskState struct {
+	ID        pgtype.UUID      `json:"id"`
+	TaskID    int32            `json:"task_id"`
+	State     string           `json:"state"`
+	CreatedAt pgtype.Timestamp `json:"created_at"`
+	UpdatedAt pgtype.Timestamp `json:"updated_at"`
+}
+
+>>>>>>> ffc9071 (AI suggestion)
 type TimeSlot struct {
 	ID             int64            `json:"id"`
 	DoctorID       int32            `json:"doctor_id"`

@@ -14,8 +14,12 @@ INSERT INTO cart_items (
     created_at,
     updated_at
 ) VALUES (
+<<<<<<< HEAD
     $1, $2, $3,  $4, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
 >>>>>>> 33fcf96 (Big update)
+=======
+    $1, $2, $3, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
+>>>>>>> ffc9071 (AI suggestion)
 ) RETURNING *;
 
 

@@ -42,10 +42,14 @@ VALUES(
 >>>>>>> b393bb9 (add service and add permission)
 =======
 INSERT INTO appointments
-( petid, doctor_id, username, service_id, "date", payment_status, notes, reminder_send, time_slot_id, created_at)
+( petid, doctor_id, username, service_id, "date", payment_status, notes, reminder_send, time_slot_id, created_at, state_id)
 VALUES( 
+<<<<<<< HEAD
     $1, $2, $3, $4, $5, $6, $7, $8, $9, now()
 >>>>>>> 33fcf96 (Big update)
+=======
+    $1, $2, $3, $4, $5, $6, $7, $8, $9, now(), $10
+>>>>>>> ffc9071 (AI suggestion)
 ) RETURNING *;
 
 
@@ -403,4 +407,18 @@ WHERE
 
 -- name: ListAllAppointments :many
 SELECT * FROM appointments;
+<<<<<<< HEAD
 >>>>>>> 33fcf96 (Big update)
+=======
+
+-- name: GetAppointmentByStateId :many
+SELECT * FROM appointments WHERE state_id = $1;
+
+-- name: GetAllAppointments :many
+SELECT * FROM appointments
+JOIN pets ON appointments.petid = pets.petid
+JOIN services ON appointments.service_id = services.id
+JOIN time_slots ON appointments.time_slot_id = time_slots.id
+JOIN doctors ON appointments.doctor_id = doctors.id;
+
+>>>>>>> ffc9071 (AI suggestion)

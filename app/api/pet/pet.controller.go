@@ -40,6 +40,7 @@ type PetControllerInterface interface {
 	UpdatePetLog(ctx *gin.Context)
 	UpdatePetAvatar(ctx *gin.Context)
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> 7e616af (add pet log schema)
 =======
@@ -49,6 +50,9 @@ type PetControllerInterface interface {
 >>>>>>> 3835eb4 (update pet_schedule api)
 =======
 >>>>>>> e30b070 (Get list appoinment by user)
+=======
+	GetPetProfileSummary(ctx *gin.Context)
+>>>>>>> ffc9071 (AI suggestion)
 }
 
 func (c *PetController) CreatePet(ctx *gin.Context) {
@@ -429,9 +433,29 @@ func (c *PetController) UpdatePetAvatar(ctx *gin.Context) {
 	ctx.JSON(200, gin.H{"message": "Update pet avatar successfully"})
 }
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> 7e616af (add pet log schema)
 =======
 >>>>>>> 3835eb4 (update pet_schedule api)
 =======
 >>>>>>> e30b070 (Get list appoinment by user)
+=======
+
+func (c *PetController) GetPetProfileSummary(ctx *gin.Context) {
+	petIDStr := ctx.Param("pet_id")
+	petID, err := strconv.ParseInt(petIDStr, 10, 64)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid pet ID"})
+		return
+	}
+
+	summary, err := c.service.GeneratePetProfileSummary(ctx, petID)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, summary)
+}
+>>>>>>> ffc9071 (AI suggestion)

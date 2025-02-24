@@ -120,6 +120,7 @@ func (q *Queries) DeleteUser(ctx context.Context, id int64) error {
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 const getActiveDoctors = `-- name: GetActiveDoctors :many
 SELECT 
   d.id,
@@ -214,6 +215,8 @@ func (q *Queries) GetAllDoctors(ctx context.Context) ([]Doctor, error) {
 >>>>>>> 6f3ea8a (update sqlc)
 =======
 >>>>>>> 33fcf96 (Big update)
+=======
+>>>>>>> ffc9071 (AI suggestion)
 const getAllUsers = `-- name: GetAllUsers :many
 <<<<<<< HEAD
 SELECT id, username, hashed_password, full_name, email, phone_number, address, data_image, original_image, role, status, created_at, is_verified_email, removed_at FROM users
@@ -257,6 +260,7 @@ func (q *Queries) GetAllUsers(ctx context.Context) ([]User, error) {
 	return items, nil
 }
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -404,6 +408,8 @@ func (q *Queries) GetDoctors(ctx context.Context) ([]GetDoctorsRow, error) {
 >>>>>>> 6f3ea8a (update sqlc)
 =======
 >>>>>>> 685da65 (latest update)
+=======
+>>>>>>> ffc9071 (AI suggestion)
 const getUser = `-- name: GetUser :one
 SELECT id, username, hashed_password, full_name, email, phone_number, address, data_image, original_image, role, created_at, is_verified_email
 FROM users

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 package doctor
 
 import (
@@ -61,3 +62,6 @@ type CreateShiftRequest struct {
 	EndTime   time.Time `json:"end_time"`
 	DoctorID  int64     `json:"doctor_id"`
 }
+=======
+package doctor
+>>>>>>> ffc9071 (AI suggestion)

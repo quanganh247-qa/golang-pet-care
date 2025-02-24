@@ -14,11 +14,15 @@ import (
 <<<<<<< HEAD
 <<<<<<< HEAD
 	"github.com/quanganh247-qa/go-blog-be/app/api/cart"
+<<<<<<< HEAD
 	"github.com/quanganh247-qa/go-blog-be/app/api/chatbot"
 	"github.com/quanganh247-qa/go-blog-be/app/api/chatbot/handlers"
 =======
 	"github.com/quanganh247-qa/go-blog-be/app/api/cart"
 >>>>>>> c449ffc (feat: cart api)
+=======
+	"github.com/quanganh247-qa/go-blog-be/app/api/clinic_reporting"
+>>>>>>> ffc9071 (AI suggestion)
 	"github.com/quanganh247-qa/go-blog-be/app/api/device_token"
 	"github.com/quanganh247-qa/go-blog-be/app/api/disease"
 <<<<<<< HEAD
@@ -179,6 +183,7 @@ func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor, config
 	cart.Routes(routerGroup)
 	products.Routes(routerGroup)
 	medical_records.Routes(routerGroup)
+	clinic_reporting.Routes(routerGroup)
 	server.Router = routerDefault
 >>>>>>> 79a3bcc (medicine api)
 

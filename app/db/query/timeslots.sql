@@ -54,10 +54,10 @@ RETURNING *;
 =======
 >>>>>>> 685da65 (latest update)
 -- name: CreateTimeSlot :one
-INSERT INTO time_slots
-( doctor_id, "date", start_time, end_time, created_at, updated_at, status)
-VALUES( 
-    $1, $2, $3, $4, now(), now(), 'available'
+INSERT INTO time_slots 
+(doctor_id, "date", start_time, end_time, max_patients, booked_patients, created_at, updated_at)
+VALUES (
+   $1, $2, $3, $4, $5, $6, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
 ) RETURNING *;
 
 <<<<<<< HEAD
