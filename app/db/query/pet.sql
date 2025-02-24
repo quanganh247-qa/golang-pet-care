@@ -66,3 +66,11 @@ WHERE petid = $1;
 SELECT * FROM pets WHERE is_active is true;
 
 
+-- name: GetPetProfileSummary :many
+SELECT p.*, pt.*, v.* 
+FROM pets AS p
+LEFT JOIN pet_treatments AS pt ON p.petid = pt.pet_id
+LEFT JOIN vaccinations AS v ON p.petid = v.petid
+WHERE p.is_active = TRUE AND p.petid = $1;
+
+

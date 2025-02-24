@@ -40,10 +40,7 @@ func Init(config util.Config) (*Connection, error) {
 		return nil, fmt.Errorf("cannot connect to redis: %w", err)
 	}
 
-	// _ = db.InitStore(connPool)
-
 	DB := db.InitStore(connPool)
-	fmt.Println("DB")
 	go runTaskProcessor(&config, asynq.RedisClientOpt{Addr: config.RedisAddress}, DB)
 
 	conn := &Connection{

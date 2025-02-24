@@ -19,6 +19,7 @@ type AppointmentServiceInterface interface {
 	GetAppointmentsByUser(ctx *gin.Context, username string) ([]createAppointmentResponse, error)
 	GetAppointmentsByDoctor(ctx *gin.Context, doctorID int64) ([]createAppointmentResponse, error)
 	GetAvailableTimeSlots(ctx *gin.Context, doctorID int64, date string) ([]timeSlotResponse, error)
+	GetAllAppointments(ctx *gin.Context) ([]createAppointmentResponse, error)
 }
 
 func (s *AppointmentService) CreateAppointment(ctx *gin.Context, req createAppointmentRequest, username string) (*createAppointmentResponse, error) {
@@ -386,46 +387,60 @@ func (s *AppointmentService) GetAvailableTimeSlots(ctx *gin.Context, doctorID in
 	return availableTimeSlots, nil
 }
 
-// func (s *AppointmentService) CancelAppointment(ctx *gin.Context, appointmentID int64, username string) error {
-//     // Lấy thông tin cuộc hẹn
-//     appointment, err := s.storeDB.GetAppointmentByID(ctx, appointmentID)
-//     if err != nil {
-//         return fmt.Errorf("failed to get appointment: %w", err)
-//     }
+func (s *AppointmentService) GetAllAppointments(ctx *gin.Context) ([]createAppointmentResponse, error) {
+	appointments, err := s.storeDB.GetAllAppointments(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get appointments: %w", err)
+	}
 
-//     // Kiểm tra xem cuộc hẹn thuộc về người dùng
-//     if appointment.Username != username {
-//         return fmt.Errorf("unauthorized to cancel this appointment")
-//     }
+	var a []createAppointmentResponse
+	for _, appointment := range appointments {
 
-//     // Bắt đầu transaction
-//     err = s.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
-//         // Cập nhật trạng thái lịch hẹn thành "cancelled"
-//         err := q.UpdateAppointmentStatus(ctx, db.UpdateAppointmentStatusParams{
-//             ID:     appointmentID,
-//             Status: pgtype.Text{String: "cancelled", Valid: true},
-//         })
-//         if err != nil {
-//             return fmt.Errorf("failed to update appointment status: %w", err)
-//         }
+		pet, err := s.storeDB.GetPetByID(ctx, appointment.Petid.Int64)
+		if err != nil {
+			return nil, fmt.Errorf("failed to get pet: %w", err)
+		}
 
-//         // Nếu lịch hẹn đã được xác nhận, giảm số lượng booked_patients
-//         if appointment.Status.String == "confirmed" {
-//             err = q.DecreaseTimeSlotBookedPatients(ctx, db.DecreaseTimeSlotBookedPatientsParams{
-//                 ID:       appointment.TimeSlotID.Int64,
-//                 Date:     pgtype.Date{Time: appointment.Date.Time, Valid: true},
-//                 DoctorID: int32(appointment.DoctorID.Int64),
-//             })
-//             if err != nil {
-//                 return fmt.Errorf("failed to decrease booked patients: %w", err)
-//             }
-//         }
+		service, err := s.storeDB.GetServiceByID(ctx, appointment.ServiceID.Int64)
+		if err != nil {
+			return nil, fmt.Errorf("failed to get service: %w", err)
+		}
 
-//         return nil
-//     })
-//     if err != nil {
-//         return fmt.Errorf("transaction failed: %w", err)
-//     }
+		doc, err := s.storeDB.GetDoctor(ctx, appointment.DoctorID.Int64)
+		if err != nil {
+			return nil, fmt.Errorf("failed to get doctor: %w", err)
+		}
 
-//     return nil
-// }
+			// Fetch time slot details
+		timeSlot, err := s.storeDB.GetTimeSlotById(ctx, appointment.TimeSlotID.Int64)
+		if err != nil {
+			return nil, fmt.Errorf("error while fetching time slot: %w", err)
+		}
+
+		// Format start and end times
+		startTime := time.UnixMicro(timeSlot.StartTime.Microseconds).UTC()
+		startTimeFormatted := startTime.Format("15:04:05")
+
+		endTime := time.UnixMicro(timeSlot.EndTime.Microseconds).UTC()
+		endTimeFormatted := endTime.Format("15:04:05")
+
+
+		a = append(a, createAppointmentResponse{
+			ID:          appointment.AppointmentID,
+			DoctorName:  doc.Name,
+			PetName:     pet.Name,
+			ServiceName: service.Name.String,
+			Date:        appointment.Date.Time.Format(time.RFC3339),
+			PaymentStatus: appointment.PaymentStatus.String,
+			Notes:         appointment.Notes.String,
+			ReminderSend:  appointment.ReminderSend.Bool,
+			CreatedAt:     appointment.CreatedAt.Time.Format(time.RFC3339),
+			TimeSlot: timeslot{
+				StartTime: startTimeFormatted,
+				EndTime:   endTimeFormatted,
+			},
+		})
+
+	}
+	return a, nil
+}

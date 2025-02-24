@@ -31,6 +31,7 @@ type Appointment struct {
 	TimeSlotID    pgtype.Int8      `json:"time_slot_id"`
 	PaymentStatus pgtype.Text      `json:"payment_status"`
 	CreatedAt     pgtype.Timestamp `json:"created_at"`
+	StateID       pgtype.UUID      `json:"state_id"`
 }
 
 type Cart struct {
@@ -252,6 +253,22 @@ type Service struct {
 	Notes       pgtype.Text      `json:"notes"`
 	CreatedAt   pgtype.Timestamp `json:"created_at"`
 	UpdatedAt   pgtype.Timestamp `json:"updated_at"`
+}
+
+type SoapNote struct {
+	ID            pgtype.UUID      `json:"id"`
+	AppointmentID int32            `json:"appointment_id"`
+	Note          []byte           `json:"note"`
+	CreatedAt     pgtype.Timestamp `json:"created_at"`
+	UpdatedAt     pgtype.Timestamp `json:"updated_at"`
+}
+
+type TaskState struct {
+	ID        pgtype.UUID      `json:"id"`
+	TaskID    int32            `json:"task_id"`
+	State     string           `json:"state"`
+	CreatedAt pgtype.Timestamp `json:"created_at"`
+	UpdatedAt pgtype.Timestamp `json:"updated_at"`
 }
 
 type TimeSlot struct {

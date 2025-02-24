@@ -56,7 +56,7 @@ func (q *Queries) CreateService(ctx context.Context, arg CreateServiceParams) (S
 const deleteService = `-- name: DeleteService :exec
 UPDATE services
 SET removed_at = NOW()
-WHERE id = $1 and removed_at is NULL
+WHERE id = $1
 `
 
 func (q *Queries) DeleteService(ctx context.Context, id int64) error {
@@ -66,7 +66,7 @@ func (q *Queries) DeleteService(ctx context.Context, id int64) error {
 
 const getServiceByID = `-- name: GetServiceByID :one
 SELECT id, name, description, duration, cost, category, notes, created_at, updated_at FROM services
-WHERE id = $1 and removed_at is NULL
+WHERE id = $1
 `
 
 func (q *Queries) GetServiceByID(ctx context.Context, id int64) (Service, error) {
@@ -135,7 +135,7 @@ SET
     category = $6,
     notes = $7,
     updated_at = NOW()
-WHERE id = $1 and removed_at is NULL
+WHERE id = $1
 RETURNING id, name, description, duration, cost, category, notes, created_at, updated_at
 `
 

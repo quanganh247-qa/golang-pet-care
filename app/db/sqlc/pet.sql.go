@@ -162,6 +162,100 @@ func (q *Queries) GetPetByID(ctx context.Context, petid int64) (Pet, error) {
 	return i, err
 }
 
+const getPetProfileSummary = `-- name: GetPetProfileSummary :many
+SELECT p.petid, p.name, p.type, p.breed, p.age, p.gender, p.healthnotes, p.weight, p.birth_date, p.username, p.microchip_number, p.last_checkup_date, p.is_active, p.data_image, p.original_image, pt.id, pt.pet_id, pt.disease_id, pt.start_date, pt.end_date, pt.status, pt.notes, pt.created_at, v.vaccinationid, v.petid, v.vaccinename, v.dateadministered, v.nextduedate, v.vaccineprovider, v.batchnumber, v.notes 
+FROM pets AS p
+LEFT JOIN pet_treatments AS pt ON p.petid = pt.pet_id
+LEFT JOIN vaccinations AS v ON p.petid = v.petid
+WHERE p.is_active = TRUE AND p.petid = $1
+`
+
+type GetPetProfileSummaryRow struct {
+	Petid            int64              `json:"petid"`
+	Name             string             `json:"name"`
+	Type             string             `json:"type"`
+	Breed            pgtype.Text        `json:"breed"`
+	Age              pgtype.Int4        `json:"age"`
+	Gender           pgtype.Text        `json:"gender"`
+	Healthnotes      pgtype.Text        `json:"healthnotes"`
+	Weight           pgtype.Float8      `json:"weight"`
+	BirthDate        pgtype.Date        `json:"birth_date"`
+	Username         string             `json:"username"`
+	MicrochipNumber  pgtype.Text        `json:"microchip_number"`
+	LastCheckupDate  pgtype.Date        `json:"last_checkup_date"`
+	IsActive         pgtype.Bool        `json:"is_active"`
+	DataImage        []byte             `json:"data_image"`
+	OriginalImage    pgtype.Text        `json:"original_image"`
+	ID               pgtype.Int8        `json:"id"`
+	PetID            pgtype.Int8        `json:"pet_id"`
+	DiseaseID        pgtype.Int8        `json:"disease_id"`
+	StartDate        pgtype.Date        `json:"start_date"`
+	EndDate          pgtype.Date        `json:"end_date"`
+	Status           pgtype.Text        `json:"status"`
+	Notes            pgtype.Text        `json:"notes"`
+	CreatedAt        pgtype.Timestamptz `json:"created_at"`
+	Vaccinationid    pgtype.Int8        `json:"vaccinationid"`
+	Petid_2          pgtype.Int8        `json:"petid_2"`
+	Vaccinename      pgtype.Text        `json:"vaccinename"`
+	Dateadministered pgtype.Timestamp   `json:"dateadministered"`
+	Nextduedate      pgtype.Timestamp   `json:"nextduedate"`
+	Vaccineprovider  pgtype.Text        `json:"vaccineprovider"`
+	Batchnumber      pgtype.Text        `json:"batchnumber"`
+	Notes_2          pgtype.Text        `json:"notes_2"`
+}
+
+func (q *Queries) GetPetProfileSummary(ctx context.Context, petid int64) ([]GetPetProfileSummaryRow, error) {
+	rows, err := q.db.Query(ctx, getPetProfileSummary, petid)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetPetProfileSummaryRow{}
+	for rows.Next() {
+		var i GetPetProfileSummaryRow
+		if err := rows.Scan(
+			&i.Petid,
+			&i.Name,
+			&i.Type,
+			&i.Breed,
+			&i.Age,
+			&i.Gender,
+			&i.Healthnotes,
+			&i.Weight,
+			&i.BirthDate,
+			&i.Username,
+			&i.MicrochipNumber,
+			&i.LastCheckupDate,
+			&i.IsActive,
+			&i.DataImage,
+			&i.OriginalImage,
+			&i.ID,
+			&i.PetID,
+			&i.DiseaseID,
+			&i.StartDate,
+			&i.EndDate,
+			&i.Status,
+			&i.Notes,
+			&i.CreatedAt,
+			&i.Vaccinationid,
+			&i.Petid_2,
+			&i.Vaccinename,
+			&i.Dateadministered,
+			&i.Nextduedate,
+			&i.Vaccineprovider,
+			&i.Batchnumber,
+			&i.Notes_2,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const listPets = `-- name: ListPets :many
 SELECT petid, name, type, breed, age, gender, healthnotes, weight, birth_date, username, microchip_number, last_checkup_date, is_active, data_image, original_image FROM pets
 WHERE is_active = true 

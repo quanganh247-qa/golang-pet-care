@@ -16,6 +16,7 @@ type PetScheduleControllerInterface interface {
 	activePetSchedule(ctx *gin.Context)
 	deletePetSchedule(ctx *gin.Context)
 	updatePetScheduleService(ctx *gin.Context)
+	generateScheduleSuggestion(ctx *gin.Context)
 }
 
 func (c *PetScheduleController) createPetSchedule(ctx *gin.Context) {
@@ -149,4 +150,20 @@ func (s *PetScheduleController) updatePetScheduleService(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, util.SuccessResponse("Update reminder", "Success"))
 
+}
+
+func (s *PetScheduleController) generateScheduleSuggestion(ctx *gin.Context) {
+	var req ScheduleSuggestion
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, util.ErrorValidator(err))
+		return
+	}
+
+	response, err := s.service.ProcessSuggestion(ctx, req.Voice)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, util.ErrorValidator(err))
+		return
+	}
+
+	ctx.JSON(http.StatusOK, util.SuccessResponse("Schedule suggestion", response))
 }
