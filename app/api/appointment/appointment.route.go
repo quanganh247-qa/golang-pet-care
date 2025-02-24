@@ -133,6 +133,8 @@ func Routes(routerGroup middleware.RouterGroup, taskDistributor worker.TaskDistr
 >>>>>>> c8bec46 (feat: add chatbot, room management, and pet allergy features)
 =======
 		authRoute.GET("/doctor/:doctor_id", appointmentApi.controller.getAppointmentsByDoctor)
+		authRoute.GET("/all", appointmentApi.controller.getAllAppointments)
+
 		// time slot
 		authRoute.GET("/doctor/:doctor_id/time-slot", appointmentApi.controller.getAvailableTimeSlots)
 >>>>>>> b393bb9 (add service and add permission)

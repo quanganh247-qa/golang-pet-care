@@ -117,6 +117,7 @@ func Init(config util.Config) (*Connection, error) {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 	_ = asynq.RedisClientOpt{
 		Addr: config.RedisAddress,
@@ -174,8 +175,9 @@ func Init(config util.Config) (*Connection, error) {
 =======
 	// _ = db.InitStore(connPool)
 
+=======
+>>>>>>> ffc9071 (AI suggestion)
 	DB := db.InitStore(connPool)
-	fmt.Println("DB")
 	go runTaskProcessor(&config, asynq.RedisClientOpt{Addr: config.RedisAddress}, DB)
 >>>>>>> 6610455 (feat: redis queue)
 

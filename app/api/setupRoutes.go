@@ -22,6 +22,7 @@ import (
 	"github.com/quanganh247-qa/go-blog-be/app/api/cart"
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	"github.com/quanganh247-qa/go-blog-be/app/api/chatbot"
 	"github.com/quanganh247-qa/go-blog-be/app/api/chatbot/handlers"
 =======
@@ -37,6 +38,9 @@ import (
 =======
 	"github.com/quanganh247-qa/go-blog-be/app/api/cart"
 >>>>>>> c449ffc (feat: cart api)
+=======
+	"github.com/quanganh247-qa/go-blog-be/app/api/clinic_reporting"
+>>>>>>> ffc9071 (AI suggestion)
 	"github.com/quanganh247-qa/go-blog-be/app/api/device_token"
 	"github.com/quanganh247-qa/go-blog-be/app/api/disease"
 <<<<<<< HEAD
@@ -363,6 +367,7 @@ func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor, config
 	cart.Routes(routerGroup)
 	products.Routes(routerGroup)
 	medical_records.Routes(routerGroup)
+<<<<<<< HEAD
 	search.Routes(routerGroup, es)
 	medications.Routes(routerGroup, es)
 	doctor.Routes(routerGroup)
@@ -387,6 +392,10 @@ func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor, config
 <<<<<<< HEAD
 >>>>>>> e01abc5 (pet schedule api)
 =======
+=======
+	clinic_reporting.Routes(routerGroup)
+	server.Router = routerDefault
+>>>>>>> ffc9071 (AI suggestion)
 
 >>>>>>> a37b29e (updated list schedules)
 	server.Router = routerDefault

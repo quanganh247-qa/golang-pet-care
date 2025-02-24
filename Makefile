@@ -11,6 +11,7 @@ new_migration:
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 =======
 =======
@@ -18,6 +19,9 @@ new_migration:
 mforce:
 	migrate -path app/db/migration -database "$(DB_URL)" -verbose force 1
 >>>>>>> dff4498 (calendar api)
+=======
+
+>>>>>>> ffc9071 (AI suggestion)
 =======
 
 >>>>>>> ffc9071 (AI suggestion)
@@ -57,10 +61,13 @@ server:
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> 9d28896 (image pet)
 =======
 >>>>>>> 9d28896 (image pet)
 
+=======
+>>>>>>> ffc9071 (AI suggestion)
 =======
 >>>>>>> ffc9071 (AI suggestion)
 postgres:
@@ -71,9 +78,12 @@ redis:
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 elasticsearch:
 	docker run --name elasticsearch -p 9200:9200 -e "discovery.type=single-node" -e "xpack.security.enabled=false" -d elasticsearch:8.12.0
 =======
+=======
+>>>>>>> ffc9071 (AI suggestion)
 chroma-db:
 	docker run -d -p 8000:8000 docker.io/chromadb/chroma:0.6.4.dev226
 
@@ -157,8 +167,10 @@ migrate-create:
 postgres-ec:
 	docker run -d  --name postgres-ec  -p 5432:5432 -e POSTGRES_PASSWORD=12345678  -e PGDATA=/var/lib/postgresql/data/pgdata  -v postgres_volume:/var/lib/postgresql/data  postgres:15-alpine
 
-createdb:
-	createdb --username=root --owner=root golang_pet_care
 
+<<<<<<< HEAD
 .PHONY: mup mdown  mforce sqlc server   postgres  redis  rabbitmq
 >>>>>>> 21608b5 (cart and order api)
+=======
+.PHONY: mup mdown  mforce sqlc server   postgres  redis  rabbitmq 
+>>>>>>> ffc9071 (AI suggestion)

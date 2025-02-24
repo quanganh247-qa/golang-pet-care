@@ -91,6 +91,7 @@ type AppointmentControllerInterface interface {
 	getAppointmentByID(ctx *gin.Context)
 	getAppointmentsByUser(ctx *gin.Context)
 	getAppointmentsByDoctor(ctx *gin.Context)
+	getAllAppointments(ctx *gin.Context)
 	//time slot
 	getAvailableTimeSlots(ctx *gin.Context)
 >>>>>>> b393bb9 (add service and add permission)
@@ -838,4 +839,13 @@ func (c *AppointmentController) getAvailableTimeSlots(ctx *gin.Context) {
 		return
 	}
 	ctx.JSON(http.StatusOK, util.SuccessResponse("get time slot successful", res))
+}
+
+func (c *AppointmentController) getAllAppointments(ctx *gin.Context) {
+	res, err := c.service.GetAllAppointments(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
+		return
+	}
+	ctx.JSON(http.StatusOK, util.SuccessResponse("get all appointments successful", res))
 }

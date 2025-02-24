@@ -1,5 +1,6 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 package doctor
 
 import (
@@ -63,3 +64,6 @@ package doctor
 >>>>>>> ada3717 (Docker file)
 =======
 >>>>>>> 4ccd381 (Update appointment flow)
+=======
+package doctor
+>>>>>>> ffc9071 (AI suggestion)

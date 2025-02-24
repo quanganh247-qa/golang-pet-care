@@ -198,6 +198,7 @@ func (q *Queries) DeleteUser(ctx context.Context, id int64) error {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> 1f24c18 (feat: OTP with redis)
 const getActiveDoctors = `-- name: GetActiveDoctors :many
@@ -327,6 +328,8 @@ func (q *Queries) GetAllRole(ctx context.Context) ([]pgtype.Text, error) {
 >>>>>>> 6f3ea8a (update sqlc)
 =======
 >>>>>>> 33fcf96 (Big update)
+=======
+>>>>>>> ffc9071 (AI suggestion)
 const getAllUsers = `-- name: GetAllUsers :many
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -378,6 +381,7 @@ func (q *Queries) GetAllUsers(ctx context.Context) ([]User, error) {
 	return items, nil
 }
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -543,6 +547,8 @@ func (q *Queries) GetDoctors(ctx context.Context) ([]GetDoctorsRow, error) {
 >>>>>>> 6f3ea8a (update sqlc)
 =======
 >>>>>>> 685da65 (latest update)
+=======
+>>>>>>> ffc9071 (AI suggestion)
 const getUser = `-- name: GetUser :one
 SELECT id, username, hashed_password, full_name, email, phone_number, address, data_image, original_image, role, created_at, is_verified_email
 FROM users

@@ -153,6 +153,7 @@ type Querier interface {
 >>>>>>> 3bf345d (happy new year)
 	CreateAppointment(ctx context.Context, arg CreateAppointmentParams) (Appointment, error)
 	CreateCartForUser(ctx context.Context, userID int64) (Cart, error)
+	CreateDoctor(ctx context.Context, arg CreateDoctorParams) (Doctor, error)
 	CreateMedicalHistory(ctx context.Context, arg CreateMedicalHistoryParams) (MedicalHistory, error)
 	CreateMedicalRecord(ctx context.Context, petID pgtype.Int8) (MedicalRecord, error)
 	CreateMedicine(ctx context.Context, arg CreateMedicineParams) (Medicine, error)
@@ -162,6 +163,7 @@ type Querier interface {
 	CreatePetSchedule(ctx context.Context, arg CreatePetScheduleParams) error
 >>>>>>> 272832d (redis cache)
 	CreateService(ctx context.Context, arg CreateServiceParams) (Service, error)
+	CreateSoapNote(ctx context.Context, arg CreateSoapNoteParams) (SoapNote, error)
 	CreateTimeSlot(ctx context.Context, arg CreateTimeSlotParams) (TimeSlot, error)
 	CreateTreatment(ctx context.Context, arg CreateTreatmentParams) (PetTreatment, error)
 	CreateTreatmentPhase(ctx context.Context, arg CreateTreatmentPhaseParams) (TreatmentPhase, error)
@@ -235,6 +237,7 @@ type Querier interface {
 	DeleteAllNotificationsByUser(ctx context.Context, username string) error
 	DeleteAllergy(ctx context.Context, id int64) error
 	DeleteDeviceToken(ctx context.Context, arg DeleteDeviceTokenParams) error
+	DeleteDoctor(ctx context.Context, id int64) error
 	DeleteMedicalHistory(ctx context.Context, id int64) error
 	DeleteMedicalRecord(ctx context.Context, id int64) error
 	DeleteNotificationByID(ctx context.Context, notificationid int64) error
@@ -334,6 +337,7 @@ type Querier interface {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> 71b74e9 (feat(appointment): add room management and update appointment functionality.)
 	GetAllAppointments(ctx context.Context, arg GetAllAppointmentsParams) ([]GetAllAppointmentsRow, error)
@@ -346,6 +350,9 @@ type Querier interface {
 =======
 	GetAllOrders(ctx context.Context, arg GetAllOrdersParams) ([]Order, error)
 >>>>>>> dc47646 (Optimize SQL query)
+=======
+	GetAllAppointments(ctx context.Context) ([]GetAllAppointmentsRow, error)
+>>>>>>> ffc9071 (AI suggestion)
 	GetAllPets(ctx context.Context) ([]Pet, error)
 	GetAllProducts(ctx context.Context, arg GetAllProductsParams) ([]Product, error)
 	GetAllRole(ctx context.Context) ([]pgtype.Text, error)
@@ -430,6 +437,7 @@ type Querier interface {
 	GetAppointmentDetailByAppointmentID(ctx context.Context, appointmentID int64) (GetAppointmentDetailByAppointmentIDRow, error)
 =======
 	GetAllergies(ctx context.Context, medicalRecordID pgtype.Int8) ([]Allergy, error)
+<<<<<<< HEAD
 	GetAppointmentByStateId(ctx context.Context, stateID pgtype.Int4) ([]Appointment, error)
 <<<<<<< HEAD
 	// Tính tỷ lệ xác nhận và hủy lịch hẹn
@@ -439,6 +447,9 @@ type Querier interface {
 =======
 	GetAllergies(ctx context.Context, medicalRecordID pgtype.Int8) ([]Allergy, error)
 >>>>>>> 3bf345d (happy new year)
+=======
+	GetAppointmentByStateId(ctx context.Context, stateID pgtype.UUID) ([]Appointment, error)
+>>>>>>> ffc9071 (AI suggestion)
 	GetAppointmentDetailById(ctx context.Context, appointmentID int64) (Appointment, error)
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -499,6 +510,7 @@ type Querier interface {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	GetAppointmentsQueue(ctx context.Context, doctorID pgtype.Int8) ([]Appointment, error)
 =======
 	GetAppointmentsQueue(ctx context.Context) ([]Appointment, error)
@@ -523,6 +535,9 @@ type Querier interface {
 >>>>>>> c8bec46 (feat: add chatbot, room management, and pet allergy features)
 =======
 >>>>>>> b393bb9 (add service and add permission)
+=======
+	GetAvailableDoctors(ctx context.Context, date pgtype.Date) ([]GetAvailableDoctorsRow, error)
+>>>>>>> ffc9071 (AI suggestion)
 	GetAvailableTimeSlots(ctx context.Context, arg GetAvailableTimeSlotsParams) ([]GetAvailableTimeSlotsRow, error)
 	GetCartByUserId(ctx context.Context, userID int64) ([]Cart, error)
 <<<<<<< HEAD
@@ -607,6 +622,7 @@ type Querier interface {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	GetDoctorByUserId(ctx context.Context, userID int64) (Doctor, error)
 <<<<<<< HEAD
 	GetDoctorByUsername(ctx context.Context, username string) (GetDoctorByUsernameRow, error)
@@ -639,6 +655,9 @@ type Querier interface {
 <<<<<<< HEAD
 >>>>>>> 685da65 (latest update)
 =======
+=======
+	GetDoctorByUserId(ctx context.Context, userID int64) (Doctor, error)
+>>>>>>> ffc9071 (AI suggestion)
 =======
 	GetDoctorByUserId(ctx context.Context, userID int64) (Doctor, error)
 >>>>>>> ffc9071 (AI suggestion)
@@ -849,6 +868,7 @@ type Querier interface {
 	GetServices(ctx context.Context, arg GetServicesParams) ([]Service, error)
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	GetTimeSlot(ctx context.Context, arg GetTimeSlotParams) (Timeslot, error)
 	// Khóa bản ghi để tránh race condition
 >>>>>>> b393bb9 (add service and add permission)
@@ -886,6 +906,9 @@ type Querier interface {
 >>>>>>> e859654 (Elastic search)
 =======
 >>>>>>> 33fcf96 (Big update)
+=======
+	GetSoapNote(ctx context.Context, appointmentID int32) (SoapNote, error)
+>>>>>>> ffc9071 (AI suggestion)
 	GetTimeSlot(ctx context.Context, arg GetTimeSlotParams) (TimeSlot, error)
 	// Lock record to avoid race condition
 	GetTimeSlotById(ctx context.Context, id int64) (TimeSlot, error)
@@ -992,7 +1015,11 @@ type Querier interface {
 =======
 =======
 	ListAllAppointments(ctx context.Context) ([]Appointment, error)
+<<<<<<< HEAD
 >>>>>>> 33fcf96 (Big update)
+=======
+	ListDoctors(ctx context.Context) ([]ListDoctorsRow, error)
+>>>>>>> ffc9071 (AI suggestion)
 	ListMedicinesByPet(ctx context.Context, arg ListMedicinesByPetParams) ([]ListMedicinesByPetRow, error)
 >>>>>>> a415f25 (new data)
 	ListPetSchedulesByUsername(ctx context.Context, username string) ([]ListPetSchedulesByUsernameRow, error)
@@ -1121,6 +1148,7 @@ type Querier interface {
 	UpdateDoctor(ctx context.Context, arg UpdateDoctorParams) (Doctor, error)
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	UpdateFile(ctx context.Context, arg UpdateFileParams) (File, error)
 =======
 	UpdateCartItemQuantity(ctx context.Context, arg UpdateCartItemQuantityParams) error
@@ -1133,6 +1161,8 @@ type Querier interface {
 =======
 	UpdateCartItemQuantity(ctx context.Context, arg UpdateCartItemQuantityParams) error
 >>>>>>> 33fcf96 (Big update)
+=======
+>>>>>>> ffc9071 (AI suggestion)
 	UpdateMedicalHistory(ctx context.Context, arg UpdateMedicalHistoryParams) error
 	UpdateMedicalRecord(ctx context.Context, id int64) error
 =======
@@ -1241,6 +1271,7 @@ type Querier interface {
 	UpdateSOAP(ctx context.Context, arg UpdateSOAPParams) (Consultation, error)
 >>>>>>> e859654 (Elastic search)
 	UpdateService(ctx context.Context, arg UpdateServiceParams) (Service, error)
+	UpdateSoapNote(ctx context.Context, arg UpdateSoapNoteParams) (SoapNote, error)
 	UpdateTimeSlotBookedPatients(ctx context.Context, arg UpdateTimeSlotBookedPatientsParams) error
 <<<<<<< HEAD
 <<<<<<< HEAD

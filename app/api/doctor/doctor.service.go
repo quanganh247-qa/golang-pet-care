@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 package doctor
 
 import (
@@ -233,3 +234,6 @@ func (service *DoctorService) GetDoctorById(ctx *gin.Context, doctorId int64) (D
 		Bio:            doctor.Bio.String,
 	}, nil
 }
+=======
+package doctor
+>>>>>>> ffc9071 (AI suggestion)

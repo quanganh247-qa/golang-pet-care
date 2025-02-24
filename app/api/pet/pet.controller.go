@@ -60,6 +60,7 @@ type PetControllerInterface interface {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> 7e616af (add pet log schema)
 =======
@@ -83,6 +84,9 @@ type PetControllerInterface interface {
 >>>>>>> 3835eb4 (update pet_schedule api)
 =======
 >>>>>>> e30b070 (Get list appoinment by user)
+=======
+	GetPetProfileSummary(ctx *gin.Context)
+>>>>>>> ffc9071 (AI suggestion)
 }
 
 func (c *PetController) CreatePet(ctx *gin.Context) {
@@ -585,6 +589,7 @@ func (c *PetController) UpdatePetAvatar(ctx *gin.Context) {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> 7e616af (add pet log schema)
 =======
@@ -592,6 +597,8 @@ func (c *PetController) UpdatePetAvatar(ctx *gin.Context) {
 =======
 >>>>>>> e30b070 (Get list appoinment by user)
 =======
+=======
+>>>>>>> ffc9071 (AI suggestion)
 
 func (c *PetController) GetPetProfileSummary(ctx *gin.Context) {
 	petIDStr := ctx.Param("pet_id")
@@ -609,6 +616,7 @@ func (c *PetController) GetPetProfileSummary(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, summary)
 }
+<<<<<<< HEAD
 >>>>>>> ffc9071 (AI suggestion)
 =======
 >>>>>>> c8bec46 (feat: add chatbot, room management, and pet allergy features)
@@ -618,3 +626,5 @@ func (c *PetController) GetPetProfileSummary(ctx *gin.Context) {
 >>>>>>> 3835eb4 (update pet_schedule api)
 =======
 >>>>>>> e30b070 (Get list appoinment by user)
+=======
+>>>>>>> ffc9071 (AI suggestion)

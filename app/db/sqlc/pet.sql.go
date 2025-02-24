@@ -325,6 +325,7 @@ func (q *Queries) GetPetByID(ctx context.Context, petid int64) (Pet, error) {
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> c8bec46 (feat: add chatbot, room management, and pet allergy features)
 const getPetDetailByUserID = `-- name: GetPetDetailByUserID :one
@@ -400,6 +401,10 @@ SELECT p.petid, p.name, p.type, p.breed, p.age, p.gender, p.healthnotes, p.weigh
 =======
 SELECT p.petid, p.name, p.type, p.breed, p.age, p.gender, p.healthnotes, p.weight, p.birth_date, p.username, p.microchip_number, p.last_checkup_date, p.is_active, p.data_image, p.original_image, pt.id, pt.pet_id, pt.disease_id, pt.start_date, pt.end_date, pt.status, pt.name, pt.type, pt.description, pt.created_at, pt.doctor_id, v.vaccinationid, v.petid, v.vaccinename, v.dateadministered, v.nextduedate, v.vaccineprovider, v.batchnumber, v.notes 
 >>>>>>> 6b24d88 (feat(payment): add PayOS payment integration and enhance treatment module)
+=======
+const getPetProfileSummary = `-- name: GetPetProfileSummary :many
+SELECT p.petid, p.name, p.type, p.breed, p.age, p.gender, p.healthnotes, p.weight, p.birth_date, p.username, p.microchip_number, p.last_checkup_date, p.is_active, p.data_image, p.original_image, pt.id, pt.pet_id, pt.disease_id, pt.start_date, pt.end_date, pt.status, pt.notes, pt.created_at, v.vaccinationid, v.petid, v.vaccinename, v.dateadministered, v.nextduedate, v.vaccineprovider, v.batchnumber, v.notes 
+>>>>>>> ffc9071 (AI suggestion)
 FROM pets AS p
 LEFT JOIN pet_treatments AS pt ON p.petid = pt.pet_id
 LEFT JOIN vaccinations AS v ON p.petid = v.petid
@@ -430,6 +435,7 @@ type GetPetProfileSummaryRow struct {
 	Status           pgtype.Text        `json:"status"`
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	Name_2           pgtype.Text        `json:"name_2"`
 	Type_2           pgtype.Text        `json:"type_2"`
 	Description      pgtype.Text        `json:"description"`
@@ -452,6 +458,10 @@ type GetPetProfileSummaryRow struct {
 =======
 	DoctorID         pgtype.Int4        `json:"doctor_id"`
 >>>>>>> ada3717 (Docker file)
+=======
+	Notes            pgtype.Text        `json:"notes"`
+	CreatedAt        pgtype.Timestamptz `json:"created_at"`
+>>>>>>> ffc9071 (AI suggestion)
 	Vaccinationid    pgtype.Int8        `json:"vaccinationid"`
 	Petid_2          pgtype.Int8        `json:"petid_2"`
 	Vaccinename      pgtype.Text        `json:"vaccinename"`
@@ -461,6 +471,7 @@ type GetPetProfileSummaryRow struct {
 	Batchnumber      pgtype.Text        `json:"batchnumber"`
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	Notes            pgtype.Text        `json:"notes"`
 =======
 	Notes_2          pgtype.Text        `json:"notes_2"`
@@ -468,6 +479,9 @@ type GetPetProfileSummaryRow struct {
 =======
 	Notes            pgtype.Text        `json:"notes"`
 >>>>>>> 6b24d88 (feat(payment): add PayOS payment integration and enhance treatment module)
+=======
+	Notes_2          pgtype.Text        `json:"notes_2"`
+>>>>>>> ffc9071 (AI suggestion)
 }
 
 func (q *Queries) GetPetProfileSummary(ctx context.Context, petid int64) ([]GetPetProfileSummaryRow, error) {
@@ -503,6 +517,7 @@ func (q *Queries) GetPetProfileSummary(ctx context.Context, petid int64) ([]GetP
 			&i.Status,
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 			&i.Name_2,
 			&i.Type_2,
 			&i.Description,
@@ -525,6 +540,10 @@ func (q *Queries) GetPetProfileSummary(ctx context.Context, petid int64) ([]GetP
 =======
 			&i.DoctorID,
 >>>>>>> ada3717 (Docker file)
+=======
+			&i.Notes,
+			&i.CreatedAt,
+>>>>>>> ffc9071 (AI suggestion)
 			&i.Vaccinationid,
 			&i.Petid_2,
 			&i.Vaccinename,
@@ -534,6 +553,7 @@ func (q *Queries) GetPetProfileSummary(ctx context.Context, petid int64) ([]GetP
 			&i.Batchnumber,
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 			&i.Notes,
 =======
 			&i.Notes_2,
@@ -541,6 +561,9 @@ func (q *Queries) GetPetProfileSummary(ctx context.Context, petid int64) ([]GetP
 =======
 			&i.Notes,
 >>>>>>> 6b24d88 (feat(payment): add PayOS payment integration and enhance treatment module)
+=======
+			&i.Notes_2,
+>>>>>>> ffc9071 (AI suggestion)
 		); err != nil {
 			return nil, err
 		}

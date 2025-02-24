@@ -6,6 +6,7 @@ import (
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	"strings"
 =======
 >>>>>>> 67140c6 (updated create pet)
@@ -14,11 +15,15 @@ import (
 >>>>>>> ffc9071 (AI suggestion)
 =======
 >>>>>>> 67140c6 (updated create pet)
+=======
+	"strings"
+>>>>>>> ffc9071 (AI suggestion)
 	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5/pgtype"
 	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
+	"github.com/quanganh247-qa/go-blog-be/app/service/llm"
 	"github.com/quanganh247-qa/go-blog-be/app/util"
 )
 
@@ -82,6 +87,7 @@ type PetServiceInterface interface {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> 7e616af (add pet log schema)
 =======
@@ -109,6 +115,9 @@ type PetServiceInterface interface {
 >>>>>>> 3835eb4 (update pet_schedule api)
 =======
 >>>>>>> 5ea33aa (PUT pet info)
+=======
+	GeneratePetProfileSummary(ctx context.Context, petID int64) (*PetProfileSummary, error)
+>>>>>>> ffc9071 (AI suggestion)
 }
 
 <<<<<<< HEAD
@@ -1090,4 +1099,133 @@ func (s *PetService) UpdatePetLogService(ctx context.Context, req PetLog, log_id
 		return fmt.Errorf("transaction update log failed: %w", err)
 	}
 	return nil
+}
+
+func (s *PetService) GeneratePetProfileSummary(ctx context.Context, petID int64) (*PetProfileSummary, error) {
+	// Get basic pet information
+	pet, err := s.storeDB.GetPetByID(ctx, petID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get pet info: %w", err)
+	}
+
+	// Get treatments with pagination
+	treatments, err := s.storeDB.GetTreatmentsByPet(ctx, db.GetTreatmentsByPetParams{
+		PetID:  pgtype.Int8{Int64: petID, Valid: true},
+		Limit:  10,
+		Offset: 0,
+	})
+	if err != nil {
+		return nil, fmt.Errorf("failed to get treatments: %w", err)
+	}
+
+	// Get vaccinations
+	vaccinations, err := s.storeDB.ListVaccinationsByPetID(ctx, db.ListVaccinationsByPetIDParams{
+		Petid:  pgtype.Int8{Int64: petID, Valid: true},
+		Limit:  10,
+		Offset: 0,
+	})
+	if err != nil {
+		return nil, fmt.Errorf("failed to get vaccinations: %w", err)
+	}
+
+	// Format pet data
+	petInfo := fmt.Sprintf(`
+		Pet Information:
+		- Name: %s
+		- Type: %s
+		- Breed: %s
+		- Age: %d
+		- Weight: %.2f
+		- Gender: %s
+		- Health Notes: %s`,
+		pet.Name,
+		pet.Type,
+		pet.Breed.String,
+		pet.Age.Int32,
+		pet.Weight.Float64,
+		pet.Gender.String,
+		pet.Healthnotes.String)
+
+	// Format treatments and vaccinations
+	treatmentInfo := formatTreatments(treatments)
+	vaccinationInfo := formatVaccinations(vaccinations)
+
+	// Update prompt with actual data
+	prompt := fmt.Sprintf(`%s
+			Treatment History:
+			%s
+
+			Vaccination History:
+			%s
+
+			Based on the provided information, please create a concise, readable summary using the following format:
+
+			1. Basic Information:
+			- Name, age, breed
+			- Current weight
+			- Blood type (if available)
+
+			2. Health Status:
+			- List main health issues
+			- Current status for each issue
+
+			3. Allergies: (if any)
+			- Brief list
+
+			4. Current Medications:
+			- Medicine name
+			- Dosage
+			- Frequency
+
+			5. Recent Weight History:
+			- List 2-3 most recent weights
+
+			Requirements:
+			- Return concise, readable information
+			- Use bullet points
+			- Focus on the most important information
+			- Exclude unnecessary details`,
+		petInfo, treatmentInfo, vaccinationInfo)
+
+	// Call Ollama API
+	ollamaReq := &llm.OllamaRequest{
+		Model:       "mistral",
+		Prompt:      prompt,
+		Temperature: 0.3,
+		Stream:      false,
+	}
+
+	summary, err := llm.CallOllamaAPI(ollamaReq)
+	if err != nil {
+		return nil, fmt.Errorf("failed to generate summary: %w", err)
+	}
+
+	return &PetProfileSummary{
+		Summary: summary,
+	}, nil
+}
+
+func formatTreatments(treatments []db.GetTreatmentsByPetRow) string {
+	var result strings.Builder
+	for _, t := range treatments {
+		result.WriteString(fmt.Sprintf("- Condition: %s\n  Status: %s\n  Period: %s to %s\n",
+			t.Disease,
+			t.Status.String,
+			t.StartDate.Time.Format("2006-01-02"),
+			t.EndDate.Time.Format("2006-01-02"),
+		))
+	}
+	return result.String()
+}
+
+func formatVaccinations(vaccinations []db.Vaccination) string {
+	var result strings.Builder
+	for _, v := range vaccinations {
+		result.WriteString(fmt.Sprintf("- Vaccine: %s\n  Administered: %s\n  Next Due: %s\n  Provider: %s\n",
+			v.Vaccinename,
+			v.Dateadministered.Time.Format("2006-01-02"),
+			v.Nextduedate.Time.Format("2006-01-02"),
+			v.Vaccineprovider.String))
+	}
+	return result.String()
 }

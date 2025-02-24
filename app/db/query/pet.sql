@@ -169,6 +169,9 @@ SELECT * FROM pets WHERE is_active is true;
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> ffc9071 (AI suggestion)
 =======
 >>>>>>> ffc9071 (AI suggestion)
 -- name: GetPetProfileSummary :many
@@ -179,6 +182,7 @@ LEFT JOIN vaccinations AS v ON p.petid = v.petid
 WHERE p.is_active = TRUE AND p.petid = $1;
 
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 =======
@@ -215,3 +219,5 @@ UPDATE Pet SET data_image = $2, original_image = $3 WHERE PetID = $1 and is_acti
 >>>>>>> 5ea33aa (PUT pet info)
 =======
 >>>>>>> 33fcf96 (Big update)
+=======
+>>>>>>> ffc9071 (AI suggestion)

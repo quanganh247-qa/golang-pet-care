@@ -52,6 +52,7 @@ func Routes(routerGroup middleware.RouterGroup) {
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 =======
 >>>>>>> c73e2dc (pagination function)
@@ -126,6 +127,10 @@ func Routes(routerGroup middleware.RouterGroup) {
 		authRoute.PUT("/logs/:log_id", petApi.controller.UpdatePetLog)
 
 >>>>>>> 3835eb4 (update pet_schedule api)
+=======
+		// Pet summary
+		Pet.GET("/summary/:pet_id", petApi.controller.GetPetProfileSummary)
+>>>>>>> ffc9071 (AI suggestion)
 	}
 
 }

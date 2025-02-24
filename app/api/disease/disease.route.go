@@ -139,7 +139,6 @@ func Routes(routerGroup middleware.RouterGroup) {
 		authRoute.GET("/pet/:pet_id/treatments", diceaseApi.controller.GetTreatmentsByPetID)
 		authRoute.GET("/treatment/:treatment_id/phases", diceaseApi.controller.GetTreatmentPhasesByTreatmentID)
 		authRoute.GET("/treatment/:treatment_id/phases/:phase_id/medicines", diceaseApi.controller.GetMedicinesByPhaseID)
-
 		// for pet owner
 
 	}

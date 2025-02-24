@@ -119,6 +119,7 @@ SET removed_at = NOW()
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 WHERE id = $1
 =======
 WHERE id = $1 and removed_at is NULL
@@ -129,6 +130,9 @@ WHERE id = $1
 =======
 WHERE id = $1 and removed_at is NULL
 >>>>>>> b393bb9 (add service and add permission)
+=======
+WHERE id = $1
+>>>>>>> ffc9071 (AI suggestion)
 `
 
 func (q *Queries) DeleteService(ctx context.Context, id int64) error {
@@ -165,8 +169,12 @@ WHERE id = $1
 =======
 const getServiceByID = `-- name: GetServiceByID :one
 SELECT id, name, description, duration, cost, category, notes, created_at, updated_at FROM services
+<<<<<<< HEAD
 WHERE id = $1 and removed_at is NULL
 >>>>>>> b393bb9 (add service and add permission)
+=======
+WHERE id = $1
+>>>>>>> ffc9071 (AI suggestion)
 `
 
 func (q *Queries) GetServiceByID(ctx context.Context, id int64) (Service, error) {
@@ -336,7 +344,7 @@ RETURNING id, name, description, duration, cost, category, priority, created_at
 =======
     notes = $7,
     updated_at = NOW()
-WHERE id = $1 and removed_at is NULL
+WHERE id = $1
 RETURNING id, name, description, duration, cost, category, notes, created_at, updated_at
 >>>>>>> b393bb9 (add service and add permission)
 `
