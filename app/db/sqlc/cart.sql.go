@@ -216,9 +216,7 @@ INSERT INTO cart_items (
     created_at,
     updated_at
 ) VALUES (
-    $1, $2, $3,
-    CURRENT_TIMESTAMP,
-    CURRENT_TIMESTAMP
+    $1, $2, $3, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
 ) RETURNING id, cart_id, product_id, quantity, created_at, updated_at
 `
 

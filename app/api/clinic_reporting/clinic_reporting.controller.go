@@ -10,6 +10,7 @@ import (
 // ClinicReportingControllerInterface defines controller methods for clinic analytics.
 type ClinicReportingControllerInterface interface {
 	GetClinicAnalytics(ctx *gin.Context)
+	GenerateSOAPNote(ctx *gin.Context)
 }
 
 // ClinicReportingController implements the clinic analytics controller.
@@ -25,4 +26,18 @@ func (c *ClinicReportingController) GetClinicAnalytics(ctx *gin.Context) {
 		return
 	}
 	ctx.JSON(http.StatusOK, util.SuccessResponse("Clinic Analytics Report", report))
+}
+
+func (c *ClinicReportingController) GenerateSOAPNote(ctx *gin.Context) {
+	var req GenerateSOAPNoteRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
+		return
+	}
+	note, err := c.service.GenerateSOAPNote(ctx, req)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, util.ErrorResponse(err))
+		return
+	}
+	ctx.JSON(http.StatusOK, util.SuccessResponse("SOAP Note", note))
 }

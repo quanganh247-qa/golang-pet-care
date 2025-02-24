@@ -10,6 +10,7 @@ gin-bin
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 # Thêm vào .gitignore
 *.log
@@ -117,3 +118,9 @@ vendor
 =======
 .github/workflows/
 >>>>>>> 07558db (Docker file)
+=======
+llm-service
+go.work.sum
+
+vendor
+>>>>>>> ffc9071 (AI suggestion)

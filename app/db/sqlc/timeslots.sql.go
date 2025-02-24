@@ -15,10 +15,14 @@ const createTimeSlot = `-- name: CreateTimeSlot :one
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> ffc9071 (AI suggestion)
 INSERT INTO time_slots 
 (doctor_id, "date", start_time, end_time, max_patients, booked_patients, created_at, updated_at)
 VALUES (
    $1, $2, $3, $4, $5, $6, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
+<<<<<<< HEAD
 ) RETURNING id, doctor_id, date, start_time, end_time, max_patients, booked_patients, created_at, updated_at, shift_id
 `
 
@@ -58,15 +62,19 @@ VALUES(
 ) RETURNING id, doctor_id, date, start_time, end_time, status, created_at, updated_at
 >>>>>>> 685da65 (latest update)
 =======
+=======
+>>>>>>> ffc9071 (AI suggestion)
 ) RETURNING id, doctor_id, date, start_time, end_time, max_patients, booked_patients, created_at, updated_at
 >>>>>>> b393bb9 (add service and add permission)
 `
 
 type CreateTimeSlotParams struct {
-	DoctorID  int32       `json:"doctor_id"`
-	Date      pgtype.Date `json:"date"`
-	StartTime pgtype.Time `json:"start_time"`
-	EndTime   pgtype.Time `json:"end_time"`
+	DoctorID       int32       `json:"doctor_id"`
+	Date           pgtype.Date `json:"date"`
+	StartTime      pgtype.Time `json:"start_time"`
+	EndTime        pgtype.Time `json:"end_time"`
+	MaxPatients    pgtype.Int4 `json:"max_patients"`
+	BookedPatients pgtype.Int4 `json:"booked_patients"`
 }
 
 func (q *Queries) CreateTimeSlot(ctx context.Context, arg CreateTimeSlotParams) (TimeSlot, error) {
@@ -80,6 +88,9 @@ func (q *Queries) CreateTimeSlot(ctx context.Context, arg CreateTimeSlotParams) 
 		arg.EndTime,
 		arg.MaxPatients,
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> ffc9071 (AI suggestion)
 		arg.BookedPatients,
 	)
 	var i TimeSlot

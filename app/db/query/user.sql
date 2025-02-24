@@ -170,6 +170,7 @@ WHERE
 =======
 >>>>>>> 3003e08 (update sqlc)
 
+<<<<<<< HEAD
 
 <<<<<<< HEAD
 -- -- name: GetDoctor :one
@@ -319,3 +320,5 @@ ORDER BY
 -- name: GetAllDoctors :many
 SELECT * FROM Doctors WHERE is_active is true;
 >>>>>>> 33fcf96 (Big update)
+=======
+>>>>>>> ffc9071 (AI suggestion)

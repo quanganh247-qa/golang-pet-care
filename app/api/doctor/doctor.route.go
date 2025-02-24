@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 package doctor
 
 import (
@@ -32,3 +33,6 @@ func Routes(routerGroup middleware.RouterGroup) {
 		perRoute([]perms.Permission{perms.ManageDoctor}).POST("/shifts", doctorApi.controller.createShift)
 	}
 }
+=======
+package doctor
+>>>>>>> ffc9071 (AI suggestion)

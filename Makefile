@@ -8,6 +8,10 @@ mdown:
 
 new_migration:
 	migrate create -ext sql -dir app/db/migration -seq change_table
+<<<<<<< HEAD
+=======
+
+>>>>>>> ffc9071 (AI suggestion)
 migrateup-github:
 	migrate -path app/db/migration -database "$(DB_URL)" -verbose up
 
@@ -34,16 +38,27 @@ server:
 	gin -p 8089 -i run /Users/dhquanganh/Documents/TLCN/golang-pet-care/main.go
 >>>>>>> 685da65 (latest update)
 
+<<<<<<< HEAD
 >>>>>>> 9d28896 (image pet)
 
+=======
+>>>>>>> ffc9071 (AI suggestion)
 postgres:
 	docker run -d  --name postgres  -p 5433:5432 -e POSTGRES_PASSWORD=12345678  -e PGDATA=/var/lib/postgresql/data/pgdata  -v postgres_volume:/var/lib/postgresql/data  postgres:15-alpine
 
 redis:
 	docker run -d --name redis -p 6379:6379 redis:7-alpine
 
+<<<<<<< HEAD
 elasticsearch:
 	docker run --name elasticsearch -p 9200:9200 -e "discovery.type=single-node" -e "xpack.security.enabled=false" -d elasticsearch:8.12.0
+=======
+chroma-db:
+	docker run -d -p 8000:8000 docker.io/chromadb/chroma:0.6.4.dev226
+
+rabbitmq:
+	docker run -d --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:3-management
+>>>>>>> ffc9071 (AI suggestion)
 
 <<<<<<< HEAD
 minio:
@@ -76,8 +91,10 @@ migrate-create:
 postgres-ec:
 	docker run -d  --name postgres-ec  -p 5432:5432 -e POSTGRES_PASSWORD=12345678  -e PGDATA=/var/lib/postgresql/data/pgdata  -v postgres_volume:/var/lib/postgresql/data  postgres:15-alpine
 
-createdb:
-	createdb --username=root --owner=root golang_pet_care
 
+<<<<<<< HEAD
 .PHONY: mup mdown  mforce sqlc server   postgres  redis  rabbitmq
 >>>>>>> 21608b5 (cart and order api)
+=======
+.PHONY: mup mdown  mforce sqlc server   postgres  redis  rabbitmq 
+>>>>>>> ffc9071 (AI suggestion)

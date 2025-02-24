@@ -7,18 +7,19 @@ toolchain go1.23.3
 require (
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 	firebase.google.com/go v3.13.0+incompatible
 =======
 >>>>>>> 9d28896 (image pet)
 	github.com/aead/chacha20poly1305 v0.0.0-20201124145622-1a5aba2a8b29
 >>>>>>> bf086f9 (app.env)
+=======
+>>>>>>> ffc9071 (AI suggestion)
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/fatih/color v1.14.1
 	github.com/fsnotify/fsnotify v1.7.0
-	github.com/galeone/tensorflow/tensorflow/go v0.0.0-20240119075110-6ad3cf65adfe
 	github.com/gin-gonic/gin v1.10.0
-	github.com/go-redis/redis/v8 v8.11.5
 	github.com/google/uuid v1.6.0
 <<<<<<< HEAD
 	github.com/gorilla/websocket v1.5.3
@@ -32,9 +33,12 @@ require (
 	github.com/jackc/pgx v3.6.2+incompatible
 	github.com/jackc/pgx/v5 v5.7.1
 	github.com/lib/pq v1.10.9
+<<<<<<< HEAD
 	github.com/o1egl/paseto v1.0.0
 	github.com/rabbitmq/amqp091-go v1.10.0
 >>>>>>> 9d28896 (image pet)
+=======
+>>>>>>> ffc9071 (AI suggestion)
 	github.com/rs/zerolog v1.33.0
 	github.com/spf13/viper v1.19.0
 <<<<<<< HEAD
@@ -95,6 +99,7 @@ require (
 	github.com/go-openapi/spec v0.21.0 // indirect
 	github.com/go-openapi/swag v0.23.0 // indirect
 	github.com/gofrs/uuid v4.4.0+incompatible // indirect
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 	github.com/golang-migrate/migrate/v4 v4.18.1 // indirect
@@ -167,26 +172,20 @@ require (
 	github.com/google/go-cmp v0.6.0 // indirect
 	github.com/guptarohit/asciigraph v0.5.1 // indirect
 >>>>>>> 33fcf96 (Big update)
+=======
+>>>>>>> ffc9071 (AI suggestion)
 	github.com/jackc/fake v0.0.0-20150926172116-812a484cc733 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
-	github.com/mattn/go-runewidth v0.0.7 // indirect
-	github.com/olekukonko/tablewriter v0.0.4 // indirect
 	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
 	github.com/robfig/cron/v3 v3.0.1 // indirect
-	github.com/rocketlaunchr/dataframe-go v0.0.0-20201007021539-67b046771f0b // indirect
 	github.com/shopspring/decimal v1.4.0 // indirect
-	github.com/sjwhitworth/golearn v0.0.0-20221228163002-74ae077eafb2 // indirect
-	github.com/stretchr/objx v0.5.2 // indirect
 	github.com/swaggo/swag v1.16.4 // indirect
 	golang.org/x/tools v0.27.0 // indirect
-	gonum.org/v1/gonum v0.8.1 // indirect
 )
 
 require (
-	github.com/aead/chacha20 v0.0.0-20180709150244-8b13a72661da // indirect
-	github.com/aead/poly1305 v0.0.0-20180717145839-3fee0db0b635 // indirect
 	github.com/bytedance/sonic v1.12.4 // indirect
 	github.com/bytedance/sonic/loader v0.2.1 // indirect
 <<<<<<< HEAD

@@ -33,17 +33,25 @@ SELECT * FROM Service ORDER BY name LIMIT $1 OFFSET $2;
 >>>>>>> 5e493e4 (get all services)
 =======
 SELECT * FROM services
+<<<<<<< HEAD
 WHERE id = $1 and removed_at is NULL;
 >>>>>>> b393bb9 (add service and add permission)
+=======
+WHERE id = $1;
+>>>>>>> ffc9071 (AI suggestion)
 
 -- name: DeleteService :exec
 UPDATE services
 SET removed_at = NOW()
 <<<<<<< HEAD
+<<<<<<< HEAD
 WHERE id = $1;
 =======
 WHERE id = $1 and removed_at is NULL;
 >>>>>>> b393bb9 (add service and add permission)
+=======
+WHERE id = $1;
+>>>>>>> ffc9071 (AI suggestion)
 
 -- name: UpdateService :one
 UPDATE services
@@ -59,6 +67,11 @@ WHERE id = $1
 =======
     notes = $7,
     updated_at = NOW()
+<<<<<<< HEAD
 WHERE id = $1 and removed_at is NULL
 >>>>>>> b393bb9 (add service and add permission)
 RETURNING *;
+=======
+WHERE id = $1
+RETURNING *;
+>>>>>>> ffc9071 (AI suggestion)

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 package doctor
 
 import (
@@ -121,3 +122,6 @@ func (c *DoctorController) getDoctorById(ctx *gin.Context) {
 	}
 	ctx.JSON(http.StatusOK, util.SuccessResponse("Success", res))
 }
+=======
+package doctor
+>>>>>>> ffc9071 (AI suggestion)

@@ -247,6 +247,7 @@ func (q *Queries) GetPetByID(ctx context.Context, petid int64) (Pet, error) {
 	return i, err
 }
 
+<<<<<<< HEAD
 const getPetDetailByUserID = `-- name: GetPetDetailByUserID :one
 SELECT p.petid, p.name, p.type, p.breed, p.age, p.gender, p.healthnotes, p.weight, p.birth_date, p.username, p.microchip_number, p.last_checkup_date, p.is_active, p.data_image, p.original_image, u.full_name
 FROM pets AS p
@@ -304,6 +305,10 @@ func (q *Queries) GetPetDetailByUserID(ctx context.Context, arg GetPetDetailByUs
 
 const getPetProfileSummary = `-- name: GetPetProfileSummary :many
 SELECT p.petid, p.name, p.type, p.breed, p.age, p.gender, p.healthnotes, p.weight, p.birth_date, p.username, p.microchip_number, p.last_checkup_date, p.is_active, p.data_image, p.original_image, pt.id, pt.pet_id, pt.disease_id, pt.start_date, pt.end_date, pt.status, pt.name, pt.type, pt.description, pt.created_at, pt.doctor_id, v.vaccinationid, v.petid, v.vaccinename, v.dateadministered, v.nextduedate, v.vaccineprovider, v.batchnumber, v.notes 
+=======
+const getPetProfileSummary = `-- name: GetPetProfileSummary :many
+SELECT p.petid, p.name, p.type, p.breed, p.age, p.gender, p.healthnotes, p.weight, p.birth_date, p.username, p.microchip_number, p.last_checkup_date, p.is_active, p.data_image, p.original_image, pt.id, pt.pet_id, pt.disease_id, pt.start_date, pt.end_date, pt.status, pt.notes, pt.created_at, v.vaccinationid, v.petid, v.vaccinename, v.dateadministered, v.nextduedate, v.vaccineprovider, v.batchnumber, v.notes 
+>>>>>>> ffc9071 (AI suggestion)
 FROM pets AS p
 LEFT JOIN pet_treatments AS pt ON p.petid = pt.pet_id
 LEFT JOIN vaccinations AS v ON p.petid = v.petid
@@ -332,11 +337,16 @@ type GetPetProfileSummaryRow struct {
 	StartDate        pgtype.Date        `json:"start_date"`
 	EndDate          pgtype.Date        `json:"end_date"`
 	Status           pgtype.Text        `json:"status"`
+<<<<<<< HEAD
 	Name_2           pgtype.Text        `json:"name_2"`
 	Type_2           pgtype.Text        `json:"type_2"`
 	Description      pgtype.Text        `json:"description"`
 	CreatedAt        pgtype.Timestamptz `json:"created_at"`
 	DoctorID         pgtype.Int4        `json:"doctor_id"`
+=======
+	Notes            pgtype.Text        `json:"notes"`
+	CreatedAt        pgtype.Timestamptz `json:"created_at"`
+>>>>>>> ffc9071 (AI suggestion)
 	Vaccinationid    pgtype.Int8        `json:"vaccinationid"`
 	Petid_2          pgtype.Int8        `json:"petid_2"`
 	Vaccinename      pgtype.Text        `json:"vaccinename"`
@@ -344,7 +354,11 @@ type GetPetProfileSummaryRow struct {
 	Nextduedate      pgtype.Timestamp   `json:"nextduedate"`
 	Vaccineprovider  pgtype.Text        `json:"vaccineprovider"`
 	Batchnumber      pgtype.Text        `json:"batchnumber"`
+<<<<<<< HEAD
 	Notes            pgtype.Text        `json:"notes"`
+=======
+	Notes_2          pgtype.Text        `json:"notes_2"`
+>>>>>>> ffc9071 (AI suggestion)
 }
 
 func (q *Queries) GetPetProfileSummary(ctx context.Context, petid int64) ([]GetPetProfileSummaryRow, error) {
@@ -378,11 +392,16 @@ func (q *Queries) GetPetProfileSummary(ctx context.Context, petid int64) ([]GetP
 			&i.StartDate,
 			&i.EndDate,
 			&i.Status,
+<<<<<<< HEAD
 			&i.Name_2,
 			&i.Type_2,
 			&i.Description,
 			&i.CreatedAt,
 			&i.DoctorID,
+=======
+			&i.Notes,
+			&i.CreatedAt,
+>>>>>>> ffc9071 (AI suggestion)
 			&i.Vaccinationid,
 			&i.Petid_2,
 			&i.Vaccinename,
@@ -390,7 +409,11 @@ func (q *Queries) GetPetProfileSummary(ctx context.Context, petid int64) ([]GetP
 			&i.Nextduedate,
 			&i.Vaccineprovider,
 			&i.Batchnumber,
+<<<<<<< HEAD
 			&i.Notes,
+=======
+			&i.Notes_2,
+>>>>>>> ffc9071 (AI suggestion)
 		); err != nil {
 			return nil, err
 		}
