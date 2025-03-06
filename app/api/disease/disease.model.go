@@ -3,18 +3,20 @@ package disease
 import (
 	"github.com/lib/pq"
 	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
+	"github.com/quanganh247-qa/go-blog-be/app/service/elasticsearch"
 )
 
-type DiceaseApi struct {
-	controller DiceaseControllerInterface
+type DiseaseApi struct {
+	controller DiseaseControllerInterface
 }
 
-type DiceaseController struct {
-	service DiceaseServiceInterface
+type DiseaseController struct {
+	service DiseaseServiceInterface
 }
 
-type DiceaseService struct {
+type DiseaseService struct {
 	storeDB db.Store
+	es      *elasticsearch.ESService
 }
 
 // DiseaseMedicineInfo holds the disease and associated medicine information.
@@ -63,7 +65,6 @@ type CreateTreatmentRequest struct {
 	Notes     string `json:"notes"`
 }
 
-// SELECT t.id, p.name AS pet_name, d.name AS disease, t.start_date, t.end_date, t.status
 type Treatment struct {
 	ID        int64  `json:"id"`
 	PetName   string `json:"pet_name"`
@@ -122,10 +123,15 @@ type UpdateTreatmentPhaseStatusRequest struct {
 	Status string `json:"status" validate:"required,oneof=pending active completed"`
 }
 
-// SELECT tp.phase_name, tp.status, tp.start_date, tp.end_date, COUNT(pm.medicine_id) AS num_medicines
 type TreatmentProgressDetail struct {
 	PhaseName    string `json:"phase_name"`
 	Status       string `json:"status"`
 	StartDate    string `json:"start_date"`
 	NumMedicines int32  `json:"num_medicines"`
+}
+
+type CreateDiseaseRequest struct {
+	Name        string   `json:"name"`
+	Description string   `json:"description"`
+	Symptoms    []string `json:"symptoms"`
 }

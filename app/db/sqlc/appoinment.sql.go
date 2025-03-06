@@ -31,23 +31,22 @@ func (q *Queries) CountAppointmentsByDateAndTimeSlot(ctx context.Context, arg Co
 
 const createAppointment = `-- name: CreateAppointment :one
 INSERT INTO appointments
-( petid, doctor_id, username, service_id, "date", payment_status, notes, reminder_send, time_slot_id, created_at, state_id)
+( petid, doctor_id, username, service_id, "date", notes, reminder_send, time_slot_id, created_at, state_id)
 VALUES( 
-    $1, $2, $3, $4, $5, $6, $7, $8, $9, now(), $10
-) RETURNING appointment_id, petid, username, doctor_id, service_id, date, notes, reminder_send, time_slot_id, payment_status, created_at, state_id
+    $1, $2, $3, $4, $5, $6, $7, $8, now(), $9
+) RETURNING appointment_id, petid, username, doctor_id, service_id, date, notes, reminder_send, time_slot_id, created_at, state_id
 `
 
 type CreateAppointmentParams struct {
-	Petid         pgtype.Int8      `json:"petid"`
-	DoctorID      pgtype.Int8      `json:"doctor_id"`
-	Username      pgtype.Text      `json:"username"`
-	ServiceID     pgtype.Int8      `json:"service_id"`
-	Date          pgtype.Timestamp `json:"date"`
-	PaymentStatus pgtype.Text      `json:"payment_status"`
-	Notes         pgtype.Text      `json:"notes"`
-	ReminderSend  pgtype.Bool      `json:"reminder_send"`
-	TimeSlotID    pgtype.Int8      `json:"time_slot_id"`
-	StateID       pgtype.UUID      `json:"state_id"`
+	Petid        pgtype.Int8      `json:"petid"`
+	DoctorID     pgtype.Int8      `json:"doctor_id"`
+	Username     pgtype.Text      `json:"username"`
+	ServiceID    pgtype.Int8      `json:"service_id"`
+	Date         pgtype.Timestamp `json:"date"`
+	Notes        pgtype.Text      `json:"notes"`
+	ReminderSend pgtype.Bool      `json:"reminder_send"`
+	TimeSlotID   pgtype.Int8      `json:"time_slot_id"`
+	StateID      pgtype.Int4      `json:"state_id"`
 }
 
 func (q *Queries) CreateAppointment(ctx context.Context, arg CreateAppointmentParams) (Appointment, error) {
@@ -57,7 +56,6 @@ func (q *Queries) CreateAppointment(ctx context.Context, arg CreateAppointmentPa
 		arg.Username,
 		arg.ServiceID,
 		arg.Date,
-		arg.PaymentStatus,
 		arg.Notes,
 		arg.ReminderSend,
 		arg.TimeSlotID,
@@ -74,7 +72,6 @@ func (q *Queries) CreateAppointment(ctx context.Context, arg CreateAppointmentPa
 		&i.Notes,
 		&i.ReminderSend,
 		&i.TimeSlotID,
-		&i.PaymentStatus,
 		&i.CreatedAt,
 		&i.StateID,
 	)
@@ -82,7 +79,7 @@ func (q *Queries) CreateAppointment(ctx context.Context, arg CreateAppointmentPa
 }
 
 const getAllAppointments = `-- name: GetAllAppointments :many
-SELECT appointment_id, appointments.petid, appointments.username, appointments.doctor_id, service_id, appointments.date, appointments.notes, reminder_send, time_slot_id, payment_status, appointments.created_at, state_id, pets.petid, pets.name, type, breed, age, gender, healthnotes, weight, birth_date, pets.username, microchip_number, last_checkup_date, is_active, data_image, original_image, services.id, services.name, description, duration, cost, category, services.notes, services.created_at, services.updated_at, time_slots.id, time_slots.doctor_id, time_slots.date, start_time, end_time, max_patients, booked_patients, time_slots.created_at, time_slots.updated_at, doctors.id, user_id, specialization, years_of_experience, education, certificate_number, bio, consultation_fee FROM appointments
+SELECT appointment_id, appointments.petid, appointments.username, appointments.doctor_id, service_id, appointments.date, appointments.notes, reminder_send, time_slot_id, appointments.created_at, state_id, pets.petid, pets.name, type, breed, age, gender, healthnotes, weight, birth_date, pets.username, microchip_number, last_checkup_date, is_active, data_image, original_image, services.id, services.name, description, duration, cost, category, services.notes, services.created_at, services.updated_at, time_slots.id, time_slots.doctor_id, time_slots.date, start_time, end_time, max_patients, booked_patients, time_slots.created_at, time_slots.updated_at, doctors.id, user_id, specialization, years_of_experience, education, certificate_number, bio, consultation_fee FROM appointments
 JOIN pets ON appointments.petid = pets.petid
 JOIN services ON appointments.service_id = services.id
 JOIN time_slots ON appointments.time_slot_id = time_slots.id
@@ -99,9 +96,8 @@ type GetAllAppointmentsRow struct {
 	Notes             pgtype.Text      `json:"notes"`
 	ReminderSend      pgtype.Bool      `json:"reminder_send"`
 	TimeSlotID        pgtype.Int8      `json:"time_slot_id"`
-	PaymentStatus     pgtype.Text      `json:"payment_status"`
 	CreatedAt         pgtype.Timestamp `json:"created_at"`
-	StateID           pgtype.UUID      `json:"state_id"`
+	StateID           pgtype.Int4      `json:"state_id"`
 	Petid_2           int64            `json:"petid_2"`
 	Name              string           `json:"name"`
 	Type              string           `json:"type"`
@@ -164,7 +160,6 @@ func (q *Queries) GetAllAppointments(ctx context.Context) ([]GetAllAppointmentsR
 			&i.Notes,
 			&i.ReminderSend,
 			&i.TimeSlotID,
-			&i.PaymentStatus,
 			&i.CreatedAt,
 			&i.StateID,
 			&i.Petid_2,
@@ -220,10 +215,10 @@ func (q *Queries) GetAllAppointments(ctx context.Context) ([]GetAllAppointmentsR
 }
 
 const getAppointmentByStateId = `-- name: GetAppointmentByStateId :many
-SELECT appointment_id, petid, username, doctor_id, service_id, date, notes, reminder_send, time_slot_id, payment_status, created_at, state_id FROM appointments WHERE state_id = $1
+SELECT appointment_id, petid, username, doctor_id, service_id, date, notes, reminder_send, time_slot_id, created_at, state_id FROM appointments WHERE state_id = $1
 `
 
-func (q *Queries) GetAppointmentByStateId(ctx context.Context, stateID pgtype.UUID) ([]Appointment, error) {
+func (q *Queries) GetAppointmentByStateId(ctx context.Context, stateID pgtype.Int4) ([]Appointment, error) {
 	rows, err := q.db.Query(ctx, getAppointmentByStateId, stateID)
 	if err != nil {
 		return nil, err
@@ -242,7 +237,6 @@ func (q *Queries) GetAppointmentByStateId(ctx context.Context, stateID pgtype.UU
 			&i.Notes,
 			&i.ReminderSend,
 			&i.TimeSlotID,
-			&i.PaymentStatus,
 			&i.CreatedAt,
 			&i.StateID,
 		); err != nil {
@@ -257,7 +251,7 @@ func (q *Queries) GetAppointmentByStateId(ctx context.Context, stateID pgtype.UU
 }
 
 const getAppointmentDetailById = `-- name: GetAppointmentDetailById :one
-SELECT appointment_id, petid, username, doctor_id, service_id, date, notes, reminder_send, time_slot_id, payment_status, created_at, state_id from appointments WHERE appointment_id = $1
+SELECT appointment_id, petid, username, doctor_id, service_id, date, notes, reminder_send, time_slot_id, created_at, state_id from appointments WHERE appointment_id = $1
 `
 
 func (q *Queries) GetAppointmentDetailById(ctx context.Context, appointmentID int64) (Appointment, error) {
@@ -273,7 +267,6 @@ func (q *Queries) GetAppointmentDetailById(ctx context.Context, appointmentID in
 		&i.Notes,
 		&i.ReminderSend,
 		&i.TimeSlotID,
-		&i.PaymentStatus,
 		&i.CreatedAt,
 		&i.StateID,
 	)
@@ -282,7 +275,7 @@ func (q *Queries) GetAppointmentDetailById(ctx context.Context, appointmentID in
 
 const getAppointmentsByDoctor = `-- name: GetAppointmentsByDoctor :many
 SELECT 
-    a.appointment_id, a.petid, a.username, a.doctor_id, a.service_id, a.date, a.notes, a.reminder_send, a.time_slot_id, a.payment_status, a.created_at, a.state_id,
+    a.appointment_id, a.petid, a.username, a.doctor_id, a.service_id, a.date, a.notes, a.reminder_send, a.time_slot_id, a.created_at, a.state_id,
     d.id AS doctor_id,
     p.name AS pet_name,
     s.name AS service_name,
@@ -312,9 +305,8 @@ type GetAppointmentsByDoctorRow struct {
 	Notes         pgtype.Text      `json:"notes"`
 	ReminderSend  pgtype.Bool      `json:"reminder_send"`
 	TimeSlotID    pgtype.Int8      `json:"time_slot_id"`
-	PaymentStatus pgtype.Text      `json:"payment_status"`
 	CreatedAt     pgtype.Timestamp `json:"created_at"`
-	StateID       pgtype.UUID      `json:"state_id"`
+	StateID       pgtype.Int4      `json:"state_id"`
 	DoctorID_2    int64            `json:"doctor_id_2"`
 	PetName       string           `json:"pet_name"`
 	ServiceName   pgtype.Text      `json:"service_name"`
@@ -341,7 +333,6 @@ func (q *Queries) GetAppointmentsByDoctor(ctx context.Context, doctorID pgtype.I
 			&i.Notes,
 			&i.ReminderSend,
 			&i.TimeSlotID,
-			&i.PaymentStatus,
 			&i.CreatedAt,
 			&i.StateID,
 			&i.DoctorID_2,
@@ -362,7 +353,7 @@ func (q *Queries) GetAppointmentsByDoctor(ctx context.Context, doctorID pgtype.I
 
 const getAppointmentsByUser = `-- name: GetAppointmentsByUser :many
 SELECT 
-    p.petid, p.name, p.type, p.breed, p.age, p.gender, p.healthnotes, p.weight, p.birth_date, p.username, p.microchip_number, p.last_checkup_date, p.is_active, p.data_image, p.original_image, s.id, s.name, s.description, s.duration, s.cost, s.category, s.notes, s.created_at, s.updated_at, a.appointment_id, a.petid, a.username, a.doctor_id, a.service_id, a.date, a.notes, a.reminder_send, a.time_slot_id, a.payment_status, a.created_at, a.state_id, ts.id, ts.doctor_id, ts.date, ts.start_time, ts.end_time, ts.max_patients, ts.booked_patients, ts.created_at, ts.updated_at
+    p.petid, p.name, p.type, p.breed, p.age, p.gender, p.healthnotes, p.weight, p.birth_date, p.username, p.microchip_number, p.last_checkup_date, p.is_active, p.data_image, p.original_image, s.id, s.name, s.description, s.duration, s.cost, s.category, s.notes, s.created_at, s.updated_at, a.appointment_id, a.petid, a.username, a.doctor_id, a.service_id, a.date, a.notes, a.reminder_send, a.time_slot_id, a.created_at, a.state_id, ts.id, ts.doctor_id, ts.date, ts.start_time, ts.end_time, ts.max_patients, ts.booked_patients, ts.created_at, ts.updated_at
 FROM 
     appointments a
 JOIN 
@@ -409,9 +400,8 @@ type GetAppointmentsByUserRow struct {
 	Notes_2         pgtype.Text      `json:"notes_2"`
 	ReminderSend    pgtype.Bool      `json:"reminder_send"`
 	TimeSlotID      pgtype.Int8      `json:"time_slot_id"`
-	PaymentStatus   pgtype.Text      `json:"payment_status"`
 	CreatedAt_2     pgtype.Timestamp `json:"created_at_2"`
-	StateID         pgtype.UUID      `json:"state_id"`
+	StateID         pgtype.Int4      `json:"state_id"`
 	ID_2            int64            `json:"id_2"`
 	DoctorID_2      int32            `json:"doctor_id_2"`
 	Date_2          pgtype.Date      `json:"date_2"`
@@ -466,7 +456,6 @@ func (q *Queries) GetAppointmentsByUser(ctx context.Context, username pgtype.Tex
 			&i.Notes_2,
 			&i.ReminderSend,
 			&i.TimeSlotID,
-			&i.PaymentStatus,
 			&i.CreatedAt_2,
 			&i.StateID,
 			&i.ID_2,
@@ -540,8 +529,27 @@ func (q *Queries) GetAppointmentsOfDoctorWithDetails(ctx context.Context, id int
 	return items, nil
 }
 
+const getSOAPByAppointmentID = `-- name: GetSOAPByAppointmentID :one
+SELECT id, appointment_id, subjective, objective, assessment, plan, created_at FROM consultations WHERE appointment_id = $1
+`
+
+func (q *Queries) GetSOAPByAppointmentID(ctx context.Context, appointmentID pgtype.Int8) (Consultation, error) {
+	row := q.db.QueryRow(ctx, getSOAPByAppointmentID, appointmentID)
+	var i Consultation
+	err := row.Scan(
+		&i.ID,
+		&i.AppointmentID,
+		&i.Subjective,
+		&i.Objective,
+		&i.Assessment,
+		&i.Plan,
+		&i.CreatedAt,
+	)
+	return i, err
+}
+
 const listAllAppointments = `-- name: ListAllAppointments :many
-SELECT appointment_id, petid, username, doctor_id, service_id, date, notes, reminder_send, time_slot_id, payment_status, created_at, state_id FROM appointments
+SELECT appointment_id, petid, username, doctor_id, service_id, date, notes, reminder_send, time_slot_id, created_at, state_id FROM appointments
 `
 
 func (q *Queries) ListAllAppointments(ctx context.Context) ([]Appointment, error) {
@@ -563,7 +571,6 @@ func (q *Queries) ListAllAppointments(ctx context.Context) ([]Appointment, error
 			&i.Notes,
 			&i.ReminderSend,
 			&i.TimeSlotID,
-			&i.PaymentStatus,
 			&i.CreatedAt,
 			&i.StateID,
 		); err != nil {
@@ -577,19 +584,45 @@ func (q *Queries) ListAllAppointments(ctx context.Context) ([]Appointment, error
 	return items, nil
 }
 
+const updateAppointmentByID = `-- name: UpdateAppointmentByID :exec
+UPDATE appointments SET 
+    state_id = $2,
+    notes = $3,
+    reminder_send = $4,
+    updated_at = now()
+WHERE appointment_id = $1
+`
+
+type UpdateAppointmentByIDParams struct {
+	AppointmentID int64       `json:"appointment_id"`
+	StateID       pgtype.Int4 `json:"state_id"`
+	Notes         pgtype.Text `json:"notes"`
+	ReminderSend  pgtype.Bool `json:"reminder_send"`
+}
+
+func (q *Queries) UpdateAppointmentByID(ctx context.Context, arg UpdateAppointmentByIDParams) error {
+	_, err := q.db.Exec(ctx, updateAppointmentByID,
+		arg.AppointmentID,
+		arg.StateID,
+		arg.Notes,
+		arg.ReminderSend,
+	)
+	return err
+}
+
 const updateAppointmentStatus = `-- name: UpdateAppointmentStatus :exec
 UPDATE appointments
-SET payment_status = $2
+SET state_id = $2
 WHERE appointment_id = $1
 `
 
 type UpdateAppointmentStatusParams struct {
 	AppointmentID int64       `json:"appointment_id"`
-	PaymentStatus pgtype.Text `json:"payment_status"`
+	StateID       pgtype.Int4 `json:"state_id"`
 }
 
 func (q *Queries) UpdateAppointmentStatus(ctx context.Context, arg UpdateAppointmentStatusParams) error {
-	_, err := q.db.Exec(ctx, updateAppointmentStatus, arg.AppointmentID, arg.PaymentStatus)
+	_, err := q.db.Exec(ctx, updateAppointmentStatus, arg.AppointmentID, arg.StateID)
 	return err
 }
 

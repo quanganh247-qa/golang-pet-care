@@ -10,15 +10,17 @@ import (
 	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
 )
 
-type VietQRServiceInterface interface {
+type PaymentServiceInterface interface {
 	GetToken(c *gin.Context) (*TokenResponse, error)
 	GetBanksService(c *gin.Context) (*BankResponse, error)
 	GenerateQRService(c *gin.Context, qrRequest QRRequest) (*GenerateQRCodeResponse, error)
+
+	GenerateOauthToken(c *gin.Context) (*OauthTokenResponse, error)
 }
 
-func (s *VietQRService) GetToken(c *gin.Context) (*TokenResponse, error) {
+func (s *PaymentService) GetToken(c *gin.Context) (*TokenResponse, error) {
 	// Build base URL
-	baseURL := fmt.Sprintf("%s/token_generate", s.config.BaseURL)
+	baseURL := fmt.Sprintf("%s/token_generate", s.config.PaymentBaseURL)
 	fmt.Println(baseURL)
 	// Make request
 	resp, err := s.client.Post(baseURL, "application/json", nil)
@@ -42,9 +44,9 @@ func (s *VietQRService) GetToken(c *gin.Context) (*TokenResponse, error) {
 }
 
 // get banks
-func (s *VietQRService) GetBanksService(c *gin.Context) (*BankResponse, error) {
+func (s *PaymentService) GetBanksService(c *gin.Context) (*BankResponse, error) {
 	// Build base URL
-	baseURL := fmt.Sprintf("%s/banks", s.config.BaseURL)
+	baseURL := fmt.Sprintf("%s/banks", s.config.PaymentBaseURL)
 	fmt.Println(baseURL)
 	// Make request
 	resp, err := s.client.Get(baseURL)
@@ -68,10 +70,10 @@ func (s *VietQRService) GetBanksService(c *gin.Context) (*BankResponse, error) {
 }
 
 // generate qr
-func (s *VietQRService) GenerateQRService(c *gin.Context, qrRequest QRRequest) (*GenerateQRCodeResponse, error) {
+func (s *PaymentService) GenerateQRService(c *gin.Context, qrRequest QRRequest) (*GenerateQRCodeResponse, error) {
 	// Build base URL
 
-	baseURL := fmt.Sprintf("%s/generate", s.config.BaseURL)
+	baseURL := fmt.Sprintf("%s/generate", s.config.PaymentBaseURL)
 
 	// Make request
 	reqBody, _ := json.Marshal(qrRequest)
@@ -80,8 +82,8 @@ func (s *VietQRService) GenerateQRService(c *gin.Context, qrRequest QRRequest) (
 		return nil, fmt.Errorf("failed to make request: %v", err)
 	}
 	// Thêm các Header cần thiết
-	resp.Header.Set("x-client-id", s.config.ClientKey)
-	resp.Header.Set("x-api-key", s.config.APIKey)
+	resp.Header.Set("x-client-id", s.config.PaymentClientKey)
+	resp.Header.Set("x-api-key", s.config.PaymentAPIKey)
 	defer resp.Body.Close()
 
 	// Check response status
@@ -109,4 +111,9 @@ func (s *VietQRService) GenerateQRService(c *gin.Context, qrRequest QRRequest) (
 	}
 
 	return &result, nil
+}
+
+// generate oauth token
+func (s *PaymentService) GenerateOauthToken(c *gin.Context) (*OauthTokenResponse, error) {
+	return nil, nil
 }

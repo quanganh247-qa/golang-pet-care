@@ -7,25 +7,25 @@ import (
 )
 
 // GoongConfig contains configuration for VierQR Maps API
-type VietQRConfig struct {
-	APIKey    string
-	ClientKey string
-	BaseURL   string
+type PaymentConfig struct {
+	PaymentAPIKey    string
+	PaymentClientKey string
+	PaymentBaseURL   string
 }
 
 // GoongService handles interactions with VierQR Maps API
-type VietQRService struct {
-	config  *VietQRConfig
+type PaymentService struct {
+	config  *PaymentConfig
 	client  *http.Client
 	storeDB db.Store
 }
 
-type VietQRApi struct {
-	controller VietQRControllerInterface
+type PaymentApi struct {
+	controller PaymentControllerInterface
 }
 
-type VietQRController struct {
-	service VietQRServiceInterface
+type PaymentController struct {
+	service PaymentServiceInterface
 }
 
 type TokenResponse struct {
@@ -74,4 +74,10 @@ type GenerateQRData struct {
 	AccountName string `json:"accountName"` // Tên tài khoản
 	QRCode      string `json:"qrCode"`      // Dữ liệu QR code
 	QRDataURL   string `json:"qrDataURL"`   // Dữ liệu QR code dạng base64
+}
+
+type OauthTokenResponse struct {
+	AccessToken string `json:"access_token"`
+	TokenType   string `json:"token_type"`
+	ExpiresIn   int    `json:"expires_in"`
 }

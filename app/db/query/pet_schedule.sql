@@ -1,4 +1,3 @@
-
 -- name: GetAllSchedulesByPet :many
 SELECT * FROM pet_schedule 
 WHERE pet_id = $1 and removedat is null

@@ -32,6 +32,7 @@ func Init(config util.Config) (*Connection, error) {
 		return nil, fmt.Errorf("cannot connect to db: %w", err)
 	}
 
+	// Khởi tạo Redis
 	_ = asynq.RedisClientOpt{
 		Addr: config.RedisAddress,
 	}
@@ -40,8 +41,25 @@ func Init(config util.Config) (*Connection, error) {
 		return nil, fmt.Errorf("cannot connect to redis: %w", err)
 	}
 
+	// Khởi tạo database
 	DB := db.InitStore(connPool)
 	go runTaskProcessor(&config, asynq.RedisClientOpt{Addr: config.RedisAddress}, DB)
+
+	// client, err := minio.NewMinIOClient(
+	// 	config.MinIOEndpoint,
+	// 	config.MinIOAccessKey,
+	// 	config.MinIOSecretKey,
+	// 	config.MinIOSSL,
+	// )
+	// if err != nil {
+	// 	log.Println(color.RedString("Failed to initialize MinIO client: %v", err))
+	// }
+
+	// // Example usage of the MinIO client
+	// err = client.CheckConnection(context.Background())
+	// if err != nil {
+	// 	log.Println(color.RedString("Failed to check connection: %v", err))
+	// }
 
 	conn := &Connection{
 		Close: func() {

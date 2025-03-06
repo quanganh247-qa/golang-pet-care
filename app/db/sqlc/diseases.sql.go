@@ -11,6 +11,30 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+const createDisease = `-- name: CreateDisease :one
+INSERT INTO diseases (name, description, symptoms, created_at, updated_at) VALUES ($1, $2, $3, now(), now()) RETURNING id, name, description, symptoms, created_at, updated_at
+`
+
+type CreateDiseaseParams struct {
+	Name        string      `json:"name"`
+	Description pgtype.Text `json:"description"`
+	Symptoms    []byte      `json:"symptoms"`
+}
+
+func (q *Queries) CreateDisease(ctx context.Context, arg CreateDiseaseParams) (Disease, error) {
+	row := q.db.QueryRow(ctx, createDisease, arg.Name, arg.Description, arg.Symptoms)
+	var i Disease
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.Description,
+		&i.Symptoms,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
 const getDiceaseAndMedicinesInfo = `-- name: GetDiceaseAndMedicinesInfo :many
 SELECT 
     d.id AS disease_id,
@@ -25,7 +49,6 @@ SELECT
     m.duration,
     m.side_effects
 FROM diseases d
-LEFT JOIN disease_medicines dm ON d.id = dm.disease_id
 LEFT JOIN medicines m ON dm.medicine_id = m.id
 WHERE LOWER(d.name) LIKE LOWER($1)
 `

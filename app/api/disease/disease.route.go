@@ -3,38 +3,36 @@ package disease
 import (
 	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
 	"github.com/quanganh247-qa/go-blog-be/app/middleware"
+	"github.com/quanganh247-qa/go-blog-be/app/service/elasticsearch"
 	"github.com/quanganh247-qa/go-blog-be/app/util/perms"
 )
 
-func Routes(routerGroup middleware.RouterGroup) {
+func Routes(routerGroup middleware.RouterGroup, es *elasticsearch.ESService) {
 	dicease := routerGroup.RouterDefault.Group("/")
 	authRoute := routerGroup.RouterAuth(dicease)
 	perRoute := routerGroup.RouterPermission(dicease)
 
 	// Khoi tao api
-	diceaseApi := &DiceaseApi{
-		&DiceaseController{
-			service: &DiceaseService{
+	diseaseApi := &DiseaseApi{
+		&DiseaseController{
+			service: &DiseaseService{
 				storeDB: db.StoreDB, // This should refer to the actual instance
+				es:      es,
 			},
 		},
 	}
 
 	{
-
-		// authRoute.GET("/", diceaseApi.controller.getDiceaseAnhMedicinesInfo)
-		// authRoute.GET("/treatment/:disease_id", diceaseApi.controller.getTreatmentByDiseaseId)
-		authRoute.GET("/pet/:pet_id/treatments", diceaseApi.controller.GetTreatmentsByPetID)
-		authRoute.GET("/treatment/:treatment_id/phases", diceaseApi.controller.GetTreatmentPhasesByTreatmentID)
-		authRoute.GET("/treatment/:treatment_id/phases/:phase_id/medicines", diceaseApi.controller.GetMedicinesByPhaseID)
-		// for pet owner
-
+		authRoute.GET("/pet/:pet_id/treatments", diseaseApi.controller.GetTreatmentsByPetID)
+		authRoute.GET("/treatment/:treatment_id/phases", diseaseApi.controller.GetTreatmentPhasesByTreatmentID)
+		authRoute.GET("/treatment/:treatment_id/phases/:phase_id/medicines", diseaseApi.controller.GetMedicinesByPhaseID)
 	}
 	{
-		perRoute([]perms.Permission{perms.ManageDisease, perms.ManageTreatment}).POST("/treatment", diceaseApi.controller.CreateTreatment)
-		perRoute([]perms.Permission{perms.ManageDisease, perms.ManageTreatment}).POST("/treatment/:treatment_id/phase", diceaseApi.controller.CreateTreatmentPhase)
-		perRoute([]perms.Permission{perms.ManageDisease, perms.ManageTreatment}).POST("/treatment/:treatment_id/phase/:phase_id/medicine", diceaseApi.controller.AssignMedicineToTreatmentPhase)
-		perRoute([]perms.Permission{perms.ManageTreatment}).PUT("/treatment/:treatment_id/phase/:phase_id", diceaseApi.controller.UpdateTreatmentPhaseStatus)
+		perRoute([]perms.Permission{perms.ManageDisease, perms.ManageTreatment}).POST("/treatment", diseaseApi.controller.CreateTreatment)
+		perRoute([]perms.Permission{perms.ManageDisease, perms.ManageTreatment}).POST("/treatment/:treatment_id/phase", diseaseApi.controller.CreateTreatmentPhase)
+		perRoute([]perms.Permission{perms.ManageDisease, perms.ManageTreatment}).POST("/treatment/:treatment_id/phase/:phase_id/medicine", diseaseApi.controller.AssignMedicineToTreatmentPhase)
+		perRoute([]perms.Permission{perms.ManageTreatment}).PUT("/treatment/:treatment_id/phase/:phase_id", diseaseApi.controller.UpdateTreatmentPhaseStatus)
 	}
 
+	dicease.POST("/disease", diseaseApi.controller.CreateDisease)
 }

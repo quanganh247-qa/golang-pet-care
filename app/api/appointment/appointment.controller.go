@@ -18,6 +18,10 @@ type AppointmentControllerInterface interface {
 	getAllAppointments(ctx *gin.Context)
 	//time slot
 	getAvailableTimeSlots(ctx *gin.Context)
+
+	// SOAP
+	createSOAP(ctx *gin.Context)
+	updateSOAP(ctx *gin.Context)
 }
 
 func (c *AppointmentController) createAppointment(ctx *gin.Context) {
@@ -40,7 +44,7 @@ func (c *AppointmentController) createAppointment(ctx *gin.Context) {
 }
 
 func (c *AppointmentController) confirmAppointment(ctx *gin.Context) {
-	appointmentID := ctx.Param("appointment_id")
+	appointmentID := ctx.Param("id")
 	if appointmentID == "" {
 		ctx.JSON(http.StatusBadRequest, nil)
 		return
@@ -51,6 +55,7 @@ func (c *AppointmentController) confirmAppointment(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
 		return
 	}
+
 	err = c.service.ConfirmPayment(ctx, id)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
@@ -144,4 +149,53 @@ func (c *AppointmentController) getAllAppointments(ctx *gin.Context) {
 		return
 	}
 	ctx.JSON(http.StatusOK, util.SuccessResponse("get all appointments successful", res))
+}
+
+func (c *AppointmentController) createSOAP(ctx *gin.Context) {
+	appointmentID := ctx.Param("appointment_id")
+	if appointmentID == "" {
+		ctx.JSON(http.StatusBadRequest, nil)
+		return
+	}
+	id, err := strconv.ParseInt(appointmentID, 10, 64)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
+		return
+	}
+	var soap CreateSOAPRequest
+	if err := ctx.ShouldBindJSON(&soap); err != nil {
+		ctx.JSON(http.StatusBadRequest, util.ErrorValidator(err))
+		return
+	}
+
+	soapResponse, err := c.service.CreateSOAPService(ctx, soap, id)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	ctx.JSON(http.StatusOK, util.SuccessResponse("SOAP", soapResponse))
+}
+
+func (c *AppointmentController) updateSOAP(ctx *gin.Context) {
+	appointmentID := ctx.Param("appointment_id")
+	if appointmentID == "" {
+		ctx.JSON(http.StatusBadRequest, nil)
+		return
+	}
+	id, err := strconv.ParseInt(appointmentID, 10, 64)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
+		return
+	}
+	var soap UpdateSOAPRequest
+	if err := ctx.ShouldBindJSON(&soap); err != nil {
+		ctx.JSON(http.StatusBadRequest, util.ErrorValidator(err))
+		return
+	}
+	soapResponse, err := c.service.UpdateSOAPService(ctx, soap, id)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	ctx.JSON(http.StatusOK, util.SuccessResponse("SOAP", soapResponse))
 }

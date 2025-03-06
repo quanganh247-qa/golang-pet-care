@@ -29,9 +29,8 @@ type Appointment struct {
 	Notes         pgtype.Text      `json:"notes"`
 	ReminderSend  pgtype.Bool      `json:"reminder_send"`
 	TimeSlotID    pgtype.Int8      `json:"time_slot_id"`
-	PaymentStatus pgtype.Text      `json:"payment_status"`
 	CreatedAt     pgtype.Timestamp `json:"created_at"`
-	StateID       pgtype.UUID      `json:"state_id"`
+	StateID       pgtype.Int4      `json:"state_id"`
 }
 
 type Cart struct {
@@ -70,6 +69,16 @@ type CheckoutService struct {
 	Subtotal          pgtype.Float8 `json:"subtotal"`
 }
 
+type Consultation struct {
+	ID            int32            `json:"id"`
+	AppointmentID pgtype.Int8      `json:"appointment_id"`
+	Subjective    pgtype.Text      `json:"subjective"`
+	Objective     pgtype.Text      `json:"objective"`
+	Assessment    pgtype.Text      `json:"assessment"`
+	Plan          pgtype.Text      `json:"plan"`
+	CreatedAt     pgtype.Timestamp `json:"created_at"`
+}
+
 type Department struct {
 	ID          int64            `json:"id"`
 	Name        string           `json:"name"`
@@ -97,11 +106,6 @@ type Disease struct {
 	UpdatedAt   pgtype.Timestamptz `json:"updated_at"`
 }
 
-type DiseaseMedicine struct {
-	DiseaseID  int64 `json:"disease_id"`
-	MedicineID int64 `json:"medicine_id"`
-}
-
 type Doctor struct {
 	ID                int64         `json:"id"`
 	UserID            int64         `json:"user_id"`
@@ -111,6 +115,16 @@ type Doctor struct {
 	CertificateNumber pgtype.Text   `json:"certificate_number"`
 	Bio               pgtype.Text   `json:"bio"`
 	ConsultationFee   pgtype.Float8 `json:"consultation_fee"`
+}
+
+type File struct {
+	ID         int64            `json:"id"`
+	FileName   string           `json:"file_name"`
+	FilePath   string           `json:"file_path"`
+	FileSize   int64            `json:"file_size"`
+	FileType   string           `json:"file_type"`
+	UploadedAt pgtype.Timestamp `json:"uploaded_at"`
+	UserID     pgtype.Int8      `json:"user_id"`
 }
 
 type MedicalHistory struct {
@@ -132,29 +146,39 @@ type MedicalRecord struct {
 }
 
 type Medicine struct {
-	ID              int64              `json:"id"`
-	Name            string             `json:"name"`
-	Description     pgtype.Text        `json:"description"`
-	Usage           pgtype.Text        `json:"usage"`
-	Dosage          pgtype.Text        `json:"dosage"`
-	Frequency       pgtype.Text        `json:"frequency"`
-	Duration        pgtype.Text        `json:"duration"`
-	SideEffects     pgtype.Text        `json:"side_effects"`
-	MedicalRecordID pgtype.Int8        `json:"medical_record_id"`
-	PrescribingVet  pgtype.Text        `json:"prescribing_vet"`
-	StartDate       pgtype.Date        `json:"start_date"`
-	EndDate         pgtype.Date        `json:"end_date"`
-	CreatedAt       pgtype.Timestamptz `json:"created_at"`
-	UpdatedAt       pgtype.Timestamptz `json:"updated_at"`
+	ID             int64              `json:"id"`
+	Name           string             `json:"name"`
+	Description    pgtype.Text        `json:"description"`
+	Usage          pgtype.Text        `json:"usage"`
+	Dosage         pgtype.Text        `json:"dosage"`
+	Frequency      pgtype.Text        `json:"frequency"`
+	Duration       pgtype.Text        `json:"duration"`
+	SideEffects    pgtype.Text        `json:"side_effects"`
+	ExpirationDate pgtype.Date        `json:"expiration_date"`
+	Quantity       pgtype.Int8        `json:"quantity"`
+	CreatedAt      pgtype.Timestamptz `json:"created_at"`
+	UpdatedAt      pgtype.Timestamptz `json:"updated_at"`
 }
 
 type Notification struct {
-	Notificationid int64            `json:"notificationid"`
-	Username       string           `json:"username"`
-	Title          string           `json:"title"`
-	Description    pgtype.Text      `json:"description"`
-	Datetime       pgtype.Timestamp `json:"datetime"`
-	IsRead         pgtype.Bool      `json:"is_read"`
+	ID          int64            `json:"id"`
+	Username    string           `json:"username"`
+	Title       string           `json:"title"`
+	Content     pgtype.Text      `json:"content"`
+	IsRead      pgtype.Bool      `json:"is_read"`
+	RelatedID   pgtype.Int4      `json:"related_id"`
+	RelatedType pgtype.Text      `json:"related_type"`
+	Datetime    pgtype.Timestamp `json:"datetime"`
+	NotifyType  pgtype.Text      `json:"notify_type"`
+}
+
+type NotificationPreference struct {
+	ID        int64            `json:"id"`
+	Username  string           `json:"username"`
+	Topic     string           `json:"topic"`
+	Enabled   pgtype.Bool      `json:"enabled"`
+	CreatedAt pgtype.Timestamp `json:"created_at"`
+	UpdatedAt pgtype.Timestamp `json:"updated_at"`
 }
 
 type Order struct {
@@ -226,6 +250,8 @@ type PhaseMedicine struct {
 	Frequency  pgtype.Text        `json:"frequency"`
 	Duration   pgtype.Text        `json:"duration"`
 	Notes      pgtype.Text        `json:"notes"`
+	Quantity   pgtype.Int4        `json:"quantity"`
+	IsReceived pgtype.Bool        `json:"is_received"`
 	CreatedAt  pgtype.Timestamptz `json:"created_at"`
 }
 
@@ -263,9 +289,8 @@ type SoapNote struct {
 	UpdatedAt     pgtype.Timestamp `json:"updated_at"`
 }
 
-type TaskState struct {
-	ID        pgtype.UUID      `json:"id"`
-	TaskID    int32            `json:"task_id"`
+type State struct {
+	ID        int64            `json:"id"`
 	State     string           `json:"state"`
 	CreatedAt pgtype.Timestamp `json:"created_at"`
 	UpdatedAt pgtype.Timestamp `json:"updated_at"`
