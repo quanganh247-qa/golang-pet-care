@@ -11,56 +11,105 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
-const deleteAllNotificationsByUser = `-- name: DeleteAllNotificationsByUser :exec
-DELETE FROM notifications WHERE username = $1
+const createNotificationPreference = `-- name: CreateNotificationPreference :exec
+INSERT INTO notification_preferences (
+    username,
+    topic,
+    enabled
+) VALUES (
+    $1, $2, $3
+)
 `
 
-func (q *Queries) DeleteAllNotificationsByUser(ctx context.Context, username string) error {
-	_, err := q.db.Exec(ctx, deleteAllNotificationsByUser, username)
+type CreateNotificationPreferenceParams struct {
+	Username string      `json:"username"`
+	Topic    string      `json:"topic"`
+	Enabled  pgtype.Bool `json:"enabled"`
+}
+
+func (q *Queries) CreateNotificationPreference(ctx context.Context, arg CreateNotificationPreferenceParams) error {
+	_, err := q.db.Exec(ctx, createNotificationPreference, arg.Username, arg.Topic, arg.Enabled)
 	return err
 }
 
-const deleteNotificationByID = `-- name: DeleteNotificationByID :exec
+const createtNotification = `-- name: CreatetNotification :one
+INSERT INTO notifications (
+    username,
+    title,
+    content,
+    notify_type,
+    related_id,
+    related_type,
+    is_read
+) VALUES (
+    $1, $2, $3, $4, $5, $6, false
+) RETURNING id, username, title, content, is_read, related_id, related_type, datetime, notify_type
+`
+
+type CreatetNotificationParams struct {
+	Username    string      `json:"username"`
+	Title       string      `json:"title"`
+	Content     pgtype.Text `json:"content"`
+	NotifyType  pgtype.Text `json:"notify_type"`
+	RelatedID   pgtype.Int4 `json:"related_id"`
+	RelatedType pgtype.Text `json:"related_type"`
+}
+
+func (q *Queries) CreatetNotification(ctx context.Context, arg CreatetNotificationParams) (Notification, error) {
+	row := q.db.QueryRow(ctx, createtNotification,
+		arg.Username,
+		arg.Title,
+		arg.Content,
+		arg.NotifyType,
+		arg.RelatedID,
+		arg.RelatedType,
+	)
+	var i Notification
+	err := row.Scan(
+		&i.ID,
+		&i.Username,
+		&i.Title,
+		&i.Content,
+		&i.IsRead,
+		&i.RelatedID,
+		&i.RelatedType,
+		&i.Datetime,
+		&i.NotifyType,
+	)
+	return i, err
+}
+
+const deleteNotificationsByUsername = `-- name: DeleteNotificationsByUsername :exec
 DELETE FROM notifications
-WHERE notificationID = $1
+WHERE username = $1
 `
 
-func (q *Queries) DeleteNotificationByID(ctx context.Context, notificationid int64) error {
-	_, err := q.db.Exec(ctx, deleteNotificationByID, notificationid)
+func (q *Queries) DeleteNotificationsByUsername(ctx context.Context, username string) error {
+	_, err := q.db.Exec(ctx, deleteNotificationsByUsername, username)
 	return err
 }
 
-const getNotificationsByUsername = `-- name: GetNotificationsByUsername :many
-SELECT notifications.notificationid, notifications.username, notifications.title, notifications.description, notifications.datetime, notifications.is_read
-FROM notifications
-JOIN users ON notifications.username = users.username
-WHERE users.username = $1
-ORDER BY notifications.datetime DESC
-LIMIT $2 OFFSET $3
+const getNotificationPreferencesByUsername = `-- name: GetNotificationPreferencesByUsername :many
+SELECT id, username, topic, enabled, created_at, updated_at FROM notification_preferences
+WHERE username = $1
 `
 
-type GetNotificationsByUsernameParams struct {
-	Username string `json:"username"`
-	Limit    int32  `json:"limit"`
-	Offset   int32  `json:"offset"`
-}
-
-func (q *Queries) GetNotificationsByUsername(ctx context.Context, arg GetNotificationsByUsernameParams) ([]Notification, error) {
-	rows, err := q.db.Query(ctx, getNotificationsByUsername, arg.Username, arg.Limit, arg.Offset)
+func (q *Queries) GetNotificationPreferencesByUsername(ctx context.Context, username string) ([]NotificationPreference, error) {
+	rows, err := q.db.Query(ctx, getNotificationPreferencesByUsername, username)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	items := []Notification{}
+	items := []NotificationPreference{}
 	for rows.Next() {
-		var i Notification
+		var i NotificationPreference
 		if err := rows.Scan(
-			&i.Notificationid,
+			&i.ID,
 			&i.Username,
-			&i.Title,
-			&i.Description,
-			&i.Datetime,
-			&i.IsRead,
+			&i.Topic,
+			&i.Enabled,
+			&i.CreatedAt,
+			&i.UpdatedAt,
 		); err != nil {
 			return nil, err
 		}
@@ -72,45 +121,72 @@ func (q *Queries) GetNotificationsByUsername(ctx context.Context, arg GetNotific
 	return items, nil
 }
 
-const insertNotification = `-- name: InsertNotification :one
-INSERT INTO notifications (username, title, description,datetime)
-VALUES ($1, $2, $3, $4)
-RETURNING notificationid, username, title, description, datetime, is_read
+const listNotificationsByUsername = `-- name: ListNotificationsByUsername :many
+SELECT id, username, title, content, is_read, related_id, related_type, datetime, notify_type FROM notifications
+WHERE username = $1
+LIMIT $2 OFFSET $3
 `
 
-type InsertNotificationParams struct {
-	Username    string           `json:"username"`
-	Title       string           `json:"title"`
-	Description pgtype.Text      `json:"description"`
-	Datetime    pgtype.Timestamp `json:"datetime"`
+type ListNotificationsByUsernameParams struct {
+	Username string `json:"username"`
+	Limit    int32  `json:"limit"`
+	Offset   int32  `json:"offset"`
 }
 
-func (q *Queries) InsertNotification(ctx context.Context, arg InsertNotificationParams) (Notification, error) {
-	row := q.db.QueryRow(ctx, insertNotification,
-		arg.Username,
-		arg.Title,
-		arg.Description,
-		arg.Datetime,
-	)
-	var i Notification
-	err := row.Scan(
-		&i.Notificationid,
-		&i.Username,
-		&i.Title,
-		&i.Description,
-		&i.Datetime,
-		&i.IsRead,
-	)
-	return i, err
+func (q *Queries) ListNotificationsByUsername(ctx context.Context, arg ListNotificationsByUsernameParams) ([]Notification, error) {
+	rows, err := q.db.Query(ctx, listNotificationsByUsername, arg.Username, arg.Limit, arg.Offset)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []Notification{}
+	for rows.Next() {
+		var i Notification
+		if err := rows.Scan(
+			&i.ID,
+			&i.Username,
+			&i.Title,
+			&i.Content,
+			&i.IsRead,
+			&i.RelatedID,
+			&i.RelatedType,
+			&i.Datetime,
+			&i.NotifyType,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
-const isReadNotification = `-- name: IsReadNotification :exec
+const markNotificationAsRead = `-- name: MarkNotificationAsRead :exec
 UPDATE notifications
 SET is_read = true
-WHERE notificationID = $1
+WHERE id = $1
 `
 
-func (q *Queries) IsReadNotification(ctx context.Context, notificationid int64) error {
-	_, err := q.db.Exec(ctx, isReadNotification, notificationid)
+func (q *Queries) MarkNotificationAsRead(ctx context.Context, id int64) error {
+	_, err := q.db.Exec(ctx, markNotificationAsRead, id)
+	return err
+}
+
+const updateNotificationPreference = `-- name: UpdateNotificationPreference :exec
+UPDATE notification_preferences
+SET enabled = $2
+WHERE username = $1 AND topic = $3
+`
+
+type UpdateNotificationPreferenceParams struct {
+	Username string      `json:"username"`
+	Enabled  pgtype.Bool `json:"enabled"`
+	Topic    string      `json:"topic"`
+}
+
+func (q *Queries) UpdateNotificationPreference(ctx context.Context, arg UpdateNotificationPreferenceParams) error {
+	_, err := q.db.Exec(ctx, updateNotificationPreference, arg.Username, arg.Enabled, arg.Topic)
 	return err
 }

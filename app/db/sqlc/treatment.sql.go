@@ -13,7 +13,7 @@ import (
 
 const assignCarprofenToInitialPhase = `-- name: AssignCarprofenToInitialPhase :exec
 INSERT INTO phase_medicines (phase_id, medicine_id, dosage, frequency, duration, notes)
-VALUES ($1, $2, $3, $4, $5, $6) RETURNING phase_id, medicine_id, dosage, frequency, duration, notes, created_at
+VALUES ($1, $2, $3, $4, $5, $6) RETURNING phase_id, medicine_id, dosage, frequency, duration, notes, quantity, is_received, created_at
 `
 
 type AssignCarprofenToInitialPhaseParams struct {
@@ -39,8 +39,8 @@ func (q *Queries) AssignCarprofenToInitialPhase(ctx context.Context, arg AssignC
 }
 
 const assignMedicationToTreatmentPhase = `-- name: AssignMedicationToTreatmentPhase :one
-INSERT INTO phase_medicines (phase_id, medicine_id, dosage, frequency, duration, notes, created_at)
-VALUES ($1, $2, $3, $4, $5, $6, now()) RETURNING phase_id, medicine_id, dosage, frequency, duration, notes, created_at
+INSERT INTO phase_medicines (phase_id, medicine_id, dosage, frequency, duration, notes, quantity, created_at)
+VALUES ($1, $2, $3, $4, $5, $6, $7, now()) RETURNING phase_id, medicine_id, dosage, frequency, duration, notes, quantity, is_received, created_at
 `
 
 type AssignMedicationToTreatmentPhaseParams struct {
@@ -50,6 +50,7 @@ type AssignMedicationToTreatmentPhaseParams struct {
 	Frequency  pgtype.Text `json:"frequency"`
 	Duration   pgtype.Text `json:"duration"`
 	Notes      pgtype.Text `json:"notes"`
+	Quantity   pgtype.Int4 `json:"quantity"`
 }
 
 func (q *Queries) AssignMedicationToTreatmentPhase(ctx context.Context, arg AssignMedicationToTreatmentPhaseParams) (PhaseMedicine, error) {
@@ -60,6 +61,7 @@ func (q *Queries) AssignMedicationToTreatmentPhase(ctx context.Context, arg Assi
 		arg.Frequency,
 		arg.Duration,
 		arg.Notes,
+		arg.Quantity,
 	)
 	var i PhaseMedicine
 	err := row.Scan(
@@ -69,6 +71,8 @@ func (q *Queries) AssignMedicationToTreatmentPhase(ctx context.Context, arg Assi
 		&i.Frequency,
 		&i.Duration,
 		&i.Notes,
+		&i.Quantity,
+		&i.IsReceived,
 		&i.CreatedAt,
 	)
 	return i, err
@@ -188,7 +192,6 @@ type GetActiveTreatmentsRow struct {
 	Status    pgtype.Text `json:"status"`
 }
 
-// Get All Active Treatments
 func (q *Queries) GetActiveTreatments(ctx context.Context, arg GetActiveTreatmentsParams) ([]GetActiveTreatmentsRow, error) {
 	rows, err := q.db.Query(ctx, getActiveTreatments, arg.Petid, arg.Limit, arg.Offset)
 	if err != nil {
@@ -239,7 +242,6 @@ type GetMedicationsByPhaseRow struct {
 	CreatedAt pgtype.Timestamptz `json:"created_at"`
 }
 
-// Get Medications for a Treatment Phase
 func (q *Queries) GetMedicationsByPhase(ctx context.Context, arg GetMedicationsByPhaseParams) ([]GetMedicationsByPhaseRow, error) {
 	rows, err := q.db.Query(ctx, getMedicationsByPhase, arg.PhaseID, arg.Limit, arg.Offset)
 	if err != nil {
@@ -339,7 +341,6 @@ type GetTreatmentPhasesByTreatmentRow struct {
 	CreatedAt_2 pgtype.Timestamptz `json:"created_at_2"`
 }
 
-// Get Treatment Phases for a Treatment
 func (q *Queries) GetTreatmentPhasesByTreatment(ctx context.Context, arg GetTreatmentPhasesByTreatmentParams) ([]GetTreatmentPhasesByTreatmentRow, error) {
 	rows, err := q.db.Query(ctx, getTreatmentPhasesByTreatment, arg.ID, arg.Limit, arg.Offset)
 	if err != nil {
@@ -391,7 +392,6 @@ type GetTreatmentProgressRow struct {
 	NumMedicines int64       `json:"num_medicines"`
 }
 
-// Get Treatment Progress
 func (q *Queries) GetTreatmentProgress(ctx context.Context, id int64) ([]GetTreatmentProgressRow, error) {
 	rows, err := q.db.Query(ctx, getTreatmentProgress, id)
 	if err != nil {
@@ -438,7 +438,6 @@ type GetTreatmentsByPetRow struct {
 	Status      pgtype.Text `json:"status"`
 }
 
-// Get All Treatments for a Pet
 func (q *Queries) GetTreatmentsByPet(ctx context.Context, arg GetTreatmentsByPetParams) ([]GetTreatmentsByPetRow, error) {
 	rows, err := q.db.Query(ctx, getTreatmentsByPet, arg.PetID, arg.Limit, arg.Offset)
 	if err != nil {
@@ -545,7 +544,6 @@ type UpdateTreatmentPhaseStatusParams struct {
 	Status pgtype.Text `json:"status"`
 }
 
-// Update Treatment Phase Status
 func (q *Queries) UpdateTreatmentPhaseStatus(ctx context.Context, arg UpdateTreatmentPhaseStatusParams) error {
 	_, err := q.db.Exec(ctx, updateTreatmentPhaseStatus, arg.ID, arg.Status)
 	return err

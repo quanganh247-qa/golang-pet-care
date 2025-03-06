@@ -1,10 +1,13 @@
 package main
 
 import (
+	"fmt"
 	"log"
 
+	"github.com/fatih/color"
 	"github.com/hibiken/asynq"
 	"github.com/quanganh247-qa/go-blog-be/app/api"
+	"github.com/quanganh247-qa/go-blog-be/app/service/elasticsearch"
 	"github.com/quanganh247-qa/go-blog-be/app/service/worker"
 	"github.com/quanganh247-qa/go-blog-be/app/util"
 	"go.uber.org/zap"
@@ -25,7 +28,15 @@ func main() {
 	}
 	taskDistributor := worker.NewRedisTaskDistributor(redisOpt)
 
-	server := runGinServer(*config, taskDistributor)
+	// Initialize Elasticsearch
+	es, err := elasticsearch.NewESService(*config)
+	if err != nil {
+		fmt.Printf(color.RedString("❌ ERROR: Failed to create elasticsearch client: %v\n", err))
+	}
+
+	es.CreateIndices()
+
+	server := runGinServer(*config, taskDistributor, es)
 
 	defer func() {
 		server.Connection.Close()
@@ -33,15 +44,15 @@ func main() {
 
 }
 
-func runGinServer(config util.Config, taskDistributor worker.TaskDistributor) *api.Server {
-	server, err := api.NewServer(config, taskDistributor)
+func runGinServer(config util.Config, taskDistributor worker.TaskDistributor, es *elasticsearch.ESService) *api.Server {
+	server, err := api.NewServer(config, taskDistributor, es)
 	if err != nil {
-		log.Fatal("cannot create server:", err)
+		fmt.Printf(color.RedString("❌ ERROR: Failed to create server: %v\n", err))
 	}
 
 	err = server.Start(config.HTTPServerAddress)
 	if err != nil {
-		log.Fatal("cannot start server:", err)
+		fmt.Printf(color.RedString("❌ ERROR: Failed to start server: %v\n", err))
 	}
 
 	return server

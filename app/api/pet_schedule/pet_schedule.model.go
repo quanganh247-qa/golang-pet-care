@@ -1,6 +1,9 @@
 package petschedule
 
-import db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
+import (
+	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
+	"github.com/quanganh247-qa/go-blog-be/app/util"
+)
 
 type PetScheduleApi struct {
 	controller PetScheduleControllerInterface
@@ -12,6 +15,7 @@ type PetScheduleController struct {
 
 type PetScheduleService struct {
 	storeDB db.Store
+	config  *util.Config
 }
 
 type PetScheduleRequest struct {
@@ -54,83 +58,4 @@ type ActiceRemider struct {
 
 type ScheduleSuggestion struct {
 	Voice string `json:"voice"`
-}
-
-
-// type ScheduleSuggestionResponse struct {
-// 	PetName        string `json:"pet_name"`
-// 	PetType        string `json:"pet_type"`
-// 	Activity       string `json:"activity"`
-// 	ReminderTime   string `json:"reminder_time"`
-// 	EventRepeat    string `json:"event_repeat"`
-// 	Notes          string `json:"notes"`
-// }
-
-// - Response:
-// {
-// 	"action": "appointment",
-// 	"parameters": {
-// 	"pet_name": "Buddy",
-// 	"appointment_type": "vet",
-// 	"date": "2023-10-15",
-// 	"time": "14:00"
-// 	}
-
-
-type ActionResponse struct {
-	Action string `json:"action"`
-}
-
-const (
-	ActionAppointment = "appointment"
-	ActionPetLog      = "pet_log"
-	ActionPetSchedule = "pet_schedule"
-)
-
-type AppointmentResponse struct {
-	Action string `json:"action"`
-	Parameters struct {
-		PetName        string `json:"pet_name"`
-		AppointmentType string `json:"appointment_type"`
-		Date           string `json:"date"`
-		Time           string `json:"time"`
-	} `json:"parameters"`
-}
-
-type LogResponse struct {
-	Action string `json:"action"`
-	Parameters struct {
-		PetName string `json:"pet_name"`
-		Activity string `json:"activity"`
-		Date     string `json:"date"`
-		Time     string `json:"time"`
-		Notes    string `json:"notes"`
-	} `json:"parameters"`
-}
-
-type ScheduleResponse struct {
-	Action string `json:"action"`
-	Parameters struct {
-		PetName string `json:"pet_name"`
-		Activity string `json:"activity"`
-		Date     string `json:"date"`
-		Time     string `json:"time"`
-		Notes    string `json:"notes"`
-	} `json:"parameters"`
-}
-
-// SuggestionResponse is the interface that all response types must implement
-type SuggestionResponse interface {
-    GetAction() string
-    Validate() error
-}
-
-// BaseResponse contains common fields for all response types
-type BaseResponse struct {
-    Action     string                 `json:"action"`
-    Parameters map[string]interface{} `json:"parameters"`
-}
-
-func (b BaseResponse) GetAction() string {
-    return b.Action
 }

@@ -6,23 +6,25 @@ import (
 )
 
 func Routes(routerGroup middleware.RouterGroup) {
-	notification := routerGroup.RouterDefault.Group("/notifications")
+	notification := routerGroup.RouterDefault.Group("/notification")
 	authRoute := routerGroup.RouterAuth(notification)
-	// Not.Use(middleware.IPbasedRateLimitingMiddleware())
 
-	// Khoi tao api
-	petApi := &NotApi{
-		&NotController{
-			service: &NotService{
-				storeDB: db.StoreDB, // This should refer to the actual instance
+	// Khởi tạo service với WebSocket Hub
+	notificationApi := &NotificationApi{
+		&NotificationController{
+			service: &NotificationService{
+				storeDB: db.StoreDB,
 			},
 		},
 	}
+
 	{
-		authRoute.POST("/", petApi.controller.InsertNotification)
-		authRoute.GET("/", petApi.controller.ListNotificationsByUsername)
-		authRoute.DELETE("/", petApi.controller.DeleteNotification)
+		// Routes hiện tại
+		authRoute.POST("/", notificationApi.controller.InsertNotification)
+		authRoute.GET("/", notificationApi.controller.ListNotificationsByUsername)
+		authRoute.PUT("/:id", notificationApi.controller.MarkAsRead)
+		authRoute.POST("/subscribe", notificationApi.controller.SubscribeToNotifications)
+		authRoute.POST("/unsubscribe", notificationApi.controller.UnsubscribeFromNotifications)
 
 	}
-
 }

@@ -14,7 +14,6 @@ type MedicineControllerInterface interface {
 	CreateMedicine(ctx *gin.Context)
 	GetMedicineByID(ctx *gin.Context)
 	ListMedicines(ctx *gin.Context)
-	// ListMedicinesByUsername(ctx *gin.Context)
 	UpdateMedicine(ctx *gin.Context)
 	// DeleteMedicine(ctx *gin.Context)
 }

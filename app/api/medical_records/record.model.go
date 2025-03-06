@@ -1,9 +1,16 @@
 package medical_records
 
 import (
+	"errors"
 	"time"
 
 	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
+)
+
+var (
+	ErrMedicalRecordNotFound = errors.New("medical record not found")
+	ErrInvalidDiagnosisDate  = errors.New("invalid diagnosis date format")
+	ErrInvalidPetID          = errors.New("invalid pet ID")
 )
 
 type MedicalRecordApi struct {
@@ -32,9 +39,9 @@ type MedicalRecordResponse struct {
 }
 
 type MedicalHistoryRequest struct {
-	Condition     string `json:"condition"`
-	DiagnosisDate string `json:"diagnosis_date"`
-	Treatment     int64  `json:"treatment"`
+	Condition     string `json:"condition" binding:"required"`
+	DiagnosisDate string `json:"diagnosis_date" binding:"required,datetime=2006-01-02 15:04:05"`
+	Treatment     int64  `json:"treatment" binding:"required"`
 	Notes         string `json:"notes"`
 }
 
@@ -50,12 +57,19 @@ type MedicalHistoryResponse struct {
 }
 
 type Allergy struct {
-	ID              string    `json:"id"`
-	MedicalRecordID string    `json:"medical_record_id"`
+	ID              int64     `json:"id"`
+	MedicalRecordID int64     `json:"medical_record_id"`
 	Allergen        string    `json:"allergen"`
 	Severity        string    `json:"severity"`
 	Reaction        string    `json:"reaction"`
 	Notes           string    `json:"notes"`
-	CreatedAt       time.Time `json:"created_at"`
-	UpdatedAt       time.Time `json:"updated_at"`
+	CreatedAt       string    `json:"created_at"`
+	UpdatedAt       string    `json:"updated_at"`
+}
+
+type AllergyRequest struct {
+	Allergen string `json:"allergen" binding:"required"`
+	Severity string `json:"severity" binding:"required,oneof=mild moderate severe"`
+	Reaction string `json:"reaction" binding:"required"`
+	Notes    string `json:"notes"`
 }

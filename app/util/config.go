@@ -39,6 +39,7 @@ type Config struct {
 	GoogleClientID     string `mapstructure:"GOOGLE_CLIENT_ID"`
 	GoogleClientSecret string `mapstructure:"GOOGLE_CLIENT_SECRET"`
 	GoogleRedirectURL  string `mapstructure:"GOOGLE_REDIRECT_URL"`
+	GoogleAPIKey       string `mapstructure:"GOOGLE_API_KEY"`
 
 	GoongAPIKey  string `mapstructure:"GOONG_API_KEY"`
 	GoongBaseURL string `mapstructure:"GOONG_BASE_URL"`
@@ -46,6 +47,16 @@ type Config struct {
 	VietQRBaseURL   string `mapstructure:"VIETQR_BASE_URL"`
 	VietQRAPIKey    string `mapstructure:"VIETQR_API_KEY"`
 	VietQRClientKey string `mapstructure:"VIETQR_CLIENT_KEY"`
+
+	PaypalBaseURL   string `mapstructure:"PAYPAL_BASE_URL"`
+	PaypalAPIKey    string `mapstructure:"PAYPAL_API_KEY"`
+	PaypalClientKey string `mapstructure:"PAYPAL_CLIENT_KEY"`
+
+	ElasticsearchURL string `mapstructure:"ELASTICSEARCH_URL"`
+	MinIOEndpoint    string `mapstructure:"MINIO_URL"`
+	MinIOAccessKey   string `mapstructure:"MINIO_ACCESS_KEY"`
+	MinIOSecretKey   string `mapstructure:"MINIO_SECRET_KEY"`
+	MinIOSSL         bool   `mapstructure:"MINIO_SSL"`
 }
 
 var Configs = Config{}

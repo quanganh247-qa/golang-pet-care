@@ -14,7 +14,6 @@ SELECT
     m.duration,
     m.side_effects
 FROM diseases d
-LEFT JOIN disease_medicines dm ON d.id = dm.disease_id
 LEFT JOIN medicines m ON dm.medicine_id = m.id
 WHERE LOWER(d.name) LIKE LOWER($1);
 
@@ -71,3 +70,6 @@ WHERE d.id = $1  LIMIT $2 OFFSET $3;
 
 -- name: GetDiseaseByID :one
 SELECT * FROM diseases WHERE id = $1 LIMIT 1;
+
+-- name: CreateDisease :one
+INSERT INTO diseases (name, description, symptoms, created_at, updated_at) VALUES ($1, $2, $3, now(), now()) RETURNING *;

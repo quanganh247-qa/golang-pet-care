@@ -2,6 +2,7 @@ package api
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/quanganh247-qa/go-blog-be/app/service/elasticsearch"
 	"github.com/quanganh247-qa/go-blog-be/app/service/worker"
 	"github.com/quanganh247-qa/go-blog-be/app/util"
 	"github.com/quanganh247-qa/go-blog-be/app/util/connection"
@@ -11,9 +12,10 @@ type Server struct {
 	Router          *gin.Engine
 	Connection      *connection.Connection
 	taskDistributor worker.TaskDistributor
+	es              *elasticsearch.ESService
 }
 
-func NewServer(config util.Config, taskDistributor worker.TaskDistributor) (*Server, error) {
+func NewServer(config util.Config, taskDistributor worker.TaskDistributor, es *elasticsearch.ESService) (*Server, error) {
 	conn, err := connection.Init(config)
 	if err != nil {
 		return nil, err
@@ -22,8 +24,9 @@ func NewServer(config util.Config, taskDistributor worker.TaskDistributor) (*Ser
 		Router:          gin.Default(),
 		Connection:      conn,
 		taskDistributor: taskDistributor,
+		es:              es,
 	}
-	server.SetupRoutes(taskDistributor, config)
+	server.SetupRoutes(taskDistributor, config, es)
 
 	return server, nil
 }

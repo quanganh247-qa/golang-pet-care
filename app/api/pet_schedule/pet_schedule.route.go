@@ -3,9 +3,10 @@ package petschedule
 import (
 	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
 	"github.com/quanganh247-qa/go-blog-be/app/middleware"
+	"github.com/quanganh247-qa/go-blog-be/app/util"
 )
 
-func Routes(routerGroup middleware.RouterGroup) {
+func Routes(routerGroup middleware.RouterGroup, config *util.Config) {
 	petSchedule := routerGroup.RouterDefault.Group("/pet-schedule")
 	authRoute := routerGroup.RouterAuth(petSchedule)
 	// PetSchedule.Use(middleware.IPbasedRateLimitingMiddleware())
@@ -15,6 +16,7 @@ func Routes(routerGroup middleware.RouterGroup) {
 		&PetScheduleController{
 			service: &PetScheduleService{
 				storeDB: db.StoreDB, // This should refer to the actual instance
+				config:  config,
 			},
 		},
 	}
