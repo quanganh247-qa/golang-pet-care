@@ -62,11 +62,15 @@ func Init(config util.Config) (*Connection, error) {
 	}
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 	// Verify the connection
 	if err := connPool.Ping(context.Background()); err != nil {
 		return nil, fmt.Errorf("cannot ping database: %w", err)
 	}
 =======
+=======
+	// Khởi tạo Redis
+>>>>>>> e859654 (Elastic search)
 	_ = asynq.RedisClientOpt{
 		Addr: config.RedisAddress,
 	}
@@ -75,6 +79,7 @@ func Init(config util.Config) (*Connection, error) {
 		return nil, fmt.Errorf("cannot connect to redis: %w", err)
 	}
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 	// // Initialize RabbitMQ client
@@ -91,9 +96,28 @@ func Init(config util.Config) (*Connection, error) {
 
 =======
 >>>>>>> ffc9071 (AI suggestion)
+=======
+	// Khởi tạo database
+>>>>>>> e859654 (Elastic search)
 	DB := db.InitStore(connPool)
 	go runTaskProcessor(&config, asynq.RedisClientOpt{Addr: config.RedisAddress}, DB)
 >>>>>>> 6610455 (feat: redis queue)
+
+	// client, err := minio.NewMinIOClient(
+	// 	config.MinIOEndpoint,
+	// 	config.MinIOAccessKey,
+	// 	config.MinIOSecretKey,
+	// 	config.MinIOSSL,
+	// )
+	// if err != nil {
+	// 	log.Println(color.RedString("Failed to initialize MinIO client: %v", err))
+	// }
+
+	// // Example usage of the MinIO client
+	// err = client.CheckConnection(context.Background())
+	// if err != nil {
+	// 	log.Println(color.RedString("Failed to check connection: %v", err))
+	// }
 
 	conn := &Connection{
 		Close: func() {

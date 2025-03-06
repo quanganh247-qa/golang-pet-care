@@ -8,6 +8,9 @@ package db
 import (
 	"context"
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> e859654 (Elastic search)
 )
 
 const getState = `-- name: GetState :one
@@ -23,6 +26,7 @@ func (q *Queries) GetState(ctx context.Context, id int64) (State, error) {
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
+<<<<<<< HEAD
 =======
 
 	"github.com/jackc/pgx/v5/pgtype"
@@ -74,5 +78,7 @@ func (q *Queries) SaveState(ctx context.Context, arg SaveStateParams) (OauthStat
 	var i OauthState
 	err := row.Scan(&i.State, &i.Username, &i.CreatedAt)
 >>>>>>> dff4498 (calendar api)
+=======
+>>>>>>> e859654 (Elastic search)
 	return i, err
 }

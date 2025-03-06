@@ -3,9 +3,13 @@ package api
 import (
 	"github.com/gin-gonic/gin"
 <<<<<<< HEAD
+<<<<<<< HEAD
 	"github.com/quanganh247-qa/go-blog-be/app/service/elasticsearch"
 =======
 >>>>>>> 6610455 (feat: redis queue)
+=======
+	"github.com/quanganh247-qa/go-blog-be/app/service/elasticsearch"
+>>>>>>> e859654 (Elastic search)
 	"github.com/quanganh247-qa/go-blog-be/app/service/worker"
 	"github.com/quanganh247-qa/go-blog-be/app/util"
 	"github.com/quanganh247-qa/go-blog-be/app/util/connection"
@@ -16,6 +20,7 @@ type Server struct {
 	Connection      *connection.Connection
 	taskDistributor worker.TaskDistributor
 <<<<<<< HEAD
+<<<<<<< HEAD
 	es              *elasticsearch.ESService
 }
 
@@ -25,6 +30,12 @@ func NewServer(config util.Config, taskDistributor worker.TaskDistributor, es *e
 
 func NewServer(config util.Config, taskDistributor worker.TaskDistributor) (*Server, error) {
 >>>>>>> 6610455 (feat: redis queue)
+=======
+	es              *elasticsearch.ESService
+}
+
+func NewServer(config util.Config, taskDistributor worker.TaskDistributor, es *elasticsearch.ESService) (*Server, error) {
+>>>>>>> e859654 (Elastic search)
 	conn, err := connection.Init(config)
 	if err != nil {
 		return nil, err
@@ -33,6 +44,7 @@ func NewServer(config util.Config, taskDistributor worker.TaskDistributor) (*Ser
 		Router:          gin.Default(),
 		Connection:      conn,
 		taskDistributor: taskDistributor,
+<<<<<<< HEAD
 <<<<<<< HEAD
 		es:              es,
 	}
@@ -45,6 +57,11 @@ func NewServer(config util.Config, taskDistributor worker.TaskDistributor) (*Ser
 =======
 	server.SetupRoutes(taskDistributor, config)
 >>>>>>> 1a9e82a (reset password api)
+=======
+		es:              es,
+	}
+	server.SetupRoutes(taskDistributor, config, es)
+>>>>>>> e859654 (Elastic search)
 
 	return server, nil
 }

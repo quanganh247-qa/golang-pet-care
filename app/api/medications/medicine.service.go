@@ -1,7 +1,12 @@
 package medications
 
 import (
+	"fmt"
+	"time"
+
 	"github.com/gin-gonic/gin"
+	"github.com/jackc/pgx/v5/pgtype"
+	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
 	"github.com/quanganh247-qa/go-blog-be/app/util"
 )
 
@@ -67,6 +72,7 @@ func (s *MedicineService) CreateMedicine(ctx *gin.Context, username string, req 
 		Quantity:       medicine.Quantity.Int64,
 		ExpirationDate: medicine.ExpirationDate.Time.Format("2006-01-02"),
 	}, nil
+<<<<<<< HEAD
 }
 
 func (s *MedicineService) GetMedicineByID(ctx *gin.Context, medicineid int64) (*createMedicineResponse, error) {
@@ -293,10 +299,19 @@ func (s *MedicineService) CreateMedicine(ctx *gin.Context, username string, req 
 >>>>>>> a415f25 (new data)
 
 	return nil, nil
+=======
+>>>>>>> e859654 (Elastic search)
 }
 
 func (s *MedicineService) GetMedicineByID(ctx *gin.Context, medicineid int64) (*createMedicineResponse, error) {
-	return nil, nil
+	medicine, err := s.storeDB.GetMedicineByID(ctx, medicineid)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get medicine: %w", err)
+	}
+
+	return &createMedicineResponse{
+		MedicineName: medicine.Name,
+	}, nil
 }
 
 func (s *MedicineService) ListMedicines(ctx *gin.Context, pagination *util.Pagination, petID int64) ([]createMedicineResponse, error) {

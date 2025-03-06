@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 -- name: GetState :one
 SELECT * FROM states WHERE id = $1;
 =======
@@ -16,3 +17,7 @@ SELECT * FROM states WHERE id = $1;
 -- -- name: CleanExpiredStates :exec
 -- DELETE FROM oauth_states WHERE created_at < $1;
 >>>>>>> dff4498 (calendar api)
+=======
+-- name: GetState :one
+SELECT * FROM states WHERE id = $1;
+>>>>>>> e859654 (Elastic search)

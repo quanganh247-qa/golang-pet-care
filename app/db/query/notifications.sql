@@ -1,5 +1,8 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> e859654 (Elastic search)
 -- name: CreatetNotification :one
 INSERT INTO notifications (
     username,
@@ -12,6 +15,7 @@ INSERT INTO notifications (
 ) VALUES (
     $1, $2, $3, $4, $5, $6, false
 ) RETURNING *;
+<<<<<<< HEAD
 
 -- name: ListNotificationsByUsername :many
 SELECT * FROM notifications
@@ -53,10 +57,42 @@ LIMIT $2 OFFSET $3;
 >>>>>>> eb8d761 (updated pet schedule)
 =======
 ORDER BY notifications.datetime DESC
+=======
+
+-- name: ListNotificationsByUsername :many
+SELECT * FROM notifications
+WHERE username = $1
+>>>>>>> e859654 (Elastic search)
 LIMIT $2 OFFSET $3;
 
--- name: IsReadNotification :exec
+-- name: DeleteNotificationsByUsername :exec
+DELETE FROM notifications
+WHERE username = $1;
+
+-- name: MarkNotificationAsRead :exec
 UPDATE notifications
 SET is_read = true
+<<<<<<< HEAD
 WHERE notificationID = $1 ;
 >>>>>>> 9fd7fc8 (feat: validate notification schema and APIs)
+=======
+WHERE id = $1;
+
+-- name: CreateNotificationPreference :exec
+INSERT INTO notification_preferences (
+    username,
+    topic,
+    enabled
+) VALUES (
+    $1, $2, $3
+);
+
+-- name: UpdateNotificationPreference :exec
+UPDATE notification_preferences
+SET enabled = $2
+WHERE username = $1 AND topic = $3;
+
+-- name: GetNotificationPreferencesByUsername :many
+SELECT * FROM notification_preferences
+WHERE username = $1;
+>>>>>>> e859654 (Elastic search)

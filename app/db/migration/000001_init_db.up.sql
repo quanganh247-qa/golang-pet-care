@@ -824,15 +824,6 @@ CREATE TABLE device_tokens (
       ON DELETE CASCADE
 );
 
-CREATE TABLE notifications (
-  notificationID BIGSERIAL PRIMARY KEY,
-  username varchar NOT NULL,
-  title VARCHAR(100) NOT NULL,
-  description TEXT,
-  datetime TIMESTAMP NOT NULL,
-  is_read BOOLEAN DEFAULT false
-);
-
 -- 2. Medical Staff Tables
 CREATE TABLE doctors (
   id BIGSERIAL PRIMARY KEY,
@@ -983,19 +974,12 @@ CREATE TABLE medicines (
     frequency TEXT,
     duration TEXT,
     side_effects TEXT,
-    medical_record_id int8 NULL,
-	prescribing_vet varchar NULL,
-	start_date date NULL,
-	end_date date NULL,
+    expiration_date DATE,
+    quantity int8,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE disease_medicines (
-    disease_id BIGINT REFERENCES diseases(id),
-    medicine_id BIGINT REFERENCES medicines(id),
-    PRIMARY KEY (disease_id, medicine_id)
-);
 
 CREATE TABLE pet_treatments (
     id BIGSERIAL PRIMARY KEY,
@@ -1025,6 +1009,8 @@ CREATE TABLE phase_medicines (
     frequency TEXT,
     duration TEXT,
     notes TEXT,
+    quantity int4,
+    is_received BOOLEAN DEFAULT true,
     created_at timestamptz NULL,
     PRIMARY KEY (phase_id, medicine_id)
 );
@@ -1052,7 +1038,6 @@ CREATE TABLE appointments (
   notes TEXT,
   reminder_send BOOLEAN DEFAULT false,
   time_slot_id BIGINT,
-  payment_status VARCHAR(20),
   created_at timestamp DEFAULT (now())
 );
 

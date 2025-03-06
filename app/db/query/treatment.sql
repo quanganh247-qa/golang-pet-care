@@ -40,14 +40,18 @@ SELECT * FROM treatment_phases
 WHERE id = $1 LIMIT 1;
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 
 
 >>>>>>> 3bf345d (happy new year)
+=======
+>>>>>>> e859654 (Elastic search)
 -- name: DeleteTreatmentPhase :exec
 DELETE FROM treatment_phases
 WHERE id = $1;
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 -- name: AssignMedicationToTreatmentPhase :one
 INSERT INTO phase_medicines (phase_id, medicine_id, dosage, frequency, duration, notes, quantity, created_at)
@@ -73,25 +77,24 @@ WHERE treatment_id = $1;
 SELECT m.id, m.name, pm.dosage, pm.frequency, pm.duration, pm.notes ,pm.Created_at
 =======
 
+=======
+>>>>>>> e859654 (Elastic search)
 -- name: AssignMedicationToTreatmentPhase :one
-INSERT INTO phase_medicines (phase_id, medicine_id, dosage, frequency, duration, notes, created_at)
-VALUES ($1, $2, $3, $4, $5, $6, now()) RETURNING *;
+INSERT INTO phase_medicines (phase_id, medicine_id, dosage, frequency, duration, notes, quantity, created_at)
+VALUES ($1, $2, $3, $4, $5, $6, $7, now()) RETURNING *;
 
 
--- Get All Treatments for a Pet
 -- name: GetTreatmentsByPet :many
 SELECT t.id as treatment_id, d.name AS disease, t.start_date, t.end_date, t.status
 FROM pet_treatments t
 JOIN diseases d ON t.disease_id = d.id
 WHERE t.pet_id = $1 LIMIT $2 OFFSET $3;
 
--- Get Treatment Phases for a Treatment
 -- name: GetTreatmentPhasesByTreatment :many
 SELECT *  FROM treatment_phases as tp
 JOIN pet_treatments t ON t.id = tp.treatment_id
 WHERE t.id = $1 LIMIT $2 OFFSET $3;
 
--- Get Medications for a Treatment Phase
 -- name: GetMedicationsByPhase :many
 <<<<<<< HEAD
 SELECT m.id, m.name, pm.dosage, pm.frequency, pm.duration, pm.notes
@@ -104,14 +107,18 @@ JOIN phase_medicines pm ON m.id = pm.medicine_id
 WHERE pm.phase_id = $1 LIMIT $2 OFFSET $3;
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 -- Update Treatment Phase Status
 >>>>>>> 3bf345d (happy new year)
+=======
+>>>>>>> e859654 (Elastic search)
 -- name: UpdateTreatmentPhaseStatus :exec
 UPDATE treatment_phases
 SET status = $2 and updated_at = now()
 WHERE id = $1;
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 -- name: GetActiveTreatments :many
 SELECT t.id, pets.name AS pet_name, d.name AS disease, t.start_date, t.end_date, t.status
@@ -122,6 +129,8 @@ WHERE t.status = 'ongoing' AND pets.petid = $1 LIMIT $2 OFFSET $3;
 
 =======
 -- Get All Active Treatments
+=======
+>>>>>>> e859654 (Elastic search)
 -- name: GetActiveTreatments :many
 SELECT t.id, pets.name AS pet_name, d.name AS disease, t.start_date, t.end_date, t.status
 FROM pet_treatments t
@@ -129,8 +138,11 @@ JOIN pets ON t.pet_id = pets.petid
 JOIN diseases d ON t.disease_id = d.id
 WHERE t.status = 'ongoing' AND pets.petid = $1 LIMIT $2 OFFSET $3;
 
+<<<<<<< HEAD
 -- Get Treatment Progress
 >>>>>>> 3bf345d (happy new year)
+=======
+>>>>>>> e859654 (Elastic search)
 -- name: GetTreatmentProgress :many
 SELECT tp.phase_name, tp.status, tp.start_date,COUNT(pm.medicine_id) AS num_medicines
 FROM treatment_phases tp
