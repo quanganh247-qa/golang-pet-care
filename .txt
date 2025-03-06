@@ -1,5 +1,6 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> ada3717 (Docker file)
 1. Thống kê về Lịch hẹn (Appointments)
@@ -137,6 +138,8 @@ PAYPAL_CLIENT_SECRET=EASjz88Szu_mbxzzzVyJNbeawvbUywZrBzjuFmN8G6KZQXSoYO2-XfZGgqx
 PAYPAL_ENVIRONMENT=sandbox
 PAYPAL_URL=https://api-m.sandbox.paypal.com
 =======
+=======
+>>>>>>> e859654 (Elastic search)
 Các cải tiến để tăng tốc độ hệ thống và trải nghiệm người dùng
 Dựa trên codebase đã cung cấp, tôi đề xuất một số cải tiến quan trọng:
 1. Tối ưu hóa hiệu suất
@@ -209,6 +212,7 @@ Lợi ích: Tăng bảo mật cho người dùng
 API versioning
 Đề xuất: Thêm versioning cho API (v1, v2, etc.)
 Lợi ích: Dễ dàng thực hiện thay đổi không gây gián đoạn
+<<<<<<< HEAD
 Nếu bạn quan tâm đến một phần cụ thể để tối ưu, tôi có thể cung cấp các đề xuất chi tiết hơn
 >>>>>>> e859654 (Elastic search)
 =======
@@ -290,3 +294,6 @@ PAYPAL_CLIENT_SECRET=EASjz88Szu_mbxzzzVyJNbeawvbUywZrBzjuFmN8G6KZQXSoYO2-XfZGgqx
 PAYPAL_ENVIRONMENT=sandbox
 PAYPAL_URL=https://api-m.sandbox.paypal.com
 >>>>>>> ada3717 (Docker file)
+=======
+Nếu bạn quan tâm đến một phần cụ thể để tối ưu, tôi có thể cung cấp các đề xuất chi tiết hơn
+>>>>>>> e859654 (Elastic search)

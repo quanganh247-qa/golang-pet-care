@@ -6,6 +6,7 @@ import (
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 	"github.com/quanganh247-qa/go-blog-be/app/util/perms"
 >>>>>>> 3bf345d (happy new year)
@@ -14,6 +15,8 @@ import (
 =======
 	"github.com/quanganh247-qa/go-blog-be/app/util/perms"
 >>>>>>> 3bf345d (happy new year)
+=======
+>>>>>>> e859654 (Elastic search)
 )
 
 func Routes(routerGroup middleware.RouterGroup) {
@@ -21,6 +24,7 @@ func Routes(routerGroup middleware.RouterGroup) {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	authRoute := routerGroup.RouterAuth(MedicalRecord)
 	// perRoute := routerGroup.RouterPermission(MedicalRecord)
 =======
@@ -35,6 +39,10 @@ func Routes(routerGroup middleware.RouterGroup) {
 	// authRoute := routerGroup.RouterAuth(MedicalRecord)
 	perRoute := routerGroup.RouterPermission(MedicalRecord)
 >>>>>>> 3bf345d (happy new year)
+=======
+	authRoute := routerGroup.RouterAuth(MedicalRecord)
+	// perRoute := routerGroup.RouterPermission(MedicalRecord)
+>>>>>>> e859654 (Elastic search)
 
 	// Khoi tao api
 	MedicalRecordApi := &MedicalRecordApi{
@@ -49,12 +57,16 @@ func Routes(routerGroup middleware.RouterGroup) {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> e859654 (Elastic search)
 =======
 >>>>>>> e859654 (Elastic search)
 		authRoute.GET("/pets/:pet_id/medical-records", MedicalRecordApi.controller.GetMedicalRecord)
 		authRoute.POST("/pets/:pet_id/medical-records", MedicalRecordApi.controller.CreateMedicalRecord)
 		authRoute.GET("/pets/:pet_id/medical-histories", MedicalRecordApi.controller.ListMedicalHistory)
 		authRoute.POST("/pets/:pet_id/medical-histories", MedicalRecordApi.controller.CreateMedicalHistory)
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 		authRoute.GET("/pets/:pet_id/medical-histories/:id", MedicalRecordApi.controller.GetMedicalHistoryByID)
@@ -83,13 +95,22 @@ func Routes(routerGroup middleware.RouterGroup) {
 		authRoute.GET("/pets/:pet_id/medical-histories/:id", MedicalRecordApi.controller.GetMedicalHistoryByID)
 	}
 
+=======
+		authRoute.POST("/pets/:pet_id/allergies", MedicalRecordApi.controller.CreateAllergy)
+		authRoute.GET("/pets/:pet_id/medical-histories/:id", MedicalRecordApi.controller.GetMedicalHistoryByID)
+	}
+
+>>>>>>> e859654 (Elastic search)
 	// {
 	// 	// Example: Only users with the "MANAGE_SERVICES" permission can access this route
 	// 	perRoute([]perms.Permission{perms.ManageMedicalRecords}).POST("/pets/:pet_id/medical-records", MedicalRecordApi.controller.CreateMedicalRecord)
 	// 	perRoute([]perms.Permission{perms.ManageMedicalRecords}).POST("/pets/:pet_id/medical-histories", MedicalRecordApi.controller.CreateMedicalHistory)
 	// }
 
+<<<<<<< HEAD
 >>>>>>> e859654 (Elastic search)
 =======
 >>>>>>> 3bf345d (happy new year)
+=======
+>>>>>>> e859654 (Elastic search)
 }

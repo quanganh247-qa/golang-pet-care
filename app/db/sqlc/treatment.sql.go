@@ -33,8 +33,12 @@ VALUES ($1, $2, $3, $4, $5, $6) RETURNING phase_id, medicine_id, dosage, frequen
 =======
 const assignCarprofenToInitialPhase = `-- name: AssignCarprofenToInitialPhase :exec
 INSERT INTO phase_medicines (phase_id, medicine_id, dosage, frequency, duration, notes)
+<<<<<<< HEAD
 VALUES ($1, $2, $3, $4, $5, $6) RETURNING phase_id, medicine_id, dosage, frequency, duration, notes, created_at
 >>>>>>> 2fe5baf (treatment phase)
+=======
+VALUES ($1, $2, $3, $4, $5, $6) RETURNING phase_id, medicine_id, dosage, frequency, duration, notes, quantity, is_received, created_at
+>>>>>>> e859654 (Elastic search)
 `
 
 type AssignCarprofenToInitialPhaseParams struct {
@@ -89,9 +93,14 @@ VALUES ($1, $2, $3, $4, $5, $6, now(), now()) RETURNING phase_id, medicine_id, d
 >>>>>>> 3bf345d (happy new year)
 =======
 const assignMedicationToTreatmentPhase = `-- name: AssignMedicationToTreatmentPhase :one
+<<<<<<< HEAD
 INSERT INTO phase_medicines (phase_id, medicine_id, dosage, frequency, duration, notes, created_at)
 VALUES ($1, $2, $3, $4, $5, $6, now()) RETURNING phase_id, medicine_id, dosage, frequency, duration, notes, created_at
 >>>>>>> 2fe5baf (treatment phase)
+=======
+INSERT INTO phase_medicines (phase_id, medicine_id, dosage, frequency, duration, notes, quantity, created_at)
+VALUES ($1, $2, $3, $4, $5, $6, $7, now()) RETURNING phase_id, medicine_id, dosage, frequency, duration, notes, quantity, is_received, created_at
+>>>>>>> e859654 (Elastic search)
 `
 
 type AssignMedicationToTreatmentPhaseParams struct {
@@ -104,6 +113,7 @@ type AssignMedicationToTreatmentPhaseParams struct {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	Quantity   pgtype.Int4 `json:"quantity"`
 =======
 >>>>>>> 3bf345d (happy new year)
@@ -112,6 +122,9 @@ type AssignMedicationToTreatmentPhaseParams struct {
 >>>>>>> e859654 (Elastic search)
 =======
 >>>>>>> 3bf345d (happy new year)
+=======
+	Quantity   pgtype.Int4 `json:"quantity"`
+>>>>>>> e859654 (Elastic search)
 }
 
 func (q *Queries) AssignMedicationToTreatmentPhase(ctx context.Context, arg AssignMedicationToTreatmentPhaseParams) (PhaseMedicine, error) {
@@ -125,6 +138,7 @@ func (q *Queries) AssignMedicationToTreatmentPhase(ctx context.Context, arg Assi
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 		arg.Quantity,
 =======
 >>>>>>> 3bf345d (happy new year)
@@ -133,6 +147,9 @@ func (q *Queries) AssignMedicationToTreatmentPhase(ctx context.Context, arg Assi
 >>>>>>> e859654 (Elastic search)
 =======
 >>>>>>> 3bf345d (happy new year)
+=======
+		arg.Quantity,
+>>>>>>> e859654 (Elastic search)
 	)
 	var i PhaseMedicine
 	err := row.Scan(
@@ -148,6 +165,11 @@ func (q *Queries) AssignMedicationToTreatmentPhase(ctx context.Context, arg Assi
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+		&i.Quantity,
+		&i.IsReceived,
+>>>>>>> e859654 (Elastic search)
 =======
 		&i.Quantity,
 		&i.IsReceived,
@@ -445,6 +467,9 @@ type GetActiveTreatmentsRow struct {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> e859654 (Elastic search)
 =======
 >>>>>>> e859654 (Elastic search)
 func (q *Queries) GetActiveTreatments(ctx context.Context, arg GetActiveTreatmentsParams) ([]GetActiveTreatmentsRow, error) {
@@ -535,7 +560,6 @@ type GetMedicationsByPhaseRow struct {
 	CreatedAt pgtype.Timestamptz `json:"created_at"`
 }
 
-// Get Medications for a Treatment Phase
 func (q *Queries) GetMedicationsByPhase(ctx context.Context, arg GetMedicationsByPhaseParams) ([]GetMedicationsByPhaseRow, error) {
 	rows, err := q.db.Query(ctx, getMedicationsByPhase, arg.PhaseID, arg.Limit, arg.Offset)
 	if err != nil {
@@ -635,12 +659,15 @@ type GetTreatmentPhasesByTreatmentRow struct {
 	CreatedAt_2 pgtype.Timestamptz `json:"created_at_2"`
 }
 
+<<<<<<< HEAD
 // Get Treatment Phases for a Treatment
 <<<<<<< HEAD
 func (q *Queries) GetTreatmentPhasesByTreatment(ctx context.Context, id int64) ([]TreatmentPhase, error) {
 	rows, err := q.db.Query(ctx, getTreatmentPhasesByTreatment, id)
 >>>>>>> 3bf345d (happy new year)
 =======
+=======
+>>>>>>> e859654 (Elastic search)
 func (q *Queries) GetTreatmentPhasesByTreatment(ctx context.Context, arg GetTreatmentPhasesByTreatmentParams) ([]GetTreatmentPhasesByTreatmentRow, error) {
 	rows, err := q.db.Query(ctx, getTreatmentPhasesByTreatment, arg.ID, arg.Limit, arg.Offset)
 >>>>>>> 2fe5baf (treatment phase)
@@ -1170,6 +1197,7 @@ type GetTreatmentProgressRow struct {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 // Get Treatment Progress
 >>>>>>> 3bf345d (happy new year)
@@ -1178,6 +1206,8 @@ type GetTreatmentProgressRow struct {
 =======
 // Get Treatment Progress
 >>>>>>> 3bf345d (happy new year)
+=======
+>>>>>>> e859654 (Elastic search)
 func (q *Queries) GetTreatmentProgress(ctx context.Context, id int64) ([]GetTreatmentProgressRow, error) {
 	rows, err := q.db.Query(ctx, getTreatmentProgress, id)
 	if err != nil {
@@ -1308,12 +1338,15 @@ type GetTreatmentsByPetRow struct {
 	Status      pgtype.Text `json:"status"`
 }
 
+<<<<<<< HEAD
 // Get All Treatments for a Pet
 <<<<<<< HEAD
 func (q *Queries) GetTreatmentsByPet(ctx context.Context, petID pgtype.Int8) ([]GetTreatmentsByPetRow, error) {
 	rows, err := q.db.Query(ctx, getTreatmentsByPet, petID)
 >>>>>>> 3bf345d (happy new year)
 =======
+=======
+>>>>>>> e859654 (Elastic search)
 func (q *Queries) GetTreatmentsByPet(ctx context.Context, arg GetTreatmentsByPetParams) ([]GetTreatmentsByPetRow, error) {
 	rows, err := q.db.Query(ctx, getTreatmentsByPet, arg.PetID, arg.Limit, arg.Offset)
 >>>>>>> 2fe5baf (treatment phase)
@@ -1560,6 +1593,7 @@ type UpdateTreatmentPhaseStatusParams struct {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 // Update Treatment Phase Status
 >>>>>>> 3bf345d (happy new year)
@@ -1568,6 +1602,8 @@ type UpdateTreatmentPhaseStatusParams struct {
 =======
 // Update Treatment Phase Status
 >>>>>>> 3bf345d (happy new year)
+=======
+>>>>>>> e859654 (Elastic search)
 func (q *Queries) UpdateTreatmentPhaseStatus(ctx context.Context, arg UpdateTreatmentPhaseStatusParams) error {
 	_, err := q.db.Exec(ctx, updateTreatmentPhaseStatus, arg.ID, arg.Status)
 	return err

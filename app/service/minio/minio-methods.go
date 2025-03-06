@@ -201,6 +201,7 @@ func UpdateCoverFileUpload(c *gin.Context, email, username string, coverID int64
 // HandleFileUpload handles file uploads and returns the URL of the uploaded file
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 func HandleFileUpload(c *gin.Context, folderName string) (string, error) {
 	mcclient, err := GetMinIOClient()
 	if err != nil {
@@ -246,10 +247,27 @@ func HandleFileUpload(c *gin.Context, folderName string) (string, error) {
 =======
 		return "", fmt.Errorf("failed to get the file: %v", err)
 >>>>>>> ada3717 (Docker file)
+=======
+func HandleFileUpload(c *gin.Context, username string) (string, int64, error) {
+	mcclient, err := GetMinIOClient()
+	if err != nil {
+		return "", 0, fmt.Errorf("error getting MinIO client: %v", err)
+	}
+
+	mcclient.CreateBucket(c, username)
+	if err != nil {
+		return "", 0, fmt.Errorf("failed to create bucket %s: %v", username, err)
+	}
+
+	file, fileHeader, err := c.Request.FormFile("image")
+	if err != nil {
+		return "", 0, fmt.Errorf("failed to get the file: %v", err)
+>>>>>>> e859654 (Elastic search)
 	}
 	defer file.Close()
 
 	fileName := fileHeader.Filename
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 	// fileSize := fileHeader.Size
@@ -305,6 +323,27 @@ func HandleFileUpload(c *gin.Context, folderName string) (string, error) {
 	}
 
 <<<<<<< HEAD
+=======
+	// Create ProjectFile record
+	fileSize := fileHeader.Size                       // Get the file size
+	fileType := fileHeader.Header.Get("Content-Type") // Get the file type
+
+	fileContent, err := io.ReadAll(file)
+	if err != nil {
+		return "", 0, fmt.Errorf("failed to read file content for %s: %v", fileName, err)
+	}
+
+	err = mcclient.UploadFile(c, username, fileName, fileContent)
+	if err != nil {
+		return "", 0, fmt.Errorf("failed to upload file %s to MinIO: %v", fileName, err)
+	}
+
+	imageURL, err := mcclient.GetPresignedURL(c, username, fileName, time.Duration(24)*time.Hour)
+	if err != nil {
+		return "", 0, fmt.Errorf("failed to get presigned URL for file %s: %v", fileName, err)
+	}
+
+>>>>>>> e859654 (Elastic search)
 	newFile, err := db.StoreDB.CreateFile(c, db.CreateFileParams{
 		FileName: fileName,
 		FilePath: username,
@@ -315,6 +354,7 @@ func HandleFileUpload(c *gin.Context, folderName string) (string, error) {
 		return "", 0, fmt.Errorf("failed to create file: %v", err)
 	}
 	return imageURL, newFile.ID, nil
+<<<<<<< HEAD
 >>>>>>> e859654 (Elastic search)
 =======
 	// newFile, err := db.StoreDB.CreateFile(c, db.CreateFileParams{
@@ -328,4 +368,6 @@ func HandleFileUpload(c *gin.Context, folderName string) (string, error) {
 	// }
 	return url, nil
 >>>>>>> ada3717 (Docker file)
+=======
+>>>>>>> e859654 (Elastic search)
 }

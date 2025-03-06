@@ -14,6 +14,7 @@ import (
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	"github.com/quanganh247-qa/go-blog-be/app/util"
 )
 
@@ -34,6 +35,12 @@ func Routes(routerGroup middleware.RouterGroup, config *util.Config) {
 
 func Routes(routerGroup middleware.RouterGroup) {
 >>>>>>> e01abc5 (pet schedule api)
+=======
+	"github.com/quanganh247-qa/go-blog-be/app/util"
+)
+
+func Routes(routerGroup middleware.RouterGroup, config *util.Config) {
+>>>>>>> e859654 (Elastic search)
 	petSchedule := routerGroup.RouterDefault.Group("/pet-schedule")
 	authRoute := routerGroup.RouterAuth(petSchedule)
 	// PetSchedule.Use(middleware.IPbasedRateLimitingMiddleware())
@@ -46,6 +53,7 @@ func Routes(routerGroup middleware.RouterGroup) {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 				config:  config,
 =======
 >>>>>>> e01abc5 (pet schedule api)
@@ -54,6 +62,9 @@ func Routes(routerGroup middleware.RouterGroup) {
 >>>>>>> e859654 (Elastic search)
 =======
 >>>>>>> e01abc5 (pet schedule api)
+=======
+				config:  config,
+>>>>>>> e859654 (Elastic search)
 			},
 		},
 	}

@@ -9,6 +9,7 @@ import (
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 type PaymentControllerInterface interface {
 	GetToken(c *gin.Context)
 	GetBanks(c *gin.Context)
@@ -48,13 +49,20 @@ func (c *PaymentController) GetToken(ctx *gin.Context) {
 >>>>>>> e859654 (Elastic search)
 =======
 type VietQRControllerInterface interface {
+=======
+type PaymentControllerInterface interface {
+>>>>>>> e859654 (Elastic search)
 	GetToken(c *gin.Context)
 	GetBanks(c *gin.Context)
 	GenerateQRCode(c *gin.Context)
 }
 
+<<<<<<< HEAD
 func (c *VietQRController) GetToken(ctx *gin.Context) {
 >>>>>>> c449ffc (feat: cart api)
+=======
+func (c *PaymentController) GetToken(ctx *gin.Context) {
+>>>>>>> e859654 (Elastic search)
 	result, err := c.service.GetToken(ctx)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -67,6 +75,7 @@ func (c *VietQRController) GetToken(ctx *gin.Context) {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 func (c *PaymentController) GetBanks(ctx *gin.Context) {
 =======
 func (c *VietQRController) GetBanks(ctx *gin.Context) {
@@ -77,6 +86,9 @@ func (c *PaymentController) GetBanks(ctx *gin.Context) {
 =======
 func (c *VietQRController) GetBanks(ctx *gin.Context) {
 >>>>>>> c449ffc (feat: cart api)
+=======
+func (c *PaymentController) GetBanks(ctx *gin.Context) {
+>>>>>>> e859654 (Elastic search)
 	result, err := c.service.GetBanksService(ctx)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -89,6 +101,7 @@ func (c *VietQRController) GetBanks(ctx *gin.Context) {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 func (c *PaymentController) GenerateQRCode(ctx *gin.Context) {
 =======
 func (c *VietQRController) GenerateQRCode(ctx *gin.Context) {
@@ -99,6 +112,9 @@ func (c *PaymentController) GenerateQRCode(ctx *gin.Context) {
 =======
 func (c *VietQRController) GenerateQRCode(ctx *gin.Context) {
 >>>>>>> c449ffc (feat: cart api)
+=======
+func (c *PaymentController) GenerateQRCode(ctx *gin.Context) {
+>>>>>>> e859654 (Elastic search)
 	var qrRequest QRRequest
 	if err := ctx.ShouldBindJSON(&qrRequest); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})

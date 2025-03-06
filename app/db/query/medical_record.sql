@@ -39,6 +39,7 @@ DELETE FROM medical_history
 WHERE id = $1;
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 -- name: GetMedicalRecordByPetID :one
 SELECT * FROM medical_records
@@ -51,3 +52,5 @@ WHERE pet_id = $1 LIMIT 1;
 SELECT * FROM medical_records
 WHERE pet_id = $1 LIMIT 1;
 >>>>>>> c8bec46 (feat: add chatbot, room management, and pet allergy features)
+=======
+>>>>>>> e859654 (Elastic search)

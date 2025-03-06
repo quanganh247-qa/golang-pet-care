@@ -94,7 +94,14 @@ type AppointmentControllerInterface interface {
 	getAllAppointments(ctx *gin.Context)
 	//time slot
 	getAvailableTimeSlots(ctx *gin.Context)
+<<<<<<< HEAD
 >>>>>>> b393bb9 (add service and add permission)
+=======
+
+	// SOAP
+	createSOAP(ctx *gin.Context)
+	updateSOAP(ctx *gin.Context)
+>>>>>>> e859654 (Elastic search)
 }
 
 func (c *AppointmentController) createAppointment(ctx *gin.Context) {
@@ -120,12 +127,16 @@ func (c *AppointmentController) confirmAppointment(ctx *gin.Context) {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	appointmentID := ctx.Param("id")
 =======
 =======
 >>>>>>> b393bb9 (add service and add permission)
 	appointmentID := ctx.Param("appointment_id")
 >>>>>>> b393bb9 (add service and add permission)
+=======
+	appointmentID := ctx.Param("id")
+>>>>>>> e859654 (Elastic search)
 =======
 	appointmentID := ctx.Param("id")
 >>>>>>> e859654 (Elastic search)
@@ -142,6 +153,7 @@ func (c *AppointmentController) confirmAppointment(ctx *gin.Context) {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 =======
 >>>>>>> b393bb9 (add service and add permission)
@@ -150,6 +162,9 @@ func (c *AppointmentController) confirmAppointment(ctx *gin.Context) {
 >>>>>>> e859654 (Elastic search)
 =======
 >>>>>>> b393bb9 (add service and add permission)
+=======
+
+>>>>>>> e859654 (Elastic search)
 	err = c.service.ConfirmPayment(ctx, id)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
@@ -848,4 +863,53 @@ func (c *AppointmentController) getAllAppointments(ctx *gin.Context) {
 		return
 	}
 	ctx.JSON(http.StatusOK, util.SuccessResponse("get all appointments successful", res))
+}
+
+func (c *AppointmentController) createSOAP(ctx *gin.Context) {
+	appointmentID := ctx.Param("appointment_id")
+	if appointmentID == "" {
+		ctx.JSON(http.StatusBadRequest, nil)
+		return
+	}
+	id, err := strconv.ParseInt(appointmentID, 10, 64)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
+		return
+	}
+	var soap CreateSOAPRequest
+	if err := ctx.ShouldBindJSON(&soap); err != nil {
+		ctx.JSON(http.StatusBadRequest, util.ErrorValidator(err))
+		return
+	}
+
+	soapResponse, err := c.service.CreateSOAPService(ctx, soap, id)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	ctx.JSON(http.StatusOK, util.SuccessResponse("SOAP", soapResponse))
+}
+
+func (c *AppointmentController) updateSOAP(ctx *gin.Context) {
+	appointmentID := ctx.Param("appointment_id")
+	if appointmentID == "" {
+		ctx.JSON(http.StatusBadRequest, nil)
+		return
+	}
+	id, err := strconv.ParseInt(appointmentID, 10, 64)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
+		return
+	}
+	var soap UpdateSOAPRequest
+	if err := ctx.ShouldBindJSON(&soap); err != nil {
+		ctx.JSON(http.StatusBadRequest, util.ErrorValidator(err))
+		return
+	}
+	soapResponse, err := c.service.UpdateSOAPService(ctx, soap, id)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	ctx.JSON(http.StatusOK, util.SuccessResponse("SOAP", soapResponse))
 }

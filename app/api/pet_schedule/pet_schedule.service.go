@@ -1,7 +1,6 @@
 package petschedule
 
 import (
-	"encoding/json"
 	"fmt"
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -30,6 +29,7 @@ import (
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 	"net/http"
 >>>>>>> 6610455 (feat: redis queue)
@@ -48,6 +48,8 @@ import (
 =======
 	"strings"
 >>>>>>> ffc9071 (AI suggestion)
+=======
+>>>>>>> e859654 (Elastic search)
 	"time"
 =======
 >>>>>>> 272832d (redis cache)
@@ -99,6 +101,7 @@ type PetScheduleServiceInterface interface {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	ProcessSuggestionGemini(ctx *gin.Context, description string) (*llm.BaseResponse, error)
 =======
 	UpdatePetScheduleService(ctx *gin.Context, scheduleID int64, req PetScheduleRequest) error
@@ -115,6 +118,9 @@ type PetScheduleServiceInterface interface {
 =======
 	ProcessSuggestion(ctx *gin.Context, description string) (*BaseResponse, error)
 >>>>>>> ffc9071 (AI suggestion)
+=======
+	ProcessSuggestionGemini(ctx *gin.Context, description string) (*llm.BaseResponse, error)
+>>>>>>> e859654 (Elastic search)
 }
 
 func (s *PetScheduleService) CreatePetScheduleService(ctx *gin.Context, req PetScheduleRequest, petID int64) error {
@@ -518,6 +524,7 @@ func (s *PetScheduleService) UpdatePetScheduleService(ctx *gin.Context, schedule
 
 func (s *PetScheduleService) ProcessSuggestionGemini(ctx *gin.Context, description string) (*llm.BaseResponse, error) {
 	actionResponse, err := llm.DetermineActionGemini(ctx, s.config, description)
+<<<<<<< HEAD
 =======
 
 <<<<<<< HEAD
@@ -734,10 +741,13 @@ func (s *PetScheduleService) ProcessSuggestionGemini(ctx *gin.Context, descripti
 >>>>>>> e859654 (Elastic search)
 =======
 >>>>>>> ffc9071 (AI suggestion)
+=======
+>>>>>>> e859654 (Elastic search)
 	if err != nil {
 		return nil, fmt.Errorf("error determining action: %v", err)
 	}
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -765,10 +775,18 @@ func (s *PetScheduleService) ProcessSuggestionGemini(ctx *gin.Context, descripti
 >>>>>>> e859654 (Elastic search)
 =======
 >>>>>>> ffc9071 (AI suggestion)
+=======
+	var res *llm.BaseResponse
+
+	switch actionResponse.Action {
+	case llm.ActionAppointment:
+		res, err = llm.GenerateSuggestionGemini(ctx, s.config, actionResponse.Action, description)
+>>>>>>> e859654 (Elastic search)
 		if err != nil {
 			return nil, fmt.Errorf("error generating suggestion: %v", err)
 		}
 		return res, nil
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -786,10 +804,15 @@ func (s *PetScheduleService) ProcessSuggestionGemini(ctx *gin.Context, descripti
 	case ActionPetLog:
 		res, err = GenerateSuggestion(ctx, actionResponse.Action, description)
 >>>>>>> ffc9071 (AI suggestion)
+=======
+	case llm.ActionPetLog:
+		res, err = llm.GenerateSuggestionGemini(ctx, s.config, actionResponse.Action, description)
+>>>>>>> e859654 (Elastic search)
 		if err != nil {
 			return nil, fmt.Errorf("error generating suggestion: %v", err)
 		}
 		return res, nil
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -807,6 +830,10 @@ func (s *PetScheduleService) ProcessSuggestionGemini(ctx *gin.Context, descripti
 	case ActionPetSchedule:
 		res, err = GenerateSuggestion(ctx, actionResponse.Action, description)
 >>>>>>> ffc9071 (AI suggestion)
+=======
+	case llm.ActionPetSchedule:
+		res, err = llm.GenerateSuggestionGemini(ctx, s.config, actionResponse.Action, description)
+>>>>>>> e859654 (Elastic search)
 		if err != nil {
 			return nil, fmt.Errorf("error generating suggestion: %v", err)
 		}
@@ -814,6 +841,7 @@ func (s *PetScheduleService) ProcessSuggestionGemini(ctx *gin.Context, descripti
 	}
 	return res, nil
 }
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -1026,3 +1054,5 @@ func (s *PetScheduleService) DeletePetScheduleService(ctx *gin.Context, schedule
 =======
 
 >>>>>>> ffc9071 (AI suggestion)
+=======
+>>>>>>> e859654 (Elastic search)

@@ -1,6 +1,7 @@
 package medical_records
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"time"
@@ -8,6 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5/pgtype"
 	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -19,11 +21,15 @@ import (
 >>>>>>> e859654 (Elastic search)
 =======
 >>>>>>> 3bf345d (happy new year)
+=======
+	"github.com/quanganh247-qa/go-blog-be/app/util"
+>>>>>>> e859654 (Elastic search)
 )
 
 type MedicalRecordServiceInterface interface {
 	CreateMedicalRecord(ctx *gin.Context, petID int64) (*MedicalRecordResponse, error)
 	CreateMedicalHistory(ctx *gin.Context, req *MedicalHistoryRequest, recordID int64) (*MedicalHistoryResponse, error)
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -43,6 +49,12 @@ type MedicalRecordServiceInterface interface {
 >>>>>>> e859654 (Elastic search)
 =======
 >>>>>>> 3bf345d (happy new year)
+=======
+	CreateAllergy(ctx *gin.Context, req AllergyRequest, recordID int64) (*Allergy, error)
+	GetMedicalRecord(ctx *gin.Context, petID int64) (*MedicalRecordResponse, error)
+	ListMedicalHistory(ctx *gin.Context, recordID int64, pagination *util.Pagination) ([]MedicalHistoryResponse, error)
+	GetMedicalHistoryByID(ctx *gin.Context, medicalHistoryID int64) (*MedicalHistoryResponse, error)
+>>>>>>> e859654 (Elastic search)
 }
 
 // Quản lý Bệnh án
@@ -112,9 +124,13 @@ func (s *MedicalRecordService) CreateMedicalHistory(ctx *gin.Context, req *Medic
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 
 <<<<<<< HEAD
+=======
+
+>>>>>>> e859654 (Elastic search)
 func (s *MedicalRecordService) CreateAllergy(ctx *gin.Context, req AllergyRequest, recordID int64) (*Allergy, error) {
 	var allergy db.Allergy
 	var err error
@@ -153,10 +169,14 @@ func (s *MedicalRecordService) CreateAllergy(ctx *gin.Context, req AllergyReques
 		Notes:           allergy.Notes.String,
 	}, nil
 }
+<<<<<<< HEAD
 >>>>>>> e859654 (Elastic search)
 
 =======
 >>>>>>> 4ccd381 (Update appointment flow)
+=======
+
+>>>>>>> e859654 (Elastic search)
 func (s *MedicalRecordService) GetMedicalRecord(ctx *gin.Context, petID int64) (*MedicalRecordResponse, error) {
 	// First verify pet exists and is active
 	pet, err := s.storeDB.GetPetByID(ctx, petID)
@@ -214,9 +234,12 @@ func (s *MedicalRecordService) GetMedicalHistoryByID(ctx *gin.Context, medicalHi
 	}, nil
 }
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> 3bf345d (happy new year)
 =======
 >>>>>>> e859654 (Elastic search)
 =======
 >>>>>>> 3bf345d (happy new year)
+=======
+>>>>>>> e859654 (Elastic search)

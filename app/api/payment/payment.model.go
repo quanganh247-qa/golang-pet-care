@@ -95,26 +95,31 @@ import (
 >>>>>>> b0fe977 (place order and make payment)
 
 // GoongConfig contains configuration for VierQR Maps API
-type VietQRConfig struct {
-	APIKey    string
-	ClientKey string
-	BaseURL   string
+type PaymentConfig struct {
+	PaymentAPIKey    string
+	PaymentClientKey string
+	PaymentBaseURL   string
 }
 
 // GoongService handles interactions with VierQR Maps API
-type VietQRService struct {
-	config  *VietQRConfig
+type PaymentService struct {
+	config  *PaymentConfig
 	client  *http.Client
 	storeDB db.Store
 }
 
-type VietQRApi struct {
-	controller VietQRControllerInterface
+type PaymentApi struct {
+	controller PaymentControllerInterface
 }
 
+<<<<<<< HEAD
 type VietQRController struct {
 	service VietQRServiceInterface
 >>>>>>> c449ffc (feat: cart api)
+=======
+type PaymentController struct {
+	service PaymentServiceInterface
+>>>>>>> e859654 (Elastic search)
 }
 
 type TokenResponse struct {
@@ -181,6 +186,9 @@ type GenerateQRData struct {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> e859654 (Elastic search)
 =======
 >>>>>>> e859654 (Elastic search)
 
@@ -189,6 +197,7 @@ type OauthTokenResponse struct {
 	TokenType   string `json:"token_type"`
 	ExpiresIn   int    `json:"expires_in"`
 }
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 =======
@@ -327,3 +336,5 @@ type CreatePaymentLinkRequest struct {
 >>>>>>> 6b24d88 (feat(payment): add PayOS payment integration and enhance treatment module)
 =======
 >>>>>>> c449ffc (feat: cart api)
+=======
+>>>>>>> e859654 (Elastic search)

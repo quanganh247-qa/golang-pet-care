@@ -24,6 +24,7 @@ func Routes(routerGroup middleware.RouterGroup) {
 import (
 	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
 	"github.com/quanganh247-qa/go-blog-be/app/middleware"
+	"github.com/quanganh247-qa/go-blog-be/app/service/elasticsearch"
 )
 <<<<<<< HEAD
 
@@ -124,7 +125,7 @@ func Routes(routerGroup middleware.RouterGroup, es *elasticsearch.ESService) {
 =======
 >>>>>>> a415f25 (new data)
 
-func Routes(routerGroup middleware.RouterGroup) {
+func Routes(routerGroup middleware.RouterGroup, es *elasticsearch.ESService) {
 	medicine := routerGroup.RouterDefault.Group("/medicine")
 	authRoute := routerGroup.RouterAuth(medicine)
 	// Medicine.Use(middleware.IPbasedRateLimitingMiddleware())
@@ -134,6 +135,7 @@ func Routes(routerGroup middleware.RouterGroup) {
 		&MedicineController{
 			service: &MedicineService{
 				storeDB: db.StoreDB, // This should refer to the actual instance
+				es:      es,
 			},
 		},
 	}

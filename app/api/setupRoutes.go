@@ -58,6 +58,7 @@ import (
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 	"github.com/quanganh247-qa/go-blog-be/app/api/device_token"
 >>>>>>> 0fb3f30 (user images)
@@ -75,6 +76,9 @@ import (
 >>>>>>> 4625843 (added goong maps api)
 =======
 >>>>>>> 3bf345d (happy new year)
+=======
+	"github.com/quanganh247-qa/go-blog-be/app/api/medications"
+>>>>>>> e859654 (Elastic search)
 	"github.com/quanganh247-qa/go-blog-be/app/api/notification"
 <<<<<<< HEAD
 >>>>>>> 3bf345d (happy new year)
@@ -117,6 +121,7 @@ import (
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	"github.com/quanganh247-qa/go-blog-be/app/api/rooms"
 =======
 	"github.com/quanganh247-qa/go-blog-be/app/api/queue"
@@ -138,10 +143,14 @@ import (
 =======
 	"github.com/quanganh247-qa/go-blog-be/app/api/products"
 >>>>>>> bd5945b (get list products)
+=======
+	"github.com/quanganh247-qa/go-blog-be/app/api/search"
+>>>>>>> e859654 (Elastic search)
 	"github.com/quanganh247-qa/go-blog-be/app/api/service"
 	"github.com/quanganh247-qa/go-blog-be/app/api/user"
 	"github.com/quanganh247-qa/go-blog-be/app/api/vaccination"
 	"github.com/quanganh247-qa/go-blog-be/app/middleware"
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -153,6 +162,9 @@ import (
 >>>>>>> e859654 (Elastic search)
 =======
 >>>>>>> 6610455 (feat: redis queue)
+=======
+	"github.com/quanganh247-qa/go-blog-be/app/service/elasticsearch"
+>>>>>>> e859654 (Elastic search)
 	"github.com/quanganh247-qa/go-blog-be/app/service/worker"
 	"github.com/quanganh247-qa/go-blog-be/app/util"
 	swaggerFiles "github.com/swaggo/files"
@@ -165,6 +177,7 @@ import (
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor, config util.Config, es *elasticsearch.ESService) {
 =======
 func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor) {
@@ -181,6 +194,9 @@ func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor) {
 =======
 func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor, config util.Config) {
 >>>>>>> 1a9e82a (reset password api)
+=======
+func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor, config util.Config, es *elasticsearch.ESService) {
+>>>>>>> e859654 (Elastic search)
 	gin.SetMode(gin.ReleaseMode)
 	routerDefault := gin.New()
 	routerDefault.SetTrustedProxies(nil)
@@ -332,10 +348,14 @@ func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor, config
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> e859654 (Elastic search)
 	appointment.Routes(routerGroup, taskDistributor)
 	device_token.Routes(routerGroup)
 	disease.Routes(routerGroup, es)
 	petschedule.Routes(routerGroup, &config)
+<<<<<<< HEAD
 <<<<<<< HEAD
 	vaccination.Routes(routerGroup)
 	location.Routes(routerGroup, &config)
@@ -358,6 +378,8 @@ func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor, config
 	device_token.Routes(routerGroup)
 	disease.Routes(routerGroup, es)
 	petschedule.Routes(routerGroup, &config)
+=======
+>>>>>>> e859654 (Elastic search)
 	notification.Routes(routerGroup)
 =======
 >>>>>>> ada3717 (Docker file)
@@ -394,6 +416,8 @@ func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor, config
 =======
 =======
 	clinic_reporting.Routes(routerGroup)
+	search.Routes(routerGroup, es)
+	medications.Routes(routerGroup, es)
 	server.Router = routerDefault
 >>>>>>> ffc9071 (AI suggestion)
 

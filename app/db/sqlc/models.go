@@ -72,8 +72,8 @@ type CartItem struct {
 	Notes         pgtype.Text      `json:"notes"`
 	ReminderSend  pgtype.Bool      `json:"reminder_send"`
 	TimeSlotID    pgtype.Int8      `json:"time_slot_id"`
-	PaymentStatus pgtype.Text      `json:"payment_status"`
 	CreatedAt     pgtype.Timestamp `json:"created_at"`
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -109,6 +109,9 @@ type CartItem struct {
 =======
 	StateID       pgtype.UUID      `json:"state_id"`
 >>>>>>> ffc9071 (AI suggestion)
+=======
+	StateID       pgtype.Int4      `json:"state_id"`
+>>>>>>> e859654 (Elastic search)
 }
 
 type Cart struct {
@@ -153,6 +156,7 @@ type CheckoutService struct {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> ada3717 (Docker file)
 type Clinic struct {
@@ -167,12 +171,15 @@ type Clinic struct {
 >>>>>>> e859654 (Elastic search)
 =======
 >>>>>>> ada3717 (Docker file)
+=======
+>>>>>>> e859654 (Elastic search)
 type Consultation struct {
 	ID            int32            `json:"id"`
 	AppointmentID pgtype.Int8      `json:"appointment_id"`
 	Subjective    pgtype.Text      `json:"subjective"`
 	Objective     pgtype.Text      `json:"objective"`
 	Assessment    pgtype.Text      `json:"assessment"`
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 =======
@@ -185,14 +192,19 @@ type DeviceToken struct {
 =======
 =======
 =======
+=======
+>>>>>>> e859654 (Elastic search)
 	Plan          pgtype.Text      `json:"plan"`
 	CreatedAt     pgtype.Timestamp `json:"created_at"`
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> e859654 (Elastic search)
 =======
 >>>>>>> e9037c6 (update sqlc)
+=======
+>>>>>>> e859654 (Elastic search)
 type Department struct {
 	ID          int64            `json:"id"`
 	Name        string           `json:"name"`
@@ -256,6 +268,7 @@ type Disease struct {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> 0fb3f30 (user images)
 =======
@@ -274,6 +287,8 @@ type DiseaseMedicine struct {
 >>>>>>> 0fb3f30 (user images)
 =======
 >>>>>>> 6c35562 (dicease and treatment plan)
+=======
+>>>>>>> e859654 (Elastic search)
 type Doctor struct {
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -300,6 +315,16 @@ type File struct {
 	UserID     pgtype.Int8      `json:"user_id"`
 =======
 >>>>>>> ada3717 (Docker file)
+}
+
+type File struct {
+	ID         int64            `json:"id"`
+	FileName   string           `json:"file_name"`
+	FilePath   string           `json:"file_path"`
+	FileSize   int64            `json:"file_size"`
+	FileType   string           `json:"file_type"`
+	UploadedAt pgtype.Timestamp `json:"uploaded_at"`
+	UserID     pgtype.Int8      `json:"user_id"`
 }
 
 type File struct {
@@ -493,29 +518,39 @@ type Order struct {
 =======
 >>>>>>> 3bf345d (happy new year)
 type Medicine struct {
-	ID              int64              `json:"id"`
-	Name            string             `json:"name"`
-	Description     pgtype.Text        `json:"description"`
-	Usage           pgtype.Text        `json:"usage"`
-	Dosage          pgtype.Text        `json:"dosage"`
-	Frequency       pgtype.Text        `json:"frequency"`
-	Duration        pgtype.Text        `json:"duration"`
-	SideEffects     pgtype.Text        `json:"side_effects"`
-	MedicalRecordID pgtype.Int8        `json:"medical_record_id"`
-	PrescribingVet  pgtype.Text        `json:"prescribing_vet"`
-	StartDate       pgtype.Date        `json:"start_date"`
-	EndDate         pgtype.Date        `json:"end_date"`
-	CreatedAt       pgtype.Timestamptz `json:"created_at"`
-	UpdatedAt       pgtype.Timestamptz `json:"updated_at"`
+	ID             int64              `json:"id"`
+	Name           string             `json:"name"`
+	Description    pgtype.Text        `json:"description"`
+	Usage          pgtype.Text        `json:"usage"`
+	Dosage         pgtype.Text        `json:"dosage"`
+	Frequency      pgtype.Text        `json:"frequency"`
+	Duration       pgtype.Text        `json:"duration"`
+	SideEffects    pgtype.Text        `json:"side_effects"`
+	ExpirationDate pgtype.Date        `json:"expiration_date"`
+	Quantity       pgtype.Int8        `json:"quantity"`
+	CreatedAt      pgtype.Timestamptz `json:"created_at"`
+	UpdatedAt      pgtype.Timestamptz `json:"updated_at"`
 }
 
 type Notification struct {
-	Notificationid int64            `json:"notificationid"`
-	Username       string           `json:"username"`
-	Title          string           `json:"title"`
-	Description    pgtype.Text      `json:"description"`
-	Datetime       pgtype.Timestamp `json:"datetime"`
-	IsRead         pgtype.Bool      `json:"is_read"`
+	ID          int64            `json:"id"`
+	Username    string           `json:"username"`
+	Title       string           `json:"title"`
+	Content     pgtype.Text      `json:"content"`
+	IsRead      pgtype.Bool      `json:"is_read"`
+	RelatedID   pgtype.Int4      `json:"related_id"`
+	RelatedType pgtype.Text      `json:"related_type"`
+	Datetime    pgtype.Timestamp `json:"datetime"`
+	NotifyType  pgtype.Text      `json:"notify_type"`
+}
+
+type NotificationPreference struct {
+	ID        int64            `json:"id"`
+	Username  string           `json:"username"`
+	Topic     string           `json:"topic"`
+	Enabled   pgtype.Bool      `json:"enabled"`
+	CreatedAt pgtype.Timestamp `json:"created_at"`
+	UpdatedAt pgtype.Timestamp `json:"updated_at"`
 }
 
 type Order struct {
@@ -825,6 +860,8 @@ type PhaseMedicine struct {
 	Frequency  pgtype.Text        `json:"frequency"`
 	Duration   pgtype.Text        `json:"duration"`
 	Notes      pgtype.Text        `json:"notes"`
+	Quantity   pgtype.Int4        `json:"quantity"`
+	IsReceived pgtype.Bool        `json:"is_received"`
 	CreatedAt  pgtype.Timestamptz `json:"created_at"`
 }
 
@@ -988,10 +1025,15 @@ type State struct {
 =======
 }
 
+<<<<<<< HEAD
 type TaskState struct {
 	ID        pgtype.UUID      `json:"id"`
 	TaskID    int32            `json:"task_id"`
 >>>>>>> ffc9071 (AI suggestion)
+=======
+type State struct {
+	ID        int64            `json:"id"`
+>>>>>>> e859654 (Elastic search)
 	State     string           `json:"state"`
 	CreatedAt pgtype.Timestamp `json:"created_at"`
 	UpdatedAt pgtype.Timestamp `json:"updated_at"`

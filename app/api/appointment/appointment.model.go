@@ -5,6 +5,7 @@ import (
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	"github.com/quanganh247-qa/go-blog-be/app/service/worker"
 =======
 >>>>>>> e30b070 (Get list appoinment by user)
@@ -13,6 +14,9 @@ import (
 >>>>>>> e859654 (Elastic search)
 =======
 >>>>>>> e30b070 (Get list appoinment by user)
+=======
+	"github.com/quanganh247-qa/go-blog-be/app/service/worker"
+>>>>>>> e859654 (Elastic search)
 )
 
 type AppointmentController struct {
@@ -77,10 +81,13 @@ type createAppointmentRequest struct {
 	Reason     string `json:"reason"`
 =======
 	Note       string `json:"note"`
+<<<<<<< HEAD
 >>>>>>> e859654 (Elastic search)
 =======
 	Reason     string `json:"reason"`
 >>>>>>> 4ccd381 (Update appointment flow)
+=======
+>>>>>>> e859654 (Elastic search)
 	StateID    int64  `json:"state_id"`
 }
 
@@ -114,6 +121,7 @@ type historyAppointmentResponse struct {
 }
 
 type createAppointmentResponse struct {
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -304,6 +312,18 @@ type QueueItem struct {
 	Notes         string   `json:"notes"`
 	ReminderSend  bool     `json:"reminder_send"`
 	CreatedAt     string   `json:"created_at"`
+=======
+	ID           int64    `json:"id"`
+	PetName      string   `json:"pet_name"`
+	ServiceName  string   `json:"service_name"`
+	DoctorName   string   `json:"doctor_name"`
+	Date         string   `json:"date"`
+	TimeSlot     timeslot `json:"time_slot"`
+	State        string   `json:"state"`
+	Notes        string   `json:"notes"`
+	ReminderSend bool     `json:"reminder_send"`
+	CreatedAt    string   `json:"created_at"`
+>>>>>>> e859654 (Elastic search)
 }
 >>>>>>> b393bb9 (add service and add permission)
 type timeSlotResponse struct {
@@ -369,4 +389,36 @@ type QueueItem struct {
 	// BookedPatients int32  `json:"booked_patients"`
 	// MaxPatients    int32  `json:"max_patients"`
 >>>>>>> b393bb9 (add service and add permission)
+}
+
+type updateAppointmentRequest struct {
+	PaymentStatus string `json:"payment_status"`
+	StateID       string `json:"state_id"`
+	Notes         string `json:"notes"`
+	ReminderSend  bool   `json:"reminder_send"`
+}
+
+type CreateSOAPRequest struct {
+	DoctorID   int64  `json:"doctor_id"`
+	Subjective string `json:"subjective"`
+	Objective  string `json:"objective"`
+	Assessment string `json:"assessment"`
+	Plan       string `json:"plan"`
+}
+
+type UpdateSOAPRequest struct {
+	Subjective string `json:"subjective"`
+	Objective  string `json:"objective"`
+	Assessment string `json:"assessment"`
+	Plan       string `json:"plan"`
+}
+
+type SOAPResponse struct {
+	ConsultationID int64  `json:"consultation_id"`
+	AppointmentID  int64  `json:"appointment_id"`
+	Subjective     string `json:"subjective"`
+	Objective      string `json:"objective"`
+	Assessment     string `json:"assessment"`
+	Plan           string `json:"plan"`
+	Notes          string `json:"notes"`
 }

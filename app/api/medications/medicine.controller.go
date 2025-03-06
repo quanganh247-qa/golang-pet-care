@@ -30,6 +30,7 @@ type MedicineControllerInterface interface {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 	// ListMedicinesByUsername(ctx *gin.Context)
 >>>>>>> 79a3bcc (medicine api)
@@ -58,6 +59,8 @@ type MedicineControllerInterface interface {
 =======
 >>>>>>> a415f25 (new data)
 	// ListMedicinesByUsername(ctx *gin.Context)
+=======
+>>>>>>> e859654 (Elastic search)
 	UpdateMedicine(ctx *gin.Context)
 	// DeleteMedicine(ctx *gin.Context)
 }

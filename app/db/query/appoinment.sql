@@ -97,14 +97,18 @@ VALUES(
 >>>>>>> b393bb9 (add service and add permission)
 =======
 INSERT INTO appointments
-( petid, doctor_id, username, service_id, "date", payment_status, notes, reminder_send, time_slot_id, created_at, state_id)
+( petid, doctor_id, username, service_id, "date", notes, reminder_send, time_slot_id, created_at, state_id)
 VALUES( 
+<<<<<<< HEAD
 <<<<<<< HEAD
     $1, $2, $3, $4, $5, $6, $7, $8, $9, now()
 >>>>>>> 33fcf96 (Big update)
 =======
     $1, $2, $3, $4, $5, $6, $7, $8, $9, now(), $10
 >>>>>>> ffc9071 (AI suggestion)
+=======
+    $1, $2, $3, $4, $5, $6, $7, $8, now(), $9
+>>>>>>> e859654 (Elastic search)
 ) RETURNING *;
 
 
@@ -172,7 +176,17 @@ UPDATE time_slots
 SET booked_patients = booked_patients + 1
 WHERE id = $1 AND doctor_id = $2;
 
+<<<<<<< HEAD
 >>>>>>> b393bb9 (add service and add permission)
+=======
+-- name: UpdateAppointmentByID :exec
+UPDATE appointments SET 
+    state_id = $2,
+    notes = $3,
+    reminder_send = $4,
+    updated_at = now()
+WHERE appointment_id = $1;
+>>>>>>> e859654 (Elastic search)
 
 -- name: UpdateNotification :exec
 UPDATE appointments
@@ -185,6 +199,7 @@ WHERE appointment_id = $1;
 <<<<<<< HEAD
 UPDATE appointments
 SET state_id = $2
+<<<<<<< HEAD
 <<<<<<< HEAD
 =======
 UPDATE Appointment
@@ -202,6 +217,8 @@ SET payment_status = $2
 =======
 SET payment_status = $2
 >>>>>>> b393bb9 (add service and add permission)
+=======
+>>>>>>> e859654 (Elastic search)
 WHERE appointment_id = $1;
 
 -- name: GetAppointmentsOfDoctorWithDetails :many
@@ -802,4 +819,9 @@ JOIN services ON appointments.service_id = services.id
 JOIN time_slots ON appointments.time_slot_id = time_slots.id
 JOIN doctors ON appointments.doctor_id = doctors.id;
 
+<<<<<<< HEAD
 >>>>>>> ffc9071 (AI suggestion)
+=======
+-- name: GetSOAPByAppointmentID :one
+SELECT * FROM consultations WHERE appointment_id = $1;
+>>>>>>> e859654 (Elastic search)

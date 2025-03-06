@@ -9,8 +9,11 @@ import (
 func Routes(routerGroup middleware.RouterGroup, taskDistributor worker.TaskDistributor) {
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	appointment := routerGroup.RouterDefault.Group("/")
 =======
+=======
+>>>>>>> e859654 (Elastic search)
 	appointment := routerGroup.RouterDefault.Group("/appointment")
 >>>>>>> e859654 (Elastic search)
 =======
@@ -25,6 +28,7 @@ func Routes(routerGroup middleware.RouterGroup, taskDistributor worker.TaskDistr
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 				storeDB:         db.StoreDB,
 				taskDistributor: taskDistributor,
 =======
@@ -37,6 +41,10 @@ func Routes(routerGroup middleware.RouterGroup, taskDistributor worker.TaskDistr
 =======
 				storeDB: db.StoreDB,
 >>>>>>> 685da65 (latest update)
+=======
+				storeDB:         db.StoreDB,
+				taskDistributor: taskDistributor,
+>>>>>>> e859654 (Elastic search)
 			},
 		},
 	}
@@ -79,8 +87,9 @@ func Routes(routerGroup middleware.RouterGroup, taskDistributor worker.TaskDistr
 		authRoute.GET("/", appointmentApi.controller.getAppointmentsByPetOfUser)
 =======
 		authRoute.POST("/", appointmentApi.controller.createAppointment)
-		authRoute.POST("/confirm/:appointment_id", appointmentApi.controller.confirmAppointment)
+		authRoute.POST("/confirm/:id", appointmentApi.controller.confirmAppointment)
 		authRoute.GET("/", appointmentApi.controller.getAppointmentsByUser)
+<<<<<<< HEAD
 >>>>>>> 685da65 (latest update)
 		authRoute.GET("/:appointment_id", appointmentApi.controller.getAppointmentByID)
 <<<<<<< HEAD
@@ -132,12 +141,22 @@ func Routes(routerGroup middleware.RouterGroup, taskDistributor worker.TaskDistr
 		authRoute.GET("appointment/:id/soap", appointmentApi.controller.getSOAPByAppointmentID)
 >>>>>>> c8bec46 (feat: add chatbot, room management, and pet allergy features)
 =======
+=======
+		authRoute.GET("/:id", appointmentApi.controller.getAppointmentByID)
+>>>>>>> e859654 (Elastic search)
 		authRoute.GET("/doctor/:doctor_id", appointmentApi.controller.getAppointmentsByDoctor)
 		authRoute.GET("/all", appointmentApi.controller.getAllAppointments)
 
 		// time slot
 		authRoute.GET("/doctor/:doctor_id/time-slot", appointmentApi.controller.getAvailableTimeSlots)
+<<<<<<< HEAD
 >>>>>>> b393bb9 (add service and add permission)
+=======
+
+		// soap
+		authRoute.POST("/soap/:appointment_id", appointmentApi.controller.createSOAP)
+		authRoute.PUT("/soap/:appointment_id", appointmentApi.controller.updateSOAP)
+>>>>>>> e859654 (Elastic search)
 	}
 
 }

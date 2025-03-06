@@ -21,6 +21,7 @@ func ErrorValidator(err error) map[string]any {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 		for i, fe := range ve {
 			out[i] = ApiError{fe.Field(), msgForTag(fe.Tag(), fe.Error()), fe.Error()}
 		}
@@ -45,16 +46,20 @@ func ErrorValidator(err error) map[string]any {
 >>>>>>> e859654 (Elastic search)
 =======
 		message := ""
+=======
+>>>>>>> e859654 (Elastic search)
 		for i, fe := range ve {
 			out[i] = ApiError{fe.Field(), msgForTag(fe.Tag(), fe.Error()), fe.Error()}
-			message += fmt.Sprintf("%s : %s, ", fe.Field(), msgForTag(fe.Tag(), fe.Error()))
 		}
-		errRes := gin.H{"code": "E", "message": "Validation Error > " + message, "errors": out}
-		return errRes
+		return gin.H{"code": "E", "message": "Validation Error", "errors": out}
 	}
+<<<<<<< HEAD
 	errRes := gin.H{"code": "E", "message": fmt.Sprintf("Validation Error Input Request Body!!!, %v", err), "errors": []ApiError{}}
 	return errRes
 >>>>>>> 3bf345d (happy new year)
+=======
+	return gin.H{"code": "E", "message": fmt.Sprintf("Validation Error: %v", err), "errors": []ApiError{}}
+>>>>>>> e859654 (Elastic search)
 }
 
 func msgForTag(tag string, defaultError string) string {
