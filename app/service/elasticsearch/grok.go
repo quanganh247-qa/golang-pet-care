@@ -4,7 +4,10 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+<<<<<<< HEAD
 	"log"
+=======
+>>>>>>> e859654 (Elastic search)
 
 	"github.com/elastic/go-elasticsearch/v8"
 	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
@@ -54,7 +57,11 @@ func NewESService(config util.Config) (*ESService, error) {
 	return &ESService{client: client, index: "petclinic", mappings: mappings}, nil
 }
 
+<<<<<<< HEAD
 func (es *ESService) CreateIndices() {
+=======
+func (es *ESService) CreateIndices() error {
+>>>>>>> e859654 (Elastic search)
 	for docType, mapping := range es.mappings {
 		indexName := es.index + "_" + docType
 
@@ -64,7 +71,11 @@ func (es *ESService) CreateIndices() {
 		}
 		data, err := json.Marshal(body)
 		if err != nil {
+<<<<<<< HEAD
 			log.Println("error marshaling mapping for %s: %w", docType, err)
+=======
+			return fmt.Errorf("error marshaling mapping for %s: %w", docType, err)
+>>>>>>> e859654 (Elastic search)
 		}
 
 		// Tạo index
@@ -73,18 +84,31 @@ func (es *ESService) CreateIndices() {
 			es.client.Indices.Create.WithBody(bytes.NewReader(data)),
 		)
 		if err != nil {
+<<<<<<< HEAD
 			log.Println("error creating index %s: %w", indexName, err)
+=======
+			return fmt.Errorf("error creating index %s: %w", indexName, err)
+>>>>>>> e859654 (Elastic search)
 		}
 		defer res.Body.Close()
 
 		if res.IsError() {
 			var errResponse map[string]interface{}
 			if err := json.NewDecoder(res.Body).Decode(&errResponse); err != nil {
+<<<<<<< HEAD
 				log.Println("error parsing create index error for %s: %w", indexName, err)
 			}
 			log.Println("error creating index %s: %v", indexName, errResponse)
 		}
 	}
+=======
+				return fmt.Errorf("error parsing create index error for %s: %w", indexName, err)
+			}
+			return fmt.Errorf("error creating index %s: %v", indexName, errResponse)
+		}
+	}
+	return nil
+>>>>>>> e859654 (Elastic search)
 }
 
 func (es *ESService) IndexDocument(docType string, id int, doc map[string]interface{}) error {

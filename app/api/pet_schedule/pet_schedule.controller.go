@@ -306,7 +306,7 @@ func (s *PetScheduleController) generateScheduleSuggestion(ctx *gin.Context) {
 		return
 	}
 
-	response, err := s.service.ProcessSuggestion(ctx, req.Voice)
+	response, err := s.service.ProcessSuggestionGemini(ctx, req.Voice)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, util.ErrorValidator(err))
 		return

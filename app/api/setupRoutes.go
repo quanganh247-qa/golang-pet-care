@@ -32,11 +32,15 @@ import (
 	"github.com/quanganh247-qa/go-blog-be/app/api/location"
 	"github.com/quanganh247-qa/go-blog-be/app/api/medical_records"
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 	"github.com/quanganh247-qa/go-blog-be/app/api/device_token"
 >>>>>>> 0fb3f30 (user images)
 	"github.com/quanganh247-qa/go-blog-be/app/api/medications"
 =======
+=======
+	"github.com/quanganh247-qa/go-blog-be/app/api/medications"
+>>>>>>> e859654 (Elastic search)
 	"github.com/quanganh247-qa/go-blog-be/app/api/notification"
 >>>>>>> 3bf345d (happy new year)
 	"github.com/quanganh247-qa/go-blog-be/app/api/payment"
@@ -60,6 +64,7 @@ import (
 <<<<<<< HEAD
 <<<<<<< HEAD
 	"github.com/quanganh247-qa/go-blog-be/app/api/products"
+<<<<<<< HEAD
 	"github.com/quanganh247-qa/go-blog-be/app/api/rooms"
 	"github.com/quanganh247-qa/go-blog-be/app/api/search"
 =======
@@ -67,14 +72,21 @@ import (
 =======
 	"github.com/quanganh247-qa/go-blog-be/app/api/products"
 >>>>>>> bd5945b (get list products)
+=======
+	"github.com/quanganh247-qa/go-blog-be/app/api/search"
+>>>>>>> e859654 (Elastic search)
 	"github.com/quanganh247-qa/go-blog-be/app/api/service"
 	"github.com/quanganh247-qa/go-blog-be/app/api/user"
 	"github.com/quanganh247-qa/go-blog-be/app/api/vaccination"
 	"github.com/quanganh247-qa/go-blog-be/app/middleware"
 <<<<<<< HEAD
+<<<<<<< HEAD
 	"github.com/quanganh247-qa/go-blog-be/app/service/elasticsearch"
 =======
 >>>>>>> 6610455 (feat: redis queue)
+=======
+	"github.com/quanganh247-qa/go-blog-be/app/service/elasticsearch"
+>>>>>>> e859654 (Elastic search)
 	"github.com/quanganh247-qa/go-blog-be/app/service/worker"
 	"github.com/quanganh247-qa/go-blog-be/app/util"
 	swaggerFiles "github.com/swaggo/files"
@@ -84,6 +96,7 @@ import (
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor, config util.Config, es *elasticsearch.ESService) {
 =======
 func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor) {
@@ -91,6 +104,9 @@ func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor) {
 =======
 func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor, config util.Config) {
 >>>>>>> 1a9e82a (reset password api)
+=======
+func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor, config util.Config, es *elasticsearch.ESService) {
+>>>>>>> e859654 (Elastic search)
 	gin.SetMode(gin.ReleaseMode)
 	routerDefault := gin.New()
 	routerDefault.SetTrustedProxies(nil)
@@ -157,6 +173,7 @@ func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor, config
 	pet.Routes(routerGroup)
 	service.Routes(routerGroup)
 <<<<<<< HEAD
+<<<<<<< HEAD
 	appointment.Routes(routerGroup, taskDistributor)
 	device_token.Routes(routerGroup)
 	disease.Routes(routerGroup, es)
@@ -173,9 +190,12 @@ func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor, config
 	rooms.Routes(routerGroup)
 =======
 	appointment.Routes(routerGroup)
+=======
+	appointment.Routes(routerGroup, taskDistributor)
+>>>>>>> e859654 (Elastic search)
 	device_token.Routes(routerGroup)
-	disease.Routes(routerGroup)
-	petschedule.Routes(routerGroup)
+	disease.Routes(routerGroup, es)
+	petschedule.Routes(routerGroup, &config)
 	notification.Routes(routerGroup)
 	vaccination.Routes(routerGroup)
 	location.Routes(routerGroup, &config)
@@ -184,6 +204,8 @@ func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor, config
 	products.Routes(routerGroup)
 	medical_records.Routes(routerGroup)
 	clinic_reporting.Routes(routerGroup)
+	search.Routes(routerGroup, es)
+	medications.Routes(routerGroup, es)
 	server.Router = routerDefault
 >>>>>>> 79a3bcc (medicine api)
 

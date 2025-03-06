@@ -163,6 +163,7 @@ func (q *Queries) GetMedicalRecord(ctx context.Context, id int64) (MedicalRecord
 	return i, err
 }
 
+<<<<<<< HEAD
 const getMedicalRecordByPetID = `-- name: GetMedicalRecordByPetID :one
 SELECT id, pet_id, created_at, updated_at FROM medical_records
 WHERE pet_id = $1 LIMIT 1
@@ -180,6 +181,8 @@ func (q *Queries) GetMedicalRecordByPetID(ctx context.Context, petID pgtype.Int8
 	return i, err
 }
 
+=======
+>>>>>>> e859654 (Elastic search)
 const updateMedicalHistory = `-- name: UpdateMedicalHistory :exec
 UPDATE medical_history
 SET condition = $2, diagnosis_date = $3, treatment = $4, notes = $5, updated_at = NOW()

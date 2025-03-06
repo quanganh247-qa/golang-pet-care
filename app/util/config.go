@@ -38,9 +38,13 @@ type Config struct {
 	GoogleClientSecret string `mapstructure:"GOOGLE_CLIENT_SECRET"`
 	GoogleRedirectURL  string `mapstructure:"GOOGLE_REDIRECT_URL"`
 <<<<<<< HEAD
+<<<<<<< HEAD
 	GoogleAPIKey       string `mapstructure:"GOOGLE_API_KEY"`
 
 	OpenFDAAPIKey string `mapstructure:"OPENFDA_API_KEY"`
+=======
+	GoogleAPIKey       string `mapstructure:"GOOGLE_API_KEY"`
+>>>>>>> e859654 (Elastic search)
 
 	GoongAPIKey  string `mapstructure:"GOONG_API_KEY"`
 	GoongBaseURL string `mapstructure:"GOONG_BASE_URL"`
@@ -48,6 +52,7 @@ type Config struct {
 	VietQRBaseURL   string `mapstructure:"VIETQR_BASE_URL"`
 	VietQRAPIKey    string `mapstructure:"VIETQR_API_KEY"`
 	VietQRClientKey string `mapstructure:"VIETQR_CLIENT_KEY"`
+<<<<<<< HEAD
 <<<<<<< HEAD
 
 	PaypalClientID     string `mapstructure:"PAYPAL_CLIENT_ID"`
@@ -67,6 +72,18 @@ type Config struct {
 >>>>>>> 4625843 (added goong maps api)
 =======
 >>>>>>> c449ffc (feat: cart api)
+=======
+
+	PaypalBaseURL   string `mapstructure:"PAYPAL_BASE_URL"`
+	PaypalAPIKey    string `mapstructure:"PAYPAL_API_KEY"`
+	PaypalClientKey string `mapstructure:"PAYPAL_CLIENT_KEY"`
+
+	ElasticsearchURL string `mapstructure:"ELASTICSEARCH_URL"`
+	MinIOEndpoint    string `mapstructure:"MINIO_URL"`
+	MinIOAccessKey   string `mapstructure:"MINIO_ACCESS_KEY"`
+	MinIOSecretKey   string `mapstructure:"MINIO_SECRET_KEY"`
+	MinIOSSL         bool   `mapstructure:"MINIO_SSL"`
+>>>>>>> e859654 (Elastic search)
 }
 
 var Configs = Config{}

@@ -17,6 +17,7 @@ import (
 
 func Routes(routerGroup middleware.RouterGroup, config *util.Config) {
 <<<<<<< HEAD
+<<<<<<< HEAD
 	payment := routerGroup.RouterDefault.Group("/payment")
 	authRoute := routerGroup.RouterAuth(payment)
 	// Goong.Use(middleware.IPbasedRateLimitingMiddleware())
@@ -38,16 +39,20 @@ func Routes(routerGroup middleware.RouterGroup, config *util.Config) {
 =======
 	Goong := routerGroup.RouterDefault.Group("/vietqr")
 	authRoute := routerGroup.RouterAuth(Goong)
+=======
+	payment := routerGroup.RouterDefault.Group("/payment")
+	authRoute := routerGroup.RouterAuth(payment)
+>>>>>>> e859654 (Elastic search)
 	// Goong.Use(middleware.IPbasedRateLimitingMiddleware())
 
 	// Khoi tao api
-	goongApi := &VietQRApi{
-		&VietQRController{
-			service: &VietQRService{
-				config: &VietQRConfig{
-					APIKey:    config.VietQRAPIKey,
-					BaseURL:   config.VietQRBaseURL,
-					ClientKey: config.VietQRClientKey,
+	paymentApi := &PaymentApi{
+		&PaymentController{
+			service: &PaymentService{
+				config: &PaymentConfig{
+					// PaymentAPIKey:    config.PaymentAPIKey,
+					// PaymentBaseURL:   config.PaymentBaseURL,
+					// PaymentClientKey: config.PaymentClientKey,
 				},
 <<<<<<< HEAD
 				client: &http.Client{},
@@ -62,6 +67,7 @@ func Routes(routerGroup middleware.RouterGroup, config *util.Config) {
 
 	{
 <<<<<<< HEAD
+<<<<<<< HEAD
 		authRoute.GET("/token", paymentApi.controller.GetToken)
 		authRoute.GET("/banks", paymentApi.controller.GetBanks)
 		authRoute.POST("/generate-qr", paymentApi.controller.GenerateQRCode)
@@ -70,6 +76,11 @@ func Routes(routerGroup middleware.RouterGroup, config *util.Config) {
 		authRoute.GET("/banks", goongApi.controller.GetBanks)
 		authRoute.POST("/generate-qr", goongApi.controller.GenerateQRCode)
 >>>>>>> c449ffc (feat: cart api)
+=======
+		authRoute.GET("/token", paymentApi.controller.GetToken)
+		authRoute.GET("/banks", paymentApi.controller.GetBanks)
+		authRoute.POST("/generate-qr", paymentApi.controller.GenerateQRCode)
+>>>>>>> e859654 (Elastic search)
 	}
 
 }

@@ -37,7 +37,10 @@ WHERE id = $1;
 -- name: DeleteMedicalHistory :exec
 DELETE FROM medical_history
 WHERE id = $1;
+<<<<<<< HEAD
 
 -- name: GetMedicalRecordByPetID :one
 SELECT * FROM medical_records
 WHERE pet_id = $1 LIMIT 1;
+=======
+>>>>>>> e859654 (Elastic search)

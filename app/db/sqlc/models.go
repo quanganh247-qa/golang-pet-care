@@ -64,13 +64,16 @@ type CartItem struct {
 	Notes         pgtype.Text      `json:"notes"`
 	ReminderSend  pgtype.Bool      `json:"reminder_send"`
 	TimeSlotID    pgtype.Int8      `json:"time_slot_id"`
-	PaymentStatus pgtype.Text      `json:"payment_status"`
 	CreatedAt     pgtype.Timestamp `json:"created_at"`
+<<<<<<< HEAD
 <<<<<<< HEAD
 >>>>>>> 272832d (redis cache)
 =======
 	StateID       pgtype.UUID      `json:"state_id"`
 >>>>>>> ffc9071 (AI suggestion)
+=======
+	StateID       pgtype.Int4      `json:"state_id"`
+>>>>>>> e859654 (Elastic search)
 }
 
 type Cart struct {
@@ -111,6 +114,7 @@ type CheckoutService struct {
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 type Clinic struct {
 	ID      int64       `json:"id"`
 	Name    pgtype.Text `json:"name"`
@@ -118,12 +122,15 @@ type Clinic struct {
 	Phone   pgtype.Text `json:"phone"`
 }
 
+=======
+>>>>>>> e859654 (Elastic search)
 type Consultation struct {
 	ID            int32            `json:"id"`
 	AppointmentID pgtype.Int8      `json:"appointment_id"`
 	Subjective    pgtype.Text      `json:"subjective"`
 	Objective     pgtype.Text      `json:"objective"`
 	Assessment    pgtype.Text      `json:"assessment"`
+<<<<<<< HEAD
 	Plan          pgtype.Int8      `json:"plan"`
 	CreatedAt     pgtype.Timestamp `json:"created_at"`
 }
@@ -131,6 +138,12 @@ type Consultation struct {
 type DeviceToken struct {
 =======
 =======
+=======
+	Plan          pgtype.Text      `json:"plan"`
+	CreatedAt     pgtype.Timestamp `json:"created_at"`
+}
+
+>>>>>>> e859654 (Elastic search)
 type Department struct {
 	ID          int64            `json:"id"`
 	Name        string           `json:"name"`
@@ -169,6 +182,7 @@ type Disease struct {
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> 0fb3f30 (user images)
 =======
@@ -178,6 +192,8 @@ type DiseaseMedicine struct {
 }
 
 >>>>>>> 6c35562 (dicease and treatment plan)
+=======
+>>>>>>> e859654 (Elastic search)
 type Doctor struct {
 <<<<<<< HEAD
 	ID                int64       `json:"id"`
@@ -187,6 +203,16 @@ type Doctor struct {
 	Education         pgtype.Text `json:"education"`
 	CertificateNumber pgtype.Text `json:"certificate_number"`
 	Bio               pgtype.Text `json:"bio"`
+}
+
+type File struct {
+	ID         int64            `json:"id"`
+	FileName   string           `json:"file_name"`
+	FilePath   string           `json:"file_path"`
+	FileSize   int64            `json:"file_size"`
+	FileType   string           `json:"file_type"`
+	UploadedAt pgtype.Timestamp `json:"uploaded_at"`
+	UserID     pgtype.Int8      `json:"user_id"`
 }
 
 type File struct {
@@ -338,6 +364,7 @@ type Medicine struct {
 >>>>>>> 6c35562 (dicease and treatment plan)
 =======
 type Medicine struct {
+<<<<<<< HEAD
 	ID              int64              `json:"id"`
 	Name            string             `json:"name"`
 	Description     pgtype.Text        `json:"description"`
@@ -353,15 +380,41 @@ type Medicine struct {
 	CreatedAt       pgtype.Timestamptz `json:"created_at"`
 	UpdatedAt       pgtype.Timestamptz `json:"updated_at"`
 >>>>>>> 3bf345d (happy new year)
+=======
+	ID             int64              `json:"id"`
+	Name           string             `json:"name"`
+	Description    pgtype.Text        `json:"description"`
+	Usage          pgtype.Text        `json:"usage"`
+	Dosage         pgtype.Text        `json:"dosage"`
+	Frequency      pgtype.Text        `json:"frequency"`
+	Duration       pgtype.Text        `json:"duration"`
+	SideEffects    pgtype.Text        `json:"side_effects"`
+	ExpirationDate pgtype.Date        `json:"expiration_date"`
+	Quantity       pgtype.Int8        `json:"quantity"`
+	CreatedAt      pgtype.Timestamptz `json:"created_at"`
+	UpdatedAt      pgtype.Timestamptz `json:"updated_at"`
+>>>>>>> e859654 (Elastic search)
 }
 
 type Notification struct {
-	Notificationid int64            `json:"notificationid"`
-	Username       string           `json:"username"`
-	Title          string           `json:"title"`
-	Description    pgtype.Text      `json:"description"`
-	Datetime       pgtype.Timestamp `json:"datetime"`
-	IsRead         pgtype.Bool      `json:"is_read"`
+	ID          int64            `json:"id"`
+	Username    string           `json:"username"`
+	Title       string           `json:"title"`
+	Content     pgtype.Text      `json:"content"`
+	IsRead      pgtype.Bool      `json:"is_read"`
+	RelatedID   pgtype.Int4      `json:"related_id"`
+	RelatedType pgtype.Text      `json:"related_type"`
+	Datetime    pgtype.Timestamp `json:"datetime"`
+	NotifyType  pgtype.Text      `json:"notify_type"`
+}
+
+type NotificationPreference struct {
+	ID        int64            `json:"id"`
+	Username  string           `json:"username"`
+	Topic     string           `json:"topic"`
+	Enabled   pgtype.Bool      `json:"enabled"`
+	CreatedAt pgtype.Timestamp `json:"created_at"`
+	UpdatedAt pgtype.Timestamp `json:"updated_at"`
 }
 
 type Order struct {
@@ -544,6 +597,8 @@ type PhaseMedicine struct {
 	Frequency  pgtype.Text        `json:"frequency"`
 	Duration   pgtype.Text        `json:"duration"`
 	Notes      pgtype.Text        `json:"notes"`
+	Quantity   pgtype.Int4        `json:"quantity"`
+	IsReceived pgtype.Bool        `json:"is_received"`
 	CreatedAt  pgtype.Timestamptz `json:"created_at"`
 }
 
@@ -652,9 +707,8 @@ type SoapNote struct {
 	UpdatedAt     pgtype.Timestamp `json:"updated_at"`
 }
 
-type TaskState struct {
-	ID        pgtype.UUID      `json:"id"`
-	TaskID    int32            `json:"task_id"`
+type State struct {
+	ID        int64            `json:"id"`
 	State     string           `json:"state"`
 	CreatedAt pgtype.Timestamp `json:"created_at"`
 	UpdatedAt pgtype.Timestamp `json:"updated_at"`

@@ -12,6 +12,9 @@ import (
 )
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> e859654 (Elastic search)
 const createDisease = `-- name: CreateDisease :one
 INSERT INTO diseases (name, description, symptoms, created_at, updated_at) VALUES ($1, $2, $3, now(), now()) RETURNING id, name, description, symptoms, created_at, updated_at
 `
@@ -36,8 +39,11 @@ func (q *Queries) CreateDisease(ctx context.Context, arg CreateDiseaseParams) (D
 	return i, err
 }
 
+<<<<<<< HEAD
 =======
 >>>>>>> 6c35562 (dicease and treatment plan)
+=======
+>>>>>>> e859654 (Elastic search)
 const getDiceaseAndMedicinesInfo = `-- name: GetDiceaseAndMedicinesInfo :many
 SELECT 
     d.id AS disease_id,
@@ -53,9 +59,12 @@ SELECT
     m.side_effects
 FROM diseases d
 <<<<<<< HEAD
+<<<<<<< HEAD
 LEFT JOIN medicines m ON d.id = m.disease_id
 =======
 LEFT JOIN disease_medicines dm ON d.id = dm.disease_id
+=======
+>>>>>>> e859654 (Elastic search)
 LEFT JOIN medicines m ON dm.medicine_id = m.id
 >>>>>>> 6c35562 (dicease and treatment plan)
 WHERE LOWER(d.name) LIKE LOWER($1)
