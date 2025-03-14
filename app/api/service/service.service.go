@@ -86,6 +86,7 @@ func (s *ServiceService) CreateService(ctx *gin.Context, req CreateServiceReques
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 			Notes:       pgtype.Text{String: req.Notes, Valid: true},
 >>>>>>> b393bb9 (add service and add permission)
@@ -94,6 +95,8 @@ func (s *ServiceService) CreateService(ctx *gin.Context, req CreateServiceReques
 =======
 			Notes:       pgtype.Text{String: req.Notes, Valid: true},
 >>>>>>> b393bb9 (add service and add permission)
+=======
+>>>>>>> ada3717 (Docker file)
 		})
 		if err != nil {
 			return fmt.Errorf("failed to create service: %w", err)
@@ -157,6 +160,9 @@ func (server *ServiceService) deleteServiceService(ctx *gin.Context, serviceID i
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> ada3717 (Docker file)
 =======
 >>>>>>> ada3717 (Docker file)
 	}, nil
@@ -240,6 +246,7 @@ func (s *ServiceService) GetAllServices(ctx *gin.Context, pagination *util.Pagin
 			Duration:    int(service.Duration.Int16),
 			Cost:        service.Cost.Float64,
 			Category:    service.Category.String,
+<<<<<<< HEAD
 <<<<<<< HEAD
 =======
 
@@ -306,6 +313,8 @@ func (s *ServiceService) GetAllServices(ctx *gin.Context, pagination *util.Pagin
 >>>>>>> cfbe865 (updated service response)
 =======
 >>>>>>> b393bb9 (add service and add permission)
+=======
+>>>>>>> ada3717 (Docker file)
 		})
 	}
 	return serviceResponses, nil
@@ -326,6 +335,7 @@ func (s *ServiceService) GetServiceByID(ctx *gin.Context, id int64) (*ServiceRep
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 		Notes:       service.Notes.String,
 >>>>>>> b393bb9 (add service and add permission)
@@ -334,6 +344,8 @@ func (s *ServiceService) GetServiceByID(ctx *gin.Context, id int64) (*ServiceRep
 =======
 		Notes:       service.Notes.String,
 >>>>>>> b393bb9 (add service and add permission)
+=======
+>>>>>>> ada3717 (Docker file)
 	}, nil
 }
 
@@ -352,6 +364,7 @@ func (s *ServiceService) UpdateService(ctx *gin.Context, id int64, req UpdateSer
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 			Notes:       pgtype.Text{String: req.Notes, Valid: true},
 >>>>>>> b393bb9 (add service and add permission)
@@ -360,6 +373,8 @@ func (s *ServiceService) UpdateService(ctx *gin.Context, id int64, req UpdateSer
 =======
 			Notes:       pgtype.Text{String: req.Notes, Valid: true},
 >>>>>>> b393bb9 (add service and add permission)
+=======
+>>>>>>> ada3717 (Docker file)
 		})
 		if err != nil {
 			return fmt.Errorf("failed to update service: %w", err)
@@ -379,6 +394,7 @@ func (s *ServiceService) UpdateService(ctx *gin.Context, id int64, req UpdateSer
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 		Notes:       service.Notes.String,
 >>>>>>> b393bb9 (add service and add permission)
@@ -387,6 +403,8 @@ func (s *ServiceService) UpdateService(ctx *gin.Context, id int64, req UpdateSer
 =======
 		Notes:       service.Notes.String,
 >>>>>>> b393bb9 (add service and add permission)
+=======
+>>>>>>> ada3717 (Docker file)
 	}, nil
 }
 

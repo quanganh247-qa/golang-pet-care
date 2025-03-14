@@ -16,7 +16,6 @@ func Routes(routerGroup middleware.RouterGroup) {
 		},
 	}
 	{
-		reporting.GET("/analytics", controller.GetClinicAnalytics)
 		reporting.POST("/soap-note", controller.GenerateSOAPNote)
 	}
 

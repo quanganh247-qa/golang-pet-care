@@ -35,6 +35,7 @@ type UserControllerInterface interface {
 	userinfo(ctx *gin.Context)
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	GetAllRole(ctx *gin.Context)
 =======
 	createDoctor(ctx *gin.Context)
@@ -107,6 +108,8 @@ type UserControllerInterface interface {
 =======
 	UpdatePassword(ctx *gin.Context)
 >>>>>>> a2c21c8 (update pass)
+=======
+>>>>>>> ada3717 (Docker file)
 }
 
 func (controller *UserController) createUser(ctx *gin.Context) {
@@ -314,6 +317,7 @@ func (controller *UserController) getAccessToken(ctx *gin.Context) {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 =======
 >>>>>>> 8d5618d (feat: update logout)
@@ -321,6 +325,8 @@ func (controller *UserController) getAccessToken(ctx *gin.Context) {
 		cookie, _, err = token.TokenMaker.CreateToken(util.Configs.DefaultAuthenticationUsername, nil, util.Configs.AccessTokenDuration)
 	}
 >>>>>>> 8d5618d (feat: update logout)
+=======
+>>>>>>> ada3717 (Docker file)
 =======
 >>>>>>> ada3717 (Docker file)
 	if err != nil {
@@ -607,6 +613,7 @@ func (controller *UserController) userinfo(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, util.SuccessResponse("Success", userInfo))
 }
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 =======
@@ -897,3 +904,5 @@ func (controller *UserController) UpdatePassword(ctx *gin.Context) {
 >>>>>>> 1a9e82a (reset password api)
 =======
 >>>>>>> a2c21c8 (update pass)
+=======
+>>>>>>> ada3717 (Docker file)

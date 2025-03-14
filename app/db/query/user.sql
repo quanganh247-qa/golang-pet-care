@@ -7,6 +7,7 @@ INSERT INTO users (username, hashed_password, full_name, email, phone_number, ad
 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, NOW(), false)
 RETURNING *;
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, NOW(), $10)
 =======
@@ -23,6 +24,8 @@ VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, NOW(), false)
 >>>>>>> eefcc96 (date time in log)
 RETURNING id;
 >>>>>>> 0fb3f30 (user images)
+=======
+>>>>>>> ada3717 (Docker file)
 
 -- name: GetUser :one
 SELECT id, username, hashed_password, full_name, email, phone_number, address, data_image, original_image, role, created_at, is_verified_email
@@ -174,6 +177,7 @@ INSERT INTO Doctors (
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     bio
 ) VALUES (
     $1, $2, $3, $4, $5, $6
@@ -310,11 +314,15 @@ ORDER BY
 =======
     bio,
     consultation_fee
+=======
+    bio
+>>>>>>> ada3717 (Docker file)
 ) VALUES (
-    $1, $2, $3, $4, $5, $6, $7
+    $1, $2, $3, $4, $5, $6
 ) RETURNING *;
 >>>>>>> 3003e08 (update sqlc)
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 
 -- name: GetDoctor :one
@@ -489,3 +497,6 @@ SELECT * FROM Doctors WHERE is_active is true;
 >>>>>>> 33fcf96 (Big update)
 =======
 >>>>>>> ffc9071 (AI suggestion)
+=======
+
+>>>>>>> ada3717 (Docker file)

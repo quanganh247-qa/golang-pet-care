@@ -31,6 +31,9 @@ VALUES (
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> ada3717 (Docker file)
 =======
 >>>>>>> ada3717 (Docker file)
 ) RETURNING id, doctor_id, date, start_time, end_time, max_patients, booked_patients, created_at, updated_at, shift_id
@@ -298,90 +301,6 @@ func (q *Queries) GetTimeSlot(ctx context.Context, arg GetTimeSlotParams) (TimeS
 =======
 		&i.CreatedAt,
 		&i.UpdatedAt,
-	)
-	return i, err
-}
-
-const getAvailableTimeSlots = `-- name: GetAvailableTimeSlots :many
-SELECT 
-    id,
-    start_time,
-    end_time,
-    booked_patients,
-    max_patients
-FROM 
-    time_slots
-WHERE 
-    doctor_id = $1 
-    AND date = $2 
-    AND booked_patients < max_patients
-`
-
-type GetAvailableTimeSlotsParams struct {
-	DoctorID int32       `json:"doctor_id"`
-	Date     pgtype.Date `json:"date"`
-}
-
-type GetAvailableTimeSlotsRow struct {
-	ID             int64       `json:"id"`
-	StartTime      pgtype.Time `json:"start_time"`
-	EndTime        pgtype.Time `json:"end_time"`
-	BookedPatients pgtype.Int4 `json:"booked_patients"`
-	MaxPatients    pgtype.Int4 `json:"max_patients"`
-}
-
-func (q *Queries) GetAvailableTimeSlots(ctx context.Context, arg GetAvailableTimeSlotsParams) ([]GetAvailableTimeSlotsRow, error) {
-	rows, err := q.db.Query(ctx, getAvailableTimeSlots, arg.DoctorID, arg.Date)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	items := []GetAvailableTimeSlotsRow{}
-	for rows.Next() {
-		var i GetAvailableTimeSlotsRow
-		if err := rows.Scan(
-			&i.ID,
-			&i.StartTime,
-			&i.EndTime,
-			&i.BookedPatients,
-			&i.MaxPatients,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
-}
-
-const getTimeSlot = `-- name: GetTimeSlot :one
-SELECT id, doctor_id, date, start_time, end_time, max_patients, booked_patients, created_at, updated_at FROM time_slots
-WHERE id = $1 AND date = $2 AND doctor_id = $3
-FOR UPDATE
-`
-
-type GetTimeSlotParams struct {
-	ID       int64       `json:"id"`
-	Date     pgtype.Date `json:"date"`
-	DoctorID int32       `json:"doctor_id"`
-}
-
-func (q *Queries) GetTimeSlot(ctx context.Context, arg GetTimeSlotParams) (TimeSlot, error) {
-	row := q.db.QueryRow(ctx, getTimeSlot, arg.ID, arg.Date, arg.DoctorID)
-	var i TimeSlot
-	err := row.Scan(
-		&i.ID,
-		&i.DoctorID,
-		&i.Date,
-		&i.StartTime,
-		&i.EndTime,
-		&i.MaxPatients,
-		&i.BookedPatients,
->>>>>>> b393bb9 (add service and add permission)
-		&i.CreatedAt,
-		&i.UpdatedAt,
 		&i.ShiftID,
 	)
 	return i, err
@@ -465,6 +384,91 @@ func (q *Queries) GetTimeSlot(ctx context.Context, arg GetTimeSlotParams) (TimeS
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.ShiftID,
+<<<<<<< HEAD
+	)
+	return i, err
+}
+
+const getAvailableTimeSlots = `-- name: GetAvailableTimeSlots :many
+SELECT id, start_time, end_time, max_patients, booked_patients
+FROM time_slots
+WHERE doctor_id = $1
+AND date = $2
+AND booked_patients < max_patients
+ORDER BY start_time
+`
+
+type GetAvailableTimeSlotsParams struct {
+	DoctorID int32       `json:"doctor_id"`
+	Date     pgtype.Date `json:"date"`
+}
+
+type GetAvailableTimeSlotsRow struct {
+	ID             int64       `json:"id"`
+	StartTime      pgtype.Time `json:"start_time"`
+	EndTime        pgtype.Time `json:"end_time"`
+	MaxPatients    pgtype.Int4 `json:"max_patients"`
+	BookedPatients pgtype.Int4 `json:"booked_patients"`
+}
+
+func (q *Queries) GetAvailableTimeSlots(ctx context.Context, arg GetAvailableTimeSlotsParams) ([]GetAvailableTimeSlotsRow, error) {
+	rows, err := q.db.Query(ctx, getAvailableTimeSlots, arg.DoctorID, arg.Date)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetAvailableTimeSlotsRow{}
+	for rows.Next() {
+		var i GetAvailableTimeSlotsRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.StartTime,
+			&i.EndTime,
+			&i.MaxPatients,
+			&i.BookedPatients,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getTimeSlot = `-- name: GetTimeSlot :one
+
+SELECT id, doctor_id, date, start_time, end_time, max_patients, booked_patients, created_at, updated_at, shift_id FROM time_slots
+WHERE id = $1 AND date = $2 AND doctor_id = $3
+FOR UPDATE
+`
+
+type GetTimeSlotParams struct {
+	ID       int64       `json:"id"`
+	Date     pgtype.Date `json:"date"`
+	DoctorID int32       `json:"doctor_id"`
+}
+
+// -- name: GetTimeSlotsByDoctorAndDate :many
+// SELECT * from time_slots WHERE doctor_id = $1 AND "date" = $2 ORDER BY start_time ASC;
+func (q *Queries) GetTimeSlot(ctx context.Context, arg GetTimeSlotParams) (TimeSlot, error) {
+	row := q.db.QueryRow(ctx, getTimeSlot, arg.ID, arg.Date, arg.DoctorID)
+	var i TimeSlot
+	err := row.Scan(
+		&i.ID,
+		&i.DoctorID,
+		&i.Date,
+		&i.StartTime,
+		&i.EndTime,
+		&i.MaxPatients,
+		&i.BookedPatients,
+>>>>>>> b393bb9 (add service and add permission)
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.ShiftID,
+=======
+>>>>>>> ada3717 (Docker file)
 	)
 	return i, err
 }
@@ -475,10 +479,14 @@ const getTimeSlotById = `-- name: GetTimeSlotById :one
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 SELECT id, doctor_id, date, start_time, end_time, max_patients, booked_patients, created_at, updated_at, shift_id from time_slots WHERE id = $1
 =======
 SELECT id, doctor_id, date, start_time, end_time, max_patients, booked_patients, created_at, updated_at from time_slots WHERE id = $1
 >>>>>>> 33fcf96 (Big update)
+=======
+SELECT id, doctor_id, date, start_time, end_time, max_patients, booked_patients, created_at, updated_at, shift_id from time_slots WHERE id = $1
+>>>>>>> ada3717 (Docker file)
 `
 
 // Lock record to avoid race condition
@@ -505,6 +513,7 @@ SELECT booked_patients, max_patients, start_time, end_time
 FROM time_slots
 WHERE id = $1
 FOR UPDATE
+<<<<<<< HEAD
 `
 
 type GetTimeSlotForUpdateRow struct {
@@ -628,39 +637,25 @@ func (q *Queries) DeleteDoctorSchedule(ctx context.Context, id int64) error {
 
 const getTimeSlotsByDoctorAndDate = `-- name: GetTimeSlotsByDoctorAndDate :many
 SELECT id, doctor_id, date, start_time, end_time, max_patients, booked_patients, created_at, updated_at from time_slots WHERE doctor_id = $1 AND "date" = $2 ORDER BY start_time ASC
+=======
+>>>>>>> ada3717 (Docker file)
 `
 
-type GetTimeSlotsByDoctorAndDateParams struct {
-	DoctorID int32       `json:"doctor_id"`
-	Date     pgtype.Date `json:"date"`
+type GetTimeSlotForUpdateRow struct {
+	BookedPatients pgtype.Int4 `json:"booked_patients"`
+	MaxPatients    pgtype.Int4 `json:"max_patients"`
+	StartTime      pgtype.Time `json:"start_time"`
+	EndTime        pgtype.Time `json:"end_time"`
 }
 
-func (q *Queries) GetTimeSlotsByDoctorAndDate(ctx context.Context, arg GetTimeSlotsByDoctorAndDateParams) ([]TimeSlot, error) {
-	rows, err := q.db.Query(ctx, getTimeSlotsByDoctorAndDate, arg.DoctorID, arg.Date)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	items := []TimeSlot{}
-	for rows.Next() {
-		var i TimeSlot
-		if err := rows.Scan(
-			&i.ID,
-			&i.DoctorID,
-			&i.Date,
-			&i.StartTime,
-			&i.EndTime,
-			&i.MaxPatients,
-			&i.BookedPatients,
-			&i.CreatedAt,
-			&i.UpdatedAt,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
+func (q *Queries) GetTimeSlotForUpdate(ctx context.Context, id int64) (GetTimeSlotForUpdateRow, error) {
+	row := q.db.QueryRow(ctx, getTimeSlotForUpdate, id)
+	var i GetTimeSlotForUpdateRow
+	err := row.Scan(
+		&i.BookedPatients,
+		&i.MaxPatients,
+		&i.StartTime,
+		&i.EndTime,
+	)
+	return i, err
 }

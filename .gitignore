@@ -9,6 +9,7 @@ gin-bin
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 # Thêm vào .gitignore
 *.log
@@ -56,6 +57,9 @@ vendor
 >>>>>>> ffc9071 (AI suggestion)
 =======
 
+=======
+
+>>>>>>> ada3717 (Docker file)
 # Thêm vào .gitignore
 *.log
 *.tmp
@@ -89,6 +93,7 @@ docker-compose.override.yml
 
 
 .txt
+<<<<<<< HEAD
 >>>>>>> ada3717 (Docker file)
 =======
     
@@ -102,3 +107,5 @@ go.work.sum
 
 vendor
 >>>>>>> ffc9071 (AI suggestion)
+=======
+>>>>>>> ada3717 (Docker file)

@@ -4,6 +4,7 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> 4ccd381 (Update appointment flow)
 
@@ -1984,144 +1985,17 @@ CREATE TABLE users (
     CONSTRAINT users_pkey PRIMARY KEY (id),  
     CONSTRAINT users_username_key UNIQUE (username)
 );
+=======
+-- public.allergies definition
+>>>>>>> ada3717 (Docker file)
 
-CREATE TABLE verify_emails (
-  id BIGSERIAL NOT NULL,
-  username varchar NOT NULL,
-  email varchar NOT NULL,
-  secret_code int8 NOT NULL,
-  is_used bool NOT NULL DEFAULT false,
-  created_at timestamp DEFAULT (now()),
-  expired_at timestamp DEFAULT (now()+'00:15:00'::interval),
-  PRIMARY KEY (id)
-);
+-- Drop table
 
-CREATE TABLE device_tokens (
-  id BIGSERIAL PRIMARY KEY,
-  username VARCHAR NOT NULL,
-  token VARCHAR NOT NULL UNIQUE,
-  device_type VARCHAR(50),
-  created_at TIMESTAMP NOT NULL DEFAULT now(),
-  last_used_at TIMESTAMP,
-  expired_at TIMESTAMP,
-  CONSTRAINT fk_device_tokens_username 
-      FOREIGN KEY (username) 
-      REFERENCES users(username) 
-      ON DELETE CASCADE
-);
+-- DROP TABLE public.allergies;
 
--- 2. Medical Staff Tables
-CREATE TABLE doctors (
-  id BIGSERIAL PRIMARY KEY,
-  user_id BIGINT NOT NULL,
-  specialization VARCHAR(100),
-  years_of_experience INT,
-  education TEXT,
-  certificate_number VARCHAR(50),
-  bio TEXT,
-  consultation_fee FLOAT8
-);
-
-CREATE TABLE departments (
-    id BIGSERIAL PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,
-    description TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
-CREATE TABLE time_slots (
-    id BIGSERIAL PRIMARY KEY,
-    doctor_id INT NOT NULL,
-    date DATE NOT NULL,
-    start_time TIME NOT NULL,
-    end_time TIME NOT NULL,
-    max_patients INT NULL,
-    booked_patients INT DEFAULT 0,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (doctor_id) REFERENCES doctors(id),
-    CONSTRAINT unique_slot UNIQUE (doctor_id, date, start_time)
-);
-
--- 3. Pet Management Tables
-CREATE TABLE pets (
-  petid BIGSERIAL NOT NULL,
-  name varchar(100) NOT NULL,
-  type varchar(50) NOT NULL,
-  breed varchar(100),
-  age int4,
-  gender varchar(10),
-  healthnotes text,
-  weight float8,
-  birth_date date,
-  username varchar NOT NULL,
-  microchip_number varchar(50),
-  last_checkup_date date,
-  is_active BOOLEAN DEFAULT true,
-  data_image BYTEA ,
-  original_image VARCHAR(255),
-  PRIMARY KEY (petid)
-);
-
-CREATE TABLE pet_logs (
-    log_id BIGSERIAL PRIMARY KEY,
-	petid int8 NOT NULL,
-	datetime timestamp NULL,
-	title varchar NULL,
-	notes text NULL,
-	CONSTRAINT newtable_pet_fk FOREIGN KEY (petid) REFERENCES pets(petid)
-);
-
-CREATE TABLE vaccinations (
-  vaccinationID BIGSERIAL PRIMARY KEY,
-  petID BIGINT,
-  vaccineName VARCHAR(100) NOT NULL,
-  dateAdministered timestamp NOT NULL,
-  nextDueDate timestamp,
-  vaccineProvider VARCHAR(100),
-  batchNumber VARCHAR(50),
-  notes TEXT
-);
-
-CREATE TABLE pet_schedule (
-    id BIGSERIAL PRIMARY KEY,
-    pet_id BIGINT REFERENCES pets(petid),
-    title VARCHAR(255),
-    reminder_datetime timestamp,
-    event_repeat VARCHAR(50),
-    end_type bool DEFAULT false,
-    end_date DATE,
-    notes TEXT,
-    is_active BOOLEAN DEFAULT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    removedat TIMESTAMP DEFAULT NULL
-);
-
--- 4. Medical Records & Treatment Tables
-CREATE TABLE medical_records (
+CREATE TABLE public.allergies (
 	id bigserial NOT NULL,
-	pet_id bigint NULL,
-	created_at timestamp NULL,
-	updated_at timestamp NULL,
-	CONSTRAINT medical_records_pk PRIMARY KEY (id)
-);
-
-CREATE TABLE medical_history (
-	id bigserial NOT NULL,
-	medical_record_id bigint NULL,
-	"condition" varchar NULL,
-	diagnosis_date timestamp NULL,
-	notes text NULL,
-  treatment int8 NULL,
-	created_at timestamp NULL,
-	updated_at timestamp NULL,
-	CONSTRAINT medical_history_pk PRIMARY KEY (id)
-);
-
-CREATE TABLE allergies (
-	id bigserial NOT NULL,
-	medical_record_id bigint NULL,
+	medical_record_id int8 NULL,
 	allergen jsonb NULL,
 	severity varchar NULL,
 	reaction jsonb NULL,
@@ -2131,15 +2005,8 @@ CREATE TABLE allergies (
 	CONSTRAINT allergies_pk PRIMARY KEY (id)
 );
 
-CREATE TABLE diseases (
-    id BIGSERIAL PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
-    description TEXT,
-    symptoms JSONB, -- Store symptoms as JSON array
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-);
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 -- -- Create indexes for better query performance
@@ -2164,144 +2031,324 @@ CREATE TABLE medicines (
     quantity int8,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+=======
+-- public.checkouts definition
+
+-- Drop table
+
+-- DROP TABLE public.checkouts;
+
+CREATE TABLE public.checkouts (
+	checkout_id bigserial NOT NULL,
+	petid int8 NULL,
+	doctor_id int8 NULL,
+	"date" timestamp DEFAULT now() NULL,
+	total_tmount float8 NOT NULL,
+	payment_status varchar(20) NULL,
+	payment_method varchar(50) NULL,
+	notes text NULL,
+	CONSTRAINT checkouts_pkey PRIMARY KEY (checkout_id)
+>>>>>>> ada3717 (Docker file)
 );
 
 
-CREATE TABLE pet_treatments (
-    id BIGSERIAL PRIMARY KEY,
-    pet_id BIGINT REFERENCES pets(petid),
-    disease_id BIGINT REFERENCES diseases(id),
-    start_date DATE,
-    end_date DATE,
-    status VARCHAR(50),  -- CHECK (status IN ('ongoing', 'completed', 'paused', 'cancelled')),
-    notes TEXT,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+-- public.departments definition
+
+-- Drop table
+
+-- DROP TABLE public.departments;
+
+CREATE TABLE public.departments (
+	id bigserial NOT NULL,
+	"name" varchar(100) NOT NULL,
+	description text NULL,
+	created_at timestamp DEFAULT CURRENT_TIMESTAMP NULL,
+	updated_at timestamp DEFAULT CURRENT_TIMESTAMP NULL,
+	CONSTRAINT departments_pkey PRIMARY KEY (id)
 );
 
-CREATE TABLE treatment_phases (
-    id BIGSERIAL PRIMARY KEY,
-    treatment_id BIGINT REFERENCES pet_treatments(id),
-    phase_name VARCHAR(255),
-    description TEXT,
-    status VARCHAR(50), -- CHECK (status IN ('pending', 'active', 'completed')),
-    start_date DATE NOT NULL,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+
+-- public.diseases definition
+
+-- Drop table
+
+-- DROP TABLE public.diseases;
+
+CREATE TABLE public.diseases (
+	id bigserial NOT NULL,
+	"name" varchar(255) NOT NULL,
+	description text NULL,
+	symptoms jsonb NULL,
+	created_at timestamptz DEFAULT CURRENT_TIMESTAMP NULL,
+	updated_at timestamptz DEFAULT CURRENT_TIMESTAMP NULL,
+	CONSTRAINT diseases_pkey PRIMARY KEY (id)
 );
 
-CREATE TABLE phase_medicines (
-    phase_id BIGINT REFERENCES treatment_phases(id),
-    medicine_id BIGINT REFERENCES medicines(id),
-    dosage TEXT,
-    frequency TEXT,
-    duration TEXT,
-    notes TEXT,
-    quantity int4,
-    is_received BOOLEAN DEFAULT true,
-    created_at timestamptz NULL,
-    PRIMARY KEY (phase_id, medicine_id)
+
+-- public.medical_history definition
+
+-- Drop table
+
+-- DROP TABLE public.medical_history;
+
+CREATE TABLE public.medical_history (
+	id bigserial NOT NULL,
+	medical_record_id int8 NULL,
+	"condition" varchar NULL,
+	diagnosis_date timestamp NULL,
+	notes text NULL,
+	treatment int8 NULL,
+	created_at timestamp NULL,
+	updated_at timestamp NULL,
+	CONSTRAINT medical_history_pk PRIMARY KEY (id)
 );
 
--- 5. Services and Appointments
-CREATE TABLE services (
-	id bigserial PRIMARY KEY,
+
+-- public.medical_records definition
+
+-- Drop table
+
+-- DROP TABLE public.medical_records;
+
+CREATE TABLE public.medical_records (
+	id bigserial NOT NULL,
+	pet_id int8 NULL,
+	created_at timestamp NULL,
+	updated_at timestamp NULL,
+	CONSTRAINT medical_records_pk PRIMARY KEY (id)
+);
+
+-- Table Triggers
+
+create trigger medical_record_changes_trigger after
+insert
+    or
+delete
+    or
+update
+    on
+    public.medical_records for each row execute function notify_pet_record_change();
+
+
+-- public.medicines definition
+
+-- Drop table
+
+-- DROP TABLE public.medicines;
+
+CREATE TABLE public.medicines (
+	id bigserial NOT NULL,
+	"name" varchar(255) NOT NULL,
+	description text NULL,
+	"usage" text NULL,
+	dosage text NULL,
+	frequency text NULL,
+	duration text NULL,
+	side_effects text NULL,
+	start_date date NULL,
+	end_date date NULL,
+	created_at timestamptz DEFAULT CURRENT_TIMESTAMP NULL,
+	updated_at timestamptz DEFAULT CURRENT_TIMESTAMP NULL,
+	expiration_date date NULL,
+	quantity int8 NULL,
+	CONSTRAINT medicines_pkey PRIMARY KEY (id)
+);
+
+
+-- public.products definition
+
+-- Drop table
+
+-- DROP TABLE public.products;
+
+CREATE TABLE public.products (
+	product_id bigserial NOT NULL,
+	"name" varchar(255) NOT NULL,
+	description text NULL,
+	price float8 NOT NULL,
+	stock_quantity int4 DEFAULT 0 NULL,
+	category varchar(100) NULL,
+	data_image bytea NULL,
+	original_image varchar(255) NULL,
+	created_at timestamp DEFAULT now() NULL,
+	is_available bool DEFAULT true NULL,
+	removed_at timestamp NULL,
+	CONSTRAINT products_pkey PRIMARY KEY (product_id)
+);
+
+
+-- public.services definition
+
+-- Drop table
+
+-- DROP TABLE public.services;
+
+CREATE TABLE public.services (
+	id bigserial NOT NULL,
 	"name" varchar(255) NULL,
 	description text NULL,
 	duration int2 NULL,
 	"cost" float8 NULL,
 	category varchar(255) NULL,
-	notes text NULL,
+	priority int2 DEFAULT 1 NULL,
 	created_at timestamp DEFAULT now() NULL,
-	updated_at timestamp NULL
+	CONSTRAINT services_pkey PRIMARY KEY (id)
 );
 
-CREATE TABLE appointments (
-  appointment_id BIGSERIAL PRIMARY KEY,
-  petid BIGINT,
-  username VARCHAR,
-  doctor_id BIGINT,
-  service_id BIGINT,
-  date timestamp DEFAULT (now()),
-  notes TEXT,
-  reminder_send BOOLEAN DEFAULT false,
-  time_slot_id BIGINT,
-  created_at timestamp DEFAULT (now())
+
+-- public.states definition
+
+-- Drop table
+
+-- DROP TABLE public.states;
+
+CREATE TABLE public.states (
+	id bigserial NOT NULL,
+	state varchar(255) NOT NULL,
+	created_at timestamp DEFAULT CURRENT_TIMESTAMP NULL,
+	updated_at timestamp DEFAULT CURRENT_TIMESTAMP NULL,
+	CONSTRAINT states_pkey PRIMARY KEY (id),
+	CONSTRAINT states_state_check CHECK (((state)::text = ANY ((ARRAY['Scheduled'::character varying, 'Confirmed'::character varying, 'In Progress'::character varying, 'Completed'::character varying, 'Closed'::character varying])::text[])))
 );
 
--- 6. Billing and Payments
-CREATE TABLE checkouts (
-  checkout_id BIGSERIAL PRIMARY KEY,
-  petid BIGINT,
-  doctor_id BIGINT,
-  date timestamp DEFAULT (now()),
-  total_tmount float8 NOT NULL,
-  payment_status VARCHAR(20),
-  payment_method VARCHAR(50),
-  notes TEXT
+
+-- public.users definition
+
+-- Drop table
+
+-- DROP TABLE public.users;
+
+CREATE TABLE public.users (
+	id bigserial NOT NULL,
+	username varchar NOT NULL,
+	hashed_password varchar NOT NULL,
+	full_name varchar NOT NULL,
+	email varchar NOT NULL,
+	phone_number varchar NULL,
+	address varchar NULL,
+	data_image bytea NULL,
+	original_image varchar(255) NULL,
+	"role" varchar(20) NULL,
+	created_at timestamp DEFAULT now() NOT NULL,
+	is_verified_email bool DEFAULT false NULL,
+	removed_at timestamp NULL,
+	CONSTRAINT users_email_key UNIQUE (email),
+	CONSTRAINT users_pkey PRIMARY KEY (id),
+	CONSTRAINT users_username_key UNIQUE (username)
 );
 
-CREATE TABLE checkout_services (
-  checkoutService_ID BIGSERIAL PRIMARY KEY,
-  checkoutID BIGINT,
-  serviceID BIGINT,
-  quantity INT DEFAULT 1,
-  unitPrice float8,
-  subtotal float8
+
+-- public.verify_emails definition
+
+-- Drop table
+
+-- DROP TABLE public.verify_emails;
+
+CREATE TABLE public.verify_emails (
+	id bigserial NOT NULL,
+	username varchar NOT NULL,
+	email varchar NOT NULL,
+	secret_code int8 NOT NULL,
+	is_used bool DEFAULT false NOT NULL,
+	created_at timestamp DEFAULT now() NULL,
+	expired_at timestamp DEFAULT (now() + '00:15:00'::interval) NULL,
+	CONSTRAINT verify_emails_pkey PRIMARY KEY (id)
 );
 
--- 7. E-commerce Tables
-CREATE TABLE products (
-    product_id BIGSERIAL PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
-    description TEXT,
-    price float8 NOT NULL,
-    stock_quantity INT DEFAULT 0,
-    category VARCHAR(100),
-    data_image BYTEA,
-    original_image VARCHAR(255),
-    created_at TIMESTAMP DEFAULT now(),
-    is_available BOOLEAN DEFAULT true,
-    removed_at TIMESTAMP DEFAULT NULL
+
+-- public.carts definition
+
+-- Drop table
+
+-- DROP TABLE public.carts;
+
+CREATE TABLE public.carts (
+	id bigserial NOT NULL,
+	user_id int8 NOT NULL,
+	created_at timestamp DEFAULT CURRENT_TIMESTAMP NULL,
+	updated_at timestamp DEFAULT CURRENT_TIMESTAMP NULL,
+	CONSTRAINT carts_pkey PRIMARY KEY (id),
+	CONSTRAINT carts_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE
 );
 
-CREATE TABLE carts (
-    id BIGSERIAL PRIMARY KEY,
-    user_id BIGINT NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+
+-- public.checkout_services definition
+
+-- Drop table
+
+-- DROP TABLE public.checkout_services;
+
+CREATE TABLE public.checkout_services (
+	checkoutservice_id bigserial NOT NULL,
+	checkoutid int8 NULL,
+	serviceid int8 NULL,
+	quantity int4 DEFAULT 1 NULL,
+	unitprice float8 NULL,
+	subtotal float8 NULL,
+	CONSTRAINT checkout_services_pkey PRIMARY KEY (checkoutservice_id),
+	CONSTRAINT cs_checkout_fk FOREIGN KEY (checkoutid) REFERENCES public.checkouts(checkout_id),
+	CONSTRAINT cs_service_fk FOREIGN KEY (serviceid) REFERENCES public.services(id)
 );
 
-CREATE TABLE cart_items (
-    id BIGSERIAL PRIMARY KEY,
-    cart_id BIGINT REFERENCES carts(id),
-    product_id BIGINT,
-    quantity INT DEFAULT 1,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+
+-- public.device_tokens definition
+
+-- Drop table
+
+-- DROP TABLE public.device_tokens;
+
+CREATE TABLE public.device_tokens (
+	id bigserial NOT NULL,
+	username varchar NOT NULL,
+	"token" varchar NOT NULL,
+	device_type varchar(50) NULL,
+	created_at timestamp DEFAULT now() NOT NULL,
+	last_used_at timestamp NULL,
+	expired_at timestamp NULL,
+	CONSTRAINT device_tokens_pkey PRIMARY KEY (id),
+	CONSTRAINT device_tokens_token_key UNIQUE (token),
+	CONSTRAINT fk_device_tokens_username FOREIGN KEY (username) REFERENCES public.users(username) ON DELETE CASCADE
 );
 
-CREATE TABLE orders (
-    id BIGSERIAL PRIMARY KEY,
-    user_id BIGINT NOT NULL, -- Liên kết tới bảng Users
-    order_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- Ngày đặt hàng
-    total_amount FLOAT8 NOT NULL, -- Tổng tiền của đơn hàng
-    payment_status VARCHAR(20) DEFAULT 'pending', -- Trạng thái thanh toán (pending, paid, canceled)
-    cart_items JSONB,
-    shipping_address VARCHAR(255), -- Địa chỉ giao hàng
-    notes TEXT, -- Ghi chú khách hàng
-    FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
+
+-- public.doctors definition
+
+-- Drop table
+
+-- DROP TABLE public.doctors;
+
+CREATE TABLE public.doctors (
+	id bigserial NOT NULL,
+	user_id int8 NOT NULL,
+	specialization varchar(100) NULL,
+	years_of_experience int4 NULL,
+	education text NULL,
+	certificate_number varchar(50) NULL,
+	bio text NULL,
+	CONSTRAINT doctors_pkey PRIMARY KEY (id),
+	CONSTRAINT fk_doctor_user FOREIGN KEY (user_id) REFERENCES public.users(id)
 );
 
--- 8. Foreign Key Constraints
-ALTER TABLE pets ADD CONSTRAINT pet_users_fk FOREIGN KEY (username) REFERENCES users (username);
 
-ALTER TABLE vaccinations ADD CONSTRAINT vaccination_pet_fk FOREIGN KEY (petID) REFERENCES pets (petid);
+-- public.files definition
 
-ALTER TABLE appointments ADD CONSTRAINT appointment_pet_fk FOREIGN KEY (petid) REFERENCES pets (petid);
+-- Drop table
 
-ALTER TABLE appointments ADD CONSTRAINT appointment_service_fk FOREIGN KEY (service_id) REFERENCES services (id);
+-- DROP TABLE public.files;
 
-ALTER TABLE checkout_services ADD CONSTRAINT cs_checkout_fk FOREIGN KEY (checkoutID) REFERENCES checkouts (checkout_id);
+CREATE TABLE public.files (
+	id bigserial NOT NULL,
+	file_name varchar(255) NOT NULL,
+	file_path varchar(255) NOT NULL,
+	file_size int8 NOT NULL,
+	file_type varchar(50) NOT NULL,
+	uploaded_at timestamp DEFAULT CURRENT_TIMESTAMP NULL,
+	user_id int8 NULL,
+	CONSTRAINT files_pkey PRIMARY KEY (id),
+	CONSTRAINT files_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE SET NULL
+);
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 -- Index for Pet table
 CREATE INDEX idx_pet_username ON Pet (username);
@@ -2620,3 +2667,343 @@ ALTER TABLE checkout_services ADD CONSTRAINT cs_service_fk FOREIGN KEY (serviceI
 
 ALTER TABLE doctors ADD CONSTRAINT fk_doctor_user FOREIGN KEY (user_id) REFERENCES users (id);
 >>>>>>> 33fcf96 (Big update)
+=======
+
+-- public.notifications definition
+
+-- Drop table
+
+-- DROP TABLE public.notifications;
+
+CREATE TABLE public.notifications (
+	id bigserial NOT NULL,
+	username varchar NOT NULL,
+	title varchar(100) NOT NULL,
+	"content" text NULL,
+	is_read bool DEFAULT false NULL,
+	related_id int4 NULL,
+	related_type varchar(255) NULL,
+	datetime timestamp NOT NULL,
+	notify_type varchar(255) NULL,
+	CONSTRAINT notifications_pkey PRIMARY KEY (id),
+	CONSTRAINT notifications_username_fkey FOREIGN KEY (username) REFERENCES public.users(username) ON DELETE CASCADE
+);
+
+
+-- public.orders definition
+
+-- Drop table
+
+-- DROP TABLE public.orders;
+
+CREATE TABLE public.orders (
+	id bigserial NOT NULL,
+	user_id int8 NOT NULL,
+	order_date timestamp DEFAULT CURRENT_TIMESTAMP NULL,
+	total_amount float8 NOT NULL,
+	payment_status varchar(20) DEFAULT 'pending'::character varying NULL,
+	cart_items jsonb NULL,
+	shipping_address varchar(255) NULL,
+	notes text NULL,
+	CONSTRAINT orders_pkey PRIMARY KEY (id),
+	CONSTRAINT orders_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE
+);
+
+
+-- public.pets definition
+
+-- Drop table
+
+-- DROP TABLE public.pets;
+
+CREATE TABLE public.pets (
+	petid bigserial NOT NULL,
+	"name" varchar(100) NOT NULL,
+	"type" varchar(50) NOT NULL,
+	breed varchar(100) NULL,
+	age int4 NULL,
+	gender varchar(10) NULL,
+	healthnotes text NULL,
+	weight float8 NULL,
+	birth_date date NULL,
+	username varchar NOT NULL,
+	microchip_number varchar(50) NULL,
+	last_checkup_date date NULL,
+	is_active bool DEFAULT true NULL,
+	data_image bytea NULL,
+	original_image varchar(255) NULL,
+	CONSTRAINT pets_pkey PRIMARY KEY (petid),
+	CONSTRAINT pet_users_fk FOREIGN KEY (username) REFERENCES public.users(username)
+);
+
+-- Table Triggers
+
+create trigger pet_record_changes_trigger after
+insert
+    or
+delete
+    or
+update
+    on
+    public.pets for each row execute function notify_pet_record_change();
+
+
+
+-- public.vaccinations definition
+
+-- Drop table
+
+-- DROP TABLE public.vaccinations;
+
+CREATE TABLE public.vaccinations (
+	vaccinationid bigserial NOT NULL,
+	petid int8 NULL,
+	vaccinename varchar(100) NOT NULL,
+	dateadministered timestamp NOT NULL,
+	nextduedate timestamp NULL,
+	vaccineprovider varchar(100) NULL,
+	batchnumber varchar(50) NULL,
+	notes text NULL,
+	CONSTRAINT vaccinations_pkey PRIMARY KEY (vaccinationid),
+	CONSTRAINT vaccination_pet_fk FOREIGN KEY (petid) REFERENCES public.pets(petid)
+);
+
+
+
+-- Table Triggers
+
+create trigger appointment_changes_trigger after
+insert
+    or
+delete
+    or
+update
+    on
+    public.appointments for each row execute function notify_pet_record_change();
+
+
+-- public.cart_items definition
+
+-- Drop table
+
+-- DROP TABLE public.cart_items;
+
+CREATE TABLE public.cart_items (
+	id bigserial NOT NULL,
+	cart_id int8 NOT NULL,
+	product_id int8 NOT NULL,
+	quantity int4 DEFAULT 1 NULL,
+	unit_price float8 NOT NULL,
+	total_price float8 GENERATED ALWAYS AS (quantity::double precision * unit_price) STORED NULL,
+	CONSTRAINT cart_items_pkey PRIMARY KEY (id),
+	CONSTRAINT cartitem_cart_id_product_id_unique UNIQUE (cart_id, product_id),
+	CONSTRAINT cart_items_cart_id_fkey FOREIGN KEY (cart_id) REFERENCES public.carts(id) ON DELETE CASCADE,
+	CONSTRAINT cart_items_product_id_fkey FOREIGN KEY (product_id) REFERENCES public.products(product_id) ON DELETE CASCADE
+);
+
+
+-- public.consultations definition
+
+-- Drop table
+
+-- DROP TABLE public.consultations;
+
+CREATE TABLE public.consultations (
+	id serial4 NOT NULL,
+	appointment_id int8 NULL,
+	subjective text NULL,
+	objective text NULL,
+	assessment text NULL,
+	plan text NULL,
+	created_at timestamp DEFAULT now() NULL,
+	CONSTRAINT consultations_pkey PRIMARY KEY (id),
+	CONSTRAINT consultations_appointment_id_fkey FOREIGN KEY (appointment_id) REFERENCES public.appointments(appointment_id) ON DELETE CASCADE
+);
+
+
+-- public.pet_logs definition
+
+-- Drop table
+
+-- DROP TABLE public.pet_logs;
+
+CREATE TABLE public.pet_logs (
+	log_id bigserial NOT NULL,
+	petid int8 NOT NULL,
+	datetime timestamp NULL,
+	title varchar NULL,
+	notes text NULL,
+	CONSTRAINT pet_logs_pkey PRIMARY KEY (log_id),
+	CONSTRAINT newtable_pet_fk FOREIGN KEY (petid) REFERENCES public.pets(petid)
+);
+
+
+-- public.pet_schedule definition
+
+-- Drop table
+
+-- DROP TABLE public.pet_schedule;
+
+CREATE TABLE public.pet_schedule (
+	id bigserial NOT NULL,
+	pet_id int8 NULL,
+	title varchar(255) NULL,
+	reminder_datetime timestamp NULL,
+	event_repeat varchar(50) NULL,
+	end_type bool DEFAULT false NULL,
+	end_date date NULL,
+	notes text NULL,
+	is_active bool NULL,
+	created_at timestamp DEFAULT CURRENT_TIMESTAMP NULL,
+	removedat timestamp NULL,
+	CONSTRAINT pet_schedule_pkey PRIMARY KEY (id),
+	CONSTRAINT pet_schedule_pet_id_fkey FOREIGN KEY (pet_id) REFERENCES public.pets(petid)
+);
+
+
+-- public.pet_treatments definition
+
+-- Drop table
+
+-- DROP TABLE public.pet_treatments;
+
+CREATE TABLE public.pet_treatments (
+	id bigserial NOT NULL,
+	pet_id int8 NULL,
+	disease_id int8 NULL,
+	start_date date NULL,
+	end_date date NULL,
+	status varchar(50) NULL,
+	notes text NULL,
+	created_at timestamptz DEFAULT CURRENT_TIMESTAMP NULL,
+	doctor_id int4 NULL,
+	CONSTRAINT pet_treatments_pkey PRIMARY KEY (id),
+	CONSTRAINT pet_treatments_disease_id_fkey FOREIGN KEY (disease_id) REFERENCES public.diseases(id),
+	CONSTRAINT pet_treatments_pet_id_fkey FOREIGN KEY (pet_id) REFERENCES public.pets(petid)
+);
+
+
+-- public.treatment_phases definition
+
+-- Drop table
+
+-- DROP TABLE public.treatment_phases;
+
+CREATE TABLE public.treatment_phases (
+	id bigserial NOT NULL,
+	treatment_id int8 NULL,
+	phase_name varchar(255) NULL,
+	description text NULL,
+	status varchar(50) NULL,
+	start_date date NOT NULL,
+	created_at timestamptz DEFAULT CURRENT_TIMESTAMP NULL,
+	CONSTRAINT treatment_phases_pkey PRIMARY KEY (id),
+	CONSTRAINT treatment_phases_treatment_id_fkey FOREIGN KEY (treatment_id) REFERENCES public.pet_treatments(id)
+);
+
+
+-- public.phase_medicines definition
+
+-- Drop table
+
+-- DROP TABLE public.phase_medicines;
+
+CREATE TABLE public.phase_medicines (
+	phase_id int8 NOT NULL,
+	medicine_id int8 NOT NULL,
+	dosage text NULL,
+	frequency text NULL,
+	duration text NULL,
+	notes text NULL,
+	created_at timestamptz NULL,
+	quantity int4 NULL,
+	is_received bool DEFAULT true NULL,
+	CONSTRAINT phase_medicines_pkey PRIMARY KEY (phase_id, medicine_id),
+	CONSTRAINT phase_medicines_medicine_id_fkey FOREIGN KEY (medicine_id) REFERENCES public.medicines(id),
+	CONSTRAINT phase_medicines_phase_id_fkey FOREIGN KEY (phase_id) REFERENCES public.treatment_phases(id)
+);
+
+-- public.clinics definition
+
+-- Drop table
+
+-- DROP TABLE public.clinics;
+
+CREATE TABLE public.clinics (
+	id bigserial NOT NULL,
+	"name" varchar NULL,
+	address text NULL,
+	phone varchar NULL,
+	CONSTRAINT clinics_pk PRIMARY KEY (id)
+);
+
+
+-- public.shifts definition
+
+-- Drop table
+
+-- DROP TABLE public.shifts;
+
+CREATE TABLE public.shifts (
+    id bigserial NOT NULL,
+    doctor_id int8 NOT NULL,
+    start_time timestamp NOT NULL,
+    end_time timestamp NOT NULL,
+	max_patients int4 DEFAULT 10 NULL,
+    assigned_patients int4 DEFAULT 0 NULL,
+    created_at timestamp DEFAULT CURRENT_TIMESTAMP NULL,
+    CONSTRAINT shifts_pkey PRIMARY KEY (id),
+    CONSTRAINT shifts_doctor_id_fkey FOREIGN KEY (doctor_id) REFERENCES public.doctors(id)
+);
+-- public.time_slots definition
+
+-- Drop table
+
+-- DROP TABLE public.time_slots;
+
+CREATE TABLE public.time_slots (
+	id bigserial NOT NULL,
+	doctor_id int4 NOT NULL,
+	"date" date NOT NULL,
+	start_time time NOT NULL,
+	end_time time NOT NULL,
+	max_patients int4 NULL,
+	booked_patients int4 DEFAULT 0 NULL,
+	created_at timestamp DEFAULT CURRENT_TIMESTAMP NULL,
+	updated_at timestamp DEFAULT CURRENT_TIMESTAMP NULL,
+	shift_id bigserial NOT NULL,
+	CONSTRAINT time_slots_pkey PRIMARY KEY (id),
+	CONSTRAINT unique_slot UNIQUE (doctor_id, date, start_time)
+);
+
+
+-- public.time_slots foreign keys
+
+ALTER TABLE public.time_slots ADD CONSTRAINT time_slots_doctor_id_fkey FOREIGN KEY (doctor_id) REFERENCES public.doctors(id);
+ALTER TABLE public.time_slots ADD CONSTRAINT time_slots_shift_id_fkey FOREIGN KEY (shift_id) REFERENCES public.shifts(id);
+
+
+-- -- public.appointments definition
+
+-- -- Drop table
+
+-- -- DROP TABLE public.appointments;
+
+CREATE TABLE public.appointments (
+    appointment_id bigserial NOT NULL,
+    petid int8 NULL,
+    username varchar NULL,
+    doctor_id int8 NULL,
+    service_id int8 NULL,
+    "date" timestamp DEFAULT now() NULL,
+    notes text NULL,
+    reminder_send bool DEFAULT false NULL,
+    time_slot_id int8 NULL,
+    created_at timestamp DEFAULT now() NULL,
+    state_id int4 NULL,
+    CONSTRAINT appointments_pkey PRIMARY KEY (appointment_id),
+    CONSTRAINT appointment_pet_fk FOREIGN KEY (petid) REFERENCES public.pets(petid),
+    CONSTRAINT appointment_service_fk FOREIGN KEY (service_id) REFERENCES public.services(id),
+    CONSTRAINT appointments_state_id_fkey FOREIGN KEY (state_id) REFERENCES public.states(id)
+);
+>>>>>>> ada3717 (Docker file)

@@ -19,6 +19,7 @@ type TaskDistributor interface {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 // Creating to interact with Redis queue
 >>>>>>> 6610455 (feat: redis queue)
@@ -27,6 +28,8 @@ type TaskDistributor interface {
 =======
 // Creating to interact with Redis queue
 >>>>>>> 6610455 (feat: redis queue)
+=======
+>>>>>>> ada3717 (Docker file)
 type RedisTaskDistributor struct {
 	client *asynq.Client
 }

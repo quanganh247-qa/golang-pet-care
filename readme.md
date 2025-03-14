@@ -69,6 +69,7 @@ curl -X GET "localhost:9200/\_cat/indices?v"
 curl -X DELETE "localhost:9200/petclinic_medicines"
 curl -X DELETE "localhost:9200/petclinic_diseases"
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 keploy record -c "gin -p 8089 -i run main.go"
 
@@ -274,3 +275,5 @@ source ~/.zshrc
 curl -X GET "localhost:9200/\_cat/indices?v"
 curl -X DELETE "localhost:9200/petclinic_medicines"
 >>>>>>> e859654 (Elastic search)
+=======
+>>>>>>> ada3717 (Docker file)

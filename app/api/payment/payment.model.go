@@ -99,6 +99,11 @@ type PaymentConfig struct {
 	PaymentAPIKey    string
 	PaymentClientKey string
 	PaymentBaseURL   string
+
+	PayPalClientID     string
+	PayPalClientSecret string
+	PayPalBaseURL      string
+	PayPalEnvironment  string
 }
 
 // GoongService handles interactions with VierQR Maps API
@@ -200,6 +205,9 @@ type OauthTokenResponse struct {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> ada3717 (Docker file)
 =======
 >>>>>>> ada3717 (Docker file)
 
@@ -316,6 +324,7 @@ type OrderUpdateRequest struct {
 }
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> 6b24d88 (feat(payment): add PayOS payment integration and enhance treatment module)
 
@@ -338,3 +347,5 @@ type CreatePaymentLinkRequest struct {
 >>>>>>> c449ffc (feat: cart api)
 =======
 >>>>>>> e859654 (Elastic search)
+=======
+>>>>>>> ada3717 (Docker file)

@@ -163,11 +163,16 @@ func Routes(routerGroup middleware.RouterGroup) {
 		perRoute([]perms.Permission{perms.ManageDisease, perms.ManageTreatment}).POST("/treatment/:treatment_id/phase", diseaseApi.controller.CreateTreatmentPhase)
 		perRoute([]perms.Permission{perms.ManageDisease, perms.ManageTreatment}).POST("/treatment/:treatment_id/phase/:phase_id/medicine", diseaseApi.controller.AssignMedicineToTreatmentPhase)
 		perRoute([]perms.Permission{perms.ManageTreatment}).PUT("/treatment/:treatment_id/phase/:phase_id", diseaseApi.controller.UpdateTreatmentPhaseStatus)
+		perRoute([]perms.Permission{perms.ManageTreatment}).GET("/treatment/:treatment_id/prescription", diseaseApi.controller.GenerateMedicineOnlyPrescription)
 	}
 
 <<<<<<< HEAD
 >>>>>>> 6c35562 (dicease and treatment plan)
 =======
 	dicease.POST("/disease", diseaseApi.controller.CreateDisease)
+<<<<<<< HEAD
 >>>>>>> e859654 (Elastic search)
+=======
+
+>>>>>>> ada3717 (Docker file)
 }

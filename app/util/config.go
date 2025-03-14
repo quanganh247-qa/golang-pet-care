@@ -114,12 +114,13 @@ type Config struct {
 >>>>>>> c449ffc (feat: cart api)
 =======
 
-	PaypalBaseURL   string `mapstructure:"PAYPAL_BASE_URL"`
-	PaypalAPIKey    string `mapstructure:"PAYPAL_API_KEY"`
-	PaypalClientKey string `mapstructure:"PAYPAL_CLIENT_KEY"`
+	PaypalClientID     string `mapstructure:"PAYPAL_CLIENT_ID"`
+	PaypalClientSecret string `mapstructure:"PAYPAL_CLIENT_SECRET"`
+	PaypalEnvironment  string `mapstructure:"PAYPAL_ENVIRONMENT"`
+	PaypalURL          string `mapstructure:"PAYPAL_URL"`
 
 	ElasticsearchURL string `mapstructure:"ELASTICSEARCH_URL"`
-	MinIOEndpoint    string `mapstructure:"MINIO_URL"`
+	MinIOEndpoint    string `mapstructure:"MINIO_ENDPOINT"`
 	MinIOAccessKey   string `mapstructure:"MINIO_ACCESS_KEY"`
 	MinIOSecretKey   string `mapstructure:"MINIO_SECRET_KEY"`
 	MinIOSSL         bool   `mapstructure:"MINIO_SSL"`

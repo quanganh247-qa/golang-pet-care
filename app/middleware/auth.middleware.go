@@ -9,6 +9,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/quanganh247-qa/go-blog-be/app/service/token"
 	"github.com/quanganh247-qa/go-blog-be/app/util"
+	"github.com/supertokens/supertokens-golang/recipe/session"
+	"github.com/supertokens/supertokens-golang/recipe/session/sessmodels"
 )
 
 const (
@@ -84,6 +86,9 @@ func SuperTokensAuthMiddleware() gin.HandlerFunc {
 		ctx.Next()
 	}
 }
+<<<<<<< HEAD
 >>>>>>> ada3717 (Docker file)
 =======
 >>>>>>> 4ccd381 (Update appointment flow)
+=======
+>>>>>>> ada3717 (Docker file)

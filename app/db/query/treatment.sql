@@ -253,6 +253,9 @@ INSERT INTO phase_medicines (phase_id, medicine_id, dosage, frequency, duration,
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> ada3717 (Docker file)
 =======
 >>>>>>> ada3717 (Docker file)
 VALUES ($1, $2, $3, $4, $5, $6) RETURNING *;
@@ -272,6 +275,7 @@ FROM clinics
 WHERE id = $1; -- Assuming a single clinic for simplicity, adjust as needed
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 GROUP BY tp.id;
 >>>>>>> 3bf345d (happy new year)
@@ -286,3 +290,5 @@ GROUP BY tp.id;
 =======
 VALUES ($1, $2, $3, $4, $5, $6) RETURNING *;
 >>>>>>> 2fe5baf (treatment phase)
+=======
+>>>>>>> ada3717 (Docker file)

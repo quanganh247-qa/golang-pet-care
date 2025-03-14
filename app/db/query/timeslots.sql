@@ -12,6 +12,7 @@ VALUES (
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 -- -- name: GetTimeSlotsByDoctorAndDate :many
 -- SELECT * from time_slots WHERE doctor_id = $1 AND "date" = $2 ORDER BY start_time ASC;
 
@@ -157,6 +158,10 @@ WHERE doctor_id = $1 AND date = $2;
 =======
 -- name: GetTimeSlotsByDoctorAndDate :many
 SELECT * from time_slots WHERE doctor_id = $1 AND "date" = $2 ORDER BY start_time ASC;
+=======
+-- -- name: GetTimeSlotsByDoctorAndDate :many
+-- SELECT * from time_slots WHERE doctor_id = $1 AND "date" = $2 ORDER BY start_time ASC;
+>>>>>>> ada3717 (Docker file)
 
 -- name: GetTimeSlot :one
 SELECT * FROM time_slots
@@ -174,6 +179,7 @@ WHERE id = $1;
 >>>>>>> 685da65 (latest update)
 =======
 -- name: GetAvailableTimeSlots :many
+<<<<<<< HEAD
 SELECT 
     id,
     start_time,
@@ -187,3 +193,17 @@ WHERE
     AND date = $2 
     AND booked_patients < max_patients;
 >>>>>>> b393bb9 (add service and add permission)
+=======
+SELECT id, start_time, end_time, max_patients, booked_patients
+FROM time_slots
+WHERE doctor_id = $1
+AND date = $2
+AND booked_patients < max_patients
+ORDER BY start_time;
+
+-- name: GetTimeSlotForUpdate :one
+SELECT booked_patients, max_patients, start_time, end_time
+FROM time_slots
+WHERE id = $1
+FOR UPDATE;
+>>>>>>> ada3717 (Docker file)

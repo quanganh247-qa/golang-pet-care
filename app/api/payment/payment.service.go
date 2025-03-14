@@ -86,6 +86,7 @@ func (s *PaymentService) GetToken(c *gin.Context) (*TokenResponse, error) {
 >>>>>>> 6b24d88 (feat(payment): add PayOS payment integration and enhance treatment module)
 =======
 	"fmt"
+	"io/ioutil"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -98,6 +99,13 @@ type PaymentServiceInterface interface {
 	GenerateQRService(c *gin.Context, qrRequest QRRequest) (*GenerateQRCodeResponse, error)
 
 	GenerateOauthToken(c *gin.Context) (*OauthTokenResponse, error)
+
+	createPayPalOrder(accessToken string, orderRequest OrderRequest) (*PayPalOrderResponse, error)
+	capturePayPalOrder(accessToken string, orderID string) (*OrderCaptureResponse, error)
+	getOrderDetails(accessToken string, orderID string) (map[string]interface{}, error)
+	updateOrder(accessToken string, orderID string, updates []OrderUpdateRequest) (map[string]interface{}, error)
+	trackOrder(accessToken string, orderID string) (map[string]interface{}, error)
+	getPayPalAccessToken() (string, error)
 }
 
 func (s *PaymentService) GetToken(c *gin.Context) (*TokenResponse, error) {
@@ -298,6 +306,9 @@ func (s *PaymentService) GenerateOauthToken(c *gin.Context) (*OauthTokenResponse
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> ada3717 (Docker file)
 =======
 >>>>>>> ada3717 (Docker file)
 
@@ -647,6 +658,7 @@ func (s *PaymentService) getPayPalAccessToken() (string, error) {
 }
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> 6b24d88 (feat(payment): add PayOS payment integration and enhance treatment module)
 
@@ -732,3 +744,5 @@ func calculateTotalAmount(items []payos.Item) int {
 >>>>>>> c449ffc (feat: cart api)
 =======
 >>>>>>> e859654 (Elastic search)
+=======
+>>>>>>> ada3717 (Docker file)

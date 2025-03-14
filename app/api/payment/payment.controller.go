@@ -22,6 +22,7 @@ type PaymentControllerInterface interface {
 	TrackOrder(c *gin.Context)
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> 6b24d88 (feat(payment): add PayOS payment integration and enhance treatment module)
 
@@ -55,6 +56,8 @@ type PaymentControllerInterface interface {
 	GetToken(c *gin.Context)
 	GetBanks(c *gin.Context)
 	GenerateQRCode(c *gin.Context)
+=======
+>>>>>>> ada3717 (Docker file)
 }
 
 <<<<<<< HEAD
@@ -132,6 +135,9 @@ func (c *PaymentController) GenerateQRCode(ctx *gin.Context) {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> ada3717 (Docker file)
 =======
 >>>>>>> ada3717 (Docker file)
 
@@ -229,6 +235,7 @@ func (c *PaymentController) TrackOrder(ctx *gin.Context) {
 }
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> 6b24d88 (feat(payment): add PayOS payment integration and enhance treatment module)
 
@@ -254,3 +261,5 @@ func (c *PaymentController) CreatePayOSLink(ctx *gin.Context) {
 >>>>>>> 6b24d88 (feat(payment): add PayOS payment integration and enhance treatment module)
 =======
 >>>>>>> c449ffc (feat: cart api)
+=======
+>>>>>>> ada3717 (Docker file)

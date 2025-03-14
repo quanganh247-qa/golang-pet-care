@@ -1,6 +1,7 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 package doctor
 
 import (
@@ -149,3 +150,6 @@ package doctor
 =======
 package doctor
 >>>>>>> ffc9071 (AI suggestion)
+=======
+package doctor
+>>>>>>> ada3717 (Docker file)

@@ -20,6 +20,7 @@ INSERT INTO users (username, hashed_password, full_name, email, phone_number, ad
 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, NOW(), false)
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 RETURNING id, username, hashed_password, full_name, email, phone_number, address, data_image, original_image, role, status, created_at, is_verified_email, removed_at
 =======
 RETURNING id, username, hashed_password, full_name, email, phone_number, address, data_image, original_image, role, created_at, is_verified_email, removed_at
@@ -27,6 +28,9 @@ RETURNING id, username, hashed_password, full_name, email, phone_number, address
 =======
 RETURNING id, username, hashed_password, full_name, email, phone_number, address, data_image, original_image, role, status, created_at, is_verified_email, removed_at
 >>>>>>> 4ccd381 (Update appointment flow)
+=======
+RETURNING id, username, hashed_password, full_name, email, phone_number, address, data_image, original_image, role, created_at, is_verified_email, removed_at
+>>>>>>> ada3717 (Docker file)
 `
 
 type CreateUserParams struct {
@@ -99,7 +103,7 @@ type CreateUserParams struct {
 >>>>>>> eefcc96 (date time in log)
 }
 
-func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (int64, error) {
+func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, error) {
 	row := q.db.QueryRow(ctx, createUser,
 		arg.Username,
 		arg.HashedPassword,
@@ -170,10 +174,30 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (int64, 
 =======
 >>>>>>> eefcc96 (date time in log)
 	)
+<<<<<<< HEAD
 	var id int64
 	err := row.Scan(&id)
 	return id, err
 >>>>>>> 0fb3f30 (user images)
+=======
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.Username,
+		&i.HashedPassword,
+		&i.FullName,
+		&i.Email,
+		&i.PhoneNumber,
+		&i.Address,
+		&i.DataImage,
+		&i.OriginalImage,
+		&i.Role,
+		&i.CreatedAt,
+		&i.IsVerifiedEmail,
+		&i.RemovedAt,
+	)
+	return i, err
+>>>>>>> ada3717 (Docker file)
 }
 
 const deleteUser = `-- name: DeleteUser :exec
@@ -628,21 +652,19 @@ INSERT INTO Doctors (
     years_of_experience,
     education,
     certificate_number,
-    bio,
-    consultation_fee
+    bio
 ) VALUES (
-    $1, $2, $3, $4, $5, $6, $7
-) RETURNING id, user_id, specialization, years_of_experience, education, certificate_number, bio, consultation_fee
+    $1, $2, $3, $4, $5, $6
+) RETURNING id, user_id, specialization, years_of_experience, education, certificate_number, bio
 `
 
 type InsertDoctorParams struct {
-	UserID            int64         `json:"user_id"`
-	Specialization    pgtype.Text   `json:"specialization"`
-	YearsOfExperience pgtype.Int4   `json:"years_of_experience"`
-	Education         pgtype.Text   `json:"education"`
-	CertificateNumber pgtype.Text   `json:"certificate_number"`
-	Bio               pgtype.Text   `json:"bio"`
-	ConsultationFee   pgtype.Float8 `json:"consultation_fee"`
+	UserID            int64       `json:"user_id"`
+	Specialization    pgtype.Text `json:"specialization"`
+	YearsOfExperience pgtype.Int4 `json:"years_of_experience"`
+	Education         pgtype.Text `json:"education"`
+	CertificateNumber pgtype.Text `json:"certificate_number"`
+	Bio               pgtype.Text `json:"bio"`
 }
 
 func (q *Queries) InsertDoctor(ctx context.Context, arg InsertDoctorParams) (Doctor, error) {
@@ -653,7 +675,6 @@ func (q *Queries) InsertDoctor(ctx context.Context, arg InsertDoctorParams) (Doc
 		arg.Education,
 		arg.CertificateNumber,
 		arg.Bio,
-		arg.ConsultationFee,
 	)
 <<<<<<< HEAD
 >>>>>>> 0fb3f30 (user images)
@@ -668,7 +689,6 @@ func (q *Queries) InsertDoctor(ctx context.Context, arg InsertDoctorParams) (Doc
 		&i.Education,
 		&i.CertificateNumber,
 		&i.Bio,
-		&i.ConsultationFee,
 	)
 	return i, err
 }

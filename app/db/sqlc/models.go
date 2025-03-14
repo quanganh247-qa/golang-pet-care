@@ -122,12 +122,12 @@ type Cart struct {
 }
 
 type CartItem struct {
-	ID        int64            `json:"id"`
-	CartID    pgtype.Int8      `json:"cart_id"`
-	ProductID pgtype.Int8      `json:"product_id"`
-	Quantity  pgtype.Int4      `json:"quantity"`
-	CreatedAt pgtype.Timestamp `json:"created_at"`
-	UpdatedAt pgtype.Timestamp `json:"updated_at"`
+	ID         int64         `json:"id"`
+	CartID     int64         `json:"cart_id"`
+	ProductID  int64         `json:"product_id"`
+	Quantity   pgtype.Int4   `json:"quantity"`
+	UnitPrice  float64       `json:"unit_price"`
+	TotalPrice pgtype.Float8 `json:"total_price"`
 }
 
 type Checkout struct {
@@ -157,6 +157,9 @@ type CheckoutService struct {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> ada3717 (Docker file)
 =======
 >>>>>>> ada3717 (Docker file)
 type Clinic struct {
@@ -167,12 +170,15 @@ type Clinic struct {
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> e859654 (Elastic search)
 =======
 >>>>>>> ada3717 (Docker file)
 =======
 >>>>>>> e859654 (Elastic search)
+=======
+>>>>>>> ada3717 (Docker file)
 type Consultation struct {
 	ID            int32            `json:"id"`
 	AppointmentID pgtype.Int8      `json:"appointment_id"`
@@ -293,6 +299,9 @@ type Doctor struct {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> ada3717 (Docker file)
 =======
 >>>>>>> ada3717 (Docker file)
 	ID                int64       `json:"id"`
@@ -302,6 +311,7 @@ type Doctor struct {
 	Education         pgtype.Text `json:"education"`
 	CertificateNumber pgtype.Text `json:"certificate_number"`
 	Bio               pgtype.Text `json:"bio"`
+<<<<<<< HEAD
 <<<<<<< HEAD
 }
 
@@ -325,6 +335,8 @@ type File struct {
 	FileType   string           `json:"file_type"`
 	UploadedAt pgtype.Timestamp `json:"uploaded_at"`
 	UserID     pgtype.Int8      `json:"user_id"`
+=======
+>>>>>>> ada3717 (Docker file)
 }
 
 type File struct {
@@ -526,10 +538,12 @@ type Medicine struct {
 	Frequency      pgtype.Text        `json:"frequency"`
 	Duration       pgtype.Text        `json:"duration"`
 	SideEffects    pgtype.Text        `json:"side_effects"`
-	ExpirationDate pgtype.Date        `json:"expiration_date"`
-	Quantity       pgtype.Int8        `json:"quantity"`
+	StartDate      pgtype.Date        `json:"start_date"`
+	EndDate        pgtype.Date        `json:"end_date"`
 	CreatedAt      pgtype.Timestamptz `json:"created_at"`
 	UpdatedAt      pgtype.Timestamptz `json:"updated_at"`
+	ExpirationDate pgtype.Date        `json:"expiration_date"`
+	Quantity       pgtype.Int8        `json:"quantity"`
 }
 
 type Notification struct {
@@ -542,15 +556,6 @@ type Notification struct {
 	RelatedType pgtype.Text      `json:"related_type"`
 	Datetime    pgtype.Timestamp `json:"datetime"`
 	NotifyType  pgtype.Text      `json:"notify_type"`
-}
-
-type NotificationPreference struct {
-	ID        int64            `json:"id"`
-	Username  string           `json:"username"`
-	Topic     string           `json:"topic"`
-	Enabled   pgtype.Bool      `json:"enabled"`
-	CreatedAt pgtype.Timestamp `json:"created_at"`
-	UpdatedAt pgtype.Timestamp `json:"updated_at"`
 }
 
 type Order struct {
@@ -851,6 +856,7 @@ type PetTreatment struct {
 	Status    pgtype.Text        `json:"status"`
 	Notes     pgtype.Text        `json:"notes"`
 	CreatedAt pgtype.Timestamptz `json:"created_at"`
+	DoctorID  pgtype.Int4        `json:"doctor_id"`
 }
 
 type PhaseMedicine struct {
@@ -860,9 +866,9 @@ type PhaseMedicine struct {
 	Frequency  pgtype.Text        `json:"frequency"`
 	Duration   pgtype.Text        `json:"duration"`
 	Notes      pgtype.Text        `json:"notes"`
+	CreatedAt  pgtype.Timestamptz `json:"created_at"`
 	Quantity   pgtype.Int4        `json:"quantity"`
 	IsReceived pgtype.Bool        `json:"is_received"`
-	CreatedAt  pgtype.Timestamptz `json:"created_at"`
 }
 
 <<<<<<< HEAD
@@ -890,6 +896,7 @@ type Service struct {
 	Duration    pgtype.Int2      `json:"duration"`
 	Cost        pgtype.Float8    `json:"cost"`
 	Category    pgtype.Text      `json:"category"`
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -1009,6 +1016,12 @@ type SoapNote struct {
 	CreatedAt   pgtype.Timestamp `json:"created_at"`
 }
 
+=======
+	Priority    pgtype.Int2      `json:"priority"`
+	CreatedAt   pgtype.Timestamp `json:"created_at"`
+}
+
+>>>>>>> ada3717 (Docker file)
 type Shift struct {
 	ID               int64            `json:"id"`
 	DoctorID         int64            `json:"doctor_id"`
@@ -1017,6 +1030,9 @@ type Shift struct {
 	MaxPatients      pgtype.Int4      `json:"max_patients"`
 	AssignedPatients pgtype.Int4      `json:"assigned_patients"`
 	CreatedAt        pgtype.Timestamp `json:"created_at"`
+<<<<<<< HEAD
+>>>>>>> ada3717 (Docker file)
+=======
 >>>>>>> ada3717 (Docker file)
 }
 

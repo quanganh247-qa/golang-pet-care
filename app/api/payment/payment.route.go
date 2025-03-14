@@ -38,6 +38,7 @@ func Routes(routerGroup middleware.RouterGroup, config *util.Config) {
 				config: &PaymentConfig{
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> 6b24d88 (feat(payment): add PayOS payment integration and enhance treatment module)
 					VietQRAPIKey:       config.VietQRAPIKey,
@@ -96,6 +97,11 @@ func Routes(routerGroup middleware.RouterGroup, config *util.Config) {
 					// PaymentAPIKey:    config.PaymentAPIKey,
 					// PaymentBaseURL:   config.PaymentBaseURL,
 					// PaymentClientKey: config.PaymentClientKey,
+=======
+					PayPalClientID:     config.PaypalClientID,
+					PayPalClientSecret: config.PaypalClientSecret,
+					PayPalBaseURL:      config.PaypalURL,
+>>>>>>> ada3717 (Docker file)
 				},
 <<<<<<< HEAD
 				client: &http.Client{},

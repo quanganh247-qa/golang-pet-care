@@ -5,10 +5,8 @@ INSERT INTO doctors (
     years_of_experience,
     education,
     certificate_number,
-    bio,
-    consultation_fee
-) VALUES (
-    $1, $2, $3, $4, $5, $6, $7
+    bio) VALUES (
+    $1, $2, $3, $4, $5, $6
 ) RETURNING *;
 
 -- name: GetDoctor :one
@@ -19,8 +17,7 @@ SELECT
     d.years_of_experience,
     d.education,
     d.certificate_number,
-    d.bio,
-    d.consultation_fee
+    d.bio
 FROM doctors d
 JOIN users u ON d.user_id = u.id
 WHERE d.id = $1;
@@ -39,8 +36,7 @@ SELECT
     d.years_of_experience,
     d.education,
     d.certificate_number,
-    d.bio,
-    d.consultation_fee
+    d.bio
 FROM doctors d
 JOIN users u ON d.user_id = u.id
 ORDER BY u.full_name;
@@ -52,9 +48,8 @@ SET
     years_of_experience = COALESCE($3, years_of_experience),
     education = COALESCE($4, education),
     certificate_number = COALESCE($5, certificate_number),
-    bio = COALESCE($6, bio),
-    consultation_fee = COALESCE($7, consultation_fee)
-WHERE id = $1
+    bio = COALESCE($6, bio)
+    WHERE id = $1
 RETURNING *;
 
 -- name: DeleteDoctor :exec
@@ -65,8 +60,8 @@ WHERE id = $1;
 SELECT DISTINCT
     d.id,
     u.full_name,
-    d.specialization,
-    d.consultation_fee
+    d.specialization
+
 FROM doctors d
 JOIN users u ON d.user_id = u.id
 JOIN time_slots ts ON ts.doctor_id = d.id
