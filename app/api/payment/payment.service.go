@@ -39,6 +39,7 @@ func (s *PaymentService) GetToken(c *gin.Context) (*TokenResponse, error) {
 	baseURL := fmt.Sprintf("%s/token_generate", s.config.VietQRBaseURL)
 =======
 	"fmt"
+	"io/ioutil"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -51,6 +52,13 @@ type PaymentServiceInterface interface {
 	GenerateQRService(c *gin.Context, qrRequest QRRequest) (*GenerateQRCodeResponse, error)
 
 	GenerateOauthToken(c *gin.Context) (*OauthTokenResponse, error)
+
+	createPayPalOrder(accessToken string, orderRequest OrderRequest) (*PayPalOrderResponse, error)
+	capturePayPalOrder(accessToken string, orderID string) (*OrderCaptureResponse, error)
+	getOrderDetails(accessToken string, orderID string) (map[string]interface{}, error)
+	updateOrder(accessToken string, orderID string, updates []OrderUpdateRequest) (map[string]interface{}, error)
+	trackOrder(accessToken string, orderID string) (map[string]interface{}, error)
+	getPayPalAccessToken() (string, error)
 }
 
 func (s *PaymentService) GetToken(c *gin.Context) (*TokenResponse, error) {
@@ -195,6 +203,9 @@ func (s *PaymentService) GenerateOauthToken(c *gin.Context) (*OauthTokenResponse
 	return nil, nil
 }
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> ada3717 (Docker file)
 
 // Create a PayPal order
 func (s *PaymentService) createPayPalOrder(accessToken string, orderRequest OrderRequest) (*PayPalOrderResponse, error) {
@@ -540,6 +551,7 @@ func (s *PaymentService) getPayPalAccessToken() (string, error) {
 
 	return tokenResponse.AccessToken, nil
 }
+<<<<<<< HEAD
 
 func (s *PaymentService) createPaymentLink(ctx *gin.Context, request CreatePaymentLinkRequest) (string, error) {
 
@@ -612,3 +624,5 @@ func calculateTotalAmount(items []payos.Item) int {
 >>>>>>> c449ffc (feat: cart api)
 =======
 >>>>>>> e859654 (Elastic search)
+=======
+>>>>>>> ada3717 (Docker file)

@@ -307,8 +307,12 @@ const getPetProfileSummary = `-- name: GetPetProfileSummary :many
 SELECT p.petid, p.name, p.type, p.breed, p.age, p.gender, p.healthnotes, p.weight, p.birth_date, p.username, p.microchip_number, p.last_checkup_date, p.is_active, p.data_image, p.original_image, pt.id, pt.pet_id, pt.disease_id, pt.start_date, pt.end_date, pt.status, pt.name, pt.type, pt.description, pt.created_at, pt.doctor_id, v.vaccinationid, v.petid, v.vaccinename, v.dateadministered, v.nextduedate, v.vaccineprovider, v.batchnumber, v.notes 
 =======
 const getPetProfileSummary = `-- name: GetPetProfileSummary :many
+<<<<<<< HEAD
 SELECT p.petid, p.name, p.type, p.breed, p.age, p.gender, p.healthnotes, p.weight, p.birth_date, p.username, p.microchip_number, p.last_checkup_date, p.is_active, p.data_image, p.original_image, pt.id, pt.pet_id, pt.disease_id, pt.start_date, pt.end_date, pt.status, pt.notes, pt.created_at, v.vaccinationid, v.petid, v.vaccinename, v.dateadministered, v.nextduedate, v.vaccineprovider, v.batchnumber, v.notes 
 >>>>>>> ffc9071 (AI suggestion)
+=======
+SELECT p.petid, p.name, p.type, p.breed, p.age, p.gender, p.healthnotes, p.weight, p.birth_date, p.username, p.microchip_number, p.last_checkup_date, p.is_active, p.data_image, p.original_image, pt.id, pt.pet_id, pt.disease_id, pt.start_date, pt.end_date, pt.status, pt.notes, pt.created_at, pt.doctor_id, v.vaccinationid, v.petid, v.vaccinename, v.dateadministered, v.nextduedate, v.vaccineprovider, v.batchnumber, v.notes 
+>>>>>>> ada3717 (Docker file)
 FROM pets AS p
 LEFT JOIN pet_treatments AS pt ON p.petid = pt.pet_id
 LEFT JOIN vaccinations AS v ON p.petid = v.petid
@@ -346,7 +350,11 @@ type GetPetProfileSummaryRow struct {
 =======
 	Notes            pgtype.Text        `json:"notes"`
 	CreatedAt        pgtype.Timestamptz `json:"created_at"`
+<<<<<<< HEAD
 >>>>>>> ffc9071 (AI suggestion)
+=======
+	DoctorID         pgtype.Int4        `json:"doctor_id"`
+>>>>>>> ada3717 (Docker file)
 	Vaccinationid    pgtype.Int8        `json:"vaccinationid"`
 	Petid_2          pgtype.Int8        `json:"petid_2"`
 	Vaccinename      pgtype.Text        `json:"vaccinename"`
@@ -401,7 +409,11 @@ func (q *Queries) GetPetProfileSummary(ctx context.Context, petid int64) ([]GetP
 =======
 			&i.Notes,
 			&i.CreatedAt,
+<<<<<<< HEAD
 >>>>>>> ffc9071 (AI suggestion)
+=======
+			&i.DoctorID,
+>>>>>>> ada3717 (Docker file)
 			&i.Vaccinationid,
 			&i.Petid_2,
 			&i.Vaccinename,

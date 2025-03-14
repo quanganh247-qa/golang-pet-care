@@ -14,6 +14,7 @@ import (
 const createService = `-- name: CreateService :one
 INSERT INTO services (
 <<<<<<< HEAD
+<<<<<<< HEAD
     name, description, duration, cost, category
 ) VALUES (
     $1, $2, $3, $4, $5
@@ -21,11 +22,18 @@ INSERT INTO services (
 RETURNING id, name, description, duration, cost, category, priority, created_at
 =======
     name, description, duration, cost, category, notes
+=======
+    name, description, duration, cost, category
+>>>>>>> ada3717 (Docker file)
 ) VALUES (
-    $1, $2, $3, $4, $5, $6
+    $1, $2, $3, $4, $5
 )
+<<<<<<< HEAD
 RETURNING id, name, description, duration, cost, category, notes, created_at, updated_at
 >>>>>>> b393bb9 (add service and add permission)
+=======
+RETURNING id, name, description, duration, cost, category, priority, created_at
+>>>>>>> ada3717 (Docker file)
 `
 
 type CreateServiceParams struct {
@@ -35,9 +43,12 @@ type CreateServiceParams struct {
 	Cost        pgtype.Float8 `json:"cost"`
 	Category    pgtype.Text   `json:"category"`
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 	Notes       pgtype.Text   `json:"notes"`
 >>>>>>> b393bb9 (add service and add permission)
+=======
+>>>>>>> ada3717 (Docker file)
 }
 
 func (q *Queries) CreateService(ctx context.Context, arg CreateServiceParams) (Service, error) {
@@ -48,9 +59,12 @@ func (q *Queries) CreateService(ctx context.Context, arg CreateServiceParams) (S
 		arg.Cost,
 		arg.Category,
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 		arg.Notes,
 >>>>>>> b393bb9 (add service and add permission)
+=======
+>>>>>>> ada3717 (Docker file)
 	)
 	var i Service
 	err := row.Scan(
@@ -61,6 +75,7 @@ func (q *Queries) CreateService(ctx context.Context, arg CreateServiceParams) (S
 		&i.Cost,
 		&i.Category,
 <<<<<<< HEAD
+<<<<<<< HEAD
 		&i.Priority,
 		&i.CreatedAt,
 =======
@@ -68,6 +83,10 @@ func (q *Queries) CreateService(ctx context.Context, arg CreateServiceParams) (S
 		&i.CreatedAt,
 		&i.UpdatedAt,
 >>>>>>> b393bb9 (add service and add permission)
+=======
+		&i.Priority,
+		&i.CreatedAt,
+>>>>>>> ada3717 (Docker file)
 	)
 	return i, err
 }
@@ -102,11 +121,15 @@ SELECT serviceid, typeid, name, price, duration, description, isavailable, remov
 >>>>>>> 5e493e4 (get all services)
 =======
 const getServiceByID = `-- name: GetServiceByID :one
+<<<<<<< HEAD
 SELECT id, name, description, duration, cost, category, notes, created_at, updated_at FROM services
 <<<<<<< HEAD
 WHERE id = $1 and removed_at is NULL
 >>>>>>> b393bb9 (add service and add permission)
 =======
+=======
+SELECT id, name, description, duration, cost, category, priority, created_at FROM services
+>>>>>>> ada3717 (Docker file)
 WHERE id = $1
 >>>>>>> ffc9071 (AI suggestion)
 `
@@ -122,6 +145,7 @@ func (q *Queries) GetServiceByID(ctx context.Context, id int64) (Service, error)
 		&i.Cost,
 		&i.Category,
 <<<<<<< HEAD
+<<<<<<< HEAD
 		&i.Priority,
 		&i.CreatedAt,
 =======
@@ -129,16 +153,24 @@ func (q *Queries) GetServiceByID(ctx context.Context, id int64) (Service, error)
 		&i.CreatedAt,
 		&i.UpdatedAt,
 >>>>>>> b393bb9 (add service and add permission)
+=======
+		&i.Priority,
+		&i.CreatedAt,
+>>>>>>> ada3717 (Docker file)
 	)
 	return i, err
 }
 
 const getServices = `-- name: GetServices :many
 <<<<<<< HEAD
+<<<<<<< HEAD
 SELECT id, name, description, duration, cost, category, priority, created_at FROM services where removed_at is NULL ORDER BY name LIMIT $1 OFFSET $2
 =======
 SELECT id, name, description, duration, cost, category, notes, created_at, updated_at FROM services where removed_at is NULL ORDER BY name LIMIT $1 OFFSET $2
 >>>>>>> b393bb9 (add service and add permission)
+=======
+SELECT id, name, description, duration, cost, category, priority, created_at FROM services where removed_at is NULL ORDER BY name LIMIT $1 OFFSET $2
+>>>>>>> ada3717 (Docker file)
 `
 
 type GetServicesParams struct {
@@ -163,6 +195,7 @@ func (q *Queries) GetServices(ctx context.Context, arg GetServicesParams) ([]Ser
 			&i.Cost,
 			&i.Category,
 <<<<<<< HEAD
+<<<<<<< HEAD
 			&i.Priority,
 			&i.CreatedAt,
 =======
@@ -170,6 +203,10 @@ func (q *Queries) GetServices(ctx context.Context, arg GetServicesParams) ([]Ser
 			&i.CreatedAt,
 			&i.UpdatedAt,
 >>>>>>> b393bb9 (add service and add permission)
+=======
+			&i.Priority,
+			&i.CreatedAt,
+>>>>>>> ada3717 (Docker file)
 		); err != nil {
 			return nil, err
 		}
@@ -193,6 +230,7 @@ SET
     duration = $4,
     cost = $5,
     category = $6,
+<<<<<<< HEAD
 <<<<<<< HEAD
     updated_at = NOW()
 WHERE id = $1
@@ -235,6 +273,11 @@ WHERE serviceID = $1
 WHERE id = $1
 RETURNING id, name, description, duration, cost, category, notes, created_at, updated_at
 >>>>>>> b393bb9 (add service and add permission)
+=======
+    updated_at = NOW()
+WHERE id = $1
+RETURNING id, name, description, duration, cost, category, priority, created_at
+>>>>>>> ada3717 (Docker file)
 `
 
 type UpdateServiceParams struct {
@@ -245,9 +288,12 @@ type UpdateServiceParams struct {
 	Cost        pgtype.Float8 `json:"cost"`
 	Category    pgtype.Text   `json:"category"`
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 	Notes       pgtype.Text   `json:"notes"`
 >>>>>>> b393bb9 (add service and add permission)
+=======
+>>>>>>> ada3717 (Docker file)
 }
 
 func (q *Queries) UpdateService(ctx context.Context, arg UpdateServiceParams) (Service, error) {
@@ -259,9 +305,12 @@ func (q *Queries) UpdateService(ctx context.Context, arg UpdateServiceParams) (S
 		arg.Cost,
 		arg.Category,
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 		arg.Notes,
 >>>>>>> b393bb9 (add service and add permission)
+=======
+>>>>>>> ada3717 (Docker file)
 	)
 	var i Service
 	err := row.Scan(
@@ -272,6 +321,7 @@ func (q *Queries) UpdateService(ctx context.Context, arg UpdateServiceParams) (S
 		&i.Cost,
 		&i.Category,
 <<<<<<< HEAD
+<<<<<<< HEAD
 		&i.Priority,
 		&i.CreatedAt,
 =======
@@ -279,6 +329,10 @@ func (q *Queries) UpdateService(ctx context.Context, arg UpdateServiceParams) (S
 		&i.CreatedAt,
 		&i.UpdatedAt,
 >>>>>>> b393bb9 (add service and add permission)
+=======
+		&i.Priority,
+		&i.CreatedAt,
+>>>>>>> ada3717 (Docker file)
 	)
 	return i, err
 }

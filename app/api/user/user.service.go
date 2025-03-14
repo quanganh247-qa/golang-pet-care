@@ -167,6 +167,9 @@ func (server *UserService) createUserService(ctx *gin.Context, req createUserReq
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> ada3717 (Docker file)
 		_, err := server.storeDB.CreateUser(ctx, arg) // Check this line carefully
 
 		if err != nil {

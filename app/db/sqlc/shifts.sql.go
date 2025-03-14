@@ -176,6 +176,7 @@ func (q *Queries) GetDoctors(ctx context.Context) ([]GetDoctorsRow, error) {
 	return items, nil
 }
 
+<<<<<<< HEAD
 const getShiftByDoctorId = `-- name: GetShiftByDoctorId :many
 SELECT id, doctor_id, start_time, end_time, assigned_patients, created_at
 FROM shifts
@@ -218,6 +219,8 @@ func (q *Queries) GetShiftByDoctorId(ctx context.Context, doctorID int64) ([]Get
 	return items, nil
 }
 
+=======
+>>>>>>> ada3717 (Docker file)
 const getShifts = `-- name: GetShifts :many
 SELECT id, doctor_id, start_time, end_time, assigned_patients, created_at
 FROM shifts

@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 package doctor
 
 import (
@@ -36,3 +37,6 @@ func Routes(routerGroup middleware.RouterGroup) {
 =======
 package doctor
 >>>>>>> ffc9071 (AI suggestion)
+=======
+package doctor
+>>>>>>> ada3717 (Docker file)

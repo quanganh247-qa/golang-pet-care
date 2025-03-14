@@ -16,6 +16,7 @@ SELECT
 FROM diseases d
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 LEFT JOIN medicines m ON d.id = m.disease_id
 =======
 LEFT JOIN disease_medicines dm ON d.id = dm.disease_id
@@ -23,6 +24,9 @@ LEFT JOIN disease_medicines dm ON d.id = dm.disease_id
 >>>>>>> e859654 (Elastic search)
 LEFT JOIN medicines m ON dm.medicine_id = m.id
 >>>>>>> 6c35562 (dicease and treatment plan)
+=======
+LEFT JOIN medicines m ON d.id = m.disease_id
+>>>>>>> ada3717 (Docker file)
 WHERE LOWER(d.name) LIKE LOWER($1);
 
 

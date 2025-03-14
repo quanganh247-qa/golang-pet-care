@@ -2,12 +2,15 @@ package api
 
 import (
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 	"io"
 	"net/http"
 	"os"
 
 >>>>>>> 98e9e45 (ratelimit and recovery function)
+=======
+>>>>>>> ada3717 (Docker file)
 	"github.com/gin-gonic/gin"
 	"github.com/quanganh247-qa/go-blog-be/app/api/appointment"
 <<<<<<< HEAD
@@ -37,12 +40,15 @@ import (
 	"github.com/quanganh247-qa/go-blog-be/app/api/device_token"
 >>>>>>> 0fb3f30 (user images)
 	"github.com/quanganh247-qa/go-blog-be/app/api/medications"
+<<<<<<< HEAD
 =======
 =======
 	"github.com/quanganh247-qa/go-blog-be/app/api/medications"
 >>>>>>> e859654 (Elastic search)
 	"github.com/quanganh247-qa/go-blog-be/app/api/notification"
 >>>>>>> 3bf345d (happy new year)
+=======
+>>>>>>> ada3717 (Docker file)
 	"github.com/quanganh247-qa/go-blog-be/app/api/payment"
 =======
 	"github.com/quanganh247-qa/go-blog-be/app/api/medications"
@@ -89,8 +95,6 @@ import (
 >>>>>>> e859654 (Elastic search)
 	"github.com/quanganh247-qa/go-blog-be/app/service/worker"
 	"github.com/quanganh247-qa/go-blog-be/app/util"
-	swaggerFiles "github.com/swaggo/files"
-	ginSwagger "github.com/swaggo/gin-swagger"
 	"go.uber.org/zap"
 )
 
@@ -114,19 +118,25 @@ func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor, config
 	routerDefault.Use(middleware.CORSMiddleware())
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	routerDefault.Use(middleware.LoggingMiddleware())
 =======
 	routerDefault.Use(middleware.IPbasedRateLimitingMiddleware())
 =======
 	// routerDefault.Use(middleware.IPbasedRateLimitingMiddleware())
 >>>>>>> 9ee4f0a (fix bug ratelimit)
+=======
+	routerDefault.Use(middleware.LoggingMiddleware())
+	// routerDefault.Use(middleware.ContentSecurityPolicyMiddleware())
+
+>>>>>>> ada3717 (Docker file)
 	logger, _ := zap.NewProduction()
 	defer logger.Sync()
 
-	debug := true // or false, depending on your environment
-	// Apply the custom recovery middleware
-	routerDefault.Use(util.Recover(logger, debug))
+	// debug := true
+	// routerDefault.Use(util.Recover(logger, debug))
 
+<<<<<<< HEAD
 	// Create a custom logger with the desired output format
 	gin.DefaultWriter = io.MultiWriter(os.Stdout)
 	gin.DefaultErrorWriter = io.MultiWriter(os.Stderr)
@@ -137,12 +147,17 @@ func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor, config
 
 	// logger, _ := zap.NewProduction()
 	// defer logger.Sync()
+=======
+	// gin.DefaultWriter = io.MultiWriter(os.Stdout)
+	// gin.DefaultErrorWriter = io.MultiWriter(os.Stderr)
+>>>>>>> ada3717 (Docker file)
 
 	v1 := routerDefault.Group(util.Configs.ApiPrefix)
 	router := v1.Group("/")
 	routerGroup := middleware.RouterGroup{
 		RouterDefault: router,
 	}
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 	router.GET("/health", server.healthCheck)
@@ -163,6 +178,18 @@ func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor, config
 			"status": "healthy",
 		})
 	})
+=======
+	router.GET("/health", server.healthCheck)
+
+	// // Adding the SuperTokens middleware
+	// router.Use(func(c *gin.Context) {
+	// 	supertokens.Middleware(http.HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
+	// 		c.Next()
+	// 	})).ServeHTTP(c.Writer, c.Request)
+	// 	// we call Abort so that the next handler in the chain is not called, unless we call Next explicitly
+	// 	c.Abort()
+	// })
+>>>>>>> ada3717 (Docker file)
 
 	user.Routes(routerGroup, taskDistributor, config)
 <<<<<<< HEAD
@@ -178,6 +205,7 @@ func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor, config
 	device_token.Routes(routerGroup)
 	disease.Routes(routerGroup, es)
 	petschedule.Routes(routerGroup, &config)
+<<<<<<< HEAD
 	vaccination.Routes(routerGroup)
 	location.Routes(routerGroup, &config)
 	payment.Routes(routerGroup, &config)
@@ -197,6 +225,8 @@ func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor, config
 	disease.Routes(routerGroup, es)
 	petschedule.Routes(routerGroup, &config)
 	notification.Routes(routerGroup)
+=======
+>>>>>>> ada3717 (Docker file)
 	vaccination.Routes(routerGroup)
 	location.Routes(routerGroup, &config)
 	payment.Routes(routerGroup, &config)

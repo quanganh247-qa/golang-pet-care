@@ -52,6 +52,11 @@ type PaymentConfig struct {
 	PaymentAPIKey    string
 	PaymentClientKey string
 	PaymentBaseURL   string
+
+	PayPalClientID     string
+	PayPalClientSecret string
+	PayPalBaseURL      string
+	PayPalEnvironment  string
 }
 
 // GoongService handles interactions with VierQR Maps API
@@ -140,6 +145,9 @@ type OauthTokenResponse struct {
 	ExpiresIn   int    `json:"expires_in"`
 }
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> ada3717 (Docker file)
 
 // Environment variables
 var (
@@ -252,6 +260,7 @@ type OrderUpdateRequest struct {
 	Path  string `json:"path"`
 	Value string `json:"value"`
 }
+<<<<<<< HEAD
 
 type CreatePaymentLinkRequest struct {
 	MobilePayment bool         // option 2: Use for order_id
@@ -263,3 +272,5 @@ type CreatePaymentLinkRequest struct {
 >>>>>>> c449ffc (feat: cart api)
 =======
 >>>>>>> e859654 (Elastic search)
+=======
+>>>>>>> ada3717 (Docker file)

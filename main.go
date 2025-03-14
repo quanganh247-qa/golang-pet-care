@@ -24,7 +24,6 @@ import (
 	"go.uber.org/zap"
 )
 
-// main is the entry point for the 1View portal API server.
 func main() {
 	config, err := util.LoadConfig(".")
 	if err != nil {

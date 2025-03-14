@@ -72,6 +72,7 @@ func Routes(routerGroup middleware.RouterGroup) {
 	}
 
 	dicease.POST("/disease", diseaseApi.controller.CreateDisease)
+<<<<<<< HEAD
 =======
 		authRoute.GET("/", diceaseApi.controller.getDiceaseAnhMedicinesInfo)
 		authRoute.GET("/treatment-plan", diceaseApi.controller.getDiseaseTreatmentPlanWithPhases)
@@ -103,4 +104,7 @@ func Routes(routerGroup middleware.RouterGroup) {
 >>>>>>> 3bf345d (happy new year)
 
 	dicease.POST("/disease", diseaseApi.controller.CreateDisease)
+=======
+
+>>>>>>> ada3717 (Docker file)
 }

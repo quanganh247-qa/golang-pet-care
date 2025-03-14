@@ -6,7 +6,6 @@ import (
 	"github.com/hibiken/asynq"
 	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
 	mail "github.com/quanganh247-qa/go-blog-be/app/service/mail"
-	"github.com/quanganh247-qa/go-blog-be/app/service/websocket"
 
 	"github.com/rs/zerolog/log"
 )
@@ -25,7 +24,6 @@ type RedisTaskProccessor struct {
 	server *asynq.Server
 	store  db.Store
 	mailer mail.EmailSender
-	wsHub  *websocket.Hub
 }
 
 func NewRedisTaskProccessor(redisOpt asynq.RedisClientOpt, store db.Store, mailer mail.EmailSender) TaskProccessor {

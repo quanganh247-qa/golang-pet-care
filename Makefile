@@ -56,6 +56,7 @@ redis:
 	docker run -d --name redis -p 6379:6379 redis:7-alpine
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 elasticsearch:
 	docker run --name elasticsearch -p 9200:9200 -e "discovery.type=single-node" -e "xpack.security.enabled=false" -d elasticsearch:8.12.0
 =======
@@ -97,15 +98,44 @@ migrate-create:
 postgres-ec:
 	docker run -d  --name postgres-ec  -p 5432:5432 -e POSTGRES_PASSWORD=12345678  -e PGDATA=/var/lib/postgresql/data/pgdata  -v postgres_volume:/var/lib/postgresql/data  postgres:15-alpine
 
+=======
+>>>>>>> ada3717 (Docker file)
 elasticsearch:
 	docker run --name elasticsearch -p 9200:9200 -e "discovery.type=single-node" -e "xpack.security.enabled=false" -d elasticsearch:8.12.0
 
 minio:
-	docker run -d --name minio -p 9000:9000 -e "MINIO_ROOT_USER=1View" -e "MINIO_ROOT_PASSWORD=12345678" -v minio_data:/data minio/minio:latest server /data
+	docker run -d --name minio -p 9000:9000 -e "MINIO_ACCESS_KEY=1View" -e "MINIO_SECRET_KEY=12345678" -v minio_data:/data minio/minio:latest server /data
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 .PHONY: mup mdown  mforce sqlc server   postgres  redis  rabbitmq
 >>>>>>> 21608b5 (cart and order api)
 =======
 .PHONY: mup mdown  mforce sqlc server   postgres  redis  rabbitmq 
 >>>>>>> ffc9071 (AI suggestion)
+=======
+# Docker commands
+docker-build:
+	docker-compose build
+
+docker-up:
+	docker-compose up -d
+
+docker-down:
+	docker-compose down
+
+docker-logs:
+	docker-compose logs -f
+
+# Migration commands for Supabase
+migrate-up:
+	migrate -path app/db/migration -database "$(SUPABASE_URL)" up
+
+migrate-down:
+	migrate -path app/db/migration -database "$(SUPABASE_URL)" down
+
+migrate-create:
+	migrate create -ext sql -dir app/db/migration -seq $(name)
+
+.PHONY: mup mdown mforce sqlc server postgres redis supertokens elasticsearch minio docker-build docker-up docker-down docker-logs migrate-up migrate-down migrate-create
+>>>>>>> ada3717 (Docker file)

@@ -7,6 +7,7 @@ app.env
 gin-bin
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 # Thêm vào .gitignore
 *.log
@@ -50,3 +51,39 @@ go.work.sum
 
 vendor
 >>>>>>> ffc9071 (AI suggestion)
+=======
+
+# Thêm vào .gitignore
+*.log
+*.tmp
+/tmp
+/logs
+/dist
+/build
+*.test
+/vendor
+.env*
+*.out
+/coverage
+.DS_Store
+
+.vscode
+
+# Docker
+.docker/
+docker-compose.override.yml
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# Build
+/dist
+/tmp
+*.log
+
+
+
+.txt
+>>>>>>> ada3717 (Docker file)

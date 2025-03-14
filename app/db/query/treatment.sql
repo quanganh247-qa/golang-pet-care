@@ -158,6 +158,9 @@ GROUP BY tp.id;
 -- name: AssignCarprofenToInitialPhase :exec
 INSERT INTO phase_medicines (phase_id, medicine_id, dosage, frequency, duration, notes)
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> ada3717 (Docker file)
 VALUES ($1, $2, $3, $4, $5, $6) RETURNING *;
 
 -- name: GetMedicineByTreatmentID :many
@@ -174,9 +177,12 @@ SELECT
 FROM clinics 
 WHERE id = $1; -- Assuming a single clinic for simplicity, adjust as needed
 
+<<<<<<< HEAD
 =======
 GROUP BY tp.id;
 >>>>>>> 3bf345d (happy new year)
 =======
 VALUES ($1, $2, $3, $4, $5, $6) RETURNING *;
 >>>>>>> 2fe5baf (treatment phase)
+=======
+>>>>>>> ada3717 (Docker file)
