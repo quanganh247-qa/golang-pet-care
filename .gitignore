@@ -42,4 +42,4 @@ docker-compose.override.yml
 .txt
 
 .github/
-    
+.github/workflows/
