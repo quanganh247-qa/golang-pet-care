@@ -60,43 +60,31 @@ type Querier interface {
 	DeleteVaccination(ctx context.Context, vaccinationid int64) error
 	GetActiveTreatments(ctx context.Context, arg GetActiveTreatmentsParams) ([]GetActiveTreatmentsRow, error)
 	GetAllAppointments(ctx context.Context) ([]GetAllAppointmentsRow, error)
+	GetAllOrders(ctx context.Context, arg GetAllOrdersParams) ([]Order, error)
 	GetAllPets(ctx context.Context) ([]Pet, error)
 	GetAllProducts(ctx context.Context, arg GetAllProductsParams) ([]Product, error)
 	GetAllSchedulesByPet(ctx context.Context, arg GetAllSchedulesByPetParams) ([]PetSchedule, error)
 	GetAllUsers(ctx context.Context) ([]User, error)
 	GetAllergies(ctx context.Context, medicalRecordID pgtype.Int8) ([]Allergy, error)
 	GetAppointmentByStateId(ctx context.Context, stateID pgtype.Int4) ([]Appointment, error)
-	// Tính tỷ lệ xác nhận và hủy lịch hẹn
-	GetAppointmentConfirmationStats(ctx context.Context, arg GetAppointmentConfirmationStatsParams) (GetAppointmentConfirmationStatsRow, error)
-	// Đếm số lượng lịch hẹn theo từng ngày trong khoảng thời gian
-	GetAppointmentCountByDateRange(ctx context.Context, arg GetAppointmentCountByDateRangeParams) ([]GetAppointmentCountByDateRangeRow, error)
-	GetAppointmentDetailById(ctx context.Context, appointmentID int64) (Appointment, error)
-	// Đếm số lượng lịch hẹn theo từng giờ trong ngày
-	GetAppointmentTrendsByHour(ctx context.Context, arg GetAppointmentTrendsByHourParams) ([]GetAppointmentTrendsByHourRow, error)
+	GetAppointmentDetail(ctx context.Context, arg GetAppointmentDetailParams) (GetAppointmentDetailRow, error)
+	GetAppointmentDetailByAppointmentID(ctx context.Context, appointmentID int64) (GetAppointmentDetailByAppointmentIDRow, error)
 	GetAppointmentsByDoctor(ctx context.Context, doctorID pgtype.Int8) ([]GetAppointmentsByDoctorRow, error)
-	// Thống kê số lượng lịch hẹn theo trạng thái và khoảng thời gian (ngày/tuần/tháng)
-	GetAppointmentsByStatus(ctx context.Context, dollar_1 string) ([]GetAppointmentsByStatusRow, error)
 	GetAppointmentsByTimeSlot(ctx context.Context, timeSlotID pgtype.Int8) ([]GetAppointmentsByTimeSlotRow, error)
 	GetAppointmentsByUser(ctx context.Context, username pgtype.Text) ([]GetAppointmentsByUserRow, error)
 	GetAppointmentsOfDoctorWithDetails(ctx context.Context, id int64) ([]GetAppointmentsOfDoctorWithDetailsRow, error)
 	GetAvailableDoctors(ctx context.Context, date pgtype.Date) ([]GetAvailableDoctorsRow, error)
 	GetAvailableTimeSlots(ctx context.Context, arg GetAvailableTimeSlotsParams) ([]GetAvailableTimeSlotsRow, error)
-	// Tính thời gian chờ trung bình từ lúc đặt đến lúc được xác nhận
-	GetAverageConfirmationTime(ctx context.Context, arg GetAverageConfirmationTimeParams) (float64, error)
 	GetCartByUserId(ctx context.Context, userID int64) ([]Cart, error)
 	GetCartItems(ctx context.Context, cartID int64) ([]GetCartItemsRow, error)
 	GetCartTotal(ctx context.Context, cartID int64) (float64, error)
 	GetClinicInfo(ctx context.Context, id int64) (GetClinicInfoRow, error)
-	// Tính số lượng lịch hẹn, số lượng bác sĩ và thú cưng trong ngày
-	GetDailyAppointmentStats(ctx context.Context) (GetDailyAppointmentStatsRow, error)
 	GetDeviceTokenByUsername(ctx context.Context, username string) ([]DeviceToken, error)
 	// 1. Query cơ bản để lấy thông tin bệnh và thuốc điều trị
 	GetDiceaseAndMedicinesInfo(ctx context.Context, lower string) ([]GetDiceaseAndMedicinesInfoRow, error)
 	GetDiseaseByID(ctx context.Context, id int64) (Disease, error)
 	GetDiseaseTreatmentPlanWithPhases(ctx context.Context, lower string) ([]GetDiseaseTreatmentPlanWithPhasesRow, error)
 	GetDoctor(ctx context.Context, id int64) (GetDoctorRow, error)
-	// Tính số ca khám trung bình mỗi bác sĩ/ngày
-	GetDoctorAppointmentStats(ctx context.Context, arg GetDoctorAppointmentStatsParams) ([]GetDoctorAppointmentStatsRow, error)
 	GetDoctorByUserId(ctx context.Context, userID int64) (Doctor, error)
 	GetDoctors(ctx context.Context) ([]GetDoctorsRow, error)
 	GetFileByID(ctx context.Context, id int64) (File, error)
@@ -128,8 +116,6 @@ type Querier interface {
 	GetTimeSlotById(ctx context.Context, id int64) (TimeSlot, error)
 	GetTimeSlotForUpdate(ctx context.Context, id int64) (GetTimeSlotForUpdateRow, error)
 	GetTimeSlotsByDoctorAndDate(ctx context.Context, arg GetTimeSlotsByDoctorAndDateParams) ([]GetTimeSlotsByDoctorAndDateRow, error)
-	// Lấy top 10 dịch vụ được đặt nhiều nhất
-	GetTopBookedServices(ctx context.Context, arg GetTopBookedServicesParams) ([]GetTopBookedServicesRow, error)
 	GetTreatment(ctx context.Context, id int64) (PetTreatment, error)
 	GetTreatmentByDiseaseId(ctx context.Context, arg GetTreatmentByDiseaseIdParams) ([]GetTreatmentByDiseaseIdRow, error)
 	GetTreatmentPhase(ctx context.Context, id int64) (TreatmentPhase, error)

@@ -2,18 +2,23 @@
 INSERT INTO cart_items (
     cart_id,
     product_id,
-    quantity,
-    created_at,
-    updated_at
+    unit_price,
+    quantity
 ) VALUES (
-    $1, $2, $3, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
+    $1, $2, $3, $4
 ) RETURNING *;
 
 
 -- name: GetCartByUserId :many
-SELECT * 
-FROM carts
-WHERE user_id = $1;
+SELECT 
+    c.id,
+    c.user_id,
+    c.created_at,
+    c.updated_at
+FROM carts c
+LEFT JOIN cart_items ci ON ci.cart_id = c.id
+WHERE c.user_id = $1
+GROUP BY c.id, c.user_id, c.created_at, c.updated_at;
 
 -- name: CreateCartForUser :one
 INSERT INTO carts (
@@ -77,3 +82,10 @@ SET
     quantity = $3,
     updated_at = CURRENT_TIMESTAMP
 WHERE cart_id = $1 AND product_id = $2;
+
+-- name: GetAllOrders :many
+SELECT *
+FROM Orders 
+WHERE payment_status = $1
+ORDER BY order_date DESC
+LIMIT $2 OFFSET $3;

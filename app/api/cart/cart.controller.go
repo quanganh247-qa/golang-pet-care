@@ -16,10 +16,11 @@ type CartControllerInterface interface {
 	GetOrders(c *gin.Context)
 	GetOrderByID(c *gin.Context)
 	RemoveItemFromCart(c *gin.Context)
+	GetAllOrders(c *gin.Context)
 }
 
 func (c *CartController) AddToCart(ctx *gin.Context) {
-	var req CartItem
+	var req CartItemRequest
 	if err := ctx.ShouldBindBodyWithJSON(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -127,4 +128,19 @@ func (c *CartController) RemoveItemFromCart(ctx *gin.Context) {
 		return
 	}
 	ctx.JSON(http.StatusOK, util.SuccessResponse("Item removed from cart successfully", nil))
+}
+
+func (c *CartController) GetAllOrders(ctx *gin.Context) {
+
+	pagination, err := util.GetPageInQuery(ctx.Request.URL.Query())
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
+		return
+	}
+	res, err := c.service.GetAllOrdersService(ctx, pagination, "paid")
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	ctx.JSON(http.StatusOK, util.SuccessResponse("Orders fetched successfully", res))
 }
