@@ -113,11 +113,14 @@ func Routes(routerGroup middleware.RouterGroup, taskDistributor worker.TaskDistr
 		authRoute.GET("/doctor/:doctor_id", appointmentApi.controller.getAppointmentsByDoctor)
 		authRoute.GET("/all", appointmentApi.controller.getAllAppointments)
 
+<<<<<<< HEAD
 =======
 		// authRoute.GET("/all", appointmentApi.controller.getAllAppointments)
 		authRoute.GET("appointments/", appointmentApi.controller.getAllAppointmentsByDate)
 		authRoute.PUT("appointment/:id", appointmentApi.controller.updateAppointment)
 >>>>>>> 71b74e9 (feat(appointment): add room management and update appointment functionality.)
+=======
+>>>>>>> dc47646 (Optimize SQL query)
 		authRoute.GET("/doctor/:doctor_id/time-slot", appointmentApi.controller.getAvailableTimeSlots)
 <<<<<<< HEAD
 >>>>>>> b393bb9 (add service and add permission)

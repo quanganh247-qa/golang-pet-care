@@ -197,7 +197,6 @@ docker-down:
 docker-logs:
 	docker-compose logs -f
 
-# Migration commands for Supabase
 migrate-up:
 	migrate -path app/db/migration -database "$(SUPABASE_URL)" up
 

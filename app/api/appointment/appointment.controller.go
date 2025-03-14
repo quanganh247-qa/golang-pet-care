@@ -779,7 +779,7 @@ func (c *AppointmentController) getSOAPByAppointmentID(ctx *gin.Context) {
 =======
 >>>>>>> 685da65 (latest update)
 func (c *AppointmentController) getAppointmentByID(ctx *gin.Context) {
-	appointmentID := ctx.Param("appointment_id")
+	appointmentID := ctx.Param("id")
 	if appointmentID == "" {
 		ctx.JSON(http.StatusBadRequest, nil)
 		return
@@ -866,7 +866,7 @@ func (c *AppointmentController) getAllAppointments(ctx *gin.Context) {
 }
 
 func (c *AppointmentController) createSOAP(ctx *gin.Context) {
-	appointmentID := ctx.Param("appointment_id")
+	appointmentID := ctx.Param("id")
 	if appointmentID == "" {
 		ctx.JSON(http.StatusBadRequest, nil)
 		return

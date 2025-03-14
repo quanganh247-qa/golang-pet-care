@@ -19,6 +19,9 @@ type CartItem struct {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> dc47646 (Optimize SQL query)
 =======
 >>>>>>> dc47646 (Optimize SQL query)
 type CartItemRequest struct {

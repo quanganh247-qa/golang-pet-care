@@ -12,6 +12,9 @@ import (
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> dc47646 (Optimize SQL query)
 =======
 >>>>>>> dc47646 (Optimize SQL query)
 	"golang.org/x/sync/semaphore"
@@ -21,6 +24,7 @@ import (
 // Giới hạn 15 request đồng thời (điều chỉnh dựa trên rate limit của Gemini)
 var sem = semaphore.NewWeighted(15)
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 =======
 	"google.golang.org/api/option"
@@ -34,6 +38,8 @@ var sem = semaphore.NewWeighted(15)
 )
 
 >>>>>>> e859654 (Elastic search)
+=======
+>>>>>>> dc47646 (Optimize SQL query)
 type SuggestionResponse interface {
 	GetAction() string
 	Validate() error
@@ -102,6 +108,9 @@ func DetermineActionGemini(ctx *gin.Context, config *util.Config, description st
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> dc47646 (Optimize SQL query)
 =======
 >>>>>>> dc47646 (Optimize SQL query)
 	// Acquire semaphore để giới hạn đồng thời
@@ -111,12 +120,15 @@ func DetermineActionGemini(ctx *gin.Context, config *util.Config, description st
 	defer sem.Release(1)
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> e859654 (Elastic search)
 =======
 >>>>>>> dc47646 (Optimize SQL query)
 =======
 >>>>>>> e859654 (Elastic search)
+=======
+>>>>>>> dc47646 (Optimize SQL query)
 	prompt := fmt.Sprintf(`As an AI assistant, your task is to interpret the user's request and determine the appropriate action to take. The possible actions are:
 
 	- "appointment": For scheduling a one-time appointment or event.
@@ -144,6 +156,7 @@ func DetermineActionGemini(ctx *gin.Context, config *util.Config, description st
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	// model := client.GenerativeModel("gemini-1.5-pro-latest")
 	model := client.GenerativeModel("gemini-2.0-flash")
 =======
@@ -156,6 +169,10 @@ func DetermineActionGemini(ctx *gin.Context, config *util.Config, description st
 =======
 	model := client.GenerativeModel("gemini-1.5-pro-latest")
 >>>>>>> e859654 (Elastic search)
+=======
+	// model := client.GenerativeModel("gemini-1.5-pro-latest")
+	model := client.GenerativeModel("gemini-2.0-flash")
+>>>>>>> dc47646 (Optimize SQL query)
 
 	model.ResponseMIMEType = "application/json"
 
@@ -199,6 +216,9 @@ func GenerateSuggestionGemini(ctx *gin.Context, config *util.Config, action, des
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> dc47646 (Optimize SQL query)
 =======
 >>>>>>> dc47646 (Optimize SQL query)
 
@@ -209,12 +229,15 @@ func GenerateSuggestionGemini(ctx *gin.Context, config *util.Config, action, des
 	defer sem.Release(1)
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> e859654 (Elastic search)
 =======
 >>>>>>> dc47646 (Optimize SQL query)
 =======
 >>>>>>> e859654 (Elastic search)
+=======
+>>>>>>> dc47646 (Optimize SQL query)
 	prompt := fmt.Sprintf(`As an AI assistant, your task is to interpret the user's request and determine the appropriate action to take. The possible actions are:
 		- "appointment": For scheduling a one-time appointment or event.
 		- "pet_log": For logging a one-time activity or event related to a pet.
@@ -265,6 +288,7 @@ func GenerateSuggestionGemini(ctx *gin.Context, config *util.Config, action, des
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	// model := client.GenerativeModel("gemini-1.5-pro-latest")
 	model := client.GenerativeModel("gemini-2.0-flash")
 
@@ -279,6 +303,11 @@ func GenerateSuggestionGemini(ctx *gin.Context, config *util.Config, action, des
 =======
 	model := client.GenerativeModel("gemini-1.5-pro-latest")
 >>>>>>> e859654 (Elastic search)
+=======
+	// model := client.GenerativeModel("gemini-1.5-pro-latest")
+	model := client.GenerativeModel("gemini-2.0-flash")
+
+>>>>>>> dc47646 (Optimize SQL query)
 	// Ask the model to respond with JSON.
 	model.ResponseMIMEType = "application/json"
 

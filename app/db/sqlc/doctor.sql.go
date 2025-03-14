@@ -66,10 +66,8 @@ func (q *Queries) DeleteDoctor(ctx context.Context, id int64) error {
 
 const getAvailableDoctors = `-- name: GetAvailableDoctors :many
 SELECT DISTINCT
-    d.id,
-    u.full_name,
-    d.specialization
-
+    d.id, d.user_id, d.specialization, d.years_of_experience, d.education, d.certificate_number, d.bio,
+    u.full_name
 FROM doctors d
 JOIN users u ON d.user_id = u.id
 JOIN time_slots ts ON ts.doctor_id = d.id
@@ -78,9 +76,14 @@ AND ts.booked_patients < ts.max_patients
 `
 
 type GetAvailableDoctorsRow struct {
-	ID             int64       `json:"id"`
-	FullName       string      `json:"full_name"`
-	Specialization pgtype.Text `json:"specialization"`
+	ID                int64       `json:"id"`
+	UserID            int64       `json:"user_id"`
+	Specialization    pgtype.Text `json:"specialization"`
+	YearsOfExperience pgtype.Int4 `json:"years_of_experience"`
+	Education         pgtype.Text `json:"education"`
+	CertificateNumber pgtype.Text `json:"certificate_number"`
+	Bio               pgtype.Text `json:"bio"`
+	FullName          string      `json:"full_name"`
 }
 
 func (q *Queries) GetAvailableDoctors(ctx context.Context, date pgtype.Date) ([]GetAvailableDoctorsRow, error) {
@@ -92,7 +95,16 @@ func (q *Queries) GetAvailableDoctors(ctx context.Context, date pgtype.Date) ([]
 	items := []GetAvailableDoctorsRow{}
 	for rows.Next() {
 		var i GetAvailableDoctorsRow
-		if err := rows.Scan(&i.ID, &i.FullName, &i.Specialization); err != nil {
+		if err := rows.Scan(
+			&i.ID,
+			&i.UserID,
+			&i.Specialization,
+			&i.YearsOfExperience,
+			&i.Education,
+			&i.CertificateNumber,
+			&i.Bio,
+			&i.FullName,
+		); err != nil {
 			return nil, err
 		}
 		items = append(items, i)
@@ -105,13 +117,8 @@ func (q *Queries) GetAvailableDoctors(ctx context.Context, date pgtype.Date) ([]
 
 const getDoctor = `-- name: GetDoctor :one
 SELECT 
-    d.id,
-    u.full_name AS name,
-    d.specialization,
-    d.years_of_experience,
-    d.education,
-    d.certificate_number,
-    d.bio
+    d.id, d.user_id, d.specialization, d.years_of_experience, d.education, d.certificate_number, d.bio,
+    u.full_name AS name
 FROM doctors d
 JOIN users u ON d.user_id = u.id
 WHERE d.id = $1
@@ -119,12 +126,13 @@ WHERE d.id = $1
 
 type GetDoctorRow struct {
 	ID                int64       `json:"id"`
-	Name              string      `json:"name"`
+	UserID            int64       `json:"user_id"`
 	Specialization    pgtype.Text `json:"specialization"`
 	YearsOfExperience pgtype.Int4 `json:"years_of_experience"`
 	Education         pgtype.Text `json:"education"`
 	CertificateNumber pgtype.Text `json:"certificate_number"`
 	Bio               pgtype.Text `json:"bio"`
+	Name              string      `json:"name"`
 }
 
 func (q *Queries) GetDoctor(ctx context.Context, id int64) (GetDoctorRow, error) {
@@ -132,12 +140,13 @@ func (q *Queries) GetDoctor(ctx context.Context, id int64) (GetDoctorRow, error)
 	var i GetDoctorRow
 	err := row.Scan(
 		&i.ID,
-		&i.Name,
+		&i.UserID,
 		&i.Specialization,
 		&i.YearsOfExperience,
 		&i.Education,
 		&i.CertificateNumber,
 		&i.Bio,
+		&i.Name,
 	)
 	return i, err
 }

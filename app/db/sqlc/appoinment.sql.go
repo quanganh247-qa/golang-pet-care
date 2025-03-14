@@ -572,65 +572,36 @@ func (q *Queries) GetAllAppointments(ctx context.Context, arg GetAllAppointments
 >>>>>>> c8bec46 (feat: add chatbot, room management, and pet allergy features)
 =======
 const getAllAppointments = `-- name: GetAllAppointments :many
-SELECT appointment_id, appointments.petid, appointments.username, appointments.doctor_id, service_id, appointments.date, notes, reminder_send, time_slot_id, appointments.created_at, state_id, pets.petid, pets.name, type, breed, age, gender, healthnotes, weight, birth_date, pets.username, microchip_number, last_checkup_date, is_active, data_image, original_image, services.id, services.name, description, duration, cost, category, priority, services.created_at, time_slots.id, time_slots.doctor_id, time_slots.date, start_time, end_time, max_patients, booked_patients, time_slots.created_at, updated_at, shift_id, doctors.id, user_id, specialization, years_of_experience, education, certificate_number, bio FROM appointments
-JOIN pets ON appointments.petid = pets.petid
-JOIN services ON appointments.service_id = services.id
-JOIN time_slots ON appointments.time_slot_id = time_slots.id
-JOIN doctors ON appointments.doctor_id = doctors.id
+SELECT 
+    a.appointment_id, a.date, a.notes, a.reminder_send, a.created_at,
+    p.name AS pet_name,
+    d.id AS doctor_id,
+    s.name AS service_name,
+    ts.start_time, ts.end_time, ts.id AS time_slot_id,
+    st.state AS state_name,
+    st.id AS state_id
+FROM appointments a
+LEFT JOIN pets p ON a.petid = p.petid
+LEFT JOIN services s ON a.service_id = s.id
+LEFT JOIN time_slots ts ON a.time_slot_id = ts.id
+LEFT JOIN doctors d ON a.doctor_id = d.id
+LEFT JOIN states st ON a.state_id = st.id
 `
 
 type GetAllAppointmentsRow struct {
-	AppointmentID     int64            `json:"appointment_id"`
-	Petid             pgtype.Int8      `json:"petid"`
-	Username          pgtype.Text      `json:"username"`
-	DoctorID          pgtype.Int8      `json:"doctor_id"`
-	ServiceID         pgtype.Int8      `json:"service_id"`
-	Date              pgtype.Timestamp `json:"date"`
-	Notes             pgtype.Text      `json:"notes"`
-	ReminderSend      pgtype.Bool      `json:"reminder_send"`
-	TimeSlotID        pgtype.Int8      `json:"time_slot_id"`
-	CreatedAt         pgtype.Timestamp `json:"created_at"`
-	StateID           pgtype.Int4      `json:"state_id"`
-	Petid_2           int64            `json:"petid_2"`
-	Name              string           `json:"name"`
-	Type              string           `json:"type"`
-	Breed             pgtype.Text      `json:"breed"`
-	Age               pgtype.Int4      `json:"age"`
-	Gender            pgtype.Text      `json:"gender"`
-	Healthnotes       pgtype.Text      `json:"healthnotes"`
-	Weight            pgtype.Float8    `json:"weight"`
-	BirthDate         pgtype.Date      `json:"birth_date"`
-	Username_2        string           `json:"username_2"`
-	MicrochipNumber   pgtype.Text      `json:"microchip_number"`
-	LastCheckupDate   pgtype.Date      `json:"last_checkup_date"`
-	IsActive          pgtype.Bool      `json:"is_active"`
-	DataImage         []byte           `json:"data_image"`
-	OriginalImage     pgtype.Text      `json:"original_image"`
-	ID                int64            `json:"id"`
-	Name_2            pgtype.Text      `json:"name_2"`
-	Description       pgtype.Text      `json:"description"`
-	Duration          pgtype.Int2      `json:"duration"`
-	Cost              pgtype.Float8    `json:"cost"`
-	Category          pgtype.Text      `json:"category"`
-	Priority          pgtype.Int2      `json:"priority"`
-	CreatedAt_2       pgtype.Timestamp `json:"created_at_2"`
-	ID_2              int64            `json:"id_2"`
-	DoctorID_2        int32            `json:"doctor_id_2"`
-	Date_2            pgtype.Date      `json:"date_2"`
-	StartTime         pgtype.Time      `json:"start_time"`
-	EndTime           pgtype.Time      `json:"end_time"`
-	MaxPatients       pgtype.Int4      `json:"max_patients"`
-	BookedPatients    pgtype.Int4      `json:"booked_patients"`
-	CreatedAt_3       pgtype.Timestamp `json:"created_at_3"`
-	UpdatedAt         pgtype.Timestamp `json:"updated_at"`
-	ShiftID           int64            `json:"shift_id"`
-	ID_3              int64            `json:"id_3"`
-	UserID            int64            `json:"user_id"`
-	Specialization    pgtype.Text      `json:"specialization"`
-	YearsOfExperience pgtype.Int4      `json:"years_of_experience"`
-	Education         pgtype.Text      `json:"education"`
-	CertificateNumber pgtype.Text      `json:"certificate_number"`
-	Bio               pgtype.Text      `json:"bio"`
+	AppointmentID int64            `json:"appointment_id"`
+	Date          pgtype.Timestamp `json:"date"`
+	Notes         pgtype.Text      `json:"notes"`
+	ReminderSend  pgtype.Bool      `json:"reminder_send"`
+	CreatedAt     pgtype.Timestamp `json:"created_at"`
+	PetName       pgtype.Text      `json:"pet_name"`
+	DoctorID      pgtype.Int8      `json:"doctor_id"`
+	ServiceName   pgtype.Text      `json:"service_name"`
+	StartTime     pgtype.Time      `json:"start_time"`
+	EndTime       pgtype.Time      `json:"end_time"`
+	TimeSlotID    pgtype.Int8      `json:"time_slot_id"`
+	StateName     pgtype.Text      `json:"state_name"`
+	StateID       pgtype.Int8      `json:"state_id"`
 }
 
 func (q *Queries) GetAllAppointments(ctx context.Context) ([]GetAllAppointmentsRow, error) {
@@ -645,6 +616,7 @@ func (q *Queries) GetAllAppointments(ctx context.Context) ([]GetAllAppointmentsR
 		var i GetAllAppointmentsRow
 		if err := rows.Scan(
 			&i.AppointmentID,
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -817,40 +789,18 @@ func (q *Queries) GetAllAppointmentsByDate(ctx context.Context, arg GetAllAppoin
 			&i.UpdatedAt,
 			&i.ShiftID,
 =======
+=======
+>>>>>>> dc47646 (Optimize SQL query)
 			&i.Date,
 			&i.Notes,
 			&i.ReminderSend,
-			&i.TimeSlotID,
 			&i.CreatedAt,
-			&i.StateID,
-			&i.Petid_2,
-			&i.Name,
-			&i.Type,
-			&i.Breed,
-			&i.Age,
-			&i.Gender,
-			&i.Healthnotes,
-			&i.Weight,
-			&i.BirthDate,
-			&i.Username_2,
-			&i.MicrochipNumber,
-			&i.LastCheckupDate,
-			&i.IsActive,
-			&i.DataImage,
-			&i.OriginalImage,
-			&i.ID,
-			&i.Name_2,
-			&i.Description,
-			&i.Duration,
-			&i.Cost,
-			&i.Category,
-			&i.Priority,
-			&i.CreatedAt_2,
-			&i.ID_2,
-			&i.DoctorID_2,
-			&i.Date_2,
+			&i.PetName,
+			&i.DoctorID,
+			&i.ServiceName,
 			&i.StartTime,
 			&i.EndTime,
+<<<<<<< HEAD
 			&i.MaxPatients,
 			&i.BookedPatients,
 			&i.CreatedAt_3,
@@ -1010,6 +960,11 @@ func (q *Queries) GetAllAppointmentsByDate(ctx context.Context, arg GetAllAppoin
 >>>>>>> ffc9071 (AI suggestion)
 =======
 >>>>>>> ada3717 (Docker file)
+=======
+			&i.TimeSlotID,
+			&i.StateName,
+			&i.StateID,
+>>>>>>> dc47646 (Optimize SQL query)
 		); err != nil {
 			return nil, err
 		}
@@ -1130,6 +1085,9 @@ func (q *Queries) GetAppointmentByStateId(ctx context.Context, stateID pgtype.In
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> dc47646 (Optimize SQL query)
 =======
 >>>>>>> dc47646 (Optimize SQL query)
 const getAppointmentDetail = `-- name: GetAppointmentDetail :one
@@ -1139,6 +1097,7 @@ SELECT
     st.state AS state_name
 FROM services s, pets p, states st
 WHERE s.id = $1 AND p.petid = $2 AND st.id = $3
+<<<<<<< HEAD
 <<<<<<< HEAD
 `
 
@@ -1385,25 +1344,85 @@ func (q *Queries) GetAppointmentDetailByAppointmentID(ctx context.Context, appoi
 >>>>>>> ffc9071 (AI suggestion)
 const getAppointmentDetailById = `-- name: GetAppointmentDetailById :one
 SELECT appointment_id, petid, username, doctor_id, service_id, date, notes, reminder_send, time_slot_id, created_at, state_id from appointments WHERE appointment_id = $1
+=======
+>>>>>>> dc47646 (Optimize SQL query)
 `
 
-func (q *Queries) GetAppointmentDetailById(ctx context.Context, appointmentID int64) (Appointment, error) {
-	row := q.db.QueryRow(ctx, getAppointmentDetailById, appointmentID)
-	var i Appointment
+type GetAppointmentDetailParams struct {
+	ID    int64 `json:"id"`
+	Petid int64 `json:"petid"`
+	ID_2  int64 `json:"id_2"`
+}
+
+type GetAppointmentDetailRow struct {
+	ServiceName pgtype.Text `json:"service_name"`
+	PetName     string      `json:"pet_name"`
+	StateName   string      `json:"state_name"`
+}
+
+func (q *Queries) GetAppointmentDetail(ctx context.Context, arg GetAppointmentDetailParams) (GetAppointmentDetailRow, error) {
+	row := q.db.QueryRow(ctx, getAppointmentDetail, arg.ID, arg.Petid, arg.ID_2)
+	var i GetAppointmentDetailRow
+	err := row.Scan(&i.ServiceName, &i.PetName, &i.StateName)
+	return i, err
+}
+
+const getAppointmentDetailByAppointmentID = `-- name: GetAppointmentDetailByAppointmentID :one
+SELECT 
+    a.appointment_id, a.date, a.notes, a.reminder_send, a.created_at,
+    d.id AS doctor_id,
+    p.name AS pet_name,
+    s.name AS service_name,
+    ts.start_time, ts.end_time, ts.id AS time_slot_id,
+    st.state AS state_name,
+    st.id AS state_id
+FROM appointments a
+LEFT JOIN pets p ON p.petid = a.petid
+LEFT JOIN doctors d ON d.id = a.doctor_id
+LEFT JOIN services s ON s.id = a.service_id
+LEFT JOIN time_slots ts ON ts.id = a.time_slot_id
+LEFT JOIN states st ON st.id = a.state_id
+WHERE a.appointment_id = $1
+`
+
+type GetAppointmentDetailByAppointmentIDRow struct {
+	AppointmentID int64            `json:"appointment_id"`
+	Date          pgtype.Timestamp `json:"date"`
+	Notes         pgtype.Text      `json:"notes"`
+	ReminderSend  pgtype.Bool      `json:"reminder_send"`
+	CreatedAt     pgtype.Timestamp `json:"created_at"`
+	DoctorID      pgtype.Int8      `json:"doctor_id"`
+	PetName       pgtype.Text      `json:"pet_name"`
+	ServiceName   pgtype.Text      `json:"service_name"`
+	StartTime     pgtype.Time      `json:"start_time"`
+	EndTime       pgtype.Time      `json:"end_time"`
+	TimeSlotID    pgtype.Int8      `json:"time_slot_id"`
+	StateName     pgtype.Text      `json:"state_name"`
+	StateID       pgtype.Int8      `json:"state_id"`
+}
+
+func (q *Queries) GetAppointmentDetailByAppointmentID(ctx context.Context, appointmentID int64) (GetAppointmentDetailByAppointmentIDRow, error) {
+	row := q.db.QueryRow(ctx, getAppointmentDetailByAppointmentID, appointmentID)
+	var i GetAppointmentDetailByAppointmentIDRow
 	err := row.Scan(
 		&i.AppointmentID,
-		&i.Petid,
-		&i.Username,
-		&i.DoctorID,
-		&i.ServiceID,
 		&i.Date,
 		&i.Notes,
 		&i.ReminderSend,
-		&i.TimeSlotID,
 		&i.CreatedAt,
+<<<<<<< HEAD
 <<<<<<< HEAD
 >>>>>>> 7e35c2e (get appointment detail)
 =======
+=======
+		&i.DoctorID,
+		&i.PetName,
+		&i.ServiceName,
+		&i.StartTime,
+		&i.EndTime,
+		&i.TimeSlotID,
+		&i.StateName,
+>>>>>>> dc47646 (Optimize SQL query)
 		&i.StateID,
 >>>>>>> ffc9071 (AI suggestion)
 	)
@@ -1423,6 +1442,7 @@ SELECT
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     a.appointment_id,
     a.date,
     a.created_at,
@@ -1457,6 +1477,13 @@ SELECT
 =======
     a.appointment_id, a.petid, a.username, a.doctor_id, a.service_id, a.date, a.notes, a.reminder_send, a.time_slot_id, a.created_at, a.state_id,
 >>>>>>> e859654 (Elastic search)
+=======
+    a.appointment_id,
+    a.date,
+    a.created_at,
+    a.notes,
+    a.reminder_send,
+>>>>>>> dc47646 (Optimize SQL query)
     d.id AS doctor_id,
     p.name AS pet_name,
     s.name AS service_name,
@@ -1464,12 +1491,16 @@ SELECT
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> dc47646 (Optimize SQL query)
 =======
 >>>>>>> dc47646 (Optimize SQL query)
     ts.end_time,
     ts.id AS time_slot_id,
     st.state AS state_name,
     st.id AS state_id
+<<<<<<< HEAD
 <<<<<<< HEAD
 FROM 
     appointments a
@@ -1604,38 +1635,43 @@ FROM appointment as a
 WHERE date = $1 AND doctor_id = $2 AND status = 'completed'
 =======
     ts.end_time
+=======
+>>>>>>> dc47646 (Optimize SQL query)
 FROM 
     appointments a
-JOIN 
+LEFT JOIN 
     doctors d ON a.doctor_id = d.id
-JOIN 
+LEFT JOIN 
     pets p ON a.petid = p.petid
-JOIN 
-    services as s ON a.service_id = s.id
-JOIN 
+LEFT JOIN 
+    services s ON a.service_id = s.id
+LEFT JOIN 
     time_slots ts ON a.time_slot_id = ts.id
+LEFT JOIN 
+    states st ON a.state_id = st.id
 WHERE 
     a.doctor_id = $1
+<<<<<<< HEAD
 >>>>>>> b393bb9 (add service and add permission)
+=======
+ORDER BY a.created_at DESC
+>>>>>>> dc47646 (Optimize SQL query)
 `
 
 type GetAppointmentsByDoctorRow struct {
 	AppointmentID int64            `json:"appointment_id"`
-	Petid         pgtype.Int8      `json:"petid"`
-	Username      pgtype.Text      `json:"username"`
-	DoctorID      pgtype.Int8      `json:"doctor_id"`
-	ServiceID     pgtype.Int8      `json:"service_id"`
 	Date          pgtype.Timestamp `json:"date"`
+	CreatedAt     pgtype.Timestamp `json:"created_at"`
 	Notes         pgtype.Text      `json:"notes"`
 	ReminderSend  pgtype.Bool      `json:"reminder_send"`
-	TimeSlotID    pgtype.Int8      `json:"time_slot_id"`
-	CreatedAt     pgtype.Timestamp `json:"created_at"`
-	StateID       pgtype.Int4      `json:"state_id"`
-	DoctorID_2    int64            `json:"doctor_id_2"`
-	PetName       string           `json:"pet_name"`
+	DoctorID      pgtype.Int8      `json:"doctor_id"`
+	PetName       pgtype.Text      `json:"pet_name"`
 	ServiceName   pgtype.Text      `json:"service_name"`
 	StartTime     pgtype.Time      `json:"start_time"`
 	EndTime       pgtype.Time      `json:"end_time"`
+	TimeSlotID    pgtype.Int8      `json:"time_slot_id"`
+	StateName     pgtype.Text      `json:"state_name"`
+	StateID       pgtype.Int8      `json:"state_id"`
 }
 
 func (q *Queries) GetAppointmentsByDoctor(ctx context.Context, doctorID pgtype.Int8) ([]GetAppointmentsByDoctorRow, error) {
@@ -1649,21 +1685,18 @@ func (q *Queries) GetAppointmentsByDoctor(ctx context.Context, doctorID pgtype.I
 		var i GetAppointmentsByDoctorRow
 		if err := rows.Scan(
 			&i.AppointmentID,
-			&i.Petid,
-			&i.Username,
-			&i.DoctorID,
-			&i.ServiceID,
 			&i.Date,
+			&i.CreatedAt,
 			&i.Notes,
 			&i.ReminderSend,
-			&i.TimeSlotID,
-			&i.CreatedAt,
-			&i.StateID,
-			&i.DoctorID_2,
+			&i.DoctorID,
 			&i.PetName,
 			&i.ServiceName,
 			&i.StartTime,
 			&i.EndTime,
+			&i.TimeSlotID,
+			&i.StateName,
+			&i.StateID,
 		); err != nil {
 			return nil, err
 		}
@@ -1677,64 +1710,31 @@ func (q *Queries) GetAppointmentsByDoctor(ctx context.Context, doctorID pgtype.I
 
 const getAppointmentsByUser = `-- name: GetAppointmentsByUser :many
 SELECT 
-    p.petid, p.name, p.type, p.breed, p.age, p.gender, p.healthnotes, p.weight, p.birth_date, p.username, p.microchip_number, p.last_checkup_date, p.is_active, p.data_image, p.original_image, s.id, s.name, s.description, s.duration, s.cost, s.category, s.priority, s.created_at, a.appointment_id, a.petid, a.username, a.doctor_id, a.service_id, a.date, a.notes, a.reminder_send, a.time_slot_id, a.created_at, a.state_id, ts.id, ts.doctor_id, ts.date, ts.start_time, ts.end_time, ts.max_patients, ts.booked_patients, ts.created_at, ts.updated_at, ts.shift_id
-FROM 
-    appointments a
-JOIN 
-    pets p ON a.petid = p.petid 
-JOIN 
-    services s ON a.service_id = s.id 
-JOIN 
-    time_slots ts ON a.time_slot_id = ts.id
-WHERE 
-    a.username = $1 and a.status <> 'completed'
+    a.appointment_id, a.date, a.created_at,
+    p.name AS pet_name,
+    d.id AS doctor_id,
+    s.name AS service_name,
+    ts.start_time, ts.end_time,
+    st.state
+FROM appointments a
+LEFT JOIN pets p ON p.petid = a.petid
+LEFT JOIN doctors d ON d.id = a.doctor_id
+LEFT JOIN services s ON s.id = a.service_id
+LEFT JOIN time_slots ts ON ts.id = a.time_slot_id
+LEFT JOIN states st ON st.id = a.state_id
+WHERE a.username = $1
 `
 
 type GetAppointmentsByUserRow struct {
-	Petid           int64            `json:"petid"`
-	Name            string           `json:"name"`
-	Type            string           `json:"type"`
-	Breed           pgtype.Text      `json:"breed"`
-	Age             pgtype.Int4      `json:"age"`
-	Gender          pgtype.Text      `json:"gender"`
-	Healthnotes     pgtype.Text      `json:"healthnotes"`
-	Weight          pgtype.Float8    `json:"weight"`
-	BirthDate       pgtype.Date      `json:"birth_date"`
-	Username        string           `json:"username"`
-	MicrochipNumber pgtype.Text      `json:"microchip_number"`
-	LastCheckupDate pgtype.Date      `json:"last_checkup_date"`
-	IsActive        pgtype.Bool      `json:"is_active"`
-	DataImage       []byte           `json:"data_image"`
-	OriginalImage   pgtype.Text      `json:"original_image"`
-	ID              int64            `json:"id"`
-	Name_2          pgtype.Text      `json:"name_2"`
-	Description     pgtype.Text      `json:"description"`
-	Duration        pgtype.Int2      `json:"duration"`
-	Cost            pgtype.Float8    `json:"cost"`
-	Category        pgtype.Text      `json:"category"`
-	Priority        pgtype.Int2      `json:"priority"`
-	CreatedAt       pgtype.Timestamp `json:"created_at"`
-	AppointmentID   int64            `json:"appointment_id"`
-	Petid_2         pgtype.Int8      `json:"petid_2"`
-	Username_2      pgtype.Text      `json:"username_2"`
-	DoctorID        pgtype.Int8      `json:"doctor_id"`
-	ServiceID       pgtype.Int8      `json:"service_id"`
-	Date            pgtype.Timestamp `json:"date"`
-	Notes           pgtype.Text      `json:"notes"`
-	ReminderSend    pgtype.Bool      `json:"reminder_send"`
-	TimeSlotID      pgtype.Int8      `json:"time_slot_id"`
-	CreatedAt_2     pgtype.Timestamp `json:"created_at_2"`
-	StateID         pgtype.Int4      `json:"state_id"`
-	ID_2            int64            `json:"id_2"`
-	DoctorID_2      int32            `json:"doctor_id_2"`
-	Date_2          pgtype.Date      `json:"date_2"`
-	StartTime       pgtype.Time      `json:"start_time"`
-	EndTime         pgtype.Time      `json:"end_time"`
-	MaxPatients     pgtype.Int4      `json:"max_patients"`
-	BookedPatients  pgtype.Int4      `json:"booked_patients"`
-	CreatedAt_3     pgtype.Timestamp `json:"created_at_3"`
-	UpdatedAt       pgtype.Timestamp `json:"updated_at"`
-	ShiftID         int64            `json:"shift_id"`
+	AppointmentID int64            `json:"appointment_id"`
+	Date          pgtype.Timestamp `json:"date"`
+	CreatedAt     pgtype.Timestamp `json:"created_at"`
+	PetName       pgtype.Text      `json:"pet_name"`
+	DoctorID      pgtype.Int8      `json:"doctor_id"`
+	ServiceName   pgtype.Text      `json:"service_name"`
+	StartTime     pgtype.Time      `json:"start_time"`
+	EndTime       pgtype.Time      `json:"end_time"`
+	State         pgtype.Text      `json:"state"`
 }
 
 func (q *Queries) GetAppointmentsByUser(ctx context.Context, username pgtype.Text) ([]GetAppointmentsByUserRow, error) {
@@ -1877,6 +1877,7 @@ func (q *Queries) GetAppointmentsByUser(ctx context.Context, username pgtype.Tex
 	for rows.Next() {
 		var i GetAppointmentsByUserRow
 		if err := rows.Scan(
+<<<<<<< HEAD
 <<<<<<< HEAD
 			&i.AppointmentID,
 			&i.Date,
@@ -2001,12 +2002,11 @@ func (q *Queries) GetAppointmentsByUser(ctx context.Context, username pgtype.Tex
 			&i.Category,
 			&i.Priority,
 			&i.CreatedAt,
+=======
+>>>>>>> dc47646 (Optimize SQL query)
 			&i.AppointmentID,
-			&i.Petid_2,
-			&i.Username_2,
-			&i.DoctorID,
-			&i.ServiceID,
 			&i.Date,
+<<<<<<< HEAD
 			&i.Notes,
 			&i.ReminderSend,
 			&i.TimeSlotID,
@@ -2045,6 +2045,15 @@ func (q *Queries) GetAppointmentsByUser(ctx context.Context, username pgtype.Tex
 			&i.UpdatedAt,
 			&i.ShiftID,
 >>>>>>> ada3717 (Docker file)
+=======
+			&i.CreatedAt,
+			&i.PetName,
+			&i.DoctorID,
+			&i.ServiceName,
+			&i.StartTime,
+			&i.EndTime,
+			&i.State,
+>>>>>>> dc47646 (Optimize SQL query)
 		); err != nil {
 			return nil, err
 		}

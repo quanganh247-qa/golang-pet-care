@@ -10,6 +10,7 @@ func Routes(routerGroup middleware.RouterGroup) {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	cart := routerGroup.RouterDefault.Group("/")
 =======
 	cart := routerGroup.RouterDefault.Group("/cart")
@@ -20,6 +21,9 @@ func Routes(routerGroup middleware.RouterGroup) {
 =======
 	cart := routerGroup.RouterDefault.Group("/cart")
 >>>>>>> c449ffc (feat: cart api)
+=======
+	cart := routerGroup.RouterDefault.Group("/")
+>>>>>>> dc47646 (Optimize SQL query)
 	authRoute := routerGroup.RouterAuth(cart)
 	// Medicine.Use(middleware.IPbasedRateLimitingMiddleware())
 
@@ -37,6 +41,9 @@ func Routes(routerGroup middleware.RouterGroup) {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> dc47646 (Optimize SQL query)
 =======
 >>>>>>> dc47646 (Optimize SQL query)
 		authRoute.POST("/cart", cartApi.controller.AddToCart)
@@ -51,6 +58,7 @@ func Routes(routerGroup middleware.RouterGroup) {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 		authRoute.GET("/orders", cartApi.controller.GetAllOrders)
 =======
 		authRoute.POST("/", cartApi.controller.AddToCart)
@@ -89,6 +97,9 @@ func Routes(routerGroup middleware.RouterGroup) {
 =======
 		authRoute.DELETE("/product/:product_id", cartApi.controller.RemoveItemFromCart)
 >>>>>>> 4a16bfc (remove item in cart)
+=======
+		authRoute.GET("/orders", cartApi.controller.GetAllOrders)
+>>>>>>> dc47646 (Optimize SQL query)
 	}
 
 }
