@@ -53,6 +53,7 @@ docker-compose.override.yml
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 .github/workflows/
 =======
 llm-service
@@ -135,3 +136,6 @@ vendor
 =======
     
 >>>>>>> 0db8c45 (Docker file)
+=======
+.github/workflows/
+>>>>>>> 07558db (Docker file)
