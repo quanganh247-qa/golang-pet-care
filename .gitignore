@@ -45,6 +45,7 @@ docker-compose.override.yml
 
 .github/
 <<<<<<< HEAD
+<<<<<<< HEAD
 .github/workflows/
 =======
 llm-service
@@ -91,3 +92,6 @@ docker-compose.override.yml
 =======
     
 >>>>>>> 0db8c45 (Docker file)
+=======
+.github/workflows/
+>>>>>>> 07558db (Docker file)
