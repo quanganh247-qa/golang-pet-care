@@ -11,6 +11,11 @@ type PaymentConfig struct {
 	PaymentAPIKey    string
 	PaymentClientKey string
 	PaymentBaseURL   string
+
+	PayPalClientID     string
+	PayPalClientSecret string
+	PayPalBaseURL      string
+	PayPalEnvironment  string
 }
 
 // GoongService handles interactions with VierQR Maps API
@@ -80,4 +85,116 @@ type OauthTokenResponse struct {
 	AccessToken string `json:"access_token"`
 	TokenType   string `json:"token_type"`
 	ExpiresIn   int    `json:"expires_in"`
+}
+
+// Environment variables
+var (
+	PayPalClientID     string
+	PayPalClientSecret string
+	PayPalBaseURL      string
+)
+
+// PayPalTokenResponse represents the response format for OAuth token
+type PayPalTokenResponse struct {
+	AccessToken string `json:"access_token"`
+	TokenType   string `json:"token_type"`
+	ExpiresIn   int    `json:"expires_in"`
+}
+
+// PayPalOrderCreateRequest represents order creation request
+type PayPalOrderCreateRequest struct {
+	Intent             string                    `json:"intent"`
+	PurchaseUnits      []PayPalOrderPurchaseUnit `json:"purchase_units"`
+	ApplicationContext PayPalApplicationContext  `json:"application_context"`
+}
+
+// PayPalApplicationContext represents the application context
+type PayPalApplicationContext struct {
+	ReturnURL          string `json:"return_url"`
+	CancelURL          string `json:"cancel_url"`
+	BrandName          string `json:"brand_name,omitempty"`
+	UserAction         string `json:"user_action,omitempty"`
+	ShippingPreference string `json:"shipping_preference,omitempty"`
+}
+
+// PayPalOrderPurchaseUnit represents a purchase unit
+type PayPalOrderPurchaseUnit struct {
+	Amount      PayPalOrderAmount `json:"amount"`
+	Description string            `json:"description,omitempty"`
+	ReferenceID string            `json:"reference_id,omitempty"`
+	Items       []PayPalOrderItem `json:"items,omitempty"`
+}
+
+// PayPalOrderItem represents an item in a purchase unit
+type PayPalOrderItem struct {
+	Name        string            `json:"name"`
+	Quantity    string            `json:"quantity"`
+	UnitAmount  PayPalOrderAmount `json:"unit_amount"`
+	Description string            `json:"description,omitempty"`
+	SKU         string            `json:"sku,omitempty"`
+	Category    string            `json:"category,omitempty"`
+}
+
+// PayPalOrderAmount represents a monetary amount
+type PayPalOrderAmount struct {
+	CurrencyCode string                      `json:"currency_code"`
+	Value        string                      `json:"value"`
+	Breakdown    *PayPalOrderAmountBreakdown `json:"breakdown,omitempty"`
+}
+
+// PayPalOrderAmountBreakdown represents a breakdown of a monetary amount
+type PayPalOrderAmountBreakdown struct {
+	ItemTotal        *PayPalOrderAmount `json:"item_total,omitempty"`
+	Shipping         *PayPalOrderAmount `json:"shipping,omitempty"`
+	Handling         *PayPalOrderAmount `json:"handling,omitempty"`
+	TaxTotal         *PayPalOrderAmount `json:"tax_total,omitempty"`
+	ShippingDiscount *PayPalOrderAmount `json:"shipping_discount,omitempty"`
+	Discount         *PayPalOrderAmount `json:"discount,omitempty"`
+}
+
+// PayPalOrderResponse represents order creation response
+type PayPalOrderResponse struct {
+	ID     string                    `json:"id"`
+	Status string                    `json:"status"`
+	Links  []PayPalOrderResponseLink `json:"links"`
+}
+
+// PayPalOrderResponseLink represents a HATEOAS link
+type PayPalOrderResponseLink struct {
+	Href   string `json:"href"`
+	Rel    string `json:"rel"`
+	Method string `json:"method"`
+}
+
+// OrderRequest represents the request from client
+type OrderRequest struct {
+	Amount       string      `json:"amount"`
+	Currency     string      `json:"currency"`
+	Description  string      `json:"description"`
+	Items        []OrderItem `json:"items,omitempty"`
+	ShippingCost string      `json:"shipping_cost,omitempty"`
+	TaxAmount    string      `json:"tax_amount,omitempty"`
+	MerchantName string      `json:"merchant_name,omitempty"`
+}
+
+// OrderItem represents an item in the order
+type OrderItem struct {
+	Name        string `json:"name"`
+	Description string `json:"description,omitempty"`
+	Quantity    int    `json:"quantity"`
+	UnitPrice   string `json:"unit_price"`
+	SKU         string `json:"sku,omitempty"`
+}
+
+// OrderCaptureResponse represents the client response format
+type OrderCaptureResponse struct {
+	OrderID string `json:"order_id"`
+	Status  string `json:"status"`
+}
+
+// OrderUpdateRequest represents the request to update an order
+type OrderUpdateRequest struct {
+	Op    string `json:"op"`
+	Path  string `json:"path"`
+	Value string `json:"value"`
 }

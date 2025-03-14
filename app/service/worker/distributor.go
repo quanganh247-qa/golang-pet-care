@@ -16,7 +16,6 @@ type TaskDistributor interface {
 	) error
 }
 
-// Creating to interact with Redis queue
 type RedisTaskDistributor struct {
 	client *asynq.Client
 }

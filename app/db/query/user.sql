@@ -1,7 +1,7 @@
 -- name: CreateUser :one
 INSERT INTO users (username, hashed_password, full_name, email, phone_number, address, data_image, original_image, role, created_at, is_verified_email)
 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, NOW(), false)
-RETURNING id;
+RETURNING *;
 
 -- name: GetUser :one
 SELECT id, username, hashed_password, full_name, email, phone_number, address, data_image, original_image, role, created_at, is_verified_email
@@ -54,9 +54,9 @@ INSERT INTO Doctors (
     years_of_experience,
     education,
     certificate_number,
-    bio,
-    consultation_fee
+    bio
 ) VALUES (
-    $1, $2, $3, $4, $5, $6, $7
+    $1, $2, $3, $4, $5, $6
 ) RETURNING *;
+
 

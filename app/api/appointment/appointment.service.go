@@ -7,7 +7,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/fatih/color"
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5/pgtype"
 	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
@@ -46,41 +45,34 @@ func (s *AppointmentService) CreateAppointment(ctx *gin.Context, req createAppoi
 	err = s.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
 
 		// Lấy thông tin khung giờ và khóa bản ghi
-		timeSlot, err := q.GetTimeSlot(ctx, db.GetTimeSlotParams{
-			ID:       req.TimeSlotID,
-			Date:     pgtype.Date{Time: dateTime, Valid: true},
-			DoctorID: int32(req.DoctorID),
-		})
+		timeSlot, err := q.GetTimeSlotForUpdate(ctx, req.TimeSlotID)
 		if err != nil {
 			return fmt.Errorf("failed to get time slot: %w", err)
 		}
-
-		startTime := time.UnixMicro(timeSlot.StartTime.Microseconds).UTC()
-		startTimeFormatted = startTime.Format("15:04:05")
-
-		// Format the end time
-		endTime := time.UnixMicro(timeSlot.EndTime.Microseconds).UTC()
-		endTimeFormatted = endTime.Format("15:04:05")
-
 		// Kiểm tra xem khung giờ còn chỗ trống không
 		if timeSlot.BookedPatients.Int32 >= timeSlot.MaxPatients.Int32 {
 			return fmt.Errorf("time slot is fully booked")
 		}
 
-		// Tạo cuộc hẹn với trạng thái "pending"
+		startTimeFormatted = time.UnixMicro(timeSlot.StartTime.Microseconds).UTC().Format("15:04:05")
+		endTimeFormatted = time.UnixMicro(timeSlot.EndTime.Microseconds).UTC().Format("15:04:05")
+
 		appointment, err = q.CreateAppointment(ctx, db.CreateAppointmentParams{
-			DoctorID:     pgtype.Int8{Int64: doctor.ID, Valid: true},
-			Petid:        pgtype.Int8{Int64: req.PetID, Valid: true},
-			ServiceID:    pgtype.Int8{Int64: req.ServiceID, Valid: true},
-			Date:         pgtype.Timestamp{Time: dateTime, Valid: true},
-			TimeSlotID:   pgtype.Int8{Int64: req.TimeSlotID, Valid: true},
-			Notes:        pgtype.Text{String: req.Note, Valid: true},
-			ReminderSend: pgtype.Bool{Bool: false, Valid: true},
-			Username:     pgtype.Text{String: username, Valid: true},
-			StateID:      pgtype.Int4{Int32: int32(req.StateID), Valid: true},
+			DoctorID:   pgtype.Int8{Int64: int64(doctor.ID), Valid: true},
+			Petid:      pgtype.Int8{Int64: req.PetID, Valid: true},
+			ServiceID:  pgtype.Int8{Int64: req.ServiceID, Valid: true},
+			Date:       pgtype.Timestamp{Time: dateTime, Valid: true},
+			TimeSlotID: pgtype.Int8{Int64: req.TimeSlotID, Valid: true},
+			Username:   pgtype.Text{String: username, Valid: true},
 		})
 		if err != nil {
 			return fmt.Errorf("failed to create appointment: %w", err)
+		}
+
+		// Cập nhật khung giờ
+		err = q.UpdateTimeSlotBookedPatients(ctx, req.TimeSlotID)
+		if err != nil {
+			return err
 		}
 
 		return nil
@@ -129,18 +121,15 @@ func (s *AppointmentService) ConfirmPayment(ctx context.Context, appointmentID i
 		// Lấy thông tin cuộc hẹn
 		appointment, err := q.GetAppointmentDetailById(ctx, appointmentID)
 		if err != nil {
-			log.Printf(color.RedString("failed to get appointment: %w", err))
 			return fmt.Errorf("failed to get appointment: %w", err)
 		}
 
 		state, err := q.GetState(ctx, int64(appointment.StateID.Int32))
 		if err != nil {
-			log.Printf(color.RedString("failed to get state: %w", err))
 			return fmt.Errorf("failed to get state: %w", err)
 		}
 		// Kiểm tra xem cuộc hẹn đã được thanh toán chưa
 		if state.State == "Confirmed" {
-			log.Printf(color.GreenString("appointment is already paid"))
 			return fmt.Errorf("appointment is already paid")
 		}
 
@@ -151,12 +140,10 @@ func (s *AppointmentService) ConfirmPayment(ctx context.Context, appointmentID i
 			DoctorID: int32(appointment.DoctorID.Int64),
 		})
 		if err != nil {
-			log.Printf(color.RedString("failed to get time slot: %w", err))
 			return fmt.Errorf("failed to get time slot: %w", err)
 		}
 
 		if timeSlot.BookedPatients.Int32 >= timeSlot.MaxPatients.Int32 {
-			log.Printf(color.RedString("time slot is fully booked"))
 			return fmt.Errorf("time slot is fully booked")
 		}
 
@@ -166,24 +153,17 @@ func (s *AppointmentService) ConfirmPayment(ctx context.Context, appointmentID i
 			StateID:       pgtype.Int4{Int32: 2, Valid: true},
 		})
 		if err != nil {
-			log.Printf(color.RedString("failed to update appointment payment status: %v", err))
 			return fmt.Errorf("failed to update payment status: %w", err)
 		}
 
 		// Tăng số lượng bệnh nhân đã đặt lịch trong khung giờ
-		err = q.UpdateTimeSlotBookedPatients(ctx, db.UpdateTimeSlotBookedPatientsParams{
-			ID:       appointment.TimeSlotID.Int64,
-			DoctorID: int32(appointment.DoctorID.Int64),
-		})
-		if err != nil {
-			log.Printf(color.RedString("failed to update time slot: %w", err))
+		if err = q.UpdateTimeSlotBookedPatients(ctx, appointment.TimeSlotID.Int64); err != nil {
 			return fmt.Errorf("failed to update time slot: %w", err)
 		}
 
 		return nil
 	})
 	if err != nil {
-		log.Printf(color.RedString("transaction failed: %w", err))
 		return fmt.Errorf("transaction failed: %w", err)
 	}
 
@@ -250,6 +230,7 @@ func (s *AppointmentService) GetAppointmentByID(ctx *gin.Context, id int64) (*cr
 		CreatedAt:    appointment.CreatedAt.Time.Format(time.RFC3339),
 	}, nil
 }
+
 func (s *AppointmentService) GetAppointmentsByUser(ctx *gin.Context, username string) ([]createAppointmentResponse, error) {
 	rows, err := s.storeDB.GetAppointmentsByUser(ctx, pgtype.Text{String: username, Valid: true})
 	if err != nil {
@@ -264,12 +245,6 @@ func (s *AppointmentService) GetAppointmentsByUser(ctx *gin.Context, username st
 		wg.Add(1)
 		go func(row db.GetAppointmentsByUserRow) {
 			defer wg.Done()
-
-			service, err := s.storeDB.GetServiceByID(ctx, row.ServiceID.Int64)
-			if err != nil {
-				log.Printf("Failed to get service for appointment %d: %v", row.AppointmentID, err)
-				return
-			}
 
 			pet, err := s.storeDB.GetPetByID(ctx, row.Petid)
 			if err != nil {
@@ -293,6 +268,12 @@ func (s *AppointmentService) GetAppointmentsByUser(ctx *gin.Context, username st
 			state, err := s.storeDB.GetState(ctx, int64(row.StateID.Int32))
 			if err != nil {
 				log.Printf("Failed to get state for appointment %d: %v", row.AppointmentID, err)
+				return
+			}
+
+			service, err := s.storeDB.GetServiceByID(ctx, row.ServiceID.Int64)
+			if err != nil {
+				log.Printf("Failed to get service for appointment %d: %v", row.AppointmentID, err)
 				return
 			}
 

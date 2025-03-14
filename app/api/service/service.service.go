@@ -29,7 +29,6 @@ func (s *ServiceService) CreateService(ctx *gin.Context, req CreateServiceReques
 			Duration:    pgtype.Int2{Int16: int16(req.Duration), Valid: true},
 			Cost:        pgtype.Float8{Float64: req.Cost, Valid: true},
 			Category:    pgtype.Text{String: req.Category, Valid: true},
-			Notes:       pgtype.Text{String: req.Notes, Valid: true},
 		})
 		if err != nil {
 			return fmt.Errorf("failed to create service: %w", err)
@@ -47,7 +46,6 @@ func (s *ServiceService) CreateService(ctx *gin.Context, req CreateServiceReques
 		Duration:    int(service.Duration.Int16),
 		Cost:        service.Cost.Float64,
 		Category:    service.Category.String,
-		Notes:       service.Notes.String,
 	}, nil
 }
 
@@ -72,7 +70,6 @@ func (s *ServiceService) GetAllServices(ctx *gin.Context, pagination *util.Pagin
 			Duration:    int(service.Duration.Int16),
 			Cost:        service.Cost.Float64,
 			Category:    service.Category.String,
-			Notes:       service.Notes.String,
 		})
 	}
 	return serviceResponses, nil
@@ -90,7 +87,6 @@ func (s *ServiceService) GetServiceByID(ctx *gin.Context, id int64) (*ServiceRep
 		Duration:    int(service.Duration.Int16),
 		Cost:        service.Cost.Float64,
 		Category:    service.Category.String,
-		Notes:       service.Notes.String,
 	}, nil
 }
 
@@ -106,7 +102,6 @@ func (s *ServiceService) UpdateService(ctx *gin.Context, id int64, req UpdateSer
 			Duration:    pgtype.Int2{Int16: int16(req.Duration), Valid: true},
 			Cost:        pgtype.Float8{Float64: req.Cost, Valid: true},
 			Category:    pgtype.Text{String: req.Category, Valid: true},
-			Notes:       pgtype.Text{String: req.Notes, Valid: true},
 		})
 		if err != nil {
 			return fmt.Errorf("failed to update service: %w", err)
@@ -123,7 +118,6 @@ func (s *ServiceService) UpdateService(ctx *gin.Context, id int64, req UpdateSer
 		Duration:    int(service.Duration.Int16),
 		Cost:        service.Cost.Float64,
 		Category:    service.Category.String,
-		Notes:       service.Notes.String,
 	}, nil
 }
 

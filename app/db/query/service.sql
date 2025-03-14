@@ -1,8 +1,8 @@
 -- name: CreateService :one
 INSERT INTO services (
-    name, description, duration, cost, category, notes
+    name, description, duration, cost, category
 ) VALUES (
-    $1, $2, $3, $4, $5, $6
+    $1, $2, $3, $4, $5
 )
 RETURNING *;
 
@@ -26,7 +26,7 @@ SET
     duration = $4,
     cost = $5,
     category = $6,
-    notes = $7,
     updated_at = NOW()
 WHERE id = $1
 RETURNING *;
+

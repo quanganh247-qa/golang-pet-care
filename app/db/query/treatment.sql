@@ -79,3 +79,18 @@ GROUP BY tp.id;
 -- name: AssignCarprofenToInitialPhase :exec
 INSERT INTO phase_medicines (phase_id, medicine_id, dosage, frequency, duration, notes)
 VALUES ($1, $2, $3, $4, $5, $6) RETURNING *;
+
+-- name: GetMedicineByTreatmentID :many
+SELECT pm.medicine_id, pm.dosage, pm.frequency, pm.duration, pm.quantity, pm.notes, pm.is_received
+FROM phase_medicines pm
+JOIN treatment_phases tp ON pm.phase_id = tp.id
+WHERE tp.treatment_id = $1;
+
+-- name: GetClinicInfo :one
+SELECT 
+    name, 
+    address, 
+    phone 
+FROM clinics 
+WHERE id = $1; -- Assuming a single clinic for simplicity, adjust as needed
+

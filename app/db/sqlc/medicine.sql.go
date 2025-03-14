@@ -50,7 +50,7 @@ func (q *Queries) CreateAllergy(ctx context.Context, arg CreateAllergyParams) (A
 const createMedicine = `-- name: CreateMedicine :one
 INSERT INTO medicines (name, description, usage, dosage, frequency, duration, side_effects, expiration_date, quantity)
 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
-RETURNING id, name, description, usage, dosage, frequency, duration, side_effects, expiration_date, quantity, created_at, updated_at
+RETURNING id, name, description, usage, dosage, frequency, duration, side_effects, start_date, end_date, created_at, updated_at, expiration_date, quantity
 `
 
 type CreateMedicineParams struct {
@@ -87,10 +87,12 @@ func (q *Queries) CreateMedicine(ctx context.Context, arg CreateMedicineParams) 
 		&i.Frequency,
 		&i.Duration,
 		&i.SideEffects,
-		&i.ExpirationDate,
-		&i.Quantity,
+		&i.StartDate,
+		&i.EndDate,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.ExpirationDate,
+		&i.Quantity,
 	)
 	return i, err
 }
@@ -140,7 +142,7 @@ func (q *Queries) GetAllergies(ctx context.Context, medicalRecordID pgtype.Int8)
 }
 
 const getMedicineByID = `-- name: GetMedicineByID :one
-SELECT id, name, description, usage, dosage, frequency, duration, side_effects, expiration_date, quantity, created_at, updated_at FROM medicines
+SELECT id, name, description, usage, dosage, frequency, duration, side_effects, start_date, end_date, created_at, updated_at, expiration_date, quantity FROM medicines
 WHERE id = $1 LIMIT 1
 `
 
@@ -156,10 +158,12 @@ func (q *Queries) GetMedicineByID(ctx context.Context, id int64) (Medicine, erro
 		&i.Frequency,
 		&i.Duration,
 		&i.SideEffects,
-		&i.ExpirationDate,
-		&i.Quantity,
+		&i.StartDate,
+		&i.EndDate,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.ExpirationDate,
+		&i.Quantity,
 	)
 	return i, err
 }

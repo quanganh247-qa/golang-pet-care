@@ -62,3 +62,4 @@ source ~/.zshrc
 
 curl -X GET "localhost:9200/\_cat/indices?v"
 curl -X DELETE "localhost:9200/petclinic_medicines"
+curl -X DELETE "localhost:9200/petclinic_diseases"

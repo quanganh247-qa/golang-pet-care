@@ -25,9 +25,7 @@ func Routes(routerGroup middleware.RouterGroup, es *elasticsearch.ESService) {
 		authRoute.POST("/", MedicineApi.controller.CreateMedicine)
 		authRoute.GET("/:medicine_id", MedicineApi.controller.GetMedicineByID)
 		authRoute.GET("/medicines/:pet_id", MedicineApi.controller.ListMedicines)
-		// authRoute.GET("/", MedicineApi.controller.ListMedicinesByUsername)
 		authRoute.PUT("/:medicine_id", MedicineApi.controller.UpdateMedicine)
-		// authRoute.DELETE("/delete/:Medicineid", MedicineApi.controller.DeleteMedicine)
 	}
 
 }

@@ -14,7 +14,7 @@ SELECT
     m.duration,
     m.side_effects
 FROM diseases d
-LEFT JOIN medicines m ON dm.medicine_id = m.id
+LEFT JOIN medicines m ON d.id = m.disease_id
 WHERE LOWER(d.name) LIKE LOWER($1);
 
 

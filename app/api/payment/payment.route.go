@@ -18,9 +18,9 @@ func Routes(routerGroup middleware.RouterGroup, config *util.Config) {
 		&PaymentController{
 			service: &PaymentService{
 				config: &PaymentConfig{
-					// PaymentAPIKey:    config.PaymentAPIKey,
-					// PaymentBaseURL:   config.PaymentBaseURL,
-					// PaymentClientKey: config.PaymentClientKey,
+					PayPalClientID:     config.PaypalClientID,
+					PayPalClientSecret: config.PaypalClientSecret,
+					PayPalBaseURL:      config.PaypalURL,
 				},
 				client:  &http.Client{},
 				storeDB: db.StoreDB,

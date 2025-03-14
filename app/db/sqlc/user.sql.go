@@ -14,7 +14,7 @@ import (
 const createUser = `-- name: CreateUser :one
 INSERT INTO users (username, hashed_password, full_name, email, phone_number, address, data_image, original_image, role, created_at, is_verified_email)
 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, NOW(), false)
-RETURNING id
+RETURNING id, username, hashed_password, full_name, email, phone_number, address, data_image, original_image, role, created_at, is_verified_email, removed_at
 `
 
 type CreateUserParams struct {
@@ -29,7 +29,7 @@ type CreateUserParams struct {
 	Role           pgtype.Text `json:"role"`
 }
 
-func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (int64, error) {
+func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, error) {
 	row := q.db.QueryRow(ctx, createUser,
 		arg.Username,
 		arg.HashedPassword,
@@ -41,9 +41,23 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (int64, 
 		arg.OriginalImage,
 		arg.Role,
 	)
-	var id int64
-	err := row.Scan(&id)
-	return id, err
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.Username,
+		&i.HashedPassword,
+		&i.FullName,
+		&i.Email,
+		&i.PhoneNumber,
+		&i.Address,
+		&i.DataImage,
+		&i.OriginalImage,
+		&i.Role,
+		&i.CreatedAt,
+		&i.IsVerifiedEmail,
+		&i.RemovedAt,
+	)
+	return i, err
 }
 
 const deleteUser = `-- name: DeleteUser :exec
@@ -169,21 +183,19 @@ INSERT INTO Doctors (
     years_of_experience,
     education,
     certificate_number,
-    bio,
-    consultation_fee
+    bio
 ) VALUES (
-    $1, $2, $3, $4, $5, $6, $7
-) RETURNING id, user_id, specialization, years_of_experience, education, certificate_number, bio, consultation_fee
+    $1, $2, $3, $4, $5, $6
+) RETURNING id, user_id, specialization, years_of_experience, education, certificate_number, bio
 `
 
 type InsertDoctorParams struct {
-	UserID            int64         `json:"user_id"`
-	Specialization    pgtype.Text   `json:"specialization"`
-	YearsOfExperience pgtype.Int4   `json:"years_of_experience"`
-	Education         pgtype.Text   `json:"education"`
-	CertificateNumber pgtype.Text   `json:"certificate_number"`
-	Bio               pgtype.Text   `json:"bio"`
-	ConsultationFee   pgtype.Float8 `json:"consultation_fee"`
+	UserID            int64       `json:"user_id"`
+	Specialization    pgtype.Text `json:"specialization"`
+	YearsOfExperience pgtype.Int4 `json:"years_of_experience"`
+	Education         pgtype.Text `json:"education"`
+	CertificateNumber pgtype.Text `json:"certificate_number"`
+	Bio               pgtype.Text `json:"bio"`
 }
 
 func (q *Queries) InsertDoctor(ctx context.Context, arg InsertDoctorParams) (Doctor, error) {
@@ -194,7 +206,6 @@ func (q *Queries) InsertDoctor(ctx context.Context, arg InsertDoctorParams) (Doc
 		arg.Education,
 		arg.CertificateNumber,
 		arg.Bio,
-		arg.ConsultationFee,
 	)
 	var i Doctor
 	err := row.Scan(
@@ -205,7 +216,6 @@ func (q *Queries) InsertDoctor(ctx context.Context, arg InsertDoctorParams) (Doc
 		&i.Education,
 		&i.CertificateNumber,
 		&i.Bio,
-		&i.ConsultationFee,
 	)
 	return i, err
 }

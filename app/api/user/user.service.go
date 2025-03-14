@@ -56,7 +56,7 @@ func (server *UserService) createUserService(ctx *gin.Context, req createUserReq
 	}
 	err = server.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
 
-		userID, err = server.storeDB.CreateUser(ctx, arg) // Check this line carefully
+		_, err := server.storeDB.CreateUser(ctx, arg) // Check this line carefully
 
 		if err != nil {
 			if pqErr, ok := err.(*pq.Error); ok {
