@@ -5,9 +5,13 @@ import (
 	"encoding/json"
 	"fmt"
 <<<<<<< HEAD
+<<<<<<< HEAD
 	"log"
 =======
 >>>>>>> e859654 (Elastic search)
+=======
+	"log"
+>>>>>>> dc47646 (Optimize SQL query)
 
 	"github.com/elastic/go-elasticsearch/v8"
 	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
@@ -58,10 +62,14 @@ func NewESService(config util.Config) (*ESService, error) {
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 func (es *ESService) CreateIndices() {
 =======
 func (es *ESService) CreateIndices() error {
 >>>>>>> e859654 (Elastic search)
+=======
+func (es *ESService) CreateIndices() {
+>>>>>>> dc47646 (Optimize SQL query)
 	for docType, mapping := range es.mappings {
 		indexName := es.index + "_" + docType
 
@@ -72,10 +80,14 @@ func (es *ESService) CreateIndices() error {
 		data, err := json.Marshal(body)
 		if err != nil {
 <<<<<<< HEAD
+<<<<<<< HEAD
 			log.Println("error marshaling mapping for %s: %w", docType, err)
 =======
 			return fmt.Errorf("error marshaling mapping for %s: %w", docType, err)
 >>>>>>> e859654 (Elastic search)
+=======
+			log.Println("error marshaling mapping for %s: %w", docType, err)
+>>>>>>> dc47646 (Optimize SQL query)
 		}
 
 		// Tạo index
@@ -85,16 +97,21 @@ func (es *ESService) CreateIndices() error {
 		)
 		if err != nil {
 <<<<<<< HEAD
+<<<<<<< HEAD
 			log.Println("error creating index %s: %w", indexName, err)
 =======
 			return fmt.Errorf("error creating index %s: %w", indexName, err)
 >>>>>>> e859654 (Elastic search)
+=======
+			log.Println("error creating index %s: %w", indexName, err)
+>>>>>>> dc47646 (Optimize SQL query)
 		}
 		defer res.Body.Close()
 
 		if res.IsError() {
 			var errResponse map[string]interface{}
 			if err := json.NewDecoder(res.Body).Decode(&errResponse); err != nil {
+<<<<<<< HEAD
 <<<<<<< HEAD
 				log.Println("error parsing create index error for %s: %w", indexName, err)
 			}
@@ -103,12 +120,18 @@ func (es *ESService) CreateIndices() error {
 	}
 =======
 				return fmt.Errorf("error parsing create index error for %s: %w", indexName, err)
+=======
+				log.Println("error parsing create index error for %s: %w", indexName, err)
+>>>>>>> dc47646 (Optimize SQL query)
 			}
-			return fmt.Errorf("error creating index %s: %v", indexName, errResponse)
+			log.Println("error creating index %s: %v", indexName, errResponse)
 		}
 	}
+<<<<<<< HEAD
 	return nil
 >>>>>>> e859654 (Elastic search)
+=======
+>>>>>>> dc47646 (Optimize SQL query)
 }
 
 func (es *ESService) IndexDocument(docType string, id int, doc map[string]interface{}) error {

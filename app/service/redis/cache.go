@@ -21,10 +21,14 @@ func (c *ClientType) LoadCacheByKey(key string, result interface{}, duration tim
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 type UserInfo struct {
 =======
 type userInfo struct {
 >>>>>>> 272832d (redis cache)
+=======
+type UserInfo struct {
+>>>>>>> dc47646 (Optimize SQL query)
 	UserID          int64  `json:"user_id"`
 	Username        string `json:"username"`
 	FullName        string `json:"full_name"`
@@ -49,10 +53,14 @@ func (c *ClientType) UserInfoLoadCache(username string) (*UserInfo, error) {
 	userKey := fmt.Sprintf("%s:%s", USER_INFO_KEY, username)
 	// log.Printf("User key: %s", userKey)
 <<<<<<< HEAD
+<<<<<<< HEAD
 	userInformation := UserInfo{}
 =======
 	userInformation := userInfo{}
 >>>>>>> b393bb9 (add service and add permission)
+=======
+	userInformation := UserInfo{}
+>>>>>>> dc47646 (Optimize SQL query)
 	err := c.GetWithBackground(userKey, &userInformation)
 	if err != nil {
 		// log.Printf("Error when get cache for key %s: %v", userKey, err)
@@ -65,6 +73,9 @@ func (c *ClientType) UserInfoLoadCache(username string) (*UserInfo, error) {
 		}
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> dc47646 (Optimize SQL query)
 		userRes := UserInfo{
 			UserID:          userData.ID,
 			Username:        userData.Username,

@@ -16,6 +16,9 @@ type CartItem struct {
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> dc47646 (Optimize SQL query)
 type CartItemRequest struct {
 	ProductID int64 `json:"product_id"`
 	Quantity  int   `json:"quantity"`

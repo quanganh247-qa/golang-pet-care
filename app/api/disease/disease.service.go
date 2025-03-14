@@ -13,6 +13,7 @@ import (
 	"fmt"
 	"log"
 	"sync"
+<<<<<<< HEAD
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -70,6 +71,8 @@ func (s *DiseaseService) CreateDisease(ctx context.Context, arg CreateDiseaseReq
 >>>>>>> e859654 (Elastic search)
 	"fmt"
 	"log"
+=======
+>>>>>>> dc47646 (Optimize SQL query)
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -1085,22 +1088,36 @@ func (s *DiseaseService) GenerateMedicineOnlyPrescriptionPDF(ctx context.Context
 	// Fetch all required data in a single transaction
 	var prescription Prescription
 	var pdfBytes bytes.Buffer
-
 	var pet db.Pet
-
 	var err error
+	var wg sync.WaitGroup
+	var treatment db.PetTreatment
+	var errs []error
 
 	err = s.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
-		// 1. Fetch treatment with related data
-		treatment, err := q.GetTreatment(ctx, treatmentID)
-		if err != nil {
-			return fmt.Errorf("failed to get treatment: %w", err)
-		}
+		wg.Add(2)
+		go func() {
+			defer wg.Done()
+			// 1. Fetch treatment with related data
+			treatment, err = q.GetTreatment(ctx, treatmentID)
+			if err != nil {
+				errs = append(errs, err)
+				return
+			}
 
-		// 2. Fetch pet details
-		pet, err = q.GetPetByID(ctx, treatment.PetID.Int64)
-		if err != nil {
-			return fmt.Errorf("failed to get pet: %w", err)
+		}()
+		go func() {
+			defer wg.Done()
+			pet, err = q.GetPetByID(ctx, treatment.PetID.Int64)
+			if err != nil {
+				errs = append(errs, err)
+				return
+			}
+		}()
+		wg.Wait()
+
+		if len(errs) > 0 {
+			return errs[0]
 		}
 
 		// 3. Fetch doctor details
