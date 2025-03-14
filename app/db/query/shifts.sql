@@ -37,7 +37,11 @@ SELECT id, doctor_id, start_time, end_time, assigned_patients, created_at
 FROM shifts
 ORDER BY start_time;
 
+<<<<<<< HEAD
 -- name: GetShiftByDoctorId :many
 SELECT id, doctor_id, start_time, end_time, assigned_patients, created_at
 FROM shifts
 WHERE doctor_id = $1;
+=======
+
+>>>>>>> ada3717 (Docker file)

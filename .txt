@@ -3,6 +3,9 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> ada3717 (Docker file)
 =======
 >>>>>>> ada3717 (Docker file)
 =======
@@ -63,6 +66,7 @@ type ExternalServices struct {
 	RedisClient   *redis.ClientType
 	ESClient      *elasticsearch.ESService
 	URLExpiryTime time.Duration
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 }
@@ -228,6 +232,9 @@ Nếu bạn quan tâm đến một phần cụ thể để tối ưu, tôi có t
 =======
 }
 >>>>>>> ada3717 (Docker file)
+=======
+}
+>>>>>>> ada3717 (Docker file)
 
 func NewExternalServices(minioCfg, redisCfg, esCfg interface{}) *ExternalServices {
 	// Initialize concrete clients here using your configuration
@@ -304,6 +311,7 @@ PAYPAL_CLIENT_ID=AbXp8X4v72TdP9vmdpCGhAgFHJOauyMkoEFn8TPHViBzknJ0gRbktwPic7aviGx
 PAYPAL_CLIENT_SECRET=EASjz88Szu_mbxzzzVyJNbeawvbUywZrBzjuFmN8G6KZQXSoYO2-XfZGgqxUOo8YstJ3ShfjJE2ki2yr
 PAYPAL_ENVIRONMENT=sandbox
 <<<<<<< HEAD
+<<<<<<< HEAD
 PAYPAL_URL=https://api-m.sandbox.paypal.com
 >>>>>>> ada3717 (Docker file)
 =======
@@ -315,3 +323,6 @@ PAYPAL_URL=https://api-m.sandbox.paypal.com
 =======
 Nếu bạn quan tâm đến một phần cụ thể để tối ưu, tôi có thể cung cấp các đề xuất chi tiết hơn
 >>>>>>> e859654 (Elastic search)
+=======
+PAYPAL_URL=https://api-m.sandbox.paypal.com
+>>>>>>> ada3717 (Docker file)

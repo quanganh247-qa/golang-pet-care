@@ -73,6 +73,8 @@ type Querier interface {
 	AssignCarprofenToInitialPhase(ctx context.Context, arg AssignCarprofenToInitialPhaseParams) error
 	AssignMedicationToTreatmentPhase(ctx context.Context, arg AssignMedicationToTreatmentPhaseParams) (PhaseMedicine, error)
 	CountAppointmentsByDateAndTimeSlot(ctx context.Context, arg CountAppointmentsByDateAndTimeSlotParams) (int64, error)
+	CountAppointmentsByDoctorAndDate(ctx context.Context, arg CountAppointmentsByDoctorAndDateParams) (int64, error)
+	CountShiftsByDoctorAndDate(ctx context.Context, arg CountShiftsByDoctorAndDateParams) (int64, error)
 	CreateAllergy(ctx context.Context, arg CreateAllergyParams) (Allergy, error)
 >>>>>>> 3bf345d (happy new year)
 	CreateAppointment(ctx context.Context, arg CreateAppointmentParams) (Appointment, error)
@@ -83,7 +85,6 @@ type Querier interface {
 	CreateMedicalHistory(ctx context.Context, arg CreateMedicalHistoryParams) (MedicalHistory, error)
 	CreateMedicalRecord(ctx context.Context, petID pgtype.Int8) (MedicalRecord, error)
 	CreateMedicine(ctx context.Context, arg CreateMedicineParams) (Medicine, error)
-	CreateNotificationPreference(ctx context.Context, arg CreateNotificationPreferenceParams) error
 	CreateOrder(ctx context.Context, arg CreateOrderParams) (Order, error)
 	CreatePet(ctx context.Context, arg CreatePetParams) (Pet, error)
 	CreatePetLog(ctx context.Context, arg CreatePetLogParams) (PetLog, error)
@@ -94,11 +95,16 @@ type Querier interface {
 	CreateSOAP(ctx context.Context, arg CreateSOAPParams) (Consultation, error)
 >>>>>>> e859654 (Elastic search)
 	CreateService(ctx context.Context, arg CreateServiceParams) (Service, error)
+	CreateShift(ctx context.Context, arg CreateShiftParams) (CreateShiftRow, error)
 	CreateTimeSlot(ctx context.Context, arg CreateTimeSlotParams) (TimeSlot, error)
 	CreateTreatment(ctx context.Context, arg CreateTreatmentParams) (PetTreatment, error)
 	CreateTreatmentPhase(ctx context.Context, arg CreateTreatmentPhaseParams) (TreatmentPhase, error)
+<<<<<<< HEAD
 	CreateUser(ctx context.Context, arg CreateUserParams) (int64, error)
 >>>>>>> 0fb3f30 (user images)
+=======
+	CreateUser(ctx context.Context, arg CreateUserParams) (User, error)
+>>>>>>> ada3717 (Docker file)
 	CreateVaccination(ctx context.Context, arg CreateVaccinationParams) (Vaccination, error)
 	CreateVerifyEmail(ctx context.Context, arg CreateVerifyEmailParams) (VerifyEmail, error)
 <<<<<<< HEAD
@@ -157,9 +163,13 @@ type Querier interface {
 	DeleteRoom(ctx context.Context, id int64) error
 	DeleteService(ctx context.Context, id int64) error
 <<<<<<< HEAD
+<<<<<<< HEAD
 	DeleteShiftsByDate(ctx context.Context, arg DeleteShiftsByDateParams) error
 =======
 >>>>>>> 3bf345d (happy new year)
+=======
+	DeleteShiftsByDate(ctx context.Context, arg DeleteShiftsByDateParams) error
+>>>>>>> ada3717 (Docker file)
 	DeleteTreatment(ctx context.Context, id int64) error
 	DeleteTreatmentPhase(ctx context.Context, id int64) error
 	DeleteUser(ctx context.Context, id int64) error
@@ -244,9 +254,21 @@ type Querier interface {
 =======
 	GetAllergies(ctx context.Context, medicalRecordID pgtype.Int8) ([]Allergy, error)
 	GetAppointmentByStateId(ctx context.Context, stateID pgtype.Int4) ([]Appointment, error)
+	// Tính tỷ lệ xác nhận và hủy lịch hẹn
+	GetAppointmentConfirmationStats(ctx context.Context, arg GetAppointmentConfirmationStatsParams) (GetAppointmentConfirmationStatsRow, error)
+	// Đếm số lượng lịch hẹn theo từng ngày trong khoảng thời gian
+	GetAppointmentCountByDateRange(ctx context.Context, arg GetAppointmentCountByDateRangeParams) ([]GetAppointmentCountByDateRangeRow, error)
 	GetAppointmentDetailById(ctx context.Context, appointmentID int64) (Appointment, error)
+<<<<<<< HEAD
 >>>>>>> 3bf345d (happy new year)
 	GetAppointmentsByDoctor(ctx context.Context, doctorID pgtype.Int8) ([]GetAppointmentsByDoctorRow, error)
+=======
+	// Đếm số lượng lịch hẹn theo từng giờ trong ngày
+	GetAppointmentTrendsByHour(ctx context.Context, arg GetAppointmentTrendsByHourParams) ([]GetAppointmentTrendsByHourRow, error)
+	GetAppointmentsByDoctor(ctx context.Context, doctorID pgtype.Int8) ([]GetAppointmentsByDoctorRow, error)
+	// Thống kê số lượng lịch hẹn theo trạng thái và khoảng thời gian (ngày/tuần/tháng)
+	GetAppointmentsByStatus(ctx context.Context, dollar_1 string) ([]GetAppointmentsByStatusRow, error)
+>>>>>>> ada3717 (Docker file)
 	GetAppointmentsByTimeSlot(ctx context.Context, timeSlotID pgtype.Int8) ([]GetAppointmentsByTimeSlotRow, error)
 	GetAppointmentsByUser(ctx context.Context, username pgtype.Text) ([]GetAppointmentsByUserRow, error)
 =======
@@ -280,7 +302,10 @@ type Querier interface {
 	GetAvailableDoctors(ctx context.Context, date pgtype.Date) ([]GetAvailableDoctorsRow, error)
 >>>>>>> ffc9071 (AI suggestion)
 	GetAvailableTimeSlots(ctx context.Context, arg GetAvailableTimeSlotsParams) ([]GetAvailableTimeSlotsRow, error)
+	// Tính thời gian chờ trung bình từ lúc đặt đến lúc được xác nhận
+	GetAverageConfirmationTime(ctx context.Context, arg GetAverageConfirmationTimeParams) (float64, error)
 	GetCartByUserId(ctx context.Context, userID int64) ([]Cart, error)
+<<<<<<< HEAD
 <<<<<<< HEAD
 	GetCartItems(ctx context.Context, cartID int64) ([]GetCartItemsRow, error)
 <<<<<<< HEAD
@@ -291,6 +316,13 @@ type Querier interface {
 	GetCartItems(ctx context.Context, cartID pgtype.Int8) ([]GetCartItemsRow, error)
 	GetCartTotal(ctx context.Context, cartID pgtype.Int8) (float64, error)
 >>>>>>> 33fcf96 (Big update)
+=======
+	GetCartItems(ctx context.Context, cartID int64) ([]GetCartItemsRow, error)
+	GetCartTotal(ctx context.Context, cartID int64) (float64, error)
+	GetClinicInfo(ctx context.Context, id int64) (GetClinicInfoRow, error)
+	// Tính số lượng lịch hẹn, số lượng bác sĩ và thú cưng trong ngày
+	GetDailyAppointmentStats(ctx context.Context) (GetDailyAppointmentStatsRow, error)
+>>>>>>> ada3717 (Docker file)
 	GetDeviceTokenByUsername(ctx context.Context, username string) ([]DeviceToken, error)
 	// 1. Query cơ bản để lấy thông tin bệnh và thuốc điều trị
 	GetDiceaseAndMedicinesInfo(ctx context.Context, lower string) ([]GetDiceaseAndMedicinesInfoRow, error)
@@ -315,6 +347,7 @@ type Querier interface {
 <<<<<<< HEAD
 >>>>>>> 6c35562 (dicease and treatment plan)
 	GetDoctor(ctx context.Context, id int64) (GetDoctorRow, error)
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -364,14 +397,24 @@ type Querier interface {
 	GetNotificationsByUsername(ctx context.Context, arg GetNotificationsByUsernameParams) ([]Notification, error)
 >>>>>>> 6f3ea8a (update sqlc)
 =======
+=======
+	// Tính số ca khám trung bình mỗi bác sĩ/ngày
+	GetDoctorAppointmentStats(ctx context.Context, arg GetDoctorAppointmentStatsParams) ([]GetDoctorAppointmentStatsRow, error)
+	GetDoctorByUserId(ctx context.Context, userID int64) (Doctor, error)
+	GetDoctors(ctx context.Context) ([]GetDoctorsRow, error)
+>>>>>>> ada3717 (Docker file)
 	GetFileByID(ctx context.Context, id int64) (File, error)
 	GetMedicalHistory(ctx context.Context, arg GetMedicalHistoryParams) ([]MedicalHistory, error)
 	GetMedicalHistoryByID(ctx context.Context, id int64) (MedicalHistory, error)
 	GetMedicalRecord(ctx context.Context, id int64) (MedicalRecord, error)
 	GetMedicationsByPhase(ctx context.Context, arg GetMedicationsByPhaseParams) ([]GetMedicationsByPhaseRow, error)
 	GetMedicineByID(ctx context.Context, id int64) (Medicine, error)
+<<<<<<< HEAD
 	GetNotificationPreferencesByUsername(ctx context.Context, username string) ([]NotificationPreference, error)
 >>>>>>> e859654 (Elastic search)
+=======
+	GetMedicineByTreatmentID(ctx context.Context, treatmentID pgtype.Int8) ([]GetMedicineByTreatmentIDRow, error)
+>>>>>>> ada3717 (Docker file)
 	GetOrderById(ctx context.Context, id int64) (Order, error)
 	// Returning fields you may want to use
 	GetOrdersByUserId(ctx context.Context, userID int64) ([]Order, error)
@@ -387,7 +430,10 @@ type Querier interface {
 	GetSOAPByAppointmentID(ctx context.Context, appointmentID pgtype.Int8) (Consultation, error)
 	GetServiceByID(ctx context.Context, id int64) (Service, error)
 	GetServices(ctx context.Context, arg GetServicesParams) ([]Service, error)
+<<<<<<< HEAD
 	GetShiftByDoctorId(ctx context.Context, doctorID int64) ([]GetShiftByDoctorIdRow, error)
+=======
+>>>>>>> ada3717 (Docker file)
 	GetShifts(ctx context.Context) ([]GetShiftsRow, error)
 	GetState(ctx context.Context, id int64) (State, error)
 	// -- name: GetTimeSlotsByDoctorAndDate :many
@@ -397,6 +443,11 @@ type Querier interface {
 	GetTimeSlotById(ctx context.Context, id int64) (TimeSlot, error)
 	GetTimeSlotForUpdate(ctx context.Context, id int64) (GetTimeSlotForUpdateRow, error)
 	GetTimeSlotsByDoctorAndDate(ctx context.Context, arg GetTimeSlotsByDoctorAndDateParams) ([]GetTimeSlotsByDoctorAndDateRow, error)
+<<<<<<< HEAD
+=======
+	// Lấy top 10 dịch vụ được đặt nhiều nhất
+	GetTopBookedServices(ctx context.Context, arg GetTopBookedServicesParams) ([]GetTopBookedServicesRow, error)
+>>>>>>> ada3717 (Docker file)
 	GetTreatment(ctx context.Context, id int64) (PetTreatment, error)
 	GetTreatmentByDiseaseId(ctx context.Context, arg GetTreatmentByDiseaseIdParams) ([]GetTreatmentByDiseaseIdRow, error)
 	GetTreatmentPhase(ctx context.Context, id int64) (TreatmentPhase, error)
@@ -641,7 +692,6 @@ type Querier interface {
 	UpdateMedicalRecord(ctx context.Context, id int64) error
 >>>>>>> 3bf345d (happy new year)
 	UpdateNotification(ctx context.Context, appointmentID int64) error
-	UpdateNotificationPreference(ctx context.Context, arg UpdateNotificationPreferenceParams) error
 	UpdateOrderPaymentStatus(ctx context.Context, id int64) (Order, error)
 	UpdatePet(ctx context.Context, arg UpdatePetParams) error
 <<<<<<< HEAD

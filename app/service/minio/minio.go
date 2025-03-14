@@ -68,9 +68,12 @@ func (mc *Client) CheckConnection(ctx context.Context) error {
 	}
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 	log.Println(color.GreenString("MinIO client is connected successfully"))
 >>>>>>> e859654 (Elastic search)
+=======
+>>>>>>> ada3717 (Docker file)
 	return nil
 }
 

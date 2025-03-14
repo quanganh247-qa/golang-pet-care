@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 package doctor
 
 import (
@@ -65,3 +66,6 @@ type CreateShiftRequest struct {
 =======
 package doctor
 >>>>>>> ffc9071 (AI suggestion)
+=======
+package doctor
+>>>>>>> ada3717 (Docker file)

@@ -32,6 +32,7 @@ type UserControllerInterface interface {
 	UpdatePassword(ctx *gin.Context)
 	sessioninfo(ctx *gin.Context)
 	userinfo(ctx *gin.Context)
+<<<<<<< HEAD
 	GetAllRole(ctx *gin.Context)
 =======
 	createDoctor(ctx *gin.Context)
@@ -69,6 +70,8 @@ type UserControllerInterface interface {
 =======
 	UpdatePassword(ctx *gin.Context)
 >>>>>>> a2c21c8 (update pass)
+=======
+>>>>>>> ada3717 (Docker file)
 }
 
 func (controller *UserController) createUser(ctx *gin.Context) {
@@ -230,11 +233,14 @@ func (controller *UserController) getAccessToken(ctx *gin.Context) {
 	util.SetCookieSameSite(ctx)
 	cookie, err := ctx.Cookie("refresh_token")
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 	if util.Configs.DefaultAuthenticationUsername != "" && err != nil {
 		cookie, _, err = token.TokenMaker.CreateToken(util.Configs.DefaultAuthenticationUsername, nil, util.Configs.AccessTokenDuration)
 	}
 >>>>>>> 8d5618d (feat: update logout)
+=======
+>>>>>>> ada3717 (Docker file)
 	if err != nil {
 		ctx.JSON(http.StatusForbidden, util.ErrorResponse(err))
 		return
@@ -475,6 +481,7 @@ func (controller *UserController) userinfo(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, util.SuccessResponse("Success", userInfo))
 }
+<<<<<<< HEAD
 
 func (controller *UserController) GetAllRole(ctx *gin.Context) {
 	res, err := controller.service.GetAllRoleService(ctx)
@@ -704,3 +711,5 @@ func (controller *UserController) UpdatePassword(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, util.SuccessResponse("Success", nil))
 }
 >>>>>>> a2c21c8 (update pass)
+=======
+>>>>>>> ada3717 (Docker file)

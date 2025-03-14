@@ -5,16 +5,22 @@ import (
 	"fmt"
 	"log"
 <<<<<<< HEAD
+<<<<<<< HEAD
 	"time"
 =======
 >>>>>>> 6610455 (feat: redis queue)
 
 <<<<<<< HEAD
+=======
+	"time"
+
+>>>>>>> ada3717 (Docker file)
 	"github.com/fatih/color"
 	"github.com/hibiken/asynq"
 	"github.com/jackc/pgx/v5/pgxpool"
 	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
 	"github.com/quanganh247-qa/go-blog-be/app/service/mail"
+<<<<<<< HEAD
 <<<<<<< HEAD
 	"github.com/quanganh247-qa/go-blog-be/app/service/minio"
 =======
@@ -24,6 +30,9 @@ import (
 >>>>>>> 272832d (redis cache)
 =======
 >>>>>>> 6610455 (feat: redis queue)
+=======
+	"github.com/quanganh247-qa/go-blog-be/app/service/minio"
+>>>>>>> ada3717 (Docker file)
 	"github.com/quanganh247-qa/go-blog-be/app/service/redis"
 	"github.com/quanganh247-qa/go-blog-be/app/service/token"
 	"github.com/quanganh247-qa/go-blog-be/app/service/worker"
@@ -40,6 +49,9 @@ func Init(config util.Config) (*Connection, error) {
 	}
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> ada3717 (Docker file)
 	// Configure connection pool with reasonable defaults
 	poolConfig, err := pgxpool.ParseConfig(config.DATABASE_URL)
 	if err != nil {
@@ -53,20 +65,27 @@ func Init(config util.Config) (*Connection, error) {
 	poolConfig.MaxConnIdleTime = 30 * time.Minute
 
 	connPool, err := pgxpool.NewWithConfig(context.Background(), poolConfig)
+<<<<<<< HEAD
 =======
 	// Initialize database connection pool
 	connPool, err := pgxpool.New(context.Background(), config.DATABASE_URL)
 >>>>>>> 33fcf96 (Big update)
+=======
+>>>>>>> ada3717 (Docker file)
 	if err != nil {
 		return nil, fmt.Errorf("cannot connect to db: %w", err)
 	}
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> ada3717 (Docker file)
 	// Verify the connection
 	if err := connPool.Ping(context.Background()); err != nil {
 		return nil, fmt.Errorf("cannot ping database: %w", err)
 	}
+<<<<<<< HEAD
 =======
 =======
 	// Khởi tạo Redis
@@ -118,6 +137,13 @@ func Init(config util.Config) (*Connection, error) {
 	// if err != nil {
 	// 	log.Println(color.RedString("Failed to check connection: %v", err))
 	// }
+=======
+
+	// Khởi tạo Redis
+	go redis.InitRedis(config.RedisAddress)
+	go runTaskProcessor(&config, asynq.RedisClientOpt{Addr: config.RedisAddress}, db.InitStore(connPool))
+	go initMinio(&config)
+>>>>>>> ada3717 (Docker file)
 
 	conn := &Connection{
 		Close: func() {
@@ -181,6 +207,9 @@ func runTaskProcessor(config *util.Config, redisOpt asynq.RedisClientOpt, store 
 	}
 }
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> ada3717 (Docker file)
 
 func initMinio(config *util.Config) {
 	client, err := minio.NewMinIOClient(
@@ -198,5 +227,8 @@ func initMinio(config *util.Config) {
 	}
 
 }
+<<<<<<< HEAD
 =======
 >>>>>>> 6610455 (feat: redis queue)
+=======
+>>>>>>> ada3717 (Docker file)

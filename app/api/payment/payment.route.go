@@ -27,6 +27,7 @@ func Routes(routerGroup middleware.RouterGroup, config *util.Config) {
 		&PaymentController{
 			service: &PaymentService{
 				config: &PaymentConfig{
+<<<<<<< HEAD
 					VietQRAPIKey:       config.VietQRAPIKey,
 					VietQRClientKey:    config.VietQRClientKey,
 					VietQRBaseURL:      config.VietQRBaseURL,
@@ -53,6 +54,11 @@ func Routes(routerGroup middleware.RouterGroup, config *util.Config) {
 					// PaymentAPIKey:    config.PaymentAPIKey,
 					// PaymentBaseURL:   config.PaymentBaseURL,
 					// PaymentClientKey: config.PaymentClientKey,
+=======
+					PayPalClientID:     config.PaypalClientID,
+					PayPalClientSecret: config.PaypalClientSecret,
+					PayPalBaseURL:      config.PaypalURL,
+>>>>>>> ada3717 (Docker file)
 				},
 <<<<<<< HEAD
 				client: &http.Client{},

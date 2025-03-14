@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 package doctor
 
 import (
@@ -125,3 +126,6 @@ func (c *DoctorController) getDoctorById(ctx *gin.Context) {
 =======
 package doctor
 >>>>>>> ffc9071 (AI suggestion)
+=======
+package doctor
+>>>>>>> ada3717 (Docker file)

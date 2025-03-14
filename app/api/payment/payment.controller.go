@@ -18,6 +18,7 @@ type PaymentControllerInterface interface {
 	GetOrderDetails(c *gin.Context)
 	UpdateOrder(c *gin.Context)
 	TrackOrder(c *gin.Context)
+<<<<<<< HEAD
 
 	CreatePayOSLink(c *gin.Context)
 }
@@ -31,6 +32,8 @@ type PaymentControllerInterface interface {
 	GetToken(c *gin.Context)
 	GetBanks(c *gin.Context)
 	GenerateQRCode(c *gin.Context)
+=======
+>>>>>>> ada3717 (Docker file)
 }
 
 <<<<<<< HEAD
@@ -90,6 +93,9 @@ func (c *PaymentController) GenerateQRCode(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, result)
 }
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> ada3717 (Docker file)
 
 func (c *PaymentController) CreatePayPalOrder(ctx *gin.Context) {
 	var orderRequest OrderRequest
@@ -183,6 +189,7 @@ func (c *PaymentController) TrackOrder(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, result)
 }
+<<<<<<< HEAD
 
 func (c *PaymentController) CreatePayOSLink(ctx *gin.Context) {
 	var orderRequest CreatePaymentLinkRequest
@@ -199,3 +206,5 @@ func (c *PaymentController) CreatePayOSLink(ctx *gin.Context) {
 }
 =======
 >>>>>>> c449ffc (feat: cart api)
+=======
+>>>>>>> ada3717 (Docker file)

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 -- name: CreateAppointment :one
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -55,7 +56,13 @@ VALUES(
     $1, $2, $3, $4, $5, $6, $7, $8, now(), $9
 >>>>>>> e859654 (Elastic search)
 ) RETURNING *;
+=======
+>>>>>>> ada3717 (Docker file)
 
+-- name: CreateAppointment :one
+INSERT INTO appointments (petid, username, doctor_id, service_id, date, time_slot_id, state_id)
+VALUES ($1, $2, $3, $4, $5, $6, (SELECT id FROM states WHERE state = 'Scheduled'))
+RETURNING *;
 
 -- name: UpdateTimeSlotBookedPatients :exec
 <<<<<<< HEAD
@@ -63,6 +70,7 @@ VALUES(
 UPDATE time_slots
 SET booked_patients = booked_patients + 1
 WHERE id = $1;
+<<<<<<< HEAD
 
 -- name: CheckinAppointment :exec
 UPDATE appointments
@@ -88,6 +96,8 @@ UPDATE time_slots
 >>>>>>> 33fcf96 (Big update)
 SET booked_patients = booked_patients + 1
 WHERE id = $1 AND doctor_id = $2;
+=======
+>>>>>>> ada3717 (Docker file)
 
 <<<<<<< HEAD
 >>>>>>> b393bb9 (add service and add permission)
@@ -443,4 +453,8 @@ JOIN doctors ON appointments.doctor_id = doctors.id;
 =======
 -- name: GetSOAPByAppointmentID :one
 SELECT * FROM consultations WHERE appointment_id = $1;
+<<<<<<< HEAD
 >>>>>>> e859654 (Elastic search)
+=======
+
+>>>>>>> ada3717 (Docker file)

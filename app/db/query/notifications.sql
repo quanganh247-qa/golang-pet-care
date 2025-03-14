@@ -30,6 +30,7 @@ WHERE username = $1;
 UPDATE notifications
 SET is_read = true
 WHERE id = $1;
+<<<<<<< HEAD
 =======
 -- Insert a notification
 =======
@@ -96,3 +97,5 @@ WHERE username = $1 AND topic = $3;
 SELECT * FROM notification_preferences
 WHERE username = $1;
 >>>>>>> e859654 (Elastic search)
+=======
+>>>>>>> ada3717 (Docker file)

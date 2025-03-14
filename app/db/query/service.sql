@@ -1,6 +1,7 @@
 -- name: CreateService :one
 INSERT INTO services (
 <<<<<<< HEAD
+<<<<<<< HEAD
     name, description, duration, cost, category
 ) VALUES (
     $1, $2, $3, $4, $5
@@ -9,6 +10,11 @@ INSERT INTO services (
 ) VALUES (
     $1, $2, $3, $4, $5, $6
 >>>>>>> b393bb9 (add service and add permission)
+=======
+    name, description, duration, cost, category
+) VALUES (
+    $1, $2, $3, $4, $5
+>>>>>>> ada3717 (Docker file)
 )
 RETURNING *;
 
@@ -62,6 +68,9 @@ SET
     cost = $5,
     category = $6,
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> ada3717 (Docker file)
     updated_at = NOW()
 WHERE id = $1
 =======
@@ -71,7 +80,11 @@ WHERE id = $1
 WHERE id = $1 and removed_at is NULL
 >>>>>>> b393bb9 (add service and add permission)
 RETURNING *;
+<<<<<<< HEAD
 =======
 WHERE id = $1
 RETURNING *;
 >>>>>>> ffc9071 (AI suggestion)
+=======
+
+>>>>>>> ada3717 (Docker file)
