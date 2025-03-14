@@ -677,8 +677,6 @@ func (service *UserService) updateUserService(ctx *gin.Context, username string,
 		return nil, fmt.Errorf("internal server error: %v", err)
 	}
 
-	fmt.Println(arg)
-
 	if arg.FullName == "" {
 		req.FullName = user.FullName
 	} else {
@@ -746,7 +744,7 @@ func (service *UserService) updateUserImageService(ctx *gin.Context, username st
 	}
 
 	// remove cache
-	service.redis.RemoveUserInfoCache(username)
+	go service.redis.RemoveUserInfoCache(username)
 
 	return nil
 }

@@ -11,13 +11,8 @@ INSERT INTO doctors (
 
 -- name: GetDoctor :one
 SELECT 
-    d.id,
-    u.full_name AS name,
-    d.specialization,
-    d.years_of_experience,
-    d.education,
-    d.certificate_number,
-    d.bio
+    d.*,
+    u.full_name AS name
 FROM doctors d
 JOIN users u ON d.user_id = u.id
 WHERE d.id = $1;
@@ -58,10 +53,8 @@ WHERE id = $1;
 
 -- name: GetAvailableDoctors :many
 SELECT DISTINCT
-    d.id,
-    u.full_name,
-    d.specialization
-
+    d.*,
+    u.full_name
 FROM doctors d
 JOIN users u ON d.user_id = u.id
 JOIN time_slots ts ON ts.doctor_id = d.id

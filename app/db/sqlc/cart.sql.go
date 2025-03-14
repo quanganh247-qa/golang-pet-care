@@ -19,6 +19,7 @@ INSERT INTO cart_items (
     product_id,
     unit_price,
     quantity
+<<<<<<< HEAD
 ) VALUES (
     $1, $2, $3, $4
 ) RETURNING id, cart_id, product_id, quantity, unit_price, total_price
@@ -215,8 +216,10 @@ INSERT INTO cart_items (
     quantity,
     created_at,
     updated_at
+=======
+>>>>>>> dc47646 (Optimize SQL query)
 ) VALUES (
-    $1, $2, $3, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
+    $1, $2, $3, $4
 ) RETURNING id, cart_id, product_id, quantity, unit_price, total_price
 `
 
@@ -228,12 +231,21 @@ type AddItemToCartParams struct {
 =======
 	CartID    int64       `json:"cart_id"`
 	ProductID int64       `json:"product_id"`
+<<<<<<< HEAD
 >>>>>>> ada3717 (Docker file)
+=======
+	UnitPrice float64     `json:"unit_price"`
+>>>>>>> dc47646 (Optimize SQL query)
 	Quantity  pgtype.Int4 `json:"quantity"`
 }
 
 func (q *Queries) AddItemToCart(ctx context.Context, arg AddItemToCartParams) (CartItem, error) {
-	row := q.db.QueryRow(ctx, addItemToCart, arg.CartID, arg.ProductID, arg.Quantity)
+	row := q.db.QueryRow(ctx, addItemToCart,
+		arg.CartID,
+		arg.ProductID,
+		arg.UnitPrice,
+		arg.Quantity,
+	)
 	var i CartItem
 	err := row.Scan(
 		&i.ID,
@@ -324,11 +336,66 @@ func (q *Queries) DecreaseItemQuantity(ctx context.Context, arg DecreaseItemQuan
 	return err
 }
 
+const getAllOrders = `-- name: GetAllOrders :many
+SELECT id, user_id, order_date, total_amount, payment_status, cart_items, shipping_address, notes
+FROM Orders 
+WHERE payment_status = $1
+ORDER BY order_date DESC
+LIMIT $2 OFFSET $3
+`
+
+type GetAllOrdersParams struct {
+	PaymentStatus pgtype.Text `json:"payment_status"`
+	Limit         int32       `json:"limit"`
+	Offset        int32       `json:"offset"`
+}
+
+func (q *Queries) GetAllOrders(ctx context.Context, arg GetAllOrdersParams) ([]Order, error) {
+	rows, err := q.db.Query(ctx, getAllOrders, arg.PaymentStatus, arg.Limit, arg.Offset)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []Order{}
+	for rows.Next() {
+		var i Order
+		if err := rows.Scan(
+			&i.ID,
+			&i.UserID,
+			&i.OrderDate,
+			&i.TotalAmount,
+			&i.PaymentStatus,
+			&i.CartItems,
+			&i.ShippingAddress,
+			&i.Notes,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getCartByUserId = `-- name: GetCartByUserId :many
+<<<<<<< HEAD
 SELECT id, user_id, created_at, updated_at 
 FROM carts
 WHERE user_id = $1
 >>>>>>> c449ffc (feat: cart api)
+=======
+SELECT 
+    c.id,
+    c.user_id,
+    c.created_at,
+    c.updated_at
+FROM carts c
+LEFT JOIN cart_items ci ON ci.cart_id = c.id
+WHERE c.user_id = $1
+GROUP BY c.id, c.user_id, c.created_at, c.updated_at
+>>>>>>> dc47646 (Optimize SQL query)
 `
 
 func (q *Queries) GetCartByUserId(ctx context.Context, userID int64) ([]Cart, error) {

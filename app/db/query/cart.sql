@@ -5,6 +5,7 @@ INSERT INTO cart_items (
     cart_id,
     product_id,
 <<<<<<< HEAD
+<<<<<<< HEAD
     unit_price,
     quantity
 ) VALUES (
@@ -20,11 +21,20 @@ INSERT INTO cart_items (
 =======
     $1, $2, $3, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
 >>>>>>> ffc9071 (AI suggestion)
+=======
+    unit_price,
+    quantity
+) VALUES (
+    $1, $2, $3, $4
+>>>>>>> dc47646 (Optimize SQL query)
 ) RETURNING *;
 
 
 -- name: GetCartByUserId :many
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> dc47646 (Optimize SQL query)
 SELECT 
     c.id,
     c.user_id,
@@ -34,6 +44,7 @@ FROM carts c
 LEFT JOIN cart_items ci ON ci.cart_id = c.id
 WHERE c.user_id = $1
 GROUP BY c.id, c.user_id, c.created_at, c.updated_at;
+<<<<<<< HEAD
 
 -- name: GetCartItemsByUserId :many
 SELECT
@@ -51,6 +62,8 @@ SELECT *
 FROM carts
 WHERE user_id = $1;
 >>>>>>> 33fcf96 (Big update)
+=======
+>>>>>>> dc47646 (Optimize SQL query)
 
 -- name: CreateCartForUser :one
 INSERT INTO carts (
@@ -122,6 +135,7 @@ SELECT *
 FROM Orders 
 WHERE payment_status = $1
 ORDER BY order_date DESC
+<<<<<<< HEAD
 LIMIT $2 OFFSET $3;
 =======
 -- name: AddItemToCart :exec
@@ -225,3 +239,6 @@ SET
     updated_at = CURRENT_TIMESTAMP
 WHERE cart_id = $1 AND product_id = $2;
 >>>>>>> 33fcf96 (Big update)
+=======
+LIMIT $2 OFFSET $3;
+>>>>>>> dc47646 (Optimize SQL query)
