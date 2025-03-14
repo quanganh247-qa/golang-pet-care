@@ -41,12 +41,12 @@ type Cart struct {
 }
 
 type CartItem struct {
-	ID        int64            `json:"id"`
-	CartID    pgtype.Int8      `json:"cart_id"`
-	ProductID pgtype.Int8      `json:"product_id"`
-	Quantity  pgtype.Int4      `json:"quantity"`
-	CreatedAt pgtype.Timestamp `json:"created_at"`
-	UpdatedAt pgtype.Timestamp `json:"updated_at"`
+	ID         int64         `json:"id"`
+	CartID     int64         `json:"cart_id"`
+	ProductID  int64         `json:"product_id"`
+	Quantity   pgtype.Int4   `json:"quantity"`
+	UnitPrice  float64       `json:"unit_price"`
+	TotalPrice pgtype.Float8 `json:"total_price"`
 }
 
 type Checkout struct {
@@ -67,6 +67,13 @@ type CheckoutService struct {
 	Quantity          pgtype.Int4   `json:"quantity"`
 	Unitprice         pgtype.Float8 `json:"unitprice"`
 	Subtotal          pgtype.Float8 `json:"subtotal"`
+}
+
+type Clinic struct {
+	ID      int64       `json:"id"`
+	Name    pgtype.Text `json:"name"`
+	Address pgtype.Text `json:"address"`
+	Phone   pgtype.Text `json:"phone"`
 }
 
 type Consultation struct {
@@ -107,14 +114,13 @@ type Disease struct {
 }
 
 type Doctor struct {
-	ID                int64         `json:"id"`
-	UserID            int64         `json:"user_id"`
-	Specialization    pgtype.Text   `json:"specialization"`
-	YearsOfExperience pgtype.Int4   `json:"years_of_experience"`
-	Education         pgtype.Text   `json:"education"`
-	CertificateNumber pgtype.Text   `json:"certificate_number"`
-	Bio               pgtype.Text   `json:"bio"`
-	ConsultationFee   pgtype.Float8 `json:"consultation_fee"`
+	ID                int64       `json:"id"`
+	UserID            int64       `json:"user_id"`
+	Specialization    pgtype.Text `json:"specialization"`
+	YearsOfExperience pgtype.Int4 `json:"years_of_experience"`
+	Education         pgtype.Text `json:"education"`
+	CertificateNumber pgtype.Text `json:"certificate_number"`
+	Bio               pgtype.Text `json:"bio"`
 }
 
 type File struct {
@@ -154,10 +160,12 @@ type Medicine struct {
 	Frequency      pgtype.Text        `json:"frequency"`
 	Duration       pgtype.Text        `json:"duration"`
 	SideEffects    pgtype.Text        `json:"side_effects"`
-	ExpirationDate pgtype.Date        `json:"expiration_date"`
-	Quantity       pgtype.Int8        `json:"quantity"`
+	StartDate      pgtype.Date        `json:"start_date"`
+	EndDate        pgtype.Date        `json:"end_date"`
 	CreatedAt      pgtype.Timestamptz `json:"created_at"`
 	UpdatedAt      pgtype.Timestamptz `json:"updated_at"`
+	ExpirationDate pgtype.Date        `json:"expiration_date"`
+	Quantity       pgtype.Int8        `json:"quantity"`
 }
 
 type Notification struct {
@@ -170,15 +178,6 @@ type Notification struct {
 	RelatedType pgtype.Text      `json:"related_type"`
 	Datetime    pgtype.Timestamp `json:"datetime"`
 	NotifyType  pgtype.Text      `json:"notify_type"`
-}
-
-type NotificationPreference struct {
-	ID        int64            `json:"id"`
-	Username  string           `json:"username"`
-	Topic     string           `json:"topic"`
-	Enabled   pgtype.Bool      `json:"enabled"`
-	CreatedAt pgtype.Timestamp `json:"created_at"`
-	UpdatedAt pgtype.Timestamp `json:"updated_at"`
 }
 
 type Order struct {
@@ -241,6 +240,7 @@ type PetTreatment struct {
 	Status    pgtype.Text        `json:"status"`
 	Notes     pgtype.Text        `json:"notes"`
 	CreatedAt pgtype.Timestamptz `json:"created_at"`
+	DoctorID  pgtype.Int4        `json:"doctor_id"`
 }
 
 type PhaseMedicine struct {
@@ -250,9 +250,9 @@ type PhaseMedicine struct {
 	Frequency  pgtype.Text        `json:"frequency"`
 	Duration   pgtype.Text        `json:"duration"`
 	Notes      pgtype.Text        `json:"notes"`
+	CreatedAt  pgtype.Timestamptz `json:"created_at"`
 	Quantity   pgtype.Int4        `json:"quantity"`
 	IsReceived pgtype.Bool        `json:"is_received"`
-	CreatedAt  pgtype.Timestamptz `json:"created_at"`
 }
 
 type Product struct {
@@ -276,17 +276,18 @@ type Service struct {
 	Duration    pgtype.Int2      `json:"duration"`
 	Cost        pgtype.Float8    `json:"cost"`
 	Category    pgtype.Text      `json:"category"`
-	Notes       pgtype.Text      `json:"notes"`
+	Priority    pgtype.Int2      `json:"priority"`
 	CreatedAt   pgtype.Timestamp `json:"created_at"`
-	UpdatedAt   pgtype.Timestamp `json:"updated_at"`
 }
 
-type SoapNote struct {
-	ID            pgtype.UUID      `json:"id"`
-	AppointmentID int32            `json:"appointment_id"`
-	Note          []byte           `json:"note"`
-	CreatedAt     pgtype.Timestamp `json:"created_at"`
-	UpdatedAt     pgtype.Timestamp `json:"updated_at"`
+type Shift struct {
+	ID               int64            `json:"id"`
+	DoctorID         int64            `json:"doctor_id"`
+	StartTime        pgtype.Timestamp `json:"start_time"`
+	EndTime          pgtype.Timestamp `json:"end_time"`
+	MaxPatients      pgtype.Int4      `json:"max_patients"`
+	AssignedPatients pgtype.Int4      `json:"assigned_patients"`
+	CreatedAt        pgtype.Timestamp `json:"created_at"`
 }
 
 type State struct {
@@ -306,6 +307,7 @@ type TimeSlot struct {
 	BookedPatients pgtype.Int4      `json:"booked_patients"`
 	CreatedAt      pgtype.Timestamp `json:"created_at"`
 	UpdatedAt      pgtype.Timestamp `json:"updated_at"`
+	ShiftID        int64            `json:"shift_id"`
 }
 
 type TreatmentPhase struct {

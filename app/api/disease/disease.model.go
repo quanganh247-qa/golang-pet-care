@@ -1,10 +1,36 @@
 package disease
 
 import (
+	"time"
+
 	"github.com/lib/pq"
 	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
 	"github.com/quanganh247-qa/go-blog-be/app/service/elasticsearch"
 )
+
+var (
+	hospitalLogo    = "https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png"
+	hospitalName    = "Aewan Clinic"
+	hospitalAddress = ""
+	hospitalPhone   = "0123-456-789"
+)
+
+type Prescription struct {
+	ID              string         `json:"id"`
+	HospitalLogo    string         `json:"hospital_logo"`
+	HospitalName    string         `json:"hospital_name"`
+	HospitalAddress string         `json:"hospital_address"`
+	HospitalPhone   string         `json:"hospital_phone"`
+	PatientName     string         `json:"patient_name"`
+	PatientGender   string         `json:"patient_gender"`
+	PatientAge      int            `json:"patient_age"`
+	Diagnosis       string         `json:"diagnosis"`
+	Medicines       []MedicineInfo `json:"medicines"`
+	Notes           string         `json:"notes"`
+	PrescribedDate  time.Time      `json:"prescribed_date"`
+	DoctorName      string         `json:"doctor_name"`
+	DoctorTitle     string         `json:"doctor_title"`
+}
 
 type DiseaseApi struct {
 	controller DiseaseControllerInterface
@@ -30,13 +56,14 @@ type DiseaseMedicineInfo struct {
 
 // MedicineInfo holds medicine-related details for a specific disease.
 type MedicineInfo struct {
-	MedicineID   int     `json:"medicine_id"`
-	MedicineName string  `json:"medicine_name"`
-	Usage        *string `json:"usage"`
-	Dosage       *string `json:"dosage"`
-	Frequency    *string `json:"frequency"`
-	Duration     *string `json:"duration"`
-	SideEffects  *string `json:"side_effects"`
+	MedicineID   int    `json:"medicine_id"`
+	MedicineName string `json:"medicine_name"`
+	Usage        string `json:"usage"`
+	Dosage       string `json:"dosage"`
+	Frequency    string `json:"frequency"`
+	Duration     string `json:"duration"`
+	SideEffects  string `json:"side_effects"`
+	Notes        string `json:"notes"`
 }
 
 type TreatmentPlan struct {
@@ -83,7 +110,6 @@ type CreateTreatmentResponse struct {
 }
 
 type CreateTreatmentPhaseRequest struct {
-	TreatmetnID int64  `json:"treatment_id"`
 	PhaseName   string `json:"phase_name"`
 	Description string `json:"description"`
 	StartDate   string `json:"start_date"`
@@ -134,4 +160,9 @@ type CreateDiseaseRequest struct {
 	Name        string   `json:"name"`
 	Description string   `json:"description"`
 	Symptoms    []string `json:"symptoms"`
+}
+
+type PrescriptionResponse struct {
+	PrescriptionID  int64  `json:"prescription_id"`
+	PrescriptionURL string `json:"prescription_url"`
 }

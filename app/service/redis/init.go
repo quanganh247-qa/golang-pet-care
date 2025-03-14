@@ -18,7 +18,7 @@ var (
 	ctxRedis = context.Background()
 )
 
-func InitRedis(address string) error {
+func InitRedis(address string) {
 	Client = &ClientType{
 		RedisClient: redis.NewClient(&redis.Options{
 			Addr:     address,
@@ -26,7 +26,6 @@ func InitRedis(address string) error {
 			DB:       0,  // use default DB
 		}),
 	}
-	return nil
 }
 func (client *ClientType) Set(ctx context.Context, key string, value interface{}, duration time.Duration) error {
 	dataValue, err := json.Marshal(value)

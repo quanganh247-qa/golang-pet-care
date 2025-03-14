@@ -1,6 +1,7 @@
 package disease
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -10,6 +11,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5/pgtype"
 	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
+	"github.com/quanganh247-qa/go-blog-be/app/service/minio"
 	"github.com/quanganh247-qa/go-blog-be/app/util"
 )
 
@@ -25,6 +27,8 @@ type DiseaseServiceInterface interface {
 	GetTreatmentProgress(ctx *gin.Context, id int64) ([]TreatmentProgressDetail, error)
 
 	CreateDisease(ctx context.Context, arg CreateDiseaseRequest) (*db.Disease, error)
+
+	GenerateMedicineOnlyPrescriptionPDF(ctx context.Context, treatmentID int64, outputFile string) (*PrescriptionResponse, error)
 	// GetDiceaseAnhMedicinesInfoService(ctx *gin.Context, disease string) ([]DiseaseMedicineInfo, error)
 	// GetTreatmentByDiseaseID(ctx *gin.Context, diseaseID int64, pagination *util.Pagination) ([]TreatmentPlan, error)
 }
@@ -310,6 +314,123 @@ func (s *DiseaseService) GetTreatmentProgress(ctx *gin.Context, id int64) ([]Tre
 		})
 	}
 	return result, nil
+}
+
+func (s *DiseaseService) GenerateMedicineOnlyPrescriptionPDF(ctx context.Context, treatmentID int64, outputFile string) (*PrescriptionResponse, error) {
+	// Fetch all required data in a single transaction
+	var prescription Prescription
+	var pdfBytes bytes.Buffer
+
+	var pet db.Pet
+
+	var err error
+
+	err = s.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
+		// 1. Fetch treatment with related data
+		treatment, err := q.GetTreatment(ctx, treatmentID)
+		if err != nil {
+			return fmt.Errorf("failed to get treatment: %w", err)
+		}
+
+		// 2. Fetch pet details
+		pet, err = q.GetPetByID(ctx, treatment.PetID.Int64)
+		if err != nil {
+			return fmt.Errorf("failed to get pet: %w", err)
+		}
+
+		// 3. Fetch doctor details
+		doctor, err := q.GetDoctor(ctx, int64(treatment.DoctorID.Int32))
+		if err != nil {
+			return fmt.Errorf("failed to get doctor: %w", err)
+		}
+
+		// 4. Fetch medicines in one call
+		medicines, err := q.GetMedicineByTreatmentID(ctx, pgtype.Int8{Int64: treatmentID, Valid: true})
+		if err != nil {
+			return fmt.Errorf("failed to get medicines: %w", err)
+		}
+
+		// Build prescription object
+		prescription = Prescription{
+			ID:              fmt.Sprintf("DT-%d", treatmentID),
+			HospitalLogo:    "",
+			HospitalName:    hospitalName,
+			HospitalAddress: hospitalAddress,
+			HospitalPhone:   hospitalPhone,
+			PatientName:     pet.Name,
+			PatientGender:   pet.Gender.String,
+			PatientAge:      int(pet.Age.Int32),
+			Diagnosis:       fmt.Sprintf("Disease ID: %d", treatment.DiseaseID.Int64),
+			Notes:           treatment.Notes.String,
+			PrescribedDate:  treatment.StartDate.Time,
+			DoctorName:      doctor.Name,
+			DoctorTitle:     doctor.Specialization.String,
+		}
+
+		// Process medicines (fetch full details for each)
+		for _, med := range medicines {
+			medicine, err := q.GetMedicineByID(ctx, med.MedicineID)
+			if err != nil {
+				return fmt.Errorf("failed to get medicine details: %w", err)
+			}
+
+			prescription.Medicines = append(prescription.Medicines, MedicineInfo{
+				MedicineName: medicine.Name,
+				Dosage:       med.Dosage.String,
+				Frequency:    med.Frequency.String,
+				Duration:     med.Duration.String,
+				Notes:        med.Notes.String,
+			})
+		}
+
+		return nil
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	// Generate PDF
+	if err := GeneratePrescriptionPDF(&prescription, &pdfBytes); err != nil {
+		return nil, fmt.Errorf("failed to generate PDF: %w", err)
+	}
+
+	// Upload to MinIO
+	filePath := fmt.Sprintf("%s/files/treatment-%d.pdf", pet.Name, treatmentID)
+	fileName := fmt.Sprintf("treatment-%d.pdf", treatmentID)
+	fileData := pdfBytes.Bytes()
+
+	mcclient, err := minio.GetMinIOClient()
+	if err != nil {
+		return nil, fmt.Errorf("failed to get MinIO client: %w", err)
+	}
+
+	// Upload file
+	if err := mcclient.UploadFile(ctx, "prescriptions", filePath, fileData); err != nil {
+		return nil, fmt.Errorf("failed to upload PDF to MinIO: %w", err)
+	}
+
+	// Get URL
+	fileURL, err := mcclient.GetPresignedURL(ctx, "prescriptions", filePath, 24*time.Hour)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get presigned URL for file: %w", err)
+	}
+
+	// Create file record
+	file, err := s.storeDB.CreateFile(ctx, db.CreateFileParams{
+		FileName: fileName,
+		FilePath: filePath,
+		FileSize: int64(len(fileData)),
+		FileType: "pdf",
+	})
+	if err != nil {
+		return nil, fmt.Errorf("failed to create file record: %w", err)
+	}
+
+	return &PrescriptionResponse{
+		PrescriptionID:  file.ID,
+		PrescriptionURL: fileURL,
+	}, nil
 }
 
 // // -- Query lấy phác đồ điều trị đầy đủ

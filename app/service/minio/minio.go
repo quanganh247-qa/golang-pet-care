@@ -67,7 +67,6 @@ func (mc *Client) CheckConnection(ctx context.Context) error {
 		return fmt.Errorf("failed to check connection: %v", err)
 	}
 
-	log.Println(color.GreenString("MinIO client is connected successfully"))
 	return nil
 }
 

@@ -42,8 +42,8 @@ func (s *CartService) AddToCartService(c *gin.Context, req CartItem, username st
 		}
 
 		item, err := q.AddItemToCart(c, db.AddItemToCartParams{
-			CartID:    pgtype.Int8{Int64: cartID, Valid: true},
-			ProductID: pgtype.Int8{Int64: req.ProductID, Valid: true},
+			CartID:    cartID,
+			ProductID: req.ProductID,
 			Quantity:  pgtype.Int4{Int32: int32(req.Quantity), Valid: true},
 		})
 		if err != nil {
@@ -52,9 +52,9 @@ func (s *CartService) AddToCartService(c *gin.Context, req CartItem, username st
 
 		cartItem = CartItem{
 			ID:        item.ID,
-			CartID:    item.CartID.Int64,
-			ProductID: item.ProductID.Int64,
-			Quantity:  int(item.Quantity.Int32), // Convert pgtype.Int4 to int32
+			CartID:    item.CartID,
+			ProductID: item.ProductID,
+			Quantity:  int(item.Quantity.Int32),
 		}
 		return nil
 	})
@@ -77,7 +77,7 @@ func (s *CartService) GetCartItemsService(c *gin.Context, username string) ([]Ca
 		return nil, fmt.Errorf("failed to get cart by user id: %w", err)
 	}
 
-	cartItems, err := s.storeDB.GetCartItems(c, pgtype.Int8{Int64: cart[0].ID, Valid: true})
+	cartItems, err := s.storeDB.GetCartItems(c, cart[0].ID)
 	if err != nil {
 		return nil, err
 	}
@@ -86,16 +86,16 @@ func (s *CartService) GetCartItemsService(c *gin.Context, username string) ([]Ca
 
 	for _, cart := range cartItems {
 
-		product, _ := s.storeDB.GetProductByID(c, cart.ProductID.Int64)
+		product, _ := s.storeDB.GetProductByID(c, cart.ProductID)
 
 		items = append(items, CartItemResponse{
 			ID:          cart.ID,
-			CartID:      cart.CartID.Int64,
+			CartID:      cart.CartID,
 			ProductName: product.Name,
 			UnitPrice:   product.Price,
-			ProductID:   cart.ProductID.Int64,
+			ProductID:   cart.ProductID,
 			Quantity:    cart.Quantity.Int32,
-			TotalPrice:  float64(cart.TotalPrice),
+			TotalPrice:  cart.TotalPrice.Float64,
 		})
 	}
 
@@ -114,13 +114,13 @@ func (s *CartService) CreateOrderService(c *gin.Context, username string, arg Pl
 		return nil, fmt.Errorf("failed to get cart by user id: %w", err)
 	}
 
-	cartItems, err := s.storeDB.GetCartItems(c, pgtype.Int8{Int64: cart[0].ID, Valid: true})
+	cartItems, err := s.storeDB.GetCartItems(c, cart[0].ID)
 	if err != nil {
 		return nil, err
 	}
 
 	// Fetch the total price for a cart
-	totalPriceRow, err := s.storeDB.GetCartTotal(c, pgtype.Int8{Int64: cart[0].ID, Valid: true})
+	totalPriceRow, err := s.storeDB.GetCartTotal(c, cart[0].ID)
 	if err != nil {
 		return nil, err
 	}
@@ -239,8 +239,8 @@ func (s *CartService) DeleteItemFromCartService(c *gin.Context, username string,
 
 	err = s.storeDB.ExecWithTransaction(c, func(q *db.Queries) error {
 		err := q.RemoveItemFromCart(c, db.RemoveItemFromCartParams{
-			CartID:    pgtype.Int8{Int64: cart[0].ID, Valid: true},
-			ProductID: pgtype.Int8{Int64: itemID, Valid: true},
+			CartID:    cart[0].ID,
+			ProductID: itemID,
 		})
 		if err != nil {
 			return err

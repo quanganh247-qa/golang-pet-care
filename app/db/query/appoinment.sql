@@ -1,15 +1,13 @@
--- name: CreateAppointment :one
-INSERT INTO appointments
-( petid, doctor_id, username, service_id, "date", notes, reminder_send, time_slot_id, created_at, state_id)
-VALUES( 
-    $1, $2, $3, $4, $5, $6, $7, $8, now(), $9
-) RETURNING *;
 
+-- name: CreateAppointment :one
+INSERT INTO appointments (petid, username, doctor_id, service_id, date, time_slot_id, state_id)
+VALUES ($1, $2, $3, $4, $5, $6, (SELECT id FROM states WHERE state = 'Scheduled'))
+RETURNING *;
 
 -- name: UpdateTimeSlotBookedPatients :exec
 UPDATE time_slots
 SET booked_patients = booked_patients + 1
-WHERE id = $1 AND doctor_id = $2;
+WHERE id = $1;
 
 -- name: UpdateAppointmentByID :exec
 UPDATE appointments SET 
@@ -103,3 +101,4 @@ JOIN doctors ON appointments.doctor_id = doctors.id;
 
 -- name: GetSOAPByAppointmentID :one
 SELECT * FROM consultations WHERE appointment_id = $1;
+

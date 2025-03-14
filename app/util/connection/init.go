@@ -4,11 +4,14 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"time"
 
+	"github.com/fatih/color"
 	"github.com/hibiken/asynq"
 	"github.com/jackc/pgx/v5/pgxpool"
 	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
 	"github.com/quanganh247-qa/go-blog-be/app/service/mail"
+	"github.com/quanganh247-qa/go-blog-be/app/service/minio"
 	"github.com/quanganh247-qa/go-blog-be/app/service/redis"
 	"github.com/quanganh247-qa/go-blog-be/app/service/token"
 	"github.com/quanganh247-qa/go-blog-be/app/service/worker"
@@ -20,50 +23,39 @@ type Connection struct {
 }
 
 func Init(config util.Config) (*Connection, error) {
-	// Initialize JWT token maker
-	_, err := token.NewJWTMaker(config.SymmetricKey)
-	if err != nil {
+	if _, err := token.NewJWTMaker(config.SymmetricKey); err != nil {
 		return nil, fmt.Errorf("can't create token maker: %w", err)
 	}
 
-	// Initialize database connection pool
-	connPool, err := pgxpool.New(context.Background(), config.DATABASE_URL)
+	// Configure connection pool with reasonable defaults
+	poolConfig, err := pgxpool.ParseConfig(config.DATABASE_URL)
+	if err != nil {
+		return nil, fmt.Errorf("unable to parse database URL: %w", err)
+	}
+
+	// Set some reasonable pool settings
+	poolConfig.MaxConns = 10
+	poolConfig.MinConns = 2
+	poolConfig.MaxConnLifetime = 1 * time.Hour
+	poolConfig.MaxConnIdleTime = 30 * time.Minute
+
+	connPool, err := pgxpool.NewWithConfig(context.Background(), poolConfig)
 	if err != nil {
 		return nil, fmt.Errorf("cannot connect to db: %w", err)
 	}
 
+	// Verify the connection
+	if err := connPool.Ping(context.Background()); err != nil {
+		return nil, fmt.Errorf("cannot ping database: %w", err)
+	}
+
 	// Khởi tạo Redis
-	_ = asynq.RedisClientOpt{
-		Addr: config.RedisAddress,
-	}
-	err = redis.InitRedis(config.RedisAddress)
-	if err != nil {
-		return nil, fmt.Errorf("cannot connect to redis: %w", err)
-	}
-
-	// Khởi tạo database
-	DB := db.InitStore(connPool)
-	go runTaskProcessor(&config, asynq.RedisClientOpt{Addr: config.RedisAddress}, DB)
-
-	// client, err := minio.NewMinIOClient(
-	// 	config.MinIOEndpoint,
-	// 	config.MinIOAccessKey,
-	// 	config.MinIOSecretKey,
-	// 	config.MinIOSSL,
-	// )
-	// if err != nil {
-	// 	log.Println(color.RedString("Failed to initialize MinIO client: %v", err))
-	// }
-
-	// // Example usage of the MinIO client
-	// err = client.CheckConnection(context.Background())
-	// if err != nil {
-	// 	log.Println(color.RedString("Failed to check connection: %v", err))
-	// }
+	go redis.InitRedis(config.RedisAddress)
+	go runTaskProcessor(&config, asynq.RedisClientOpt{Addr: config.RedisAddress}, db.InitStore(connPool))
+	go initMinio(&config)
 
 	conn := &Connection{
 		Close: func() {
-			// Close resources when `Close` is called
 			connPool.Close()
 		},
 	}
@@ -88,4 +80,21 @@ func runTaskProcessor(config *util.Config, redisOpt asynq.RedisClientOpt, store 
 	if err != nil {
 		log.Fatalf("Failed to start task processor: %v", err)
 	}
+}
+
+func initMinio(config *util.Config) {
+	client, err := minio.NewMinIOClient(
+		config.MinIOEndpoint,
+		config.MinIOAccessKey,
+		config.MinIOSecretKey,
+		config.MinIOSSL,
+	)
+	if err != nil {
+		log.Println(color.RedString("Failed to initialize MinIO client: %v", err))
+	}
+
+	if err := client.CheckConnection(context.Background()); err != nil {
+		log.Println(color.RedString("Failed to check connection: %v", err))
+	}
+
 }

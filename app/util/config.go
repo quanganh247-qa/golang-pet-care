@@ -28,8 +28,6 @@ type Config struct {
 	CookieSecure   bool   `mapstructure:"COOKIE_SECURE"`
 	CookieUseHost  bool   `mapstructure:"COOKIE_USE_HOST"`
 
-	DefaultAuthenticationUsername string `mapstructure:"DEFAULT_AUTHENTICATION_USERNAME"`
-
 	AccessControlAllowOrigin string `mapstructure:"ACCESS_CONTROL_ALLOW_ORIGIN"`
 
 	EmailSenderName     string `mapstructure:"EMAIL_SENDER_NAME"`
@@ -48,12 +46,13 @@ type Config struct {
 	VietQRAPIKey    string `mapstructure:"VIETQR_API_KEY"`
 	VietQRClientKey string `mapstructure:"VIETQR_CLIENT_KEY"`
 
-	PaypalBaseURL   string `mapstructure:"PAYPAL_BASE_URL"`
-	PaypalAPIKey    string `mapstructure:"PAYPAL_API_KEY"`
-	PaypalClientKey string `mapstructure:"PAYPAL_CLIENT_KEY"`
+	PaypalClientID     string `mapstructure:"PAYPAL_CLIENT_ID"`
+	PaypalClientSecret string `mapstructure:"PAYPAL_CLIENT_SECRET"`
+	PaypalEnvironment  string `mapstructure:"PAYPAL_ENVIRONMENT"`
+	PaypalURL          string `mapstructure:"PAYPAL_URL"`
 
 	ElasticsearchURL string `mapstructure:"ELASTICSEARCH_URL"`
-	MinIOEndpoint    string `mapstructure:"MINIO_URL"`
+	MinIOEndpoint    string `mapstructure:"MINIO_ENDPOINT"`
 	MinIOAccessKey   string `mapstructure:"MINIO_ACCESS_KEY"`
 	MinIOSecretKey   string `mapstructure:"MINIO_SECRET_KEY"`
 	MinIOSSL         bool   `mapstructure:"MINIO_SSL"`

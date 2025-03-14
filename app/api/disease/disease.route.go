@@ -32,7 +32,9 @@ func Routes(routerGroup middleware.RouterGroup, es *elasticsearch.ESService) {
 		perRoute([]perms.Permission{perms.ManageDisease, perms.ManageTreatment}).POST("/treatment/:treatment_id/phase", diseaseApi.controller.CreateTreatmentPhase)
 		perRoute([]perms.Permission{perms.ManageDisease, perms.ManageTreatment}).POST("/treatment/:treatment_id/phase/:phase_id/medicine", diseaseApi.controller.AssignMedicineToTreatmentPhase)
 		perRoute([]perms.Permission{perms.ManageTreatment}).PUT("/treatment/:treatment_id/phase/:phase_id", diseaseApi.controller.UpdateTreatmentPhaseStatus)
+		perRoute([]perms.Permission{perms.ManageTreatment}).GET("/treatment/:treatment_id/prescription", diseaseApi.controller.GenerateMedicineOnlyPrescription)
 	}
 
 	dicease.POST("/disease", diseaseApi.controller.CreateDisease)
+
 }

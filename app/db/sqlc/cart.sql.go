@@ -20,12 +20,12 @@ INSERT INTO cart_items (
     updated_at
 ) VALUES (
     $1, $2, $3, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
-) RETURNING id, cart_id, product_id, quantity, created_at, updated_at
+) RETURNING id, cart_id, product_id, quantity, unit_price, total_price
 `
 
 type AddItemToCartParams struct {
-	CartID    pgtype.Int8 `json:"cart_id"`
-	ProductID pgtype.Int8 `json:"product_id"`
+	CartID    int64       `json:"cart_id"`
+	ProductID int64       `json:"product_id"`
 	Quantity  pgtype.Int4 `json:"quantity"`
 }
 
@@ -37,8 +37,8 @@ func (q *Queries) AddItemToCart(ctx context.Context, arg AddItemToCartParams) (C
 		&i.CartID,
 		&i.ProductID,
 		&i.Quantity,
-		&i.CreatedAt,
-		&i.UpdatedAt,
+		&i.UnitPrice,
+		&i.TotalPrice,
 	)
 	return i, err
 }
@@ -107,12 +107,12 @@ const decreaseItemQuantity = `-- name: DecreaseItemQuantity :exec
 UPDATE cart_items
 SET quantity = quantity - $3
 WHERE cart_id = $1 AND product_id = $2 AND quantity > $3
-RETURNING id, cart_id, product_id, quantity, created_at, updated_at
+RETURNING id, cart_id, product_id, quantity, unit_price, total_price
 `
 
 type DecreaseItemQuantityParams struct {
-	CartID    pgtype.Int8 `json:"cart_id"`
-	ProductID pgtype.Int8 `json:"product_id"`
+	CartID    int64       `json:"cart_id"`
+	ProductID int64       `json:"product_id"`
 	Quantity  pgtype.Int4 `json:"quantity"`
 }
 
@@ -154,7 +154,7 @@ func (q *Queries) GetCartByUserId(ctx context.Context, userID int64) ([]Cart, er
 
 const getCartItems = `-- name: GetCartItems :many
 SELECT 
-    ci.id, ci.cart_id, ci.product_id, ci.quantity, ci.created_at, ci.updated_at,
+    ci.id, ci.cart_id, ci.product_id, ci.quantity, ci.unit_price, ci.total_price,
     p.name as product_name,
     p.price as unit_price,
     (p.price * ci.quantity) as total_price
@@ -164,18 +164,18 @@ WHERE ci.cart_id = $1
 `
 
 type GetCartItemsRow struct {
-	ID          int64            `json:"id"`
-	CartID      pgtype.Int8      `json:"cart_id"`
-	ProductID   pgtype.Int8      `json:"product_id"`
-	Quantity    pgtype.Int4      `json:"quantity"`
-	CreatedAt   pgtype.Timestamp `json:"created_at"`
-	UpdatedAt   pgtype.Timestamp `json:"updated_at"`
-	ProductName string           `json:"product_name"`
-	UnitPrice   float64          `json:"unit_price"`
-	TotalPrice  int32            `json:"total_price"`
+	ID           int64         `json:"id"`
+	CartID       int64         `json:"cart_id"`
+	ProductID    int64         `json:"product_id"`
+	Quantity     pgtype.Int4   `json:"quantity"`
+	UnitPrice    float64       `json:"unit_price"`
+	TotalPrice   pgtype.Float8 `json:"total_price"`
+	ProductName  string        `json:"product_name"`
+	UnitPrice_2  float64       `json:"unit_price_2"`
+	TotalPrice_2 int32         `json:"total_price_2"`
 }
 
-func (q *Queries) GetCartItems(ctx context.Context, cartID pgtype.Int8) ([]GetCartItemsRow, error) {
+func (q *Queries) GetCartItems(ctx context.Context, cartID int64) ([]GetCartItemsRow, error) {
 	rows, err := q.db.Query(ctx, getCartItems, cartID)
 	if err != nil {
 		return nil, err
@@ -189,11 +189,11 @@ func (q *Queries) GetCartItems(ctx context.Context, cartID pgtype.Int8) ([]GetCa
 			&i.CartID,
 			&i.ProductID,
 			&i.Quantity,
-			&i.CreatedAt,
-			&i.UpdatedAt,
-			&i.ProductName,
 			&i.UnitPrice,
 			&i.TotalPrice,
+			&i.ProductName,
+			&i.UnitPrice_2,
+			&i.TotalPrice_2,
 		); err != nil {
 			return nil, err
 		}
@@ -211,7 +211,7 @@ FROM cart_items
 WHERE cart_id = $1
 `
 
-func (q *Queries) GetCartTotal(ctx context.Context, cartID pgtype.Int8) (float64, error) {
+func (q *Queries) GetCartTotal(ctx context.Context, cartID int64) (float64, error) {
 	row := q.db.QueryRow(ctx, getCartTotal, cartID)
 	var column_1 float64
 	err := row.Scan(&column_1)
@@ -283,8 +283,8 @@ WHERE cart_id = $1 AND product_id = $2
 `
 
 type RemoveItemFromCartParams struct {
-	CartID    pgtype.Int8 `json:"cart_id"`
-	ProductID pgtype.Int8 `json:"product_id"`
+	CartID    int64 `json:"cart_id"`
+	ProductID int64 `json:"product_id"`
 }
 
 func (q *Queries) RemoveItemFromCart(ctx context.Context, arg RemoveItemFromCartParams) error {
@@ -301,8 +301,8 @@ WHERE cart_id = $1 AND product_id = $2
 `
 
 type UpdateCartItemQuantityParams struct {
-	CartID    pgtype.Int8 `json:"cart_id"`
-	ProductID pgtype.Int8 `json:"product_id"`
+	CartID    int64       `json:"cart_id"`
+	ProductID int64       `json:"product_id"`
 	Quantity  pgtype.Int4 `json:"quantity"`
 }
 

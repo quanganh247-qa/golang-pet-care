@@ -13,11 +13,11 @@ import (
 
 const createService = `-- name: CreateService :one
 INSERT INTO services (
-    name, description, duration, cost, category, notes
+    name, description, duration, cost, category
 ) VALUES (
-    $1, $2, $3, $4, $5, $6
+    $1, $2, $3, $4, $5
 )
-RETURNING id, name, description, duration, cost, category, notes, created_at, updated_at
+RETURNING id, name, description, duration, cost, category, priority, created_at
 `
 
 type CreateServiceParams struct {
@@ -26,7 +26,6 @@ type CreateServiceParams struct {
 	Duration    pgtype.Int2   `json:"duration"`
 	Cost        pgtype.Float8 `json:"cost"`
 	Category    pgtype.Text   `json:"category"`
-	Notes       pgtype.Text   `json:"notes"`
 }
 
 func (q *Queries) CreateService(ctx context.Context, arg CreateServiceParams) (Service, error) {
@@ -36,7 +35,6 @@ func (q *Queries) CreateService(ctx context.Context, arg CreateServiceParams) (S
 		arg.Duration,
 		arg.Cost,
 		arg.Category,
-		arg.Notes,
 	)
 	var i Service
 	err := row.Scan(
@@ -46,9 +44,8 @@ func (q *Queries) CreateService(ctx context.Context, arg CreateServiceParams) (S
 		&i.Duration,
 		&i.Cost,
 		&i.Category,
-		&i.Notes,
+		&i.Priority,
 		&i.CreatedAt,
-		&i.UpdatedAt,
 	)
 	return i, err
 }
@@ -65,7 +62,7 @@ func (q *Queries) DeleteService(ctx context.Context, id int64) error {
 }
 
 const getServiceByID = `-- name: GetServiceByID :one
-SELECT id, name, description, duration, cost, category, notes, created_at, updated_at FROM services
+SELECT id, name, description, duration, cost, category, priority, created_at FROM services
 WHERE id = $1
 `
 
@@ -79,15 +76,14 @@ func (q *Queries) GetServiceByID(ctx context.Context, id int64) (Service, error)
 		&i.Duration,
 		&i.Cost,
 		&i.Category,
-		&i.Notes,
+		&i.Priority,
 		&i.CreatedAt,
-		&i.UpdatedAt,
 	)
 	return i, err
 }
 
 const getServices = `-- name: GetServices :many
-SELECT id, name, description, duration, cost, category, notes, created_at, updated_at FROM services where removed_at is NULL ORDER BY name LIMIT $1 OFFSET $2
+SELECT id, name, description, duration, cost, category, priority, created_at FROM services where removed_at is NULL ORDER BY name LIMIT $1 OFFSET $2
 `
 
 type GetServicesParams struct {
@@ -111,9 +107,8 @@ func (q *Queries) GetServices(ctx context.Context, arg GetServicesParams) ([]Ser
 			&i.Duration,
 			&i.Cost,
 			&i.Category,
-			&i.Notes,
+			&i.Priority,
 			&i.CreatedAt,
-			&i.UpdatedAt,
 		); err != nil {
 			return nil, err
 		}
@@ -133,10 +128,9 @@ SET
     duration = $4,
     cost = $5,
     category = $6,
-    notes = $7,
     updated_at = NOW()
 WHERE id = $1
-RETURNING id, name, description, duration, cost, category, notes, created_at, updated_at
+RETURNING id, name, description, duration, cost, category, priority, created_at
 `
 
 type UpdateServiceParams struct {
@@ -146,7 +140,6 @@ type UpdateServiceParams struct {
 	Duration    pgtype.Int2   `json:"duration"`
 	Cost        pgtype.Float8 `json:"cost"`
 	Category    pgtype.Text   `json:"category"`
-	Notes       pgtype.Text   `json:"notes"`
 }
 
 func (q *Queries) UpdateService(ctx context.Context, arg UpdateServiceParams) (Service, error) {
@@ -157,7 +150,6 @@ func (q *Queries) UpdateService(ctx context.Context, arg UpdateServiceParams) (S
 		arg.Duration,
 		arg.Cost,
 		arg.Category,
-		arg.Notes,
 	)
 	var i Service
 	err := row.Scan(
@@ -167,9 +159,8 @@ func (q *Queries) UpdateService(ctx context.Context, arg UpdateServiceParams) (S
 		&i.Duration,
 		&i.Cost,
 		&i.Category,
-		&i.Notes,
+		&i.Priority,
 		&i.CreatedAt,
-		&i.UpdatedAt,
 	)
 	return i, err
 }

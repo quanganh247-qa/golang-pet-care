@@ -10,6 +10,9 @@ import (
 	"github.com/quanganh247-qa/go-blog-be/app/middleware"
 	"github.com/quanganh247-qa/go-blog-be/app/service/token"
 	"github.com/quanganh247-qa/go-blog-be/app/util"
+	"github.com/supertokens/supertokens-golang/recipe/session"
+	"github.com/supertokens/supertokens-golang/recipe/thirdparty"
+	"github.com/supertokens/supertokens-golang/supertokens"
 )
 
 type UserControllerInterface interface {
@@ -25,6 +28,8 @@ type UserControllerInterface interface {
 	updatetUserAvatar(ctx *gin.Context)
 	ForgotPassword(ctx *gin.Context)
 	UpdatePassword(ctx *gin.Context)
+	sessioninfo(ctx *gin.Context)
+	userinfo(ctx *gin.Context)
 }
 
 func (controller *UserController) createUser(ctx *gin.Context) {
@@ -128,9 +133,6 @@ func (controller *UserController) logoutUser(ctx *gin.Context) {
 func (controller *UserController) getAccessToken(ctx *gin.Context) {
 	util.SetCookieSameSite(ctx)
 	cookie, err := ctx.Cookie("refresh_token")
-	if util.Configs.DefaultAuthenticationUsername != "" && err != nil {
-		cookie, _, err = token.TokenMaker.CreateToken(util.Configs.DefaultAuthenticationUsername, nil, util.Configs.AccessTokenDuration)
-	}
 	if err != nil {
 		ctx.JSON(http.StatusForbidden, util.ErrorResponse(err))
 		return
@@ -274,4 +276,44 @@ func (controller *UserController) UpdatePassword(ctx *gin.Context) {
 		return
 	}
 	ctx.JSON(http.StatusOK, util.SuccessResponse("Success", nil))
+}
+
+func (controller *UserController) sessioninfo(ctx *gin.Context) {
+	sessionContainer := session.GetSessionFromRequestContext(ctx.Request.Context())
+	if sessionContainer == nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "no session found"})
+		return
+	}
+
+	sessionData, err := sessionContainer.GetSessionDataInDatabase()
+	if err != nil {
+		if err = supertokens.ErrorHandler(err, ctx.Request, ctx.Writer); err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"sessionHandle":      sessionContainer.GetHandle(),
+		"userId":             sessionContainer.GetUserID(),
+		"accessTokenPayload": sessionContainer.GetAccessTokenPayload(),
+		"sessionData":        sessionData,
+	})
+}
+
+func (controller *UserController) userinfo(ctx *gin.Context) {
+	sessionContainer := session.GetSessionFromRequestContext(ctx.Request.Context())
+	if sessionContainer == nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "no session found"})
+		return
+	}
+
+	userInfo, err := thirdparty.GetUserByID(sessionContainer.GetUserID())
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, util.ErrorResponse(err))
+		return
+	}
+
+	ctx.JSON(http.StatusOK, util.SuccessResponse("Success", userInfo))
 }

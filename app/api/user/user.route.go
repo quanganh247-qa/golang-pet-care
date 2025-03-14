@@ -39,6 +39,9 @@ func Routes(routerGroup middleware.RouterGroup, taskDistributor worker.TaskDistr
 		user.PUT("/reset-password", userApi.controller.ForgotPassword)
 		authRoute.PUT("/change-password", userApi.controller.UpdatePassword)
 
+		user.GET("/sessioninfo", userApi.controller.sessioninfo)
+		user.GET("/userinfo", userApi.controller.userinfo)
+
 	}
 
 }

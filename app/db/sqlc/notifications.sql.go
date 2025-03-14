@@ -11,27 +11,6 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
-const createNotificationPreference = `-- name: CreateNotificationPreference :exec
-INSERT INTO notification_preferences (
-    username,
-    topic,
-    enabled
-) VALUES (
-    $1, $2, $3
-)
-`
-
-type CreateNotificationPreferenceParams struct {
-	Username string      `json:"username"`
-	Topic    string      `json:"topic"`
-	Enabled  pgtype.Bool `json:"enabled"`
-}
-
-func (q *Queries) CreateNotificationPreference(ctx context.Context, arg CreateNotificationPreferenceParams) error {
-	_, err := q.db.Exec(ctx, createNotificationPreference, arg.Username, arg.Topic, arg.Enabled)
-	return err
-}
-
 const createtNotification = `-- name: CreatetNotification :one
 INSERT INTO notifications (
     username,
@@ -89,38 +68,6 @@ func (q *Queries) DeleteNotificationsByUsername(ctx context.Context, username st
 	return err
 }
 
-const getNotificationPreferencesByUsername = `-- name: GetNotificationPreferencesByUsername :many
-SELECT id, username, topic, enabled, created_at, updated_at FROM notification_preferences
-WHERE username = $1
-`
-
-func (q *Queries) GetNotificationPreferencesByUsername(ctx context.Context, username string) ([]NotificationPreference, error) {
-	rows, err := q.db.Query(ctx, getNotificationPreferencesByUsername, username)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	items := []NotificationPreference{}
-	for rows.Next() {
-		var i NotificationPreference
-		if err := rows.Scan(
-			&i.ID,
-			&i.Username,
-			&i.Topic,
-			&i.Enabled,
-			&i.CreatedAt,
-			&i.UpdatedAt,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
-}
-
 const listNotificationsByUsername = `-- name: ListNotificationsByUsername :many
 SELECT id, username, title, content, is_read, related_id, related_type, datetime, notify_type FROM notifications
 WHERE username = $1
@@ -171,22 +118,5 @@ WHERE id = $1
 
 func (q *Queries) MarkNotificationAsRead(ctx context.Context, id int64) error {
 	_, err := q.db.Exec(ctx, markNotificationAsRead, id)
-	return err
-}
-
-const updateNotificationPreference = `-- name: UpdateNotificationPreference :exec
-UPDATE notification_preferences
-SET enabled = $2
-WHERE username = $1 AND topic = $3
-`
-
-type UpdateNotificationPreferenceParams struct {
-	Username string      `json:"username"`
-	Enabled  pgtype.Bool `json:"enabled"`
-	Topic    string      `json:"topic"`
-}
-
-func (q *Queries) UpdateNotificationPreference(ctx context.Context, arg UpdateNotificationPreferenceParams) error {
-	_, err := q.db.Exec(ctx, updateNotificationPreference, arg.Username, arg.Enabled, arg.Topic)
 	return err
 }

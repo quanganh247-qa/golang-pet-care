@@ -19,6 +19,7 @@ type DiseaseControllerInterface interface {
 	UpdateTreatmentPhaseStatus(ctx *gin.Context)
 	GetActiveTreatments(ctx *gin.Context)
 	GetTreatmentProgress(ctx *gin.Context)
+	GenerateMedicineOnlyPrescription(ctx *gin.Context)
 }
 
 func (c *DiseaseController) CreateDisease(ctx *gin.Context) {
@@ -249,3 +250,19 @@ func (c *DiseaseController) GetTreatmentProgress(ctx *gin.Context) {
 // 	}
 // 	ctx.JSON(http.StatusOK, util.SuccessResponse("Treatment", treatment))
 // }
+
+func (c *DiseaseController) GenerateMedicineOnlyPrescription(ctx *gin.Context) {
+	treatmentID := ctx.Param("treatment_id")
+	id, err := strconv.ParseInt(treatmentID, 10, 64)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
+		return
+	}
+
+	prescription, err := c.service.GenerateMedicineOnlyPrescriptionPDF(ctx, id, "prescription.pdf")
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	ctx.JSON(http.StatusOK, util.SuccessResponse("Prescription", prescription))
+}

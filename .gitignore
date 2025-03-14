@@ -6,7 +6,37 @@ app/static/images/
 app.env
 gin-bin
 
-llm-service
-go.work.sum
 
-vendor
+# Thêm vào .gitignore
+*.log
+*.tmp
+/tmp
+/logs
+/dist
+/build
+*.test
+/vendor
+.env*
+*.out
+/coverage
+.DS_Store
+
+.vscode
+
+# Docker
+.docker/
+docker-compose.override.yml
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# Build
+/dist
+/tmp
+*.log
+
+
+
+.txt

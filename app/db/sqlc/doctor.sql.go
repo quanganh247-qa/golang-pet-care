@@ -18,21 +18,18 @@ INSERT INTO doctors (
     years_of_experience,
     education,
     certificate_number,
-    bio,
-    consultation_fee
-) VALUES (
-    $1, $2, $3, $4, $5, $6, $7
-) RETURNING id, user_id, specialization, years_of_experience, education, certificate_number, bio, consultation_fee
+    bio) VALUES (
+    $1, $2, $3, $4, $5, $6
+) RETURNING id, user_id, specialization, years_of_experience, education, certificate_number, bio
 `
 
 type CreateDoctorParams struct {
-	UserID            int64         `json:"user_id"`
-	Specialization    pgtype.Text   `json:"specialization"`
-	YearsOfExperience pgtype.Int4   `json:"years_of_experience"`
-	Education         pgtype.Text   `json:"education"`
-	CertificateNumber pgtype.Text   `json:"certificate_number"`
-	Bio               pgtype.Text   `json:"bio"`
-	ConsultationFee   pgtype.Float8 `json:"consultation_fee"`
+	UserID            int64       `json:"user_id"`
+	Specialization    pgtype.Text `json:"specialization"`
+	YearsOfExperience pgtype.Int4 `json:"years_of_experience"`
+	Education         pgtype.Text `json:"education"`
+	CertificateNumber pgtype.Text `json:"certificate_number"`
+	Bio               pgtype.Text `json:"bio"`
 }
 
 func (q *Queries) CreateDoctor(ctx context.Context, arg CreateDoctorParams) (Doctor, error) {
@@ -43,7 +40,6 @@ func (q *Queries) CreateDoctor(ctx context.Context, arg CreateDoctorParams) (Doc
 		arg.Education,
 		arg.CertificateNumber,
 		arg.Bio,
-		arg.ConsultationFee,
 	)
 	var i Doctor
 	err := row.Scan(
@@ -54,7 +50,6 @@ func (q *Queries) CreateDoctor(ctx context.Context, arg CreateDoctorParams) (Doc
 		&i.Education,
 		&i.CertificateNumber,
 		&i.Bio,
-		&i.ConsultationFee,
 	)
 	return i, err
 }
@@ -73,8 +68,8 @@ const getAvailableDoctors = `-- name: GetAvailableDoctors :many
 SELECT DISTINCT
     d.id,
     u.full_name,
-    d.specialization,
-    d.consultation_fee
+    d.specialization
+
 FROM doctors d
 JOIN users u ON d.user_id = u.id
 JOIN time_slots ts ON ts.doctor_id = d.id
@@ -83,10 +78,9 @@ AND ts.booked_patients < ts.max_patients
 `
 
 type GetAvailableDoctorsRow struct {
-	ID              int64         `json:"id"`
-	FullName        string        `json:"full_name"`
-	Specialization  pgtype.Text   `json:"specialization"`
-	ConsultationFee pgtype.Float8 `json:"consultation_fee"`
+	ID             int64       `json:"id"`
+	FullName       string      `json:"full_name"`
+	Specialization pgtype.Text `json:"specialization"`
 }
 
 func (q *Queries) GetAvailableDoctors(ctx context.Context, date pgtype.Date) ([]GetAvailableDoctorsRow, error) {
@@ -98,12 +92,7 @@ func (q *Queries) GetAvailableDoctors(ctx context.Context, date pgtype.Date) ([]
 	items := []GetAvailableDoctorsRow{}
 	for rows.Next() {
 		var i GetAvailableDoctorsRow
-		if err := rows.Scan(
-			&i.ID,
-			&i.FullName,
-			&i.Specialization,
-			&i.ConsultationFee,
-		); err != nil {
+		if err := rows.Scan(&i.ID, &i.FullName, &i.Specialization); err != nil {
 			return nil, err
 		}
 		items = append(items, i)
@@ -122,22 +111,20 @@ SELECT
     d.years_of_experience,
     d.education,
     d.certificate_number,
-    d.bio,
-    d.consultation_fee
+    d.bio
 FROM doctors d
 JOIN users u ON d.user_id = u.id
 WHERE d.id = $1
 `
 
 type GetDoctorRow struct {
-	ID                int64         `json:"id"`
-	Name              string        `json:"name"`
-	Specialization    pgtype.Text   `json:"specialization"`
-	YearsOfExperience pgtype.Int4   `json:"years_of_experience"`
-	Education         pgtype.Text   `json:"education"`
-	CertificateNumber pgtype.Text   `json:"certificate_number"`
-	Bio               pgtype.Text   `json:"bio"`
-	ConsultationFee   pgtype.Float8 `json:"consultation_fee"`
+	ID                int64       `json:"id"`
+	Name              string      `json:"name"`
+	Specialization    pgtype.Text `json:"specialization"`
+	YearsOfExperience pgtype.Int4 `json:"years_of_experience"`
+	Education         pgtype.Text `json:"education"`
+	CertificateNumber pgtype.Text `json:"certificate_number"`
+	Bio               pgtype.Text `json:"bio"`
 }
 
 func (q *Queries) GetDoctor(ctx context.Context, id int64) (GetDoctorRow, error) {
@@ -151,13 +138,12 @@ func (q *Queries) GetDoctor(ctx context.Context, id int64) (GetDoctorRow, error)
 		&i.Education,
 		&i.CertificateNumber,
 		&i.Bio,
-		&i.ConsultationFee,
 	)
 	return i, err
 }
 
 const getDoctorByUserId = `-- name: GetDoctorByUserId :one
-SELECT id, user_id, specialization, years_of_experience, education, certificate_number, bio, consultation_fee FROM doctors
+SELECT id, user_id, specialization, years_of_experience, education, certificate_number, bio FROM doctors
 WHERE user_id = $1
 `
 
@@ -172,7 +158,6 @@ func (q *Queries) GetDoctorByUserId(ctx context.Context, userID int64) (Doctor, 
 		&i.Education,
 		&i.CertificateNumber,
 		&i.Bio,
-		&i.ConsultationFee,
 	)
 	return i, err
 }
@@ -187,24 +172,22 @@ SELECT
     d.years_of_experience,
     d.education,
     d.certificate_number,
-    d.bio,
-    d.consultation_fee
+    d.bio
 FROM doctors d
 JOIN users u ON d.user_id = u.id
 ORDER BY u.full_name
 `
 
 type ListDoctorsRow struct {
-	DoctorID          int64         `json:"doctor_id"`
-	Username          string        `json:"username"`
-	FullName          string        `json:"full_name"`
-	Email             string        `json:"email"`
-	Specialization    pgtype.Text   `json:"specialization"`
-	YearsOfExperience pgtype.Int4   `json:"years_of_experience"`
-	Education         pgtype.Text   `json:"education"`
-	CertificateNumber pgtype.Text   `json:"certificate_number"`
-	Bio               pgtype.Text   `json:"bio"`
-	ConsultationFee   pgtype.Float8 `json:"consultation_fee"`
+	DoctorID          int64       `json:"doctor_id"`
+	Username          string      `json:"username"`
+	FullName          string      `json:"full_name"`
+	Email             string      `json:"email"`
+	Specialization    pgtype.Text `json:"specialization"`
+	YearsOfExperience pgtype.Int4 `json:"years_of_experience"`
+	Education         pgtype.Text `json:"education"`
+	CertificateNumber pgtype.Text `json:"certificate_number"`
+	Bio               pgtype.Text `json:"bio"`
 }
 
 func (q *Queries) ListDoctors(ctx context.Context) ([]ListDoctorsRow, error) {
@@ -226,7 +209,6 @@ func (q *Queries) ListDoctors(ctx context.Context) ([]ListDoctorsRow, error) {
 			&i.Education,
 			&i.CertificateNumber,
 			&i.Bio,
-			&i.ConsultationFee,
 		); err != nil {
 			return nil, err
 		}
@@ -245,20 +227,18 @@ SET
     years_of_experience = COALESCE($3, years_of_experience),
     education = COALESCE($4, education),
     certificate_number = COALESCE($5, certificate_number),
-    bio = COALESCE($6, bio),
-    consultation_fee = COALESCE($7, consultation_fee)
-WHERE id = $1
-RETURNING id, user_id, specialization, years_of_experience, education, certificate_number, bio, consultation_fee
+    bio = COALESCE($6, bio)
+    WHERE id = $1
+RETURNING id, user_id, specialization, years_of_experience, education, certificate_number, bio
 `
 
 type UpdateDoctorParams struct {
-	ID                int64         `json:"id"`
-	Specialization    pgtype.Text   `json:"specialization"`
-	YearsOfExperience pgtype.Int4   `json:"years_of_experience"`
-	Education         pgtype.Text   `json:"education"`
-	CertificateNumber pgtype.Text   `json:"certificate_number"`
-	Bio               pgtype.Text   `json:"bio"`
-	ConsultationFee   pgtype.Float8 `json:"consultation_fee"`
+	ID                int64       `json:"id"`
+	Specialization    pgtype.Text `json:"specialization"`
+	YearsOfExperience pgtype.Int4 `json:"years_of_experience"`
+	Education         pgtype.Text `json:"education"`
+	CertificateNumber pgtype.Text `json:"certificate_number"`
+	Bio               pgtype.Text `json:"bio"`
 }
 
 func (q *Queries) UpdateDoctor(ctx context.Context, arg UpdateDoctorParams) (Doctor, error) {
@@ -269,7 +249,6 @@ func (q *Queries) UpdateDoctor(ctx context.Context, arg UpdateDoctorParams) (Doc
 		arg.Education,
 		arg.CertificateNumber,
 		arg.Bio,
-		arg.ConsultationFee,
 	)
 	var i Doctor
 	err := row.Scan(
@@ -280,7 +259,6 @@ func (q *Queries) UpdateDoctor(ctx context.Context, arg UpdateDoctorParams) (Doc
 		&i.Education,
 		&i.CertificateNumber,
 		&i.Bio,
-		&i.ConsultationFee,
 	)
 	return i, err
 }

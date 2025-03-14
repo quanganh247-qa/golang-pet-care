@@ -163,7 +163,7 @@ func (q *Queries) GetPetByID(ctx context.Context, petid int64) (Pet, error) {
 }
 
 const getPetProfileSummary = `-- name: GetPetProfileSummary :many
-SELECT p.petid, p.name, p.type, p.breed, p.age, p.gender, p.healthnotes, p.weight, p.birth_date, p.username, p.microchip_number, p.last_checkup_date, p.is_active, p.data_image, p.original_image, pt.id, pt.pet_id, pt.disease_id, pt.start_date, pt.end_date, pt.status, pt.notes, pt.created_at, v.vaccinationid, v.petid, v.vaccinename, v.dateadministered, v.nextduedate, v.vaccineprovider, v.batchnumber, v.notes 
+SELECT p.petid, p.name, p.type, p.breed, p.age, p.gender, p.healthnotes, p.weight, p.birth_date, p.username, p.microchip_number, p.last_checkup_date, p.is_active, p.data_image, p.original_image, pt.id, pt.pet_id, pt.disease_id, pt.start_date, pt.end_date, pt.status, pt.notes, pt.created_at, pt.doctor_id, v.vaccinationid, v.petid, v.vaccinename, v.dateadministered, v.nextduedate, v.vaccineprovider, v.batchnumber, v.notes 
 FROM pets AS p
 LEFT JOIN pet_treatments AS pt ON p.petid = pt.pet_id
 LEFT JOIN vaccinations AS v ON p.petid = v.petid
@@ -194,6 +194,7 @@ type GetPetProfileSummaryRow struct {
 	Status           pgtype.Text        `json:"status"`
 	Notes            pgtype.Text        `json:"notes"`
 	CreatedAt        pgtype.Timestamptz `json:"created_at"`
+	DoctorID         pgtype.Int4        `json:"doctor_id"`
 	Vaccinationid    pgtype.Int8        `json:"vaccinationid"`
 	Petid_2          pgtype.Int8        `json:"petid_2"`
 	Vaccinename      pgtype.Text        `json:"vaccinename"`
@@ -237,6 +238,7 @@ func (q *Queries) GetPetProfileSummary(ctx context.Context, petid int64) ([]GetP
 			&i.Status,
 			&i.Notes,
 			&i.CreatedAt,
+			&i.DoctorID,
 			&i.Vaccinationid,
 			&i.Petid_2,
 			&i.Vaccinename,

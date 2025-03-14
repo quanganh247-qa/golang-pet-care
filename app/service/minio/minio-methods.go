@@ -199,51 +199,54 @@ func UpdateCoverFileUpload(c *gin.Context, email, username string, coverID int64
 }
 
 // HandleFileUpload handles file uploads and returns the URL of the uploaded file
-func HandleFileUpload(c *gin.Context, username string) (string, int64, error) {
+func HandleFileUpload(c *gin.Context, folderName string) (string, error) {
 	mcclient, err := GetMinIOClient()
 	if err != nil {
-		return "", 0, fmt.Errorf("error getting MinIO client: %v", err)
+		return "", fmt.Errorf("error getting MinIO client: %v", err)
 	}
 
-	mcclient.CreateBucket(c, username)
+	//check if bucket exists
+	exists, err := mcclient.Client.BucketExists(c, folderName)
 	if err != nil {
-		return "", 0, fmt.Errorf("failed to create bucket %s: %v", username, err)
+		return "", fmt.Errorf("failed to check bucket %s: %v", folderName, err)
+	}
+	if !exists {
+		mcclient.CreateBucket(c, folderName)
 	}
 
-	file, fileHeader, err := c.Request.FormFile("image")
+	file, fileHeader, err := c.Request.FormFile("file")
 	if err != nil {
-		return "", 0, fmt.Errorf("failed to get the file: %v", err)
+		return "", fmt.Errorf("failed to get the file: %v", err)
 	}
 	defer file.Close()
 
 	fileName := fileHeader.Filename
-	// Create ProjectFile record
-	fileSize := fileHeader.Size                       // Get the file size
-	fileType := fileHeader.Header.Get("Content-Type") // Get the file type
+	// fileSize := fileHeader.Size
+	// fileType := fileHeader.Header.Get("Content-Type")
 
 	fileContent, err := io.ReadAll(file)
 	if err != nil {
-		return "", 0, fmt.Errorf("failed to read file content for %s: %v", fileName, err)
+		return "", fmt.Errorf("failed to read file content for %s: %v", fileName, err)
 	}
 
-	err = mcclient.UploadFile(c, username, fileName, fileContent)
+	err = mcclient.UploadFile(c, folderName, fileName, fileContent)
 	if err != nil {
-		return "", 0, fmt.Errorf("failed to upload file %s to MinIO: %v", fileName, err)
+		return "", fmt.Errorf("failed to upload file %s to MinIO: %v", fileName, err)
 	}
 
-	imageURL, err := mcclient.GetPresignedURL(c, username, fileName, time.Duration(24)*time.Hour)
+	url, err := mcclient.GetPresignedURL(c, folderName, fileName, time.Duration(24)*time.Hour)
 	if err != nil {
-		return "", 0, fmt.Errorf("failed to get presigned URL for file %s: %v", fileName, err)
+		return "", fmt.Errorf("failed to get presigned URL for file %s: %v", fileName, err)
 	}
 
-	newFile, err := db.StoreDB.CreateFile(c, db.CreateFileParams{
-		FileName: fileName,
-		FilePath: username,
-		FileSize: fileSize,
-		FileType: fileType,
-	})
-	if err != nil {
-		return "", 0, fmt.Errorf("failed to create file: %v", err)
-	}
-	return imageURL, newFile.ID, nil
+	// newFile, err := db.StoreDB.CreateFile(c, db.CreateFileParams{
+	// 	FileName: fileName,
+	// 	FilePath: url,
+	// 	FileSize: fileSize,
+	// 	FileType: fileType,
+	// })
+	// if err != nil {
+	// 	return "", 0, fmt.Errorf("failed to create file: %v", err)
+	// }
+	return url, nil
 }
