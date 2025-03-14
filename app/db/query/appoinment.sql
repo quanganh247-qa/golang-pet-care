@@ -43,22 +43,6 @@ WHERE d.id = $1
 AND LOWER(a.status) <> 'completed'
 ORDER BY ts.start_time ASC;
 
--- name: GetAppointmentDetailById :one
-SELECT * from appointments WHERE appointment_id = $1;
-
--- name: GetAppointmentsByUser :many
-SELECT 
-    p.*, s.*, a.*, ts.*
-FROM 
-    appointments a
-JOIN 
-    pets p ON a.petid = p.petid 
-JOIN 
-    services s ON a.service_id = s.id 
-JOIN 
-    time_slots ts ON a.time_slot_id = ts.id
-WHERE 
-    a.username = $1 and a.status <> 'completed';
 
 -- name: CountAppointmentsByDateAndTimeSlot :one
 SELECT COUNT(*) 
@@ -67,24 +51,34 @@ WHERE date = $1 AND doctor_id = $2 AND status = 'completed';
 
 -- name: GetAppointmentsByDoctor :many
 SELECT 
-    a.*,
+    a.appointment_id,
+    a.date,
+    a.created_at,
+    a.notes,
+    a.reminder_send,
     d.id AS doctor_id,
     p.name AS pet_name,
     s.name AS service_name,
     ts.start_time,
-    ts.end_time
+    ts.end_time,
+    ts.id AS time_slot_id,
+    st.state AS state_name,
+    st.id AS state_id
 FROM 
     appointments a
-JOIN 
+LEFT JOIN 
     doctors d ON a.doctor_id = d.id
-JOIN 
+LEFT JOIN 
     pets p ON a.petid = p.petid
-JOIN 
-    services as s ON a.service_id = s.id
-JOIN 
+LEFT JOIN 
+    services s ON a.service_id = s.id
+LEFT JOIN 
     time_slots ts ON a.time_slot_id = ts.id
+LEFT JOIN 
+    states st ON a.state_id = st.id
 WHERE 
-    a.doctor_id = $1;
+    a.doctor_id = $1
+ORDER BY a.created_at DESC;
 
 -- name: ListAllAppointments :many
 SELECT * FROM appointments;
@@ -93,12 +87,61 @@ SELECT * FROM appointments;
 SELECT * FROM appointments WHERE state_id = $1;
 
 -- name: GetAllAppointments :many
-SELECT * FROM appointments
-JOIN pets ON appointments.petid = pets.petid
-JOIN services ON appointments.service_id = services.id
-JOIN time_slots ON appointments.time_slot_id = time_slots.id
-JOIN doctors ON appointments.doctor_id = doctors.id;
+SELECT 
+    a.appointment_id, a.date, a.notes, a.reminder_send, a.created_at,
+    p.name AS pet_name,
+    d.id AS doctor_id,
+    s.name AS service_name,
+    ts.start_time, ts.end_time, ts.id AS time_slot_id,
+    st.state AS state_name,
+    st.id AS state_id
+FROM appointments a
+LEFT JOIN pets p ON a.petid = p.petid
+LEFT JOIN services s ON a.service_id = s.id
+LEFT JOIN time_slots ts ON a.time_slot_id = ts.id
+LEFT JOIN doctors d ON a.doctor_id = d.id
+LEFT JOIN states st ON a.state_id = st.id;
 
 -- name: GetSOAPByAppointmentID :one
 SELECT * FROM consultations WHERE appointment_id = $1;
 
+-- name: GetAppointmentDetail :one
+SELECT 
+    s.name AS service_name,
+    p.name AS pet_name,
+    st.state AS state_name
+FROM services s, pets p, states st
+WHERE s.id = $1 AND p.petid = $2 AND st.id = $3;
+
+-- name: GetAppointmentDetailByAppointmentID :one
+SELECT 
+    a.appointment_id, a.date, a.notes, a.reminder_send, a.created_at,
+    d.id AS doctor_id,
+    p.name AS pet_name,
+    s.name AS service_name,
+    ts.start_time, ts.end_time, ts.id AS time_slot_id,
+    st.state AS state_name,
+    st.id AS state_id
+FROM appointments a
+LEFT JOIN pets p ON p.petid = a.petid
+LEFT JOIN doctors d ON d.id = a.doctor_id
+LEFT JOIN services s ON s.id = a.service_id
+LEFT JOIN time_slots ts ON ts.id = a.time_slot_id
+LEFT JOIN states st ON st.id = a.state_id
+WHERE a.appointment_id = $1;
+
+-- name: GetAppointmentsByUser :many
+SELECT 
+    a.appointment_id, a.date, a.created_at,
+    p.name AS pet_name,
+    d.id AS doctor_id,
+    s.name AS service_name,
+    ts.start_time, ts.end_time,
+    st.state
+FROM appointments a
+LEFT JOIN pets p ON p.petid = a.petid
+LEFT JOIN doctors d ON d.id = a.doctor_id
+LEFT JOIN services s ON s.id = a.service_id
+LEFT JOIN time_slots ts ON ts.id = a.time_slot_id
+LEFT JOIN states st ON st.id = a.state_id
+WHERE a.username = $1;

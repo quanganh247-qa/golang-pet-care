@@ -28,7 +28,6 @@ func Routes(routerGroup middleware.RouterGroup, taskDistributor worker.TaskDistr
 		authRoute.GET("/doctor/:doctor_id", appointmentApi.controller.getAppointmentsByDoctor)
 		authRoute.GET("/all", appointmentApi.controller.getAllAppointments)
 
-		// time slot
 		authRoute.GET("/doctor/:doctor_id/time-slot", appointmentApi.controller.getAvailableTimeSlots)
 
 		// soap

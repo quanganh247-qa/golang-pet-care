@@ -9,8 +9,12 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/google/generative-ai-go/genai"
 	"github.com/quanganh247-qa/go-blog-be/app/util"
+	"golang.org/x/sync/semaphore"
 	"google.golang.org/api/option"
 )
+
+// Giới hạn 15 request đồng thời (điều chỉnh dựa trên rate limit của Gemini)
+var sem = semaphore.NewWeighted(15)
 
 type SuggestionResponse interface {
 	GetAction() string
@@ -77,6 +81,12 @@ type ActionResponse struct {
 }
 
 func DetermineActionGemini(ctx *gin.Context, config *util.Config, description string) (*ActionResponse, error) {
+	// Acquire semaphore để giới hạn đồng thời
+	if err := sem.Acquire(ctx, 1); err != nil {
+		return nil, fmt.Errorf("server busy: %v", err)
+	}
+	defer sem.Release(1)
+
 	prompt := fmt.Sprintf(`As an AI assistant, your task is to interpret the user's request and determine the appropriate action to take. The possible actions are:
 
 	- "appointment": For scheduling a one-time appointment or event.
@@ -101,7 +111,8 @@ func DetermineActionGemini(ctx *gin.Context, config *util.Config, description st
 	}
 	defer client.Close()
 
-	model := client.GenerativeModel("gemini-1.5-pro-latest")
+	// model := client.GenerativeModel("gemini-1.5-pro-latest")
+	model := client.GenerativeModel("gemini-2.0-flash")
 
 	model.ResponseMIMEType = "application/json"
 
@@ -142,6 +153,13 @@ func DetermineActionGemini(ctx *gin.Context, config *util.Config, description st
 }
 
 func GenerateSuggestionGemini(ctx *gin.Context, config *util.Config, action, description string) (*BaseResponse, error) {
+
+	// Acquire semaphore để giới hạn đồng thời
+	if err := sem.Acquire(ctx, 1); err != nil {
+		return nil, fmt.Errorf("server busy: %v", err)
+	}
+	defer sem.Release(1)
+
 	prompt := fmt.Sprintf(`As an AI assistant, your task is to interpret the user's request and determine the appropriate action to take. The possible actions are:
 		- "appointment": For scheduling a one-time appointment or event.
 		- "pet_log": For logging a one-time activity or event related to a pet.
@@ -189,7 +207,9 @@ func GenerateSuggestionGemini(ctx *gin.Context, config *util.Config, action, des
 	}
 	defer client.Close()
 
-	model := client.GenerativeModel("gemini-1.5-pro-latest")
+	// model := client.GenerativeModel("gemini-1.5-pro-latest")
+	model := client.GenerativeModel("gemini-2.0-flash")
+
 	// Ask the model to respond with JSON.
 	model.ResponseMIMEType = "application/json"
 

@@ -3,67 +3,97 @@ package cart
 import (
 	"encoding/json"
 	"fmt"
+	"sync"
 
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5/pgtype"
 	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
+	"github.com/quanganh247-qa/go-blog-be/app/util"
 )
 
 type CartServiceInterface interface {
-	AddToCartService(c *gin.Context, req CartItem, username string) (*CartItem, error)
+	AddToCartService(c *gin.Context, req CartItemRequest, username string) (*CartItem, error)
 	GetCartItemsService(c *gin.Context, username string) ([]CartItemResponse, error)
 	CreateOrderService(c *gin.Context, username string, arg PlaceOrderRequest) (*OrderResponse, error)
 	GetOrdersService(c *gin.Context, username string) ([]OrderResponse, error)
 	GetOrderByIdService(c *gin.Context, username string, orderID int64) (*Order, error)
 	DeleteItemFromCartService(c *gin.Context, username string, itemID int64) error
+	GetAllOrdersService(c *gin.Context, pagination *util.Pagination, status string) ([]OrderResponse, error)
 }
 
-func (s *CartService) AddToCartService(c *gin.Context, req CartItem, username string) (*CartItem, error) {
-	var cartItem CartItem
-	err := s.storeDB.ExecWithTransaction(c, func(q *db.Queries) error {
-		user, err := s.redis.UserInfoLoadCache(username)
+func (s *CartService) AddToCartService(c *gin.Context, req CartItemRequest, username string) (*CartItem, error) {
+	user, err := s.redis.UserInfoLoadCache(username)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get user info: %w", err)
+	}
+
+	var product db.Product
+	var carts []db.Cart
+	var wg sync.WaitGroup
+	wg.Add(2)
+
+	go func() {
+		defer wg.Done()
+		product, err = s.storeDB.GetProductByID(c, req.ProductID)
 		if err != nil {
-			return fmt.Errorf("failed to get user info: %w", err)
+			return
 		}
+	}()
 
-		cart, err := s.storeDB.GetCartByUserId(c, user.UserID)
+	go func() {
+		defer wg.Done()
+		res, err := s.storeDB.GetCartByUserId(c, user.UserID)
 		if err != nil {
-			return fmt.Errorf("failed to get cart by user id: %w", err)
+			return
 		}
 
-		var cartID int64
-
-		if len(cart) == 0 {
-			cart, err := s.storeDB.CreateCartForUser(c, user.UserID)
-			if err != nil {
-				return fmt.Errorf("failed to create cart: %w", err)
-			}
-			cartID = cart.ID
+		for _, cart := range res {
+			carts = append(carts, db.Cart{
+				ID:        cart.ID,
+				UserID:    cart.UserID,
+				CreatedAt: cart.CreatedAt,
+				UpdatedAt: cart.UpdatedAt,
+			})
 		}
+	}()
 
-		item, err := q.AddItemToCart(c, db.AddItemToCartParams{
-			CartID:    cartID,
-			ProductID: req.ProductID,
-			Quantity:  pgtype.Int4{Int32: int32(req.Quantity), Valid: true},
-		})
+	wg.Wait()
+
+	if err != nil {
+		return nil, fmt.Errorf("error fetching data: %w", err)
+	}
+
+	// Check if cart exists, if not create one
+	var cartID int64
+	if len(carts) == 0 {
+		newCart, err := s.storeDB.CreateCartForUser(c, user.UserID)
 		if err != nil {
-			return err
+			return nil, fmt.Errorf("failed to create cart: %w", err)
 		}
+		cartID = newCart.ID
+	} else {
+		cartID = carts[0].ID
+	}
 
-		cartItem = CartItem{
-			ID:        item.ID,
-			CartID:    item.CartID,
-			ProductID: item.ProductID,
-			Quantity:  int(item.Quantity.Int32),
-		}
-		return nil
+	// Now use the product information
+	cartItem, err := s.storeDB.AddItemToCart(c, db.AddItemToCartParams{
+		CartID:    cartID,
+		ProductID: req.ProductID,
+		UnitPrice: product.Price,
+		Quantity:  pgtype.Int4{Int32: int32(req.Quantity), Valid: true},
 	})
-
 	if err != nil {
 		return nil, fmt.Errorf("failed to add item to cart: %w", err)
 	}
 
-	return &cartItem, nil
+	return &CartItem{
+		ID:         cartItem.ID,
+		CartID:     cartItem.CartID,
+		ProductID:  cartItem.ProductID,
+		Quantity:   int(cartItem.Quantity.Int32),
+		UnitPrice:  cartItem.UnitPrice,
+		TotalPrice: cartItem.TotalPrice.Float64,
+	}, nil
 }
 
 func (s *CartService) GetCartItemsService(c *gin.Context, username string) ([]CartItemResponse, error) {
@@ -75,6 +105,10 @@ func (s *CartService) GetCartItemsService(c *gin.Context, username string) ([]Ca
 	cart, err := s.storeDB.GetCartByUserId(c, user.UserID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get cart by user id: %w", err)
+	}
+
+	if len(cart) == 0 {
+		return nil, fmt.Errorf("cart not found")
 	}
 
 	cartItems, err := s.storeDB.GetCartItems(c, cart[0].ID)
@@ -109,24 +143,19 @@ func (s *CartService) CreateOrderService(c *gin.Context, username string, arg Pl
 		return nil, fmt.Errorf("failed to get user info: %w", err)
 	}
 
-	cart, err := s.storeDB.GetCartByUserId(c, user.UserID)
+	carts, err := s.storeDB.GetCartByUserId(c, user.UserID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get cart by user id: %w", err)
 	}
 
-	cartItems, err := s.storeDB.GetCartItems(c, cart[0].ID)
-	if err != nil {
-		return nil, err
-	}
-
 	// Fetch the total price for a cart
-	totalPriceRow, err := s.storeDB.GetCartTotal(c, cart[0].ID)
+	totalPriceRow, err := s.storeDB.GetCartTotal(c, carts[0].ID)
 	if err != nil {
 		return nil, err
 	}
 
 	// Convert cartItems slice to JSON
-	jsonData, err := json.Marshal(cartItems)
+	jsonData, err := json.Marshal(carts)
 	if err != nil {
 		return nil, fmt.Errorf("failed to convert cart items to JSON: %w", err)
 	}
@@ -137,7 +166,7 @@ func (s *CartService) CreateOrderService(c *gin.Context, username string, arg Pl
 		order, err := q.CreateOrder(c, db.CreateOrderParams{
 			UserID:          user.UserID,
 			TotalAmount:     float64(totalPriceRow),
-			CartItems:       []byte(jsonData),
+			CartItems:       jsonData,
 			ShippingAddress: pgtype.Text{String: arg.ShippingAddress, Valid: true},
 			Notes:           pgtype.Text{String: arg.Notes, Valid: true},
 		})
@@ -224,8 +253,6 @@ func (s *CartService) GetOrderByIdService(c *gin.Context, username string, order
 	return &orderResponse, nil
 }
 
-// delete item from cart
-
 func (s *CartService) DeleteItemFromCartService(c *gin.Context, username string, itemID int64) error {
 	user, err := s.redis.UserInfoLoadCache(username)
 	if err != nil {
@@ -253,5 +280,31 @@ func (s *CartService) DeleteItemFromCartService(c *gin.Context, username string,
 	}
 
 	return nil
+
+}
+
+func (s *CartService) GetAllOrdersService(c *gin.Context, pagination *util.Pagination, status string) ([]OrderResponse, error) {
+
+	offset := (pagination.Page - 1) * pagination.PageSize
+	orders, err := s.storeDB.GetAllOrders(c, db.GetAllOrdersParams{
+		PaymentStatus: pgtype.Text{String: status, Valid: true},
+		Limit:         int32(pagination.PageSize),
+		Offset:        int32(offset),
+	})
+	if err != nil {
+		return nil, fmt.Errorf("failed to get orders: %w", err)
+	}
+
+	var orderResponses []OrderResponse
+	for _, order := range orders {
+		orderResponses = append(orderResponses, OrderResponse{
+			OrderID:       order.ID,
+			OrderDate:     order.OrderDate.Time.Format("2006-01-02"),
+			TotalAmount:   order.TotalAmount,
+			PaymentStatus: order.PaymentStatus.String,
+		})
+	}
+
+	return orderResponses, nil
 
 }
