@@ -48,6 +48,7 @@ docker-compose.override.yml
 .github/
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 .github/workflows/
 =======
 llm-service
@@ -109,3 +110,6 @@ vendor
 >>>>>>> ffc9071 (AI suggestion)
 =======
 >>>>>>> ada3717 (Docker file)
+=======
+    
+>>>>>>> 0db8c45 (Docker file)
