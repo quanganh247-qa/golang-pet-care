@@ -1,7 +1,6 @@
 package medical_records
 
 import (
-	"encoding/json"
 	"fmt"
 	"log"
 	"time"
@@ -24,6 +23,7 @@ type MedicalRecordServiceInterface interface {
 	CreateMedicalHistory(ctx *gin.Context, req *MedicalHistoryRequest, recordID int64) (*MedicalHistoryResponse, error)
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	GetMedicalRecord(ctx *gin.Context, petID int64) (*MedicalRecordResponse, error)
 	ListMedicalHistory(ctx *gin.Context, recordID int64, pagination *util.Pagination) ([]MedicalHistoryResponse, error)
 	GetMedicalHistoryByID(ctx *gin.Context, medicalHistoryID int64) (*MedicalHistoryResponse, error)
@@ -31,6 +31,8 @@ type MedicalRecordServiceInterface interface {
 >>>>>>> 3bf345d (happy new year)
 =======
 	CreateAllergy(ctx *gin.Context, req AllergyRequest, recordID int64) (*Allergy, error)
+=======
+>>>>>>> 4ccd381 (Update appointment flow)
 	GetMedicalRecord(ctx *gin.Context, petID int64) (*MedicalRecordResponse, error)
 	ListMedicalHistory(ctx *gin.Context, recordID int64, pagination *util.Pagination) ([]MedicalHistoryResponse, error)
 	GetMedicalHistoryByID(ctx *gin.Context, medicalHistoryID int64) (*MedicalHistoryResponse, error)
@@ -105,6 +107,7 @@ func (s *MedicalRecordService) CreateMedicalHistory(ctx *gin.Context, req *Medic
 <<<<<<< HEAD
 =======
 
+<<<<<<< HEAD
 func (s *MedicalRecordService) CreateAllergy(ctx *gin.Context, req AllergyRequest, recordID int64) (*Allergy, error) {
 	var allergy db.Allergy
 	var err error
@@ -145,6 +148,8 @@ func (s *MedicalRecordService) CreateAllergy(ctx *gin.Context, req AllergyReques
 }
 >>>>>>> e859654 (Elastic search)
 
+=======
+>>>>>>> 4ccd381 (Update appointment flow)
 func (s *MedicalRecordService) GetMedicalRecord(ctx *gin.Context, petID int64) (*MedicalRecordResponse, error) {
 	// First verify pet exists and is active
 	pet, err := s.storeDB.GetPetByID(ctx, petID)

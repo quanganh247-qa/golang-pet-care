@@ -28,7 +28,6 @@ type MedicalRecordControllerInterface interface {
 =======
 	ListMedicalHistory(ctx *gin.Context)
 	GetMedicalRecord(ctx *gin.Context)
-	CreateAllergy(ctx *gin.Context)
 	GetMedicalHistoryByID(ctx *gin.Context)
 >>>>>>> e859654 (Elastic search)
 }
@@ -136,6 +135,7 @@ func (c *MedicalRecordController) GetMedicalRecord(ctx *gin.Context) {
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 func (c *MedicalRecordController) CreateAllergy(ctx *gin.Context) {
 	petID := ctx.Param("pet_id")
@@ -160,6 +160,8 @@ func (c *MedicalRecordController) CreateAllergy(ctx *gin.Context) {
 }
 
 >>>>>>> e859654 (Elastic search)
+=======
+>>>>>>> 4ccd381 (Update appointment flow)
 func (c *MedicalRecordController) GetMedicalHistoryByID(ctx *gin.Context) {
 	medicalHistoryID := ctx.Param("id")
 	id, err := strconv.ParseInt(medicalHistoryID, 10, 64)

@@ -8,19 +8,11 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
-type Allergy struct {
-	ID              int64            `json:"id"`
-	MedicalRecordID pgtype.Int8      `json:"medical_record_id"`
-	Allergen        []byte           `json:"allergen"`
-	Severity        pgtype.Text      `json:"severity"`
-	Reaction        []byte           `json:"reaction"`
-	Notes           pgtype.Text      `json:"notes"`
-	CreatedAt       pgtype.Timestamp `json:"created_at"`
-	UpdatedAt       pgtype.Timestamp `json:"updated_at"`
-}
-
 type Appointment struct {
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 4ccd381 (Update appointment flow)
 	AppointmentID     int64            `json:"appointment_id"`
 	Petid             pgtype.Int8      `json:"petid"`
 	Username          pgtype.Text      `json:"username"`
@@ -36,6 +28,7 @@ type Appointment struct {
 	ArrivalTime       pgtype.Timestamp `json:"arrival_time"`
 	RoomID            pgtype.Int8      `json:"room_id"`
 	ConfirmationSent  pgtype.Bool      `json:"confirmation_sent"`
+<<<<<<< HEAD
 	Notes             pgtype.Text      `json:"notes"`
 	UpdatedAt         pgtype.Timestamp `json:"updated_at"`
 }
@@ -74,6 +67,8 @@ type CartItem struct {
 =======
 	StateID       pgtype.Int4      `json:"state_id"`
 >>>>>>> e859654 (Elastic search)
+=======
+>>>>>>> 4ccd381 (Update appointment flow)
 }
 
 type Cart struct {
@@ -149,6 +144,7 @@ type DeviceToken struct {
 	CreatedAt     pgtype.Timestamp `json:"created_at"`
 }
 
+<<<<<<< HEAD
 >>>>>>> e859654 (Elastic search)
 type Department struct {
 	ID          int64            `json:"id"`
@@ -163,6 +159,8 @@ type Department struct {
 type Devicetoken struct {
 >>>>>>> 0fb3f30 (user images)
 =======
+=======
+>>>>>>> 4ccd381 (Update appointment flow)
 type DeviceToken struct {
 >>>>>>> 33fcf96 (Big update)
 	ID         int64            `json:"id"`
@@ -586,6 +584,7 @@ type Room struct {
 	AvailableAt          pgtype.Timestamp `json:"available_at"`
 }
 
+<<<<<<< HEAD
 =======
 >>>>>>> 0fb3f30 (user images)
 =======
@@ -631,6 +630,8 @@ type Product struct {
 }
 
 >>>>>>> c449ffc (feat: cart api)
+=======
+>>>>>>> 4ccd381 (Update appointment flow)
 type Service struct {
 	ID          int64            `json:"id"`
 	Name        pgtype.Text      `json:"name"`

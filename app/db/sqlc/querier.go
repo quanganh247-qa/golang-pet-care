@@ -22,6 +22,7 @@ type Querier interface {
 	// Assign Carprofen to the Initial Phase
 	AssignCarprofenToInitialPhase(ctx context.Context, arg AssignCarprofenToInitialPhaseParams) error
 	AssignMedicationToTreatmentPhase(ctx context.Context, arg AssignMedicationToTreatmentPhaseParams) (PhaseMedicine, error)
+<<<<<<< HEAD
 	AssignRoomToAppointment(ctx context.Context, arg AssignRoomToAppointmentParams) error
 	CheckinAppointment(ctx context.Context, appointmentID int64) error
 	CountAppointmentsByDateAndTimeSlot(ctx context.Context, arg CountAppointmentsByDateAndTimeSlotParams) (int64, error)
@@ -77,6 +78,12 @@ type Querier interface {
 	CountShiftsByDoctorAndDate(ctx context.Context, arg CountShiftsByDoctorAndDateParams) (int64, error)
 	CreateAllergy(ctx context.Context, arg CreateAllergyParams) (Allergy, error)
 >>>>>>> 3bf345d (happy new year)
+=======
+	CheckinAppointment(ctx context.Context, appointmentID int64) error
+	CountAppointmentsByDateAndTimeSlot(ctx context.Context, arg CountAppointmentsByDateAndTimeSlotParams) (int64, error)
+	CountAppointmentsByDoctorAndDate(ctx context.Context, arg CountAppointmentsByDoctorAndDateParams) (int64, error)
+	CountShiftsByDoctorAndDate(ctx context.Context, arg CountShiftsByDoctorAndDateParams) (int64, error)
+>>>>>>> 4ccd381 (Update appointment flow)
 	CreateAppointment(ctx context.Context, arg CreateAppointmentParams) (Appointment, error)
 	CreateCartForUser(ctx context.Context, userID int64) (Cart, error)
 	CreateDisease(ctx context.Context, arg CreateDiseaseParams) (Disease, error)
@@ -115,10 +122,13 @@ type Querier interface {
 <<<<<<< HEAD
 	CreatetNotification(ctx context.Context, arg CreatetNotificationParams) (Notification, error)
 	DecreaseItemQuantity(ctx context.Context, arg DecreaseItemQuantityParams) error
+<<<<<<< HEAD
 =======
 	// Delete all notifications
 	DeleteAllNotifications(ctx context.Context) error
 >>>>>>> eb8d761 (updated pet schedule)
+=======
+>>>>>>> 4ccd381 (Update appointment flow)
 	DeleteDeviceToken(ctx context.Context, arg DeleteDeviceTokenParams) error
 	DeleteDoctor(ctx context.Context, id int64) error
 	DeleteMedicalHistory(ctx context.Context, id int64) error
@@ -252,6 +262,9 @@ type Querier interface {
 	GetAllUsers(ctx context.Context) ([]User, error)
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 4ccd381 (Update appointment flow)
 	GetAppointmentByStateId(ctx context.Context, stateID pgtype.Int4) ([]Appointment, error)
 	GetAppointmentDetail(ctx context.Context, arg GetAppointmentDetailParams) (GetAppointmentDetailRow, error)
 	GetAppointmentDetailByAppointmentID(ctx context.Context, appointmentID int64) (GetAppointmentDetailByAppointmentIDRow, error)
@@ -302,7 +315,11 @@ type Querier interface {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	GetAppointmentsQueue(ctx context.Context, doctorID pgtype.Int8) ([]Appointment, error)
+=======
+	GetAppointmentsQueue(ctx context.Context) ([]Appointment, error)
+>>>>>>> 4ccd381 (Update appointment flow)
 	GetAvailableDoctors(ctx context.Context, date pgtype.Date) ([]GetAvailableDoctorsRow, error)
 	GetAvailableRooms(ctx context.Context, arg GetAvailableRoomsParams) ([]Room, error)
 	GetAvailableRoomsForDuration(ctx context.Context, arg GetAvailableRoomsForDurationParams) ([]Room, error)
@@ -445,9 +462,13 @@ type Querier interface {
 	GetServiceByID(ctx context.Context, id int64) (Service, error)
 	GetServices(ctx context.Context, arg GetServicesParams) ([]Service, error)
 <<<<<<< HEAD
+<<<<<<< HEAD
 	GetShiftByDoctorId(ctx context.Context, doctorID int64) ([]GetShiftByDoctorIdRow, error)
 =======
 >>>>>>> ada3717 (Docker file)
+=======
+	GetShiftByDoctorId(ctx context.Context, doctorID int64) ([]GetShiftByDoctorIdRow, error)
+>>>>>>> 4ccd381 (Update appointment flow)
 	GetShifts(ctx context.Context) ([]GetShiftsRow, error)
 	GetState(ctx context.Context, id int64) (State, error)
 	// -- name: GetTimeSlotsByDoctorAndDate :many
@@ -650,11 +671,14 @@ type Querier interface {
 =======
 =======
 	SetPetInactive(ctx context.Context, petid int64) error
+<<<<<<< HEAD
 >>>>>>> 33fcf96 (Big update)
 	UpdateAllergy(ctx context.Context, arg UpdateAllergyParams) error
 <<<<<<< HEAD
 >>>>>>> 3bf345d (happy new year)
 =======
+=======
+>>>>>>> 4ccd381 (Update appointment flow)
 	UpdateAppointmentByID(ctx context.Context, arg UpdateAppointmentByIDParams) error
 >>>>>>> e859654 (Elastic search)
 	UpdateAppointmentStatus(ctx context.Context, arg UpdateAppointmentStatusParams) error

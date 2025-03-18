@@ -19,7 +19,10 @@ type DoctorControllerInterface interface {
 	getShifts(ctx *gin.Context)
 	createShift(ctx *gin.Context)
 	getShiftByDoctorId(ctx *gin.Context)
+<<<<<<< HEAD
 	getDoctorById(ctx *gin.Context)
+=======
+>>>>>>> 4ccd381 (Update appointment flow)
 }
 
 func (c *DoctorController) loginDoctor(ctx *gin.Context) {
@@ -104,6 +107,7 @@ func (c *DoctorController) getShiftByDoctorId(ctx *gin.Context) {
 	}
 	ctx.JSON(http.StatusOK, util.SuccessResponse("Success", res))
 }
+<<<<<<< HEAD
 
 func (c *DoctorController) getDoctorById(ctx *gin.Context) {
 	id := ctx.Param("doctor_id")
@@ -129,3 +133,5 @@ package doctor
 =======
 package doctor
 >>>>>>> ada3717 (Docker file)
+=======
+>>>>>>> 4ccd381 (Update appointment flow)

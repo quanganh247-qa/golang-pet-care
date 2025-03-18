@@ -31,6 +31,9 @@ import (
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 4ccd381 (Update appointment flow)
 	"github.com/quanganh247-qa/go-blog-be/app/api/doctor"
 	"github.com/quanganh247-qa/go-blog-be/app/api/location"
 	"github.com/quanganh247-qa/go-blog-be/app/api/medical_records"
@@ -71,7 +74,11 @@ import (
 <<<<<<< HEAD
 	"github.com/quanganh247-qa/go-blog-be/app/api/products"
 <<<<<<< HEAD
+<<<<<<< HEAD
 	"github.com/quanganh247-qa/go-blog-be/app/api/rooms"
+=======
+	"github.com/quanganh247-qa/go-blog-be/app/api/queue"
+>>>>>>> 4ccd381 (Update appointment flow)
 	"github.com/quanganh247-qa/go-blog-be/app/api/search"
 =======
 >>>>>>> e01abc5 (pet schedule api)
@@ -119,6 +126,7 @@ func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor, config
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	routerDefault.Use(middleware.LoggingMiddleware())
 =======
 	routerDefault.Use(middleware.IPbasedRateLimitingMiddleware())
@@ -128,10 +136,14 @@ func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor, config
 =======
 	routerDefault.Use(middleware.LoggingMiddleware())
 	// routerDefault.Use(middleware.ContentSecurityPolicyMiddleware())
+=======
+	// routerDefault.Use(middleware.LoggingMiddleware())
+>>>>>>> 4ccd381 (Update appointment flow)
 
 >>>>>>> ada3717 (Docker file)
 	logger, _ := zap.NewProduction()
 	defer logger.Sync()
+<<<<<<< HEAD
 
 	// debug := true
 	// routerDefault.Use(util.Recover(logger, debug))
@@ -152,6 +164,8 @@ func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor, config
 	// gin.DefaultErrorWriter = io.MultiWriter(os.Stderr)
 >>>>>>> ada3717 (Docker file)
 
+=======
+>>>>>>> 4ccd381 (Update appointment flow)
 	v1 := routerDefault.Group(util.Configs.ApiPrefix)
 	router := v1.Group("/")
 	routerGroup := middleware.RouterGroup{
@@ -180,6 +194,7 @@ func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor, config
 	})
 =======
 	router.GET("/health", server.healthCheck)
+<<<<<<< HEAD
 
 	// // Adding the SuperTokens middleware
 	// router.Use(func(c *gin.Context) {
@@ -191,6 +206,8 @@ func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor, config
 	// })
 >>>>>>> ada3717 (Docker file)
 
+=======
+>>>>>>> 4ccd381 (Update appointment flow)
 	user.Routes(routerGroup, taskDistributor, config)
 <<<<<<< HEAD
 	service_type.Routes(routerGroup)
@@ -236,6 +253,8 @@ func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor, config
 	clinic_reporting.Routes(routerGroup)
 	search.Routes(routerGroup, es)
 	medications.Routes(routerGroup, es)
+	doctor.Routes(routerGroup)
+	queue.Routes(routerGroup)
 	server.Router = routerDefault
 >>>>>>> 79a3bcc (medicine api)
 

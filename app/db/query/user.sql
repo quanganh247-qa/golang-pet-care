@@ -179,6 +179,7 @@ WHERE
 >>>>>>> 3003e08 (update sqlc)
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 <<<<<<< HEAD
 -- -- name: GetDoctor :one
@@ -333,3 +334,7 @@ SELECT * FROM Doctors WHERE is_active is true;
 =======
 
 >>>>>>> ada3717 (Docker file)
+=======
+-- name: GetAllRole :many
+SELECT distinct (role) FROM users;
+>>>>>>> 4ccd381 (Update appointment flow)

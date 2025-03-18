@@ -68,7 +68,11 @@ func Routes(routerGroup middleware.RouterGroup, taskDistributor worker.TaskDistr
 		authRoute.POST("/confirm/:appointment_id", appointmentApi.controller.confirmAppointment)
 =======
 		authRoute.POST("/confirm/:id", appointmentApi.controller.confirmAppointment)
+<<<<<<< HEAD
 >>>>>>> e859654 (Elastic search)
+=======
+		authRoute.POST("/check-in/:id", appointmentApi.controller.checkinAppointment)
+>>>>>>> 4ccd381 (Update appointment flow)
 		authRoute.GET("/", appointmentApi.controller.getAppointmentsByUser)
 		authRoute.GET("/:id", appointmentApi.controller.getAppointmentByID)
 		authRoute.GET("/doctor/:doctor_id", appointmentApi.controller.getAppointmentsByDoctor)
