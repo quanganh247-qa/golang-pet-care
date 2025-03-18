@@ -32,6 +32,7 @@ type UserServiceInterface interface {
 
 	ForgotPasswordService(ctx *gin.Context, email string) error
 	UpdatePasswordService(ctx *gin.Context, username string, arg UpdatePasswordParams) error
+	GetAllRoleService(ctx *gin.Context) ([]string, error)
 }
 
 func (server *UserService) createUserService(ctx *gin.Context, req createUserRequest) (*VerrifyEmailTxParams, error) {
@@ -468,4 +469,16 @@ func (s *UserService) UpdatePasswordService(ctx *gin.Context, username string, a
 		return fmt.Errorf("failed to update user password: %w", err)
 	}
 	return nil
+}
+
+func (s *UserService) GetAllRoleService(ctx *gin.Context) ([]string, error) {
+	roles, err := s.storeDB.GetAllRole(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get all role: %w", err)
+	}
+	roleList := make([]string, 0)
+	for _, role := range roles {
+		roleList = append(roleList, role.String)
+	}
+	return roleList, nil
 }

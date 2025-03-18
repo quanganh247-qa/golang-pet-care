@@ -13,7 +13,6 @@ type MedicalRecordControllerInterface interface {
 	CreateMedicalHistory(ctx *gin.Context)
 	ListMedicalHistory(ctx *gin.Context)
 	GetMedicalRecord(ctx *gin.Context)
-	CreateAllergy(ctx *gin.Context)
 	GetMedicalHistoryByID(ctx *gin.Context)
 }
 
@@ -95,28 +94,6 @@ func (c *MedicalRecordController) GetMedicalRecord(ctx *gin.Context) {
 		return
 	}
 	ctx.JSON(http.StatusOK, util.SuccessResponse("Medical Record", res))
-}
-
-func (c *MedicalRecordController) CreateAllergy(ctx *gin.Context) {
-	petID := ctx.Param("pet_id")
-	id, err := strconv.ParseInt(petID, 10, 64)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
-		return
-	}
-
-	var req AllergyRequest
-	if err := ctx.ShouldBindJSON(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
-		return
-	}
-
-	res, err := c.service.CreateAllergy(ctx, req, id)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-	ctx.JSON(http.StatusOK, util.SuccessResponse("Allergy", res))
 }
 
 func (c *MedicalRecordController) GetMedicalHistoryByID(ctx *gin.Context) {

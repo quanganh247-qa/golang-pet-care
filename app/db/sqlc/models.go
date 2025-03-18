@@ -8,29 +8,22 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
-type Allergy struct {
-	ID              int64            `json:"id"`
-	MedicalRecordID pgtype.Int8      `json:"medical_record_id"`
-	Allergen        []byte           `json:"allergen"`
-	Severity        pgtype.Text      `json:"severity"`
-	Reaction        []byte           `json:"reaction"`
-	Notes           pgtype.Text      `json:"notes"`
-	CreatedAt       pgtype.Timestamp `json:"created_at"`
-	UpdatedAt       pgtype.Timestamp `json:"updated_at"`
-}
-
 type Appointment struct {
-	AppointmentID int64            `json:"appointment_id"`
-	Petid         pgtype.Int8      `json:"petid"`
-	Username      pgtype.Text      `json:"username"`
-	DoctorID      pgtype.Int8      `json:"doctor_id"`
-	ServiceID     pgtype.Int8      `json:"service_id"`
-	Date          pgtype.Timestamp `json:"date"`
-	Notes         pgtype.Text      `json:"notes"`
-	ReminderSend  pgtype.Bool      `json:"reminder_send"`
-	TimeSlotID    pgtype.Int8      `json:"time_slot_id"`
-	CreatedAt     pgtype.Timestamp `json:"created_at"`
-	StateID       pgtype.Int4      `json:"state_id"`
+	AppointmentID     int64            `json:"appointment_id"`
+	Petid             pgtype.Int8      `json:"petid"`
+	Username          pgtype.Text      `json:"username"`
+	DoctorID          pgtype.Int8      `json:"doctor_id"`
+	ServiceID         pgtype.Int8      `json:"service_id"`
+	Date              pgtype.Timestamp `json:"date"`
+	ReminderSend      pgtype.Bool      `json:"reminder_send"`
+	TimeSlotID        pgtype.Int8      `json:"time_slot_id"`
+	CreatedAt         pgtype.Timestamp `json:"created_at"`
+	StateID           pgtype.Int4      `json:"state_id"`
+	AppointmentReason pgtype.Text      `json:"appointment_reason"`
+	Priority          pgtype.Text      `json:"priority"`
+	ArrivalTime       pgtype.Timestamp `json:"arrival_time"`
+	RoomID            pgtype.Int8      `json:"room_id"`
+	ConfirmationSent  pgtype.Bool      `json:"confirmation_sent"`
 }
 
 type Cart struct {
@@ -84,14 +77,6 @@ type Consultation struct {
 	Assessment    pgtype.Text      `json:"assessment"`
 	Plan          pgtype.Text      `json:"plan"`
 	CreatedAt     pgtype.Timestamp `json:"created_at"`
-}
-
-type Department struct {
-	ID          int64            `json:"id"`
-	Name        string           `json:"name"`
-	Description pgtype.Text      `json:"description"`
-	CreatedAt   pgtype.Timestamp `json:"created_at"`
-	UpdatedAt   pgtype.Timestamp `json:"updated_at"`
 }
 
 type DeviceToken struct {
@@ -269,6 +254,15 @@ type Product struct {
 	RemovedAt     pgtype.Timestamp `json:"removed_at"`
 }
 
+type Room struct {
+	ID                   int64            `json:"id"`
+	Name                 string           `json:"name"`
+	Type                 string           `json:"type"`
+	Status               pgtype.Text      `json:"status"`
+	CurrentAppointmentID pgtype.Int8      `json:"current_appointment_id"`
+	AvailableAt          pgtype.Timestamp `json:"available_at"`
+}
+
 type Service struct {
 	ID          int64            `json:"id"`
 	Name        pgtype.Text      `json:"name"`
@@ -331,6 +325,7 @@ type User struct {
 	DataImage       []byte           `json:"data_image"`
 	OriginalImage   pgtype.Text      `json:"original_image"`
 	Role            pgtype.Text      `json:"role"`
+	Status          pgtype.Text      `json:"status"`
 	CreatedAt       pgtype.Timestamp `json:"created_at"`
 	IsVerifiedEmail pgtype.Bool      `json:"is_verified_email"`
 	RemovedAt       pgtype.Timestamp `json:"removed_at"`

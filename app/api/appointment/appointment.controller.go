@@ -12,6 +12,7 @@ import (
 type AppointmentControllerInterface interface {
 	createAppointment(ctx *gin.Context)
 	confirmAppointment(ctx *gin.Context)
+	checkinAppointment(ctx *gin.Context)
 	getAppointmentByID(ctx *gin.Context)
 	getAppointmentsByUser(ctx *gin.Context)
 	getAppointmentsByDoctor(ctx *gin.Context)
@@ -62,6 +63,29 @@ func (c *AppointmentController) confirmAppointment(ctx *gin.Context) {
 		return
 	}
 	ctx.JSON(http.StatusOK, util.SuccessResponse("confirm appointment successful", nil))
+}
+
+func (c *AppointmentController) checkinAppointment(ctx *gin.Context) {
+	roomID, err := strconv.ParseInt(ctx.Query("room_id"), 10, 64)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
+		return
+	}
+	// convert string to int64
+	id, err := strconv.ParseInt(ctx.Param("id"), 10, 64)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
+		return
+	}
+
+	priority := ctx.Query("priority")
+
+	err = c.service.CheckInAppoinment(ctx, id, roomID, priority)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
+		return
+	}
+	ctx.JSON(http.StatusOK, util.SuccessResponse("checkin appointment successful", nil))
 }
 
 func (c *AppointmentController) getAppointmentByID(ctx *gin.Context) {

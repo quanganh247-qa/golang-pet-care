@@ -23,6 +23,7 @@ func Routes(routerGroup middleware.RouterGroup, taskDistributor worker.TaskDistr
 	{
 		authRoute.POST("/", appointmentApi.controller.createAppointment)
 		authRoute.POST("/confirm/:id", appointmentApi.controller.confirmAppointment)
+		authRoute.POST("/check-in/:id", appointmentApi.controller.checkinAppointment)
 		authRoute.GET("/", appointmentApi.controller.getAppointmentsByUser)
 		authRoute.GET("/:id", appointmentApi.controller.getAppointmentByID)
 		authRoute.GET("/doctor/:doctor_id", appointmentApi.controller.getAppointmentsByDoctor)

@@ -27,6 +27,7 @@ SELECT
     u.username,
     u.full_name,
     u.email,
+    u.role,
     d.specialization,
     d.years_of_experience,
     d.education,
