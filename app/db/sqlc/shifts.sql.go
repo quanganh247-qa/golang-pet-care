@@ -177,6 +177,9 @@ func (q *Queries) GetDoctors(ctx context.Context) ([]GetDoctorsRow, error) {
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 4ccd381 (Update appointment flow)
 const getShiftByDoctorId = `-- name: GetShiftByDoctorId :many
 SELECT id, doctor_id, start_time, end_time, assigned_patients, created_at
 FROM shifts
@@ -219,8 +222,11 @@ func (q *Queries) GetShiftByDoctorId(ctx context.Context, doctorID int64) ([]Get
 	return items, nil
 }
 
+<<<<<<< HEAD
 =======
 >>>>>>> ada3717 (Docker file)
+=======
+>>>>>>> 4ccd381 (Update appointment flow)
 const getShifts = `-- name: GetShifts :many
 SELECT id, doctor_id, start_time, end_time, assigned_patients, created_at
 FROM shifts

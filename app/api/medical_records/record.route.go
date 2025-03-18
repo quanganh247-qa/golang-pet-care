@@ -46,6 +46,7 @@ func Routes(routerGroup middleware.RouterGroup) {
 		authRoute.GET("/pets/:pet_id/medical-histories", MedicalRecordApi.controller.ListMedicalHistory)
 		authRoute.POST("/pets/:pet_id/medical-histories", MedicalRecordApi.controller.CreateMedicalHistory)
 <<<<<<< HEAD
+<<<<<<< HEAD
 		authRoute.GET("/pets/:pet_id/medical-histories/:id", MedicalRecordApi.controller.GetMedicalHistoryByID)
 	}
 
@@ -64,6 +65,8 @@ func Routes(routerGroup middleware.RouterGroup) {
 >>>>>>> 3bf345d (happy new year)
 =======
 		authRoute.POST("/pets/:pet_id/allergies", MedicalRecordApi.controller.CreateAllergy)
+=======
+>>>>>>> 4ccd381 (Update appointment flow)
 		authRoute.GET("/pets/:pet_id/medical-histories/:id", MedicalRecordApi.controller.GetMedicalHistoryByID)
 	}
 

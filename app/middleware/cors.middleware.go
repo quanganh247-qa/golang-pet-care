@@ -24,6 +24,7 @@ func CORSMiddleware() gin.HandlerFunc {
 			}
 		}
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 		// // Add SuperTokens CORS headers
 		// corsHeaders := supertokens.GetAllCORSHeaders()
@@ -31,6 +32,8 @@ func CORSMiddleware() gin.HandlerFunc {
 		// 	c.Writer.Header().Set(header, "*") // Hoặc để trống nếu không cần value cụ thể
 		// }
 >>>>>>> ada3717 (Docker file)
+=======
+>>>>>>> 4ccd381 (Update appointment flow)
 
 		c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
 		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With")
@@ -45,6 +48,7 @@ func CORSMiddleware() gin.HandlerFunc {
 		c.Next()
 	}
 }
+<<<<<<< HEAD
 <<<<<<< HEAD
 =======
 
@@ -63,3 +67,5 @@ func ContentSecurityPolicyMiddleware() gin.HandlerFunc {
 	}
 }
 >>>>>>> ada3717 (Docker file)
+=======
+>>>>>>> 4ccd381 (Update appointment flow)

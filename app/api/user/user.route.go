@@ -124,6 +124,7 @@ func Routes(routerGroup middleware.RouterGroup, taskDistributor worker.TaskDistr
 =======
 		user.GET("/sessioninfo", userApi.controller.sessioninfo)
 		user.GET("/userinfo", userApi.controller.userinfo)
+		authRoute.GET("/roles", userApi.controller.GetAllRole)
 
 >>>>>>> ada3717 (Docker file)
 	}

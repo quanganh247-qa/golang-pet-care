@@ -112,6 +112,7 @@ type UserServiceInterface interface {
 
 	ForgotPasswordService(ctx *gin.Context, email string) error
 	UpdatePasswordService(ctx *gin.Context, username string, arg UpdatePasswordParams) error
+	GetAllRoleService(ctx *gin.Context) ([]string, error)
 }
 
 >>>>>>> edfe5ad (OTP verifycation)
@@ -1018,6 +1019,7 @@ func (s *UserService) GetAllRoleService(ctx *gin.Context) ([]string, error) {
 	}
 	return roleList, nil
 }
+<<<<<<< HEAD
 =======
 	return nil // Successfully updated
 }
@@ -1194,3 +1196,5 @@ func (s *UserService) ForgotPasswordService(ctx *gin.Context, email string) erro
 	return nil
 }
 >>>>>>> a2c21c8 (update pass)
+=======
+>>>>>>> 4ccd381 (Update appointment flow)

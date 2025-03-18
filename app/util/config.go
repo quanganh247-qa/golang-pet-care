@@ -65,6 +65,7 @@ type Config struct {
 	MinIOAccessKey   string `mapstructure:"MINIO_ACCESS_KEY"`
 	MinIOSecretKey   string `mapstructure:"MINIO_SECRET_KEY"`
 	MinIOSSL         bool   `mapstructure:"MINIO_SSL"`
+<<<<<<< HEAD
 =======
 
 	GoongAPIKey  string `mapstructure:"GOONG_API_KEY"`
@@ -85,6 +86,12 @@ type Config struct {
 	MinIOSecretKey   string `mapstructure:"MINIO_SECRET_KEY"`
 	MinIOSSL         bool   `mapstructure:"MINIO_SSL"`
 >>>>>>> e859654 (Elastic search)
+=======
+
+	ClickatellAPIKey string `mapstructure:"CLICKATELL_API_KEY"`
+	ClickatellAPIID  string `mapstructure:"CLICKATELL_API_ID"`
+	ClickatellURL    string `mapstructure:"CLICKATELL_URL"`
+>>>>>>> 4ccd381 (Update appointment flow)
 }
 
 var Configs = Config{}
