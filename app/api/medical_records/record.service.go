@@ -1,7 +1,6 @@
 package medical_records
 
 import (
-	"encoding/json"
 	"fmt"
 	"log"
 	"time"
@@ -15,7 +14,6 @@ import (
 type MedicalRecordServiceInterface interface {
 	CreateMedicalRecord(ctx *gin.Context, petID int64) (*MedicalRecordResponse, error)
 	CreateMedicalHistory(ctx *gin.Context, req *MedicalHistoryRequest, recordID int64) (*MedicalHistoryResponse, error)
-	CreateAllergy(ctx *gin.Context, req AllergyRequest, recordID int64) (*Allergy, error)
 	GetMedicalRecord(ctx *gin.Context, petID int64) (*MedicalRecordResponse, error)
 	ListMedicalHistory(ctx *gin.Context, recordID int64, pagination *util.Pagination) ([]MedicalHistoryResponse, error)
 	GetMedicalHistoryByID(ctx *gin.Context, medicalHistoryID int64) (*MedicalHistoryResponse, error)
@@ -83,45 +81,6 @@ func (s *MedicalRecordService) CreateMedicalHistory(ctx *gin.Context, req *Medic
 		Notes:           rec.Notes.String,
 		CreatedAt:       rec.CreatedAt.Time.Format("2006-01-02 15:04:05"),
 		UpdatedAt:       rec.UpdatedAt.Time.Format("2006-01-02 15:04:05"),
-	}, nil
-}
-
-func (s *MedicalRecordService) CreateAllergy(ctx *gin.Context, req AllergyRequest, recordID int64) (*Allergy, error) {
-	var allergy db.Allergy
-	var err error
-
-	allergen, err := json.Marshal(req.Allergen)
-	if err != nil {
-		return nil, fmt.Errorf("failed to marshal allergen: %w", err)
-	}
-	reaction, err := json.Marshal(req.Reaction)
-	if err != nil {
-		return nil, fmt.Errorf("failed to marshal reaction: %w", err)
-	}
-	err = s.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
-		allergy, err = q.CreateAllergy(ctx, db.CreateAllergyParams{
-			MedicalRecordID: pgtype.Int8{Int64: recordID, Valid: true},
-			Allergen:        allergen,
-			Severity:        pgtype.Text{String: req.Severity, Valid: true},
-			Reaction:        reaction,
-			Notes:           pgtype.Text{String: req.Notes, Valid: true},
-		})
-		if err != nil {
-			return fmt.Errorf("failed to create allergy: %w", err)
-		}
-		return nil
-	})
-	if err != nil {
-		return nil, fmt.Errorf("failed to create allergy: %w", err)
-	}
-
-	return &Allergy{
-		ID:              allergy.ID,
-		MedicalRecordID: allergy.MedicalRecordID.Int64,
-		Allergen:        string(allergen),
-		Severity:        allergy.Severity.String,
-		Reaction:        string(reaction),
-		Notes:           allergy.Notes.String,
 	}, nil
 }
 

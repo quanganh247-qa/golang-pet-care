@@ -2,6 +2,7 @@ package appointment
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"sync"
 	"time"
@@ -17,6 +18,7 @@ type AppointmentServiceInterface interface {
 	UpdateSOAPService(ctx *gin.Context, soap UpdateSOAPRequest, appointmentID int64) (*SOAPResponse, error)
 	CreateAppointment(ctx *gin.Context, req createAppointmentRequest, username string) (*createAppointmentResponse, error)
 	ConfirmPayment(ctx context.Context, appointmentID int64) error
+	CheckInAppoinment(ctx *gin.Context, id, roomID int64, priority string) error
 	GetAppointmentByID(ctx *gin.Context, id int64) (*createAppointmentResponse, error)
 	GetAppointmentsByUser(ctx *gin.Context, username string) ([]createAppointmentResponse, error)
 	GetAppointmentsByDoctor(ctx *gin.Context, doctorID int64) ([]createAppointmentResponse, error)
@@ -104,21 +106,16 @@ func (s *AppointmentService) CreateAppointment(ctx *gin.Context, req createAppoi
 		endTimeFormatted = time.UnixMicro(timeSlot.EndTime.Microseconds).UTC().Format("15:04:05")
 
 		appointment, err = q.CreateAppointment(ctx, db.CreateAppointmentParams{
-			DoctorID:   pgtype.Int8{Int64: int64(doctor.ID), Valid: true},
-			Petid:      pgtype.Int8{Int64: req.PetID, Valid: true},
-			ServiceID:  pgtype.Int8{Int64: service.ID, Valid: true},
-			Date:       pgtype.Timestamp{Time: dateTime, Valid: true},
-			TimeSlotID: pgtype.Int8{Int64: req.TimeSlotID, Valid: true},
-			Username:   pgtype.Text{String: username, Valid: true},
+			DoctorID:          pgtype.Int8{Int64: int64(doctor.ID), Valid: true},
+			Petid:             pgtype.Int8{Int64: req.PetID, Valid: true},
+			ServiceID:         pgtype.Int8{Int64: service.ID, Valid: true},
+			AppointmentReason: pgtype.Text{String: req.Reason, Valid: true},
+			Date:              pgtype.Timestamp{Time: dateTime, Valid: true},
+			TimeSlotID:        pgtype.Int8{Int64: req.TimeSlotID, Valid: true},
+			Username:          pgtype.Text{String: username, Valid: true},
 		})
 		if err != nil {
 			return fmt.Errorf("failed to create appointment: %w", err)
-		}
-
-		// Cập nhật khung giờ
-		err = q.UpdateTimeSlotBookedPatients(ctx, req.TimeSlotID)
-		if err != nil {
-			return err
 		}
 
 		return nil
@@ -127,11 +124,8 @@ func (s *AppointmentService) CreateAppointment(ctx *gin.Context, req createAppoi
 		return nil, fmt.Errorf("transaction failed: %w", err)
 	}
 
-	detail, err := s.storeDB.GetAppointmentDetail(ctx, db.GetAppointmentDetailParams{
-		ID:    appointment.ServiceID.Int64,
-		Petid: appointment.Petid.Int64,
-		ID_2:  int64(appointment.StateID.Int32),
-	})
+	detail, err := s.storeDB.GetAppointmentDetailByAppointmentID(ctx, appointment.AppointmentID)
+
 	if err != nil {
 		return nil, fmt.Errorf("failed to get appointment detail: %w", err)
 	}
@@ -140,62 +134,82 @@ func (s *AppointmentService) CreateAppointment(ctx *gin.Context, req createAppoi
 	return &createAppointmentResponse{
 		ID:          appointment.AppointmentID,
 		DoctorName:  doctor.Name,
-		PetName:     detail.PetName,
+		PetName:     detail.PetName.String,
+		Reason:      detail.AppointmentReason.String,
 		Date:        appointment.Date.Time.Format(time.RFC3339),
 		ServiceName: detail.ServiceName.String,
 		TimeSlot: timeslot{
 			StartTime: startTimeFormatted,
 			EndTime:   endTimeFormatted,
 		},
-		State:        detail.StateName,
-		Notes:        appointment.Notes.String,
+		State:        detail.StateName.String,
 		ReminderSend: appointment.ReminderSend.Bool,
 		CreatedAt:    appointment.CreatedAt.Time.Format("2006-01-02 15:04:05"),
 	}, nil
 }
-
 func (s *AppointmentService) ConfirmPayment(ctx context.Context, appointmentID int64) error {
-	err := s.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
+	return s.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
+		// Fetch appointment details
 		appointment, err := q.GetAppointmentDetailByAppointmentID(ctx, appointmentID)
 		if err != nil {
 			return fmt.Errorf("failed to get appointment: %w", err)
 		}
 
+		// Check appointment state early to avoid unnecessary queries
 		state, err := q.GetState(ctx, appointment.StateID.Int64)
 		if err != nil {
 			return fmt.Errorf("failed to get state: %w", err)
 		}
 		if state.State == "Confirmed" {
-			return fmt.Errorf("appointment is already paid")
+			return errors.New("appointment is already paid")
 		}
+
+		// Fetch and validate time slot
 		timeSlot, err := q.GetTimeSlotForUpdate(ctx, appointment.TimeSlotID.Int64)
 		if err != nil {
 			return fmt.Errorf("failed to get time slot: %w", err)
 		}
-
 		if timeSlot.BookedPatients.Int32 >= timeSlot.MaxPatients.Int32 {
-			return fmt.Errorf("time slot is fully booked")
+			return errors.New("time slot is fully booked")
 		}
 
-		err = q.UpdateAppointmentStatus(ctx, db.UpdateAppointmentStatusParams{
-			AppointmentID: appointmentID,
-			StateID:       pgtype.Int4{Int32: 2, Valid: true},
-		})
-		if err != nil {
-			return fmt.Errorf("failed to update payment status: %w", err)
-		}
-
+		// Prepare updates in a single transaction
 		if err = q.UpdateTimeSlotBookedPatients(ctx, appointment.TimeSlotID.Int64); err != nil {
 			return fmt.Errorf("failed to update time slot: %w", err)
 		}
 
+		if err = q.UpdateAppointmentStatus(ctx, db.UpdateAppointmentStatusParams{
+			AppointmentID: appointmentID,
+			StateID:       pgtype.Int4{Int32: 2, Valid: true}, // Consider defining a constant for StateID
+		}); err != nil {
+			return fmt.Errorf("failed to update appointment status: %w", err)
+		}
+
 		return nil
 	})
-	if err != nil {
-		return fmt.Errorf("transaction failed: %w", err)
-	}
+}
 
-	return nil
+func (s *AppointmentService) CheckInAppoinment(ctx *gin.Context, id, roomID int64, priority string) error {
+	return s.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
+		// Fetch appointment details
+		appointment, err := q.GetAppointmentDetailByAppointmentID(ctx, id)
+		if err != nil {
+			return fmt.Errorf("failed to get appointment: %w", err)
+		}
+
+		arrivalTime := time.Now().UTC()
+
+		if err = q.UpdateAppointmentByID(ctx, db.UpdateAppointmentByIDParams{
+			AppointmentID: appointment.AppointmentID,
+			StateID:       pgtype.Int4{Int32: 3, Valid: true},
+			ArrivalTime:   pgtype.Timestamp{Time: arrivalTime, Valid: true},
+			RoomID:        pgtype.Int8{Int64: roomID, Valid: true},
+			Priority:      pgtype.Text{String: priority, Valid: true},
+		}); err != nil {
+			return fmt.Errorf("failed to update appointment status: %w", err)
+		}
+		return nil
+	})
 }
 
 func (s *AppointmentService) GetAppointmentByID(ctx *gin.Context, id int64) (*createAppointmentResponse, error) {
@@ -229,7 +243,6 @@ func (s *AppointmentService) GetAppointmentByID(ctx *gin.Context, id int64) (*cr
 			StartTime: startTimeFormatted,
 			EndTime:   endTimeFormatted,
 		},
-		Notes:        appointment.Notes.String,
 		ReminderSend: appointment.ReminderSend.Bool,
 		State:        appointment.StateName.String,
 		CreatedAt:    appointment.CreatedAt.Time.Format(time.RFC3339),
@@ -291,7 +304,6 @@ func (s *AppointmentService) GetAppointmentsByDoctor(ctx *gin.Context, doctorID 
 				StartTime: time.UnixMicro(appointment.StartTime.Microseconds).UTC().Format("15:04:05"),
 				EndTime:   time.UnixMicro(appointment.EndTime.Microseconds).UTC().Format("15:04:05"),
 			},
-			Notes:        appointment.Notes.String,
 			State:        appointment.StateName.String,
 			ReminderSend: appointment.ReminderSend.Bool,
 			CreatedAt:    appointment.CreatedAt.Time.Format("2006-01-02 15:04:05"),
@@ -365,7 +377,6 @@ func (s *AppointmentService) GetAllAppointments(ctx *gin.Context) ([]createAppoi
 			ServiceName:  appointment.ServiceName.String,
 			Date:         appointment.Date.Time.Format("2006-01-02"),
 			State:        appointment.StateName.String,
-			Notes:        appointment.Notes.String,
 			ReminderSend: appointment.ReminderSend.Bool,
 			CreatedAt:    appointment.CreatedAt.Time.Format("2006-01-02 15:04:05"),
 			TimeSlot: timeslot{

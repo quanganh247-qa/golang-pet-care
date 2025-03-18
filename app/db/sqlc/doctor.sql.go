@@ -177,6 +177,7 @@ SELECT
     u.username,
     u.full_name,
     u.email,
+    u.role,
     d.specialization,
     d.years_of_experience,
     d.education,
@@ -192,6 +193,7 @@ type ListDoctorsRow struct {
 	Username          string      `json:"username"`
 	FullName          string      `json:"full_name"`
 	Email             string      `json:"email"`
+	Role              pgtype.Text `json:"role"`
 	Specialization    pgtype.Text `json:"specialization"`
 	YearsOfExperience pgtype.Int4 `json:"years_of_experience"`
 	Education         pgtype.Text `json:"education"`
@@ -213,6 +215,7 @@ func (q *Queries) ListDoctors(ctx context.Context) ([]ListDoctorsRow, error) {
 			&i.Username,
 			&i.FullName,
 			&i.Email,
+			&i.Role,
 			&i.Specialization,
 			&i.YearsOfExperience,
 			&i.Education,

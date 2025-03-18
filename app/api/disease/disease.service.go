@@ -30,15 +30,12 @@ type DiseaseServiceInterface interface {
 	CreateDisease(ctx context.Context, arg CreateDiseaseRequest) (*db.Disease, error)
 
 	GenerateMedicineOnlyPrescriptionPDF(ctx context.Context, treatmentID int64, outputFile string) (*PrescriptionResponse, error)
-	// GetDiceaseAnhMedicinesInfoService(ctx *gin.Context, disease string) ([]DiseaseMedicineInfo, error)
-	// GetTreatmentByDiseaseID(ctx *gin.Context, diseaseID int64, pagination *util.Pagination) ([]TreatmentPlan, error)
 }
 
 func (s *DiseaseService) CreateDisease(ctx context.Context, arg CreateDiseaseRequest) (*db.Disease, error) {
 	var disease db.Disease
 	var err error
 
-	// Convert []string to JSON bytes
 	symptomsJSON, err := json.Marshal(arg.Symptoms)
 	if err != nil {
 		return nil, fmt.Errorf("error marshaling symptoms: %w", err)

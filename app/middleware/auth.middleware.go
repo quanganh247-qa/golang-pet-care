@@ -9,8 +9,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/quanganh247-qa/go-blog-be/app/service/token"
 	"github.com/quanganh247-qa/go-blog-be/app/util"
-	"github.com/supertokens/supertokens-golang/recipe/session"
-	"github.com/supertokens/supertokens-golang/recipe/session/sessmodels"
 )
 
 const (
@@ -60,26 +58,4 @@ func GetAuthorizationPayload(ctx *gin.Context) (*token.Payload, error) {
 		return nil, errors.New("payload not found")
 	}
 	return payload.(*token.Payload), nil
-}
-
-// AuthMiddleware kiểm tra phiên hợp lệ với SuperTokens
-func SuperTokensAuthMiddleware() gin.HandlerFunc {
-	return func(ctx *gin.Context) {
-		// Tạo biến bool và lấy địa chỉ của nó
-		sessionRequired := true
-		sessionContainer, err := session.GetSession(ctx.Request, ctx.Writer, &sessmodels.VerifySessionOptions{
-			SessionRequired: &sessionRequired, // Sửa lỗi ở đây, // Bắt buộc phải có session
-		})
-		if err != nil {
-			// Nếu không có session hoặc token không hợp lệ
-			ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
-				"error": "Unauthorized: " + err.Error(),
-			})
-			return
-		}
-
-		// Lưu thông tin session vào context để sử dụng trong handler
-		ctx.Set("session", sessionContainer)
-		ctx.Next()
-	}
 }

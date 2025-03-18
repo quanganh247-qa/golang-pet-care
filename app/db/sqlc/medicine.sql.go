@@ -11,42 +11,6 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
-const createAllergy = `-- name: CreateAllergy :one
-INSERT INTO allergies (medical_record_id, allergen, severity, reaction, notes)
-VALUES ($1, $2, $3, $4, $5)
-RETURNING id, medical_record_id, allergen, severity, reaction, notes, created_at, updated_at
-`
-
-type CreateAllergyParams struct {
-	MedicalRecordID pgtype.Int8 `json:"medical_record_id"`
-	Allergen        []byte      `json:"allergen"`
-	Severity        pgtype.Text `json:"severity"`
-	Reaction        []byte      `json:"reaction"`
-	Notes           pgtype.Text `json:"notes"`
-}
-
-func (q *Queries) CreateAllergy(ctx context.Context, arg CreateAllergyParams) (Allergy, error) {
-	row := q.db.QueryRow(ctx, createAllergy,
-		arg.MedicalRecordID,
-		arg.Allergen,
-		arg.Severity,
-		arg.Reaction,
-		arg.Notes,
-	)
-	var i Allergy
-	err := row.Scan(
-		&i.ID,
-		&i.MedicalRecordID,
-		&i.Allergen,
-		&i.Severity,
-		&i.Reaction,
-		&i.Notes,
-		&i.CreatedAt,
-		&i.UpdatedAt,
-	)
-	return i, err
-}
-
 const createMedicine = `-- name: CreateMedicine :one
 INSERT INTO medicines (name, description, usage, dosage, frequency, duration, side_effects, expiration_date, quantity)
 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
@@ -95,50 +59,6 @@ func (q *Queries) CreateMedicine(ctx context.Context, arg CreateMedicineParams) 
 		&i.Quantity,
 	)
 	return i, err
-}
-
-const deleteAllergy = `-- name: DeleteAllergy :exec
-DELETE FROM Allergies
-WHERE id = $1
-`
-
-func (q *Queries) DeleteAllergy(ctx context.Context, id int64) error {
-	_, err := q.db.Exec(ctx, deleteAllergy, id)
-	return err
-}
-
-const getAllergies = `-- name: GetAllergies :many
-SELECT id, medical_record_id, allergen, severity, reaction, notes, created_at, updated_at FROM allergies
-WHERE medical_record_id = $1
-`
-
-func (q *Queries) GetAllergies(ctx context.Context, medicalRecordID pgtype.Int8) ([]Allergy, error) {
-	rows, err := q.db.Query(ctx, getAllergies, medicalRecordID)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	items := []Allergy{}
-	for rows.Next() {
-		var i Allergy
-		if err := rows.Scan(
-			&i.ID,
-			&i.MedicalRecordID,
-			&i.Allergen,
-			&i.Severity,
-			&i.Reaction,
-			&i.Notes,
-			&i.CreatedAt,
-			&i.UpdatedAt,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
 }
 
 const getMedicineByID = `-- name: GetMedicineByID :one
@@ -248,29 +168,4 @@ func (q *Queries) ListMedicinesByPet(ctx context.Context, arg ListMedicinesByPet
 		return nil, err
 	}
 	return items, nil
-}
-
-const updateAllergy = `-- name: UpdateAllergy :exec
-UPDATE allergies
-SET allergen = $2, severity = $3, reaction = $4, notes = $5, updated_at = NOW()
-WHERE id = $1
-`
-
-type UpdateAllergyParams struct {
-	ID       int64       `json:"id"`
-	Allergen []byte      `json:"allergen"`
-	Severity pgtype.Text `json:"severity"`
-	Reaction []byte      `json:"reaction"`
-	Notes    pgtype.Text `json:"notes"`
-}
-
-func (q *Queries) UpdateAllergy(ctx context.Context, arg UpdateAllergyParams) error {
-	_, err := q.db.Exec(ctx, updateAllergy,
-		arg.ID,
-		arg.Allergen,
-		arg.Severity,
-		arg.Reaction,
-		arg.Notes,
-	)
-	return err
 }

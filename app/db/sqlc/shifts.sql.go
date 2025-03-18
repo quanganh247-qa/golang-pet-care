@@ -176,6 +176,48 @@ func (q *Queries) GetDoctors(ctx context.Context) ([]GetDoctorsRow, error) {
 	return items, nil
 }
 
+const getShiftByDoctorId = `-- name: GetShiftByDoctorId :many
+SELECT id, doctor_id, start_time, end_time, assigned_patients, created_at
+FROM shifts
+WHERE doctor_id = $1
+`
+
+type GetShiftByDoctorIdRow struct {
+	ID               int64            `json:"id"`
+	DoctorID         int64            `json:"doctor_id"`
+	StartTime        pgtype.Timestamp `json:"start_time"`
+	EndTime          pgtype.Timestamp `json:"end_time"`
+	AssignedPatients pgtype.Int4      `json:"assigned_patients"`
+	CreatedAt        pgtype.Timestamp `json:"created_at"`
+}
+
+func (q *Queries) GetShiftByDoctorId(ctx context.Context, doctorID int64) ([]GetShiftByDoctorIdRow, error) {
+	rows, err := q.db.Query(ctx, getShiftByDoctorId, doctorID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetShiftByDoctorIdRow{}
+	for rows.Next() {
+		var i GetShiftByDoctorIdRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.DoctorID,
+			&i.StartTime,
+			&i.EndTime,
+			&i.AssignedPatients,
+			&i.CreatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getShifts = `-- name: GetShifts :many
 SELECT id, doctor_id, start_time, end_time, assigned_patients, created_at
 FROM shifts

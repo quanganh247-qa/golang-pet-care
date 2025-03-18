@@ -60,3 +60,5 @@ INSERT INTO Doctors (
 ) RETURNING *;
 
 
+-- name: GetAllRole :many
+SELECT distinct (role) FROM users;

@@ -24,7 +24,6 @@ func Routes(routerGroup middleware.RouterGroup) {
 		authRoute.POST("/pets/:pet_id/medical-records", MedicalRecordApi.controller.CreateMedicalRecord)
 		authRoute.GET("/pets/:pet_id/medical-histories", MedicalRecordApi.controller.ListMedicalHistory)
 		authRoute.POST("/pets/:pet_id/medical-histories", MedicalRecordApi.controller.CreateMedicalHistory)
-		authRoute.POST("/pets/:pet_id/allergies", MedicalRecordApi.controller.CreateAllergy)
 		authRoute.GET("/pets/:pet_id/medical-histories/:id", MedicalRecordApi.controller.GetMedicalHistoryByID)
 	}
 

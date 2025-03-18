@@ -30,6 +30,7 @@ type UserControllerInterface interface {
 	UpdatePassword(ctx *gin.Context)
 	sessioninfo(ctx *gin.Context)
 	userinfo(ctx *gin.Context)
+	GetAllRole(ctx *gin.Context)
 }
 
 func (controller *UserController) createUser(ctx *gin.Context) {
@@ -99,7 +100,10 @@ func (controller *UserController) loginUser(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
 		return
 	}
-	accessToken, _, err := token.TokenMaker.CreateToken(req.Username, nil, util.Configs.AccessTokenDuration)
+	accessToken, _, err := token.TokenMaker.CreateToken(req.Username,
+		map[string]bool{"user": true},
+		util.Configs.AccessTokenDuration,
+	)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
 		return
@@ -316,4 +320,13 @@ func (controller *UserController) userinfo(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, util.SuccessResponse("Success", userInfo))
+}
+
+func (controller *UserController) GetAllRole(ctx *gin.Context) {
+	res, err := controller.service.GetAllRoleService(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
+		return
+	}
+	ctx.JSON(http.StatusOK, util.SuccessResponse("Success", res))
 }

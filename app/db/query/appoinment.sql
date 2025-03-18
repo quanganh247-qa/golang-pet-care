@@ -1,19 +1,43 @@
-
 -- name: CreateAppointment :one
-INSERT INTO appointments (petid, username, doctor_id, service_id, date, time_slot_id, state_id)
-VALUES ($1, $2, $3, $4, $5, $6, (SELECT id FROM states WHERE state = 'Scheduled'))
-RETURNING *;
+INSERT INTO public.appointments (
+    petid, 
+    username, 
+    doctor_id, 
+    service_id, 
+    "date", 
+    reminder_send, 
+    time_slot_id, 
+    created_at, 
+    state_id, 
+    appointment_reason, 
+    priority, 
+    arrival_time, 
+    room_id, 
+    confirmation_sent
+) VALUES (
+    $1, $2, $3, $4, $5, $6, $7, NOW(), (SELECT id FROM public.states WHERE state = 'Scheduled' LIMIT 1), $8, $9, $10, $11, $12
+) RETURNING *;
+
 
 -- name: UpdateTimeSlotBookedPatients :exec
 UPDATE time_slots
 SET booked_patients = booked_patients + 1
 WHERE id = $1;
 
+-- name: CheckinAppointment :exec
+UPDATE appointments
+SET state_id = (SELECT id FROM states WHERE state = 'Checked In')
+WHERE appointment_id = $1;
+
 -- name: UpdateAppointmentByID :exec
 UPDATE appointments SET 
     state_id = $2,
-    notes = $3,
-    reminder_send = $4,
+    reminder_send = $3,
+    appointment_reason = $4,
+    priority = $5,
+    arrival_time = $6,
+    room_id = $7,
+    confirmation_sent = $8,
     updated_at = now()
 WHERE appointment_id = $1;
 
@@ -54,7 +78,6 @@ SELECT
     a.appointment_id,
     a.date,
     a.created_at,
-    a.notes,
     a.reminder_send,
     d.id AS doctor_id,
     p.name AS pet_name,
@@ -88,7 +111,7 @@ SELECT * FROM appointments WHERE state_id = $1;
 
 -- name: GetAllAppointments :many
 SELECT 
-    a.appointment_id, a.date, a.notes, a.reminder_send, a.created_at,
+    a.appointment_id, a.date, a.reminder_send, a.created_at,
     p.name AS pet_name,
     d.id AS doctor_id,
     s.name AS service_name,
@@ -115,7 +138,7 @@ WHERE s.id = $1 AND p.petid = $2 AND st.id = $3;
 
 -- name: GetAppointmentDetailByAppointmentID :one
 SELECT 
-    a.appointment_id, a.date, a.notes, a.reminder_send, a.created_at,
+    a.appointment_id, a.date,  a.reminder_send, a.created_at, a.appointment_reason, a.priority, a.arrival_time, a.room_id, a.confirmation_sent,
     d.id AS doctor_id,
     p.name AS pet_name,
     s.name AS service_name,
@@ -145,3 +168,8 @@ LEFT JOIN services s ON s.id = a.service_id
 LEFT JOIN time_slots ts ON ts.id = a.time_slot_id
 LEFT JOIN states st ON st.id = a.state_id
 WHERE a.username = $1;
+
+-- name: GetAppointmentsQueue :many
+SELECT * FROM public.appointments 
+WHERE state_id <> (SELECT id FROM public.states WHERE state = 'Scheduled' LIMIT 1)
+ORDER BY arrival_time ASC;

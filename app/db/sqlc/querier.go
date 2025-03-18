@@ -16,10 +16,10 @@ type Querier interface {
 	// Assign Carprofen to the Initial Phase
 	AssignCarprofenToInitialPhase(ctx context.Context, arg AssignCarprofenToInitialPhaseParams) error
 	AssignMedicationToTreatmentPhase(ctx context.Context, arg AssignMedicationToTreatmentPhaseParams) (PhaseMedicine, error)
+	CheckinAppointment(ctx context.Context, appointmentID int64) error
 	CountAppointmentsByDateAndTimeSlot(ctx context.Context, arg CountAppointmentsByDateAndTimeSlotParams) (int64, error)
 	CountAppointmentsByDoctorAndDate(ctx context.Context, arg CountAppointmentsByDoctorAndDateParams) (int64, error)
 	CountShiftsByDoctorAndDate(ctx context.Context, arg CountShiftsByDoctorAndDateParams) (int64, error)
-	CreateAllergy(ctx context.Context, arg CreateAllergyParams) (Allergy, error)
 	CreateAppointment(ctx context.Context, arg CreateAppointmentParams) (Appointment, error)
 	CreateCartForUser(ctx context.Context, userID int64) (Cart, error)
 	CreateDisease(ctx context.Context, arg CreateDiseaseParams) (Disease, error)
@@ -43,7 +43,6 @@ type Querier interface {
 	CreateVerifyEmail(ctx context.Context, arg CreateVerifyEmailParams) (VerifyEmail, error)
 	CreatetNotification(ctx context.Context, arg CreatetNotificationParams) (Notification, error)
 	DecreaseItemQuantity(ctx context.Context, arg DecreaseItemQuantityParams) error
-	DeleteAllergy(ctx context.Context, id int64) error
 	DeleteDeviceToken(ctx context.Context, arg DeleteDeviceTokenParams) error
 	DeleteDoctor(ctx context.Context, id int64) error
 	DeleteMedicalHistory(ctx context.Context, id int64) error
@@ -63,9 +62,9 @@ type Querier interface {
 	GetAllOrders(ctx context.Context, arg GetAllOrdersParams) ([]Order, error)
 	GetAllPets(ctx context.Context) ([]Pet, error)
 	GetAllProducts(ctx context.Context, arg GetAllProductsParams) ([]Product, error)
+	GetAllRole(ctx context.Context) ([]pgtype.Text, error)
 	GetAllSchedulesByPet(ctx context.Context, arg GetAllSchedulesByPetParams) ([]PetSchedule, error)
 	GetAllUsers(ctx context.Context) ([]User, error)
-	GetAllergies(ctx context.Context, medicalRecordID pgtype.Int8) ([]Allergy, error)
 	GetAppointmentByStateId(ctx context.Context, stateID pgtype.Int4) ([]Appointment, error)
 	GetAppointmentDetail(ctx context.Context, arg GetAppointmentDetailParams) (GetAppointmentDetailRow, error)
 	GetAppointmentDetailByAppointmentID(ctx context.Context, appointmentID int64) (GetAppointmentDetailByAppointmentIDRow, error)
@@ -73,6 +72,7 @@ type Querier interface {
 	GetAppointmentsByTimeSlot(ctx context.Context, timeSlotID pgtype.Int8) ([]GetAppointmentsByTimeSlotRow, error)
 	GetAppointmentsByUser(ctx context.Context, username pgtype.Text) ([]GetAppointmentsByUserRow, error)
 	GetAppointmentsOfDoctorWithDetails(ctx context.Context, id int64) ([]GetAppointmentsOfDoctorWithDetailsRow, error)
+	GetAppointmentsQueue(ctx context.Context) ([]Appointment, error)
 	GetAvailableDoctors(ctx context.Context, date pgtype.Date) ([]GetAvailableDoctorsRow, error)
 	GetAvailableTimeSlots(ctx context.Context, arg GetAvailableTimeSlotsParams) ([]GetAvailableTimeSlotsRow, error)
 	GetCartByUserId(ctx context.Context, userID int64) ([]Cart, error)
@@ -107,6 +107,7 @@ type Querier interface {
 	GetSOAPByAppointmentID(ctx context.Context, appointmentID pgtype.Int8) (Consultation, error)
 	GetServiceByID(ctx context.Context, id int64) (Service, error)
 	GetServices(ctx context.Context, arg GetServicesParams) ([]Service, error)
+	GetShiftByDoctorId(ctx context.Context, doctorID int64) ([]GetShiftByDoctorIdRow, error)
 	GetShifts(ctx context.Context) ([]GetShiftsRow, error)
 	GetState(ctx context.Context, id int64) (State, error)
 	// -- name: GetTimeSlotsByDoctorAndDate :many
@@ -140,7 +141,6 @@ type Querier interface {
 	MarkNotificationAsRead(ctx context.Context, id int64) error
 	RemoveItemFromCart(ctx context.Context, arg RemoveItemFromCartParams) error
 	SetPetInactive(ctx context.Context, petid int64) error
-	UpdateAllergy(ctx context.Context, arg UpdateAllergyParams) error
 	UpdateAppointmentByID(ctx context.Context, arg UpdateAppointmentByIDParams) error
 	UpdateAppointmentStatus(ctx context.Context, arg UpdateAppointmentStatusParams) error
 	UpdateAvatarUser(ctx context.Context, arg UpdateAvatarUserParams) (User, error)
