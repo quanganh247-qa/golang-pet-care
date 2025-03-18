@@ -36,6 +36,7 @@ type UserControllerInterface interface {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	GetAllRole(ctx *gin.Context)
 =======
 	createDoctor(ctx *gin.Context)
@@ -110,6 +111,9 @@ type UserControllerInterface interface {
 >>>>>>> a2c21c8 (update pass)
 =======
 >>>>>>> ada3717 (Docker file)
+=======
+	GetAllRole(ctx *gin.Context)
+>>>>>>> 4ccd381 (Update appointment flow)
 }
 
 func (controller *UserController) createUser(ctx *gin.Context) {
@@ -616,6 +620,9 @@ func (controller *UserController) userinfo(ctx *gin.Context) {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 4ccd381 (Update appointment flow)
 =======
 >>>>>>> 4ccd381 (Update appointment flow)
 
@@ -627,6 +634,7 @@ func (controller *UserController) GetAllRole(ctx *gin.Context) {
 	}
 	ctx.JSON(http.StatusOK, util.SuccessResponse("Success", res))
 }
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 =======
@@ -906,3 +914,5 @@ func (controller *UserController) UpdatePassword(ctx *gin.Context) {
 >>>>>>> a2c21c8 (update pass)
 =======
 >>>>>>> ada3717 (Docker file)
+=======
+>>>>>>> 4ccd381 (Update appointment flow)

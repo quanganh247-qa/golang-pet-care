@@ -30,6 +30,7 @@ type Querier interface {
 	AssignMedicationToTreatmentPhase(ctx context.Context, arg AssignMedicationToTreatmentPhaseParams) (PhaseMedicine, error)
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> 71b74e9 (feat(appointment): add room management and update appointment functionality.)
 	AssignRoomToAppointment(ctx context.Context, arg AssignRoomToAppointmentParams) error
@@ -92,6 +93,12 @@ type Querier interface {
 	CountShiftsByDoctorAndDate(ctx context.Context, arg CountShiftsByDoctorAndDateParams) (int64, error)
 	CreateAllergy(ctx context.Context, arg CreateAllergyParams) (Allergy, error)
 >>>>>>> 3bf345d (happy new year)
+=======
+	CheckinAppointment(ctx context.Context, appointmentID int64) error
+	CountAppointmentsByDateAndTimeSlot(ctx context.Context, arg CountAppointmentsByDateAndTimeSlotParams) (int64, error)
+	CountAppointmentsByDoctorAndDate(ctx context.Context, arg CountAppointmentsByDoctorAndDateParams) (int64, error)
+	CountShiftsByDoctorAndDate(ctx context.Context, arg CountShiftsByDoctorAndDateParams) (int64, error)
+>>>>>>> 4ccd381 (Update appointment flow)
 =======
 	CheckinAppointment(ctx context.Context, appointmentID int64) error
 	CountAppointmentsByDateAndTimeSlot(ctx context.Context, arg CountAppointmentsByDateAndTimeSlotParams) (int64, error)
@@ -197,6 +204,7 @@ type Querier interface {
 	CreatetNotification(ctx context.Context, arg CreatetNotificationParams) (Notification, error)
 	DecreaseItemQuantity(ctx context.Context, arg DecreaseItemQuantityParams) error
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 	// Delete all notifications
 	DeleteAllNotifications(ctx context.Context) error
@@ -207,6 +215,8 @@ type Querier interface {
 	// Delete all notifications
 	DeleteAllNotifications(ctx context.Context) error
 >>>>>>> eb8d761 (updated pet schedule)
+=======
+>>>>>>> 4ccd381 (Update appointment flow)
 	DeleteDeviceToken(ctx context.Context, arg DeleteDeviceTokenParams) error
 	DeleteDoctor(ctx context.Context, id int64) error
 	DeleteMedicalHistory(ctx context.Context, id int64) error
@@ -388,12 +398,15 @@ type Querier interface {
 	GetAllPets(ctx context.Context) ([]Pet, error)
 	GetAllProducts(ctx context.Context, arg GetAllProductsParams) ([]Product, error)
 	GetAllRole(ctx context.Context) ([]pgtype.Text, error)
+<<<<<<< HEAD
 =======
 	GetActiveDoctors(ctx context.Context, arg GetActiveDoctorsParams) ([]GetActiveDoctorsRow, error)
 =======
 >>>>>>> 6f3ea8a (update sqlc)
 	GetAllProducts(ctx context.Context, arg GetAllProductsParams) ([]Product, error)
 >>>>>>> bd5945b (get list products)
+=======
+>>>>>>> 4ccd381 (Update appointment flow)
 	GetAllSchedulesByPet(ctx context.Context, arg GetAllSchedulesByPetParams) ([]PetSchedule, error)
 	GetAllTreatmentPhasesByTreatmentID(ctx context.Context, treatmentID pgtype.Int8) ([]TreatmentPhase, error)
 <<<<<<< HEAD
@@ -462,6 +475,9 @@ type Querier interface {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 4ccd381 (Update appointment flow)
 =======
 >>>>>>> 4ccd381 (Update appointment flow)
 	GetAppointmentByStateId(ctx context.Context, stateID pgtype.Int4) ([]Appointment, error)
@@ -565,7 +581,11 @@ type Querier interface {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	GetAppointmentsQueue(ctx context.Context, doctorID pgtype.Int8) ([]Appointment, error)
+=======
+	GetAppointmentsQueue(ctx context.Context) ([]Appointment, error)
+>>>>>>> 4ccd381 (Update appointment flow)
 =======
 	GetAppointmentsQueue(ctx context.Context) ([]Appointment, error)
 >>>>>>> 4ccd381 (Update appointment flow)
@@ -856,6 +876,7 @@ type Querier interface {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	GetShiftByDoctorId(ctx context.Context, doctorID int64) ([]GetShiftByDoctorIdRow, error)
 =======
 >>>>>>> ada3717 (Docker file)
@@ -864,6 +885,9 @@ type Querier interface {
 >>>>>>> 4ccd381 (Update appointment flow)
 =======
 >>>>>>> ada3717 (Docker file)
+=======
+	GetShiftByDoctorId(ctx context.Context, doctorID int64) ([]GetShiftByDoctorIdRow, error)
+>>>>>>> 4ccd381 (Update appointment flow)
 	GetShifts(ctx context.Context) ([]GetShiftsRow, error)
 	GetState(ctx context.Context, id int64) (State, error)
 	// -- name: GetTimeSlotsByDoctorAndDate :many
@@ -1232,6 +1256,7 @@ type Querier interface {
 =======
 	SetPetInactive(ctx context.Context, petid int64) error
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> 33fcf96 (Big update)
 =======
 	SetPetInactive(ctx context.Context, petid int64) error
@@ -1241,6 +1266,8 @@ type Querier interface {
 <<<<<<< HEAD
 >>>>>>> 3bf345d (happy new year)
 =======
+=======
+>>>>>>> 4ccd381 (Update appointment flow)
 =======
 >>>>>>> 4ccd381 (Update appointment flow)
 	UpdateAppointmentByID(ctx context.Context, arg UpdateAppointmentByIDParams) error

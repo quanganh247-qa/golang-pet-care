@@ -21,6 +21,7 @@ VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, NOW(), false)
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 RETURNING id, username, hashed_password, full_name, email, phone_number, address, data_image, original_image, role, status, created_at, is_verified_email, removed_at
 =======
 RETURNING id, username, hashed_password, full_name, email, phone_number, address, data_image, original_image, role, created_at, is_verified_email, removed_at
@@ -31,6 +32,9 @@ RETURNING id, username, hashed_password, full_name, email, phone_number, address
 =======
 RETURNING id, username, hashed_password, full_name, email, phone_number, address, data_image, original_image, role, created_at, is_verified_email, removed_at
 >>>>>>> ada3717 (Docker file)
+=======
+RETURNING id, username, hashed_password, full_name, email, phone_number, address, data_image, original_image, role, status, created_at, is_verified_email, removed_at
+>>>>>>> 4ccd381 (Update appointment flow)
 `
 
 type CreateUserParams struct {
@@ -133,6 +137,7 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 		&i.Role,
 		&i.Status,
 <<<<<<< HEAD
+<<<<<<< HEAD
 		&i.CreatedAt,
 		&i.IsVerifiedEmail,
 		&i.RemovedAt,
@@ -192,6 +197,8 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 		&i.DataImage,
 		&i.OriginalImage,
 		&i.Role,
+=======
+>>>>>>> 4ccd381 (Update appointment flow)
 		&i.CreatedAt,
 		&i.IsVerifiedEmail,
 		&i.RemovedAt,
@@ -215,6 +222,7 @@ func (q *Queries) DeleteUser(ctx context.Context, id int64) error {
 	return err
 }
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -281,15 +289,20 @@ func (q *Queries) GetAllDoctors(ctx context.Context) ([]Doctor, error) {
 <<<<<<< HEAD
 >>>>>>> 33fcf96 (Big update)
 =======
+=======
+>>>>>>> 4ccd381 (Update appointment flow)
 const getAllRole = `-- name: GetAllRole :many
 SELECT distinct (role) FROM users
 `
 
 func (q *Queries) GetAllRole(ctx context.Context) ([]pgtype.Text, error) {
 	rows, err := q.db.Query(ctx, getAllRole)
+<<<<<<< HEAD
 >>>>>>> 4ccd381 (Update appointment flow)
 =======
 >>>>>>> 33fcf96 (Big update)
+=======
+>>>>>>> 4ccd381 (Update appointment flow)
 	if err != nil {
 		return nil, err
 	}
@@ -297,6 +310,9 @@ func (q *Queries) GetAllRole(ctx context.Context) ([]pgtype.Text, error) {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 4ccd381 (Update appointment flow)
 =======
 >>>>>>> 4ccd381 (Update appointment flow)
 	items := []pgtype.Text{}
@@ -306,6 +322,7 @@ func (q *Queries) GetAllRole(ctx context.Context) ([]pgtype.Text, error) {
 			return nil, err
 		}
 		items = append(items, role)
+<<<<<<< HEAD
 <<<<<<< HEAD
 =======
 =======
@@ -332,6 +349,8 @@ func (q *Queries) GetAllRole(ctx context.Context) ([]pgtype.Text, error) {
 >>>>>>> 4ccd381 (Update appointment flow)
 =======
 >>>>>>> 33fcf96 (Big update)
+=======
+>>>>>>> 4ccd381 (Update appointment flow)
 	}
 	if err := rows.Err(); err != nil {
 		return nil, err
@@ -339,6 +358,7 @@ func (q *Queries) GetAllRole(ctx context.Context) ([]pgtype.Text, error) {
 	return items, nil
 }
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -368,6 +388,10 @@ SELECT id, username, hashed_password, full_name, email, phone_number, address, d
 =======
 SELECT id, username, hashed_password, full_name, email, phone_number, address, data_image, original_image, role, created_at, is_verified_email, removed_at FROM users
 >>>>>>> 0fb3f30 (user images)
+=======
+const getAllUsers = `-- name: GetAllUsers :many
+SELECT id, username, hashed_password, full_name, email, phone_number, address, data_image, original_image, role, status, created_at, is_verified_email, removed_at FROM users
+>>>>>>> 4ccd381 (Update appointment flow)
 `
 
 func (q *Queries) GetAllUsers(ctx context.Context) ([]User, error) {
@@ -615,7 +639,7 @@ func (q *Queries) GetUser(ctx context.Context, username string) (GetUserRow, err
 }
 
 const getUserByEmail = `-- name: GetUserByEmail :one
-SELECT id, username, hashed_password, full_name, email, phone_number, address, data_image, original_image, role, created_at, is_verified_email, removed_at
+SELECT id, username, hashed_password, full_name, email, phone_number, address, data_image, original_image, role, status, created_at, is_verified_email, removed_at
 FROM users
 WHERE email = $1
 `
@@ -634,6 +658,7 @@ func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error
 		&i.DataImage,
 		&i.OriginalImage,
 		&i.Role,
+		&i.Status,
 		&i.CreatedAt,
 		&i.IsVerifiedEmail,
 		&i.RemovedAt,
@@ -1340,7 +1365,7 @@ const updateAvatarUser = `-- name: UpdateAvatarUser :one
 UPDATE users
 SET data_image = $2, original_image = $3
 WHERE username = $1
-RETURNING id, username, hashed_password, full_name, email, phone_number, address, data_image, original_image, role, created_at, is_verified_email, removed_at
+RETURNING id, username, hashed_password, full_name, email, phone_number, address, data_image, original_image, role, status, created_at, is_verified_email, removed_at
 `
 
 type UpdateAvatarUserParams struct {
@@ -1363,6 +1388,7 @@ func (q *Queries) UpdateAvatarUser(ctx context.Context, arg UpdateAvatarUserPara
 		&i.DataImage,
 		&i.OriginalImage,
 		&i.Role,
+		&i.Status,
 		&i.CreatedAt,
 		&i.IsVerifiedEmail,
 		&i.RemovedAt,
@@ -1374,7 +1400,7 @@ const updateUser = `-- name: UpdateUser :one
 UPDATE users
 SET full_name = $2, email = $3, phone_number = $4, address = $5
 WHERE username = $1
-RETURNING id, username, hashed_password, full_name, email, phone_number, address, data_image, original_image, role, created_at, is_verified_email, removed_at
+RETURNING id, username, hashed_password, full_name, email, phone_number, address, data_image, original_image, role, status, created_at, is_verified_email, removed_at
 `
 
 type UpdateUserParams struct {
@@ -1405,6 +1431,7 @@ func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, e
 		&i.DataImage,
 		&i.OriginalImage,
 		&i.Role,
+		&i.Status,
 		&i.CreatedAt,
 		&i.IsVerifiedEmail,
 		&i.RemovedAt,
@@ -1415,7 +1442,7 @@ func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, e
 const updateUserPassword = `-- name: UpdateUserPassword :one
 UPDATE users
 SET hashed_password = $2
-WHERE username = $1 RETURNING id, username, hashed_password, full_name, email, phone_number, address, data_image, original_image, role, created_at, is_verified_email, removed_at
+WHERE username = $1 RETURNING id, username, hashed_password, full_name, email, phone_number, address, data_image, original_image, role, status, created_at, is_verified_email, removed_at
 `
 
 type UpdateUserPasswordParams struct {
@@ -1437,6 +1464,7 @@ func (q *Queries) UpdateUserPassword(ctx context.Context, arg UpdateUserPassword
 		&i.DataImage,
 		&i.OriginalImage,
 		&i.Role,
+		&i.Status,
 		&i.CreatedAt,
 		&i.IsVerifiedEmail,
 		&i.RemovedAt,

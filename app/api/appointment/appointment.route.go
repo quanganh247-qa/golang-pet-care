@@ -88,6 +88,7 @@ func Routes(routerGroup middleware.RouterGroup, taskDistributor worker.TaskDistr
 =======
 		authRoute.POST("/", appointmentApi.controller.createAppointment)
 		authRoute.POST("/confirm/:id", appointmentApi.controller.confirmAppointment)
+		authRoute.POST("/check-in/:id", appointmentApi.controller.checkinAppointment)
 		authRoute.GET("/", appointmentApi.controller.getAppointmentsByUser)
 <<<<<<< HEAD
 >>>>>>> 685da65 (latest update)

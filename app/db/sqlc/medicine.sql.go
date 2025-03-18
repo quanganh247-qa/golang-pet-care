@@ -16,6 +16,7 @@ import (
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 const createMedicine = `-- name: CreateMedicine :one
 INSERT INTO medicines (name, description, usage, dosage, frequency, duration, side_effects, expiration_date, quantity)
 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
@@ -87,6 +88,8 @@ func (q *Queries) CreateAllergy(ctx context.Context, arg CreateAllergyParams) (A
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+=======
+>>>>>>> 4ccd381 (Update appointment flow)
 =======
 >>>>>>> 4ccd381 (Update appointment flow)
 const createMedicine = `-- name: CreateMedicine :one
@@ -200,6 +203,7 @@ func (q *Queries) CreateMedicalHistory(ctx context.Context, arg CreateMedicalHis
 	return i, err
 }
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 const getMedicineByID = `-- name: GetMedicineByID :one
@@ -384,6 +388,8 @@ func (q *Queries) GetAllergies(ctx context.Context, medicalRecordID pgtype.Int8)
 >>>>>>> 4ccd381 (Update appointment flow)
 }
 
+=======
+>>>>>>> 4ccd381 (Update appointment flow)
 const getMedicineByID = `-- name: GetMedicineByID :one
 SELECT id, name, description, usage, dosage, frequency, duration, side_effects, start_date, end_date, created_at, updated_at, expiration_date, quantity FROM medicines
 WHERE id = $1 LIMIT 1
@@ -583,29 +589,4 @@ func (q *Queries) ListMedicinesByPet(ctx context.Context, arg ListMedicinesByPet
 		return nil, err
 	}
 	return items, nil
-}
-
-const updateAllergy = `-- name: UpdateAllergy :exec
-UPDATE allergies
-SET allergen = $2, severity = $3, reaction = $4, notes = $5, updated_at = NOW()
-WHERE id = $1
-`
-
-type UpdateAllergyParams struct {
-	ID       int64       `json:"id"`
-	Allergen []byte      `json:"allergen"`
-	Severity pgtype.Text `json:"severity"`
-	Reaction []byte      `json:"reaction"`
-	Notes    pgtype.Text `json:"notes"`
-}
-
-func (q *Queries) UpdateAllergy(ctx context.Context, arg UpdateAllergyParams) error {
-	_, err := q.db.Exec(ctx, updateAllergy,
-		arg.ID,
-		arg.Allergen,
-		arg.Severity,
-		arg.Reaction,
-		arg.Notes,
-	)
-	return err
 }

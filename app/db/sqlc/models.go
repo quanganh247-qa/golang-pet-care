@@ -8,21 +8,13 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
-type Allergy struct {
-	ID              int64            `json:"id"`
-	MedicalRecordID pgtype.Int8      `json:"medical_record_id"`
-	Allergen        []byte           `json:"allergen"`
-	Severity        pgtype.Text      `json:"severity"`
-	Reaction        []byte           `json:"reaction"`
-	Notes           pgtype.Text      `json:"notes"`
-	CreatedAt       pgtype.Timestamp `json:"created_at"`
-	UpdatedAt       pgtype.Timestamp `json:"updated_at"`
-}
-
 type Appointment struct {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 4ccd381 (Update appointment flow)
 =======
 >>>>>>> 4ccd381 (Update appointment flow)
 	AppointmentID     int64            `json:"appointment_id"`
@@ -40,6 +32,7 @@ type Appointment struct {
 	ArrivalTime       pgtype.Timestamp `json:"arrival_time"`
 	RoomID            pgtype.Int8      `json:"room_id"`
 	ConfirmationSent  pgtype.Bool      `json:"confirmation_sent"`
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 	Notes             pgtype.Text      `json:"notes"`
@@ -112,6 +105,8 @@ type CartItem struct {
 =======
 	StateID       pgtype.Int4      `json:"state_id"`
 >>>>>>> e859654 (Elastic search)
+=======
+>>>>>>> 4ccd381 (Update appointment flow)
 }
 
 type Cart struct {
@@ -206,6 +201,7 @@ type DeviceToken struct {
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> e859654 (Elastic search)
 =======
 >>>>>>> e9037c6 (update sqlc)
@@ -235,6 +231,8 @@ type Department struct {
 type Devicetoken struct {
 >>>>>>> 0fb3f30 (user images)
 =======
+=======
+>>>>>>> 4ccd381 (Update appointment flow)
 =======
 >>>>>>> 4ccd381 (Update appointment flow)
 type DeviceToken struct {
@@ -797,6 +795,7 @@ type Room struct {
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> 0fb3f30 (user images)
 =======
@@ -889,6 +888,8 @@ type Product struct {
 }
 
 >>>>>>> c449ffc (feat: cart api)
+=======
+>>>>>>> 4ccd381 (Update appointment flow)
 type Service struct {
 	ID          int64            `json:"id"`
 	Name        pgtype.Text      `json:"name"`

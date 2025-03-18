@@ -5,6 +5,7 @@ import (
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	"errors"
 =======
 >>>>>>> b393bb9 (add service and add permission)
@@ -13,6 +14,9 @@ import (
 >>>>>>> 4ccd381 (Update appointment flow)
 =======
 >>>>>>> b393bb9 (add service and add permission)
+=======
+	"errors"
+>>>>>>> 4ccd381 (Update appointment flow)
 	"fmt"
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -65,8 +69,11 @@ type AppointmentServiceInterface interface {
 	CheckInAppoinment(ctx *gin.Context, id, roomID int64, priority string) error
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	GetAppointmentByID(ctx *gin.Context, id int64) (*Appointment, error)
 =======
+=======
+>>>>>>> 4ccd381 (Update appointment flow)
 	GetAppointmentByID(ctx *gin.Context, id int64) (*createAppointmentResponse, error)
 >>>>>>> 4ccd381 (Update appointment flow)
 	GetAppointmentsByUser(ctx *gin.Context, username string) ([]createAppointmentResponse, error)
@@ -541,21 +548,16 @@ func (s *AppointmentService) CreateAppointment(ctx *gin.Context, req createAppoi
 		endTimeFormatted = time.UnixMicro(timeSlot.EndTime.Microseconds).UTC().Format("15:04:05")
 
 		appointment, err = q.CreateAppointment(ctx, db.CreateAppointmentParams{
-			DoctorID:   pgtype.Int8{Int64: int64(doctor.ID), Valid: true},
-			Petid:      pgtype.Int8{Int64: req.PetID, Valid: true},
-			ServiceID:  pgtype.Int8{Int64: service.ID, Valid: true},
-			Date:       pgtype.Timestamp{Time: dateTime, Valid: true},
-			TimeSlotID: pgtype.Int8{Int64: req.TimeSlotID, Valid: true},
-			Username:   pgtype.Text{String: username, Valid: true},
+			DoctorID:          pgtype.Int8{Int64: int64(doctor.ID), Valid: true},
+			Petid:             pgtype.Int8{Int64: req.PetID, Valid: true},
+			ServiceID:         pgtype.Int8{Int64: service.ID, Valid: true},
+			AppointmentReason: pgtype.Text{String: req.Reason, Valid: true},
+			Date:              pgtype.Timestamp{Time: dateTime, Valid: true},
+			TimeSlotID:        pgtype.Int8{Int64: req.TimeSlotID, Valid: true},
+			Username:          pgtype.Text{String: username, Valid: true},
 		})
 		if err != nil {
 			return fmt.Errorf("failed to create appointment: %w", err)
-		}
-
-		// Cập nhật khung giờ
-		err = q.UpdateTimeSlotBookedPatients(ctx, req.TimeSlotID)
-		if err != nil {
-			return err
 		}
 
 		return nil
@@ -564,6 +566,7 @@ func (s *AppointmentService) CreateAppointment(ctx *gin.Context, req createAppoi
 		return nil, fmt.Errorf("transaction failed: %w", err)
 	}
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 >>>>>>> 685da65 (latest update)
 	// Fetch related data
@@ -612,6 +615,10 @@ func (s *AppointmentService) CreateAppointment(ctx *gin.Context, req createAppoi
 		Petid: appointment.Petid.Int64,
 		ID_2:  int64(appointment.StateID.Int32),
 	})
+=======
+	detail, err := s.storeDB.GetAppointmentDetailByAppointmentID(ctx, appointment.AppointmentID)
+
+>>>>>>> 4ccd381 (Update appointment flow)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get appointment detail: %w", err)
 >>>>>>> dc47646 (Optimize SQL query)
@@ -635,6 +642,7 @@ func (s *AppointmentService) CreateAppointment(ctx *gin.Context, req createAppoi
 	return &createAppointmentResponse{
 		ID:          appointment.AppointmentID,
 		DoctorName:  doctor.Name,
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 		PetName:     detail.PetName.String,
@@ -762,6 +770,10 @@ func (s *AppointmentService) CheckInAppoinment(ctx *gin.Context, id, roomID int6
 >>>>>>> b393bb9 (add service and add permission)
 =======
 		PetName:     detail.PetName,
+=======
+		PetName:     detail.PetName.String,
+		Reason:      detail.AppointmentReason.String,
+>>>>>>> 4ccd381 (Update appointment flow)
 		Date:        appointment.Date.Time.Format(time.RFC3339),
 		ServiceName: detail.ServiceName.String,
 >>>>>>> dc47646 (Optimize SQL query)
@@ -769,13 +781,13 @@ func (s *AppointmentService) CheckInAppoinment(ctx *gin.Context, id, roomID int6
 			StartTime: startTimeFormatted,
 			EndTime:   endTimeFormatted,
 		},
-		State:        detail.StateName,
-		Notes:        appointment.Notes.String,
+		State:        detail.StateName.String,
 		ReminderSend: appointment.ReminderSend.Bool,
 		CreatedAt:    appointment.CreatedAt.Time.Format("2006-01-02 15:04:05"),
 	}, nil
 >>>>>>> 685da65 (latest update)
 }
+<<<<<<< HEAD
 
 <<<<<<< HEAD
 func (s *AppointmentService) GetAppointmentByID(ctx *gin.Context, id int64) (*Appointment, error) {
@@ -946,42 +958,50 @@ func (s *AppointmentService) ConfirmPayment(ctx context.Context, appointmentID i
 		appointment, err := q.GetAppointmentDetailById(ctx, appointmentID)
 >>>>>>> b393bb9 (add service and add permission)
 =======
+=======
+func (s *AppointmentService) ConfirmPayment(ctx context.Context, appointmentID int64) error {
+	return s.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
+		// Fetch appointment details
+>>>>>>> 4ccd381 (Update appointment flow)
 		appointment, err := q.GetAppointmentDetailByAppointmentID(ctx, appointmentID)
 >>>>>>> dc47646 (Optimize SQL query)
 		if err != nil {
 			return fmt.Errorf("failed to get appointment: %w", err)
 		}
 
+		// Check appointment state early to avoid unnecessary queries
 		state, err := q.GetState(ctx, appointment.StateID.Int64)
 		if err != nil {
 			return fmt.Errorf("failed to get state: %w", err)
 		}
 		if state.State == "Confirmed" {
-			return fmt.Errorf("appointment is already paid")
+			return errors.New("appointment is already paid")
 		}
+
+		// Fetch and validate time slot
 		timeSlot, err := q.GetTimeSlotForUpdate(ctx, appointment.TimeSlotID.Int64)
 		if err != nil {
 			return fmt.Errorf("failed to get time slot: %w", err)
 		}
-
 		if timeSlot.BookedPatients.Int32 >= timeSlot.MaxPatients.Int32 {
-			return fmt.Errorf("time slot is fully booked")
+			return errors.New("time slot is fully booked")
 		}
 
-		err = q.UpdateAppointmentStatus(ctx, db.UpdateAppointmentStatusParams{
-			AppointmentID: appointmentID,
-			StateID:       pgtype.Int4{Int32: 2, Valid: true},
-		})
-		if err != nil {
-			return fmt.Errorf("failed to update payment status: %w", err)
-		}
-
+		// Prepare updates in a single transaction
 		if err = q.UpdateTimeSlotBookedPatients(ctx, appointment.TimeSlotID.Int64); err != nil {
 			return fmt.Errorf("failed to update time slot: %w", err)
 		}
 
+		if err = q.UpdateAppointmentStatus(ctx, db.UpdateAppointmentStatusParams{
+			AppointmentID: appointmentID,
+			StateID:       pgtype.Int4{Int32: 2, Valid: true}, // Consider defining a constant for StateID
+		}); err != nil {
+			return fmt.Errorf("failed to update appointment status: %w", err)
+		}
+
 		return nil
 	})
+<<<<<<< HEAD
 	if err != nil {
 		return fmt.Errorf("transaction failed: %w", err)
 >>>>>>> 685da65 (latest update)
@@ -1018,10 +1038,19 @@ func (s *AppointmentService) ConfirmPayment(ctx context.Context, appointmentID i
 >>>>>>> 4ccd381 (Update appointment flow)
 		appointment, err := q.GetAppointmentDetailByAppointmentID(ctx, appointmentID)
 >>>>>>> dc47646 (Optimize SQL query)
+=======
+}
+
+func (s *AppointmentService) CheckInAppoinment(ctx *gin.Context, id, roomID int64, priority string) error {
+	return s.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
+		// Fetch appointment details
+		appointment, err := q.GetAppointmentDetailByAppointmentID(ctx, id)
+>>>>>>> 4ccd381 (Update appointment flow)
 		if err != nil {
 			return fmt.Errorf("failed to get appointment: %w", err)
 		}
 
+<<<<<<< HEAD
 		// Check appointment state early to avoid unnecessary queries
 		state, err := q.GetState(ctx, appointment.StateID.Int64)
 		if err != nil {
@@ -1086,6 +1115,21 @@ func (s *AppointmentService) ConfirmPayment(ctx context.Context, appointmentID i
 	}
 
 	return availableTimeSlots, nil
+=======
+		arrivalTime := time.Now().UTC()
+
+		if err = q.UpdateAppointmentByID(ctx, db.UpdateAppointmentByIDParams{
+			AppointmentID: appointment.AppointmentID,
+			StateID:       pgtype.Int4{Int32: 3, Valid: true},
+			ArrivalTime:   pgtype.Timestamp{Time: arrivalTime, Valid: true},
+			RoomID:        pgtype.Int8{Int64: roomID, Valid: true},
+			Priority:      pgtype.Text{String: priority, Valid: true},
+		}); err != nil {
+			return fmt.Errorf("failed to update appointment status: %w", err)
+		}
+		return nil
+	})
+>>>>>>> 4ccd381 (Update appointment flow)
 }
 
 <<<<<<< HEAD
@@ -2130,7 +2174,6 @@ func (s *AppointmentService) GetAppointmentByID(ctx *gin.Context, id int64) (*cr
 			StartTime: startTimeFormatted,
 			EndTime:   endTimeFormatted,
 		},
-		Notes:        appointment.Notes.String,
 		ReminderSend: appointment.ReminderSend.Bool,
 		State:        appointment.StateName.String,
 		CreatedAt:    appointment.CreatedAt.Time.Format(time.RFC3339),
@@ -2192,7 +2235,6 @@ func (s *AppointmentService) GetAppointmentsByDoctor(ctx *gin.Context, doctorID 
 				StartTime: time.UnixMicro(appointment.StartTime.Microseconds).UTC().Format("15:04:05"),
 				EndTime:   time.UnixMicro(appointment.EndTime.Microseconds).UTC().Format("15:04:05"),
 			},
-			Notes:        appointment.Notes.String,
 			State:        appointment.StateName.String,
 			ReminderSend: appointment.ReminderSend.Bool,
 			CreatedAt:    appointment.CreatedAt.Time.Format("2006-01-02 15:04:05"),
@@ -2266,7 +2308,6 @@ func (s *AppointmentService) GetAllAppointments(ctx *gin.Context) ([]createAppoi
 			ServiceName:  appointment.ServiceName.String,
 			Date:         appointment.Date.Time.Format("2006-01-02"),
 			State:        appointment.StateName.String,
-			Notes:        appointment.Notes.String,
 			ReminderSend: appointment.ReminderSend.Bool,
 			CreatedAt:    appointment.CreatedAt.Time.Format("2006-01-02 15:04:05"),
 			TimeSlot: timeslot{

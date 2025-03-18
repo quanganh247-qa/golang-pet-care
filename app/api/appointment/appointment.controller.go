@@ -88,6 +88,7 @@ type AppointmentControllerInterface interface {
 >>>>>>> 685da65 (latest update)
 =======
 	confirmAppointment(ctx *gin.Context)
+	checkinAppointment(ctx *gin.Context)
 	getAppointmentByID(ctx *gin.Context)
 	getAppointmentsByUser(ctx *gin.Context)
 	getAppointmentsByDoctor(ctx *gin.Context)
@@ -220,8 +221,13 @@ func (c *AppointmentController) getAppointmentByID(ctx *gin.Context) {
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 func (c *AppointmentController) getAppointmentsByUser(ctx *gin.Context) {
 	payload, err := middleware.GetAuthorizationPayload(ctx)
+=======
+func (c *AppointmentController) checkinAppointment(ctx *gin.Context) {
+	roomID, err := strconv.ParseInt(ctx.Query("room_id"), 10, 64)
+>>>>>>> 4ccd381 (Update appointment flow)
 =======
 func (c *AppointmentController) checkinAppointment(ctx *gin.Context) {
 	roomID, err := strconv.ParseInt(ctx.Query("room_id"), 10, 64)
@@ -230,6 +236,7 @@ func (c *AppointmentController) checkinAppointment(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
 		return
 	}
+<<<<<<< HEAD
 <<<<<<< HEAD
 	res, err := c.service.GetAppointmentsByUser(ctx, payload.Username)
 	if err != nil {
@@ -251,22 +258,33 @@ func (c *AppointmentController) getAppointmentsByDoctor(ctx *gin.Context) {
 	// convert string to int64
 	id, err := strconv.ParseInt(ctx.Param("id"), 10, 64)
 >>>>>>> 4ccd381 (Update appointment flow)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
-		return
-	}
-<<<<<<< HEAD
-	res, err := c.service.GetAppointmentsByDoctor(ctx, id)
 =======
-
-	priority := ctx.Query("priority")
-
-	err = c.service.CheckInAppoinment(ctx, id, roomID, priority)
+	// convert string to int64
+	id, err := strconv.ParseInt(ctx.Param("id"), 10, 64)
 >>>>>>> 4ccd381 (Update appointment flow)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
 		return
 	}
+<<<<<<< HEAD
+<<<<<<< HEAD
+	res, err := c.service.GetAppointmentsByDoctor(ctx, id)
+=======
+=======
+>>>>>>> 4ccd381 (Update appointment flow)
+
+	priority := ctx.Query("priority")
+
+	err = c.service.CheckInAppoinment(ctx, id, roomID, priority)
+<<<<<<< HEAD
+>>>>>>> 4ccd381 (Update appointment flow)
+=======
+>>>>>>> 4ccd381 (Update appointment flow)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
+		return
+	}
+<<<<<<< HEAD
 <<<<<<< HEAD
 	ctx.JSON(http.StatusOK, util.SuccessResponse("get appointment successful", res))
 }
@@ -778,6 +796,11 @@ func (c *AppointmentController) getSOAPByAppointmentID(ctx *gin.Context) {
 
 =======
 >>>>>>> 685da65 (latest update)
+=======
+	ctx.JSON(http.StatusOK, util.SuccessResponse("checkin appointment successful", nil))
+}
+
+>>>>>>> 4ccd381 (Update appointment flow)
 func (c *AppointmentController) getAppointmentByID(ctx *gin.Context) {
 	appointmentID := ctx.Param("id")
 	if appointmentID == "" {

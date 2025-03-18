@@ -9,8 +9,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/quanganh247-qa/go-blog-be/app/service/token"
 	"github.com/quanganh247-qa/go-blog-be/app/util"
-	"github.com/supertokens/supertokens-golang/recipe/session"
-	"github.com/supertokens/supertokens-golang/recipe/session/sessmodels"
 )
 
 const (
@@ -63,6 +61,7 @@ func GetAuthorizationPayload(ctx *gin.Context) (*token.Payload, error) {
 }
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 
 // AuthMiddleware kiểm tra phiên hợp lệ với SuperTokens
@@ -92,3 +91,5 @@ func SuperTokensAuthMiddleware() gin.HandlerFunc {
 >>>>>>> 4ccd381 (Update appointment flow)
 =======
 >>>>>>> ada3717 (Docker file)
+=======
+>>>>>>> 4ccd381 (Update appointment flow)

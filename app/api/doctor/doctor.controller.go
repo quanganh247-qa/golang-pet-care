@@ -23,12 +23,15 @@ type DoctorControllerInterface interface {
 	getShiftByDoctorId(ctx *gin.Context)
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	getDoctorById(ctx *gin.Context)
 =======
 >>>>>>> 4ccd381 (Update appointment flow)
 =======
 	getDoctorById(ctx *gin.Context)
 >>>>>>> 71b74e9 (feat(appointment): add room management and update appointment functionality.)
+=======
+>>>>>>> 4ccd381 (Update appointment flow)
 }
 
 func (c *DoctorController) loginDoctor(ctx *gin.Context) {
@@ -115,6 +118,7 @@ func (c *DoctorController) getShiftByDoctorId(ctx *gin.Context) {
 }
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> 71b74e9 (feat(appointment): add room management and update appointment functionality.)
 
@@ -153,3 +157,5 @@ package doctor
 =======
 package doctor
 >>>>>>> ada3717 (Docker file)
+=======
+>>>>>>> 4ccd381 (Update appointment flow)

@@ -78,6 +78,7 @@ type createAppointmentRequest struct {
 	ServiceID  int64  `json:"service_id"`
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	Reason     string `json:"reason"`
 =======
 	Note       string `json:"note"`
@@ -88,6 +89,9 @@ type createAppointmentRequest struct {
 >>>>>>> 4ccd381 (Update appointment flow)
 =======
 >>>>>>> e859654 (Elastic search)
+=======
+	Reason     string `json:"reason"`
+>>>>>>> 4ccd381 (Update appointment flow)
 	StateID    int64  `json:"state_id"`
 }
 
@@ -320,7 +324,7 @@ type QueueItem struct {
 	Date         string   `json:"date"`
 	TimeSlot     timeslot `json:"time_slot"`
 	State        string   `json:"state"`
-	Notes        string   `json:"notes"`
+	Reason       string   `json:"reason"`
 	ReminderSend bool     `json:"reminder_send"`
 	CreatedAt    string   `json:"created_at"`
 >>>>>>> e859654 (Elastic search)

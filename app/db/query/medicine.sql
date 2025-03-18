@@ -99,23 +99,6 @@ WHERE id = $1 LIMIT 1;
 =======
     tp.start_date, pm.medicine_id LIMIT $3 OFFSET $4;
 
--- name: CreateAllergy :one
-INSERT INTO allergies (medical_record_id, allergen, severity, reaction, notes)
-VALUES ($1, $2, $3, $4, $5)
-RETURNING *;
-
--- name: GetAllergies :many
-SELECT * FROM allergies
-WHERE medical_record_id = $1;
-
--- name: UpdateAllergy :exec
-UPDATE allergies
-SET allergen = $2, severity = $3, reaction = $4, notes = $5, updated_at = NOW()
-WHERE id = $1;
-
--- name: DeleteAllergy :exec
-DELETE FROM Allergies
-WHERE id = $1;
 
 <<<<<<< HEAD
 >>>>>>> 3bf345d (happy new year)

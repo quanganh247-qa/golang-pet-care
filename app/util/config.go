@@ -77,6 +77,7 @@ type Config struct {
 	MinIOSSL         bool   `mapstructure:"MINIO_SSL"`
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 
 	GoongAPIKey  string `mapstructure:"GOONG_API_KEY"`
@@ -98,10 +99,13 @@ type Config struct {
 	MinIOSSL         bool   `mapstructure:"MINIO_SSL"`
 >>>>>>> e859654 (Elastic search)
 =======
+=======
+>>>>>>> 4ccd381 (Update appointment flow)
 
 	ClickatellAPIKey string `mapstructure:"CLICKATELL_API_KEY"`
 	ClickatellAPIID  string `mapstructure:"CLICKATELL_API_ID"`
 	ClickatellURL    string `mapstructure:"CLICKATELL_URL"`
+<<<<<<< HEAD
 >>>>>>> 4ccd381 (Update appointment flow)
 =======
 >>>>>>> 6b24d88 (feat(payment): add PayOS payment integration and enhance treatment module)
@@ -125,6 +129,8 @@ type Config struct {
 	MinIOSecretKey   string `mapstructure:"MINIO_SECRET_KEY"`
 	MinIOSSL         bool   `mapstructure:"MINIO_SSL"`
 >>>>>>> e859654 (Elastic search)
+=======
+>>>>>>> 4ccd381 (Update appointment flow)
 }
 
 var Configs = Config{}
