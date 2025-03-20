@@ -20,6 +20,7 @@ type DoctorServiceInterface interface {
 	GetShifts(ctx *gin.Context) ([]Shift, error)
 	CreateShift(ctx *gin.Context, req CreateShiftRequest) (*Shift, error)
 	GetShiftByDoctorId(ctx *gin.Context, doctorId int64) ([]Shift, error)
+	GetDoctorById(ctx *gin.Context, doctorId int64) (DoctorDetail, error)
 }
 
 func (service *DoctorService) LoginDoctorService(ctx *gin.Context, req loginDoctorRequest) (*loginDoctorResponse, error) {
@@ -88,7 +89,7 @@ func (service *DoctorService) LoginDoctorService(ctx *gin.Context, req loginDoct
 		Doctor: DoctorDetail{
 			DoctorID:       doctor.ID,
 			Username:       user.Username,
-			FullName:       user.FullName,
+			DoctorName:     user.FullName,
 			Email:          user.Email,
 			Specialization: doctor.Specialization.String,
 			YearsOfExp:     doctor.YearsOfExperience.Int32,
@@ -119,8 +120,9 @@ func (service *DoctorService) GetDoctorProfile(ctx *gin.Context, username string
 	}
 
 	return &DoctorDetail{
+		DoctorID:       doctor.ID,
 		Username:       user.Username,
-		FullName:       user.FullName,
+		DoctorName:     user.FullName,
 		Email:          user.Email,
 		Specialization: doctor.Specialization.String,
 		YearsOfExp:     doctor.YearsOfExperience.Int32,
@@ -139,8 +141,9 @@ func (service *DoctorService) GetAllDoctorService(ctx *gin.Context) ([]DoctorDet
 	doctorList := make([]DoctorDetail, 0)
 	for _, d := range doctor {
 		doctorList = append(doctorList, DoctorDetail{
+			DoctorID:       d.DoctorID,
 			Username:       d.Username,
-			FullName:       d.FullName,
+			DoctorName:     d.FullName,
 			Email:          d.Email,
 			Role:           d.Role.String,
 			Specialization: d.Specialization.String,
@@ -212,4 +215,21 @@ func (service *DoctorService) GetShiftByDoctorId(ctx *gin.Context, doctorId int6
 		})
 	}
 	return shiftList, nil
+}
+
+func (service *DoctorService) GetDoctorById(ctx *gin.Context, doctorId int64) (DoctorDetail, error) {
+	doctor, err := service.storeDB.GetDoctor(ctx, doctorId)
+	if err != nil {
+		return DoctorDetail{}, fmt.Errorf("failed to get doctor: %w", err)
+	}
+	return DoctorDetail{
+		DoctorID:       doctor.ID,
+		DoctorName:     doctor.Name,
+		Specialization: doctor.Specialization.String,
+		YearsOfExp:     doctor.YearsOfExperience.Int32,
+		Education:      doctor.Education.String,
+		Role:           doctor.Role.String,
+		Certificate:    doctor.CertificateNumber.String,
+		Bio:            doctor.Bio.String,
+	}, nil
 }

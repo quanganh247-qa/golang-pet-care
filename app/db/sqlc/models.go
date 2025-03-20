@@ -29,6 +29,7 @@ type Appointment struct {
 	RoomID            pgtype.Int8      `json:"room_id"`
 	ConfirmationSent  pgtype.Bool      `json:"confirmation_sent"`
 <<<<<<< HEAD
+<<<<<<< HEAD
 	Notes             pgtype.Text      `json:"notes"`
 	UpdatedAt         pgtype.Timestamp `json:"updated_at"`
 }
@@ -69,6 +70,10 @@ type CartItem struct {
 >>>>>>> e859654 (Elastic search)
 =======
 >>>>>>> 4ccd381 (Update appointment flow)
+=======
+	Notes             pgtype.Text      `json:"notes"`
+	UpdatedAt         pgtype.Timestamp `json:"updated_at"`
+>>>>>>> 71b74e9 (feat(appointment): add room management and update appointment functionality.)
 }
 
 type Cart struct {

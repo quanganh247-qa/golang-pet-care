@@ -23,6 +23,9 @@ type Querier interface {
 	AssignCarprofenToInitialPhase(ctx context.Context, arg AssignCarprofenToInitialPhaseParams) error
 	AssignMedicationToTreatmentPhase(ctx context.Context, arg AssignMedicationToTreatmentPhaseParams) (PhaseMedicine, error)
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 71b74e9 (feat(appointment): add room management and update appointment functionality.)
 	AssignRoomToAppointment(ctx context.Context, arg AssignRoomToAppointmentParams) error
 	CheckinAppointment(ctx context.Context, appointmentID int64) error
 	CountAppointmentsByDateAndTimeSlot(ctx context.Context, arg CountAppointmentsByDateAndTimeSlotParams) (int64, error)
@@ -217,6 +220,9 @@ type Querier interface {
 	GetActiveTreatments(ctx context.Context, arg GetActiveTreatmentsParams) ([]GetActiveTreatmentsRow, error)
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 71b74e9 (feat(appointment): add room management and update appointment functionality.)
 	GetAllAppointments(ctx context.Context, arg GetAllAppointmentsParams) ([]GetAllAppointmentsRow, error)
 	GetAllAppointmentsByDate(ctx context.Context, arg GetAllAppointmentsByDateParams) ([]GetAllAppointmentsByDateRow, error)
 	GetAllOrders(ctx context.Context, arg GetAllOrdersParams) ([]Order, error)
@@ -321,6 +327,7 @@ type Querier interface {
 	GetAppointmentsQueue(ctx context.Context) ([]Appointment, error)
 >>>>>>> 4ccd381 (Update appointment flow)
 	GetAvailableDoctors(ctx context.Context, date pgtype.Date) ([]GetAvailableDoctorsRow, error)
+<<<<<<< HEAD
 	GetAvailableRooms(ctx context.Context, arg GetAvailableRoomsParams) ([]Room, error)
 	GetAvailableRoomsForDuration(ctx context.Context, arg GetAvailableRoomsForDurationParams) ([]Room, error)
 =======
@@ -328,6 +335,9 @@ type Querier interface {
 =======
 	GetAvailableDoctors(ctx context.Context, date pgtype.Date) ([]GetAvailableDoctorsRow, error)
 >>>>>>> ffc9071 (AI suggestion)
+=======
+	GetAvailableRooms(ctx context.Context, availableAt pgtype.Timestamp) ([]Room, error)
+>>>>>>> 71b74e9 (feat(appointment): add room management and update appointment functionality.)
 	GetAvailableTimeSlots(ctx context.Context, arg GetAvailableTimeSlotsParams) ([]GetAvailableTimeSlotsRow, error)
 	GetCartByUserId(ctx context.Context, userID int64) ([]Cart, error)
 <<<<<<< HEAD
@@ -458,6 +468,10 @@ type Querier interface {
 	GetPetScheduleById(ctx context.Context, id int64) (PetSchedule, error)
 	GetProductByID(ctx context.Context, productID int64) (Product, error)
 	GetRoomByID(ctx context.Context, id int64) (Room, error)
+<<<<<<< HEAD
+=======
+	GetSOAP(ctx context.Context, appointmentID pgtype.Int8) (Consultation, error)
+>>>>>>> 71b74e9 (feat(appointment): add room management and update appointment functionality.)
 	GetSOAPByAppointmentID(ctx context.Context, appointmentID pgtype.Int8) (Consultation, error)
 	GetServiceByID(ctx context.Context, id int64) (Service, error)
 	GetServices(ctx context.Context, arg GetServicesParams) ([]Service, error)
@@ -663,6 +677,7 @@ type Querier interface {
 	ListTreatmentsByPet(ctx context.Context, arg ListTreatmentsByPetParams) ([]PetTreatment, error)
 	ListVaccinationsByPetID(ctx context.Context, arg ListVaccinationsByPetIDParams) ([]Vaccination, error)
 	MarkNotificationAsRead(ctx context.Context, id int64) error
+	ReleaseRoom(ctx context.Context, arg ReleaseRoomParams) error
 	RemoveItemFromCart(ctx context.Context, arg RemoveItemFromCartParams) error
 <<<<<<< HEAD
 	SetPetInactive(ctx context.Context, arg SetPetInactiveParams) error

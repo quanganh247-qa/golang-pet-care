@@ -8,10 +8,14 @@ import (
 
 func Routes(routerGroup middleware.RouterGroup, taskDistributor worker.TaskDistributor) {
 <<<<<<< HEAD
+<<<<<<< HEAD
 	appointment := routerGroup.RouterDefault.Group("/")
 =======
 	appointment := routerGroup.RouterDefault.Group("/appointment")
 >>>>>>> e859654 (Elastic search)
+=======
+	appointment := routerGroup.RouterDefault.Group("/")
+>>>>>>> 71b74e9 (feat(appointment): add room management and update appointment functionality.)
 	authRoute := routerGroup.RouterAuth(appointment)
 
 	// Khoi tao api
@@ -36,12 +40,16 @@ func Routes(routerGroup middleware.RouterGroup, taskDistributor worker.TaskDistr
 	{
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 71b74e9 (feat(appointment): add room management and update appointment functionality.)
 		authRoute.POST("appointment/", appointmentApi.controller.createAppointment)
 		authRoute.POST("appointment/confirm/:id", appointmentApi.controller.confirmAppointment)
 		authRoute.POST("appointment/check-in/:id", appointmentApi.controller.checkinAppointment)
 		authRoute.GET("appointment/user", appointmentApi.controller.getAppointmentsByUser)
 		authRoute.GET("appointment/:id", appointmentApi.controller.getAppointmentByID)
 		authRoute.GET("appointment/doctor/:doctor_id", appointmentApi.controller.getAppointmentsByDoctor)
+<<<<<<< HEAD
 		authRoute.GET("appointments", appointmentApi.controller.getAllAppointments)
 		authRoute.PUT("appointment/:id", appointmentApi.controller.updateAppointment)
 		authRoute.GET("doctor/:doctor_id/time-slot", appointmentApi.controller.getAvailableTimeSlots)
@@ -78,6 +86,11 @@ func Routes(routerGroup middleware.RouterGroup, taskDistributor worker.TaskDistr
 		authRoute.GET("/doctor/:doctor_id", appointmentApi.controller.getAppointmentsByDoctor)
 		authRoute.GET("/all", appointmentApi.controller.getAllAppointments)
 
+=======
+		// authRoute.GET("/all", appointmentApi.controller.getAllAppointments)
+		authRoute.GET("appointments/", appointmentApi.controller.getAllAppointmentsByDate)
+		authRoute.PUT("appointment/:id", appointmentApi.controller.updateAppointment)
+>>>>>>> 71b74e9 (feat(appointment): add room management and update appointment functionality.)
 		authRoute.GET("/doctor/:doctor_id/time-slot", appointmentApi.controller.getAvailableTimeSlots)
 <<<<<<< HEAD
 >>>>>>> b393bb9 (add service and add permission)
