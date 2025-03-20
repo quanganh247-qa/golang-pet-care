@@ -17,6 +17,7 @@ type DoctorControllerInterface interface {
 	getShifts(ctx *gin.Context)
 	createShift(ctx *gin.Context)
 	getShiftByDoctorId(ctx *gin.Context)
+	getDoctorById(ctx *gin.Context)
 }
 
 func (c *DoctorController) loginDoctor(ctx *gin.Context) {
@@ -95,6 +96,25 @@ func (c *DoctorController) getShiftByDoctorId(ctx *gin.Context) {
 		return
 	}
 	res, err := c.service.GetShiftByDoctorId(ctx, doctorId)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
+		return
+	}
+	ctx.JSON(http.StatusOK, util.SuccessResponse("Success", res))
+}
+
+func (c *DoctorController) getDoctorById(ctx *gin.Context) {
+	id := ctx.Param("doctor_id")
+	if id == "" {
+		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(errors.New("id is required")))
+		return
+	}
+	doctorId, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
+		return
+	}
+	res, err := c.service.GetDoctorById(ctx, doctorId)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
 		return

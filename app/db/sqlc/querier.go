@@ -16,6 +16,7 @@ type Querier interface {
 	// Assign Carprofen to the Initial Phase
 	AssignCarprofenToInitialPhase(ctx context.Context, arg AssignCarprofenToInitialPhaseParams) error
 	AssignMedicationToTreatmentPhase(ctx context.Context, arg AssignMedicationToTreatmentPhaseParams) (PhaseMedicine, error)
+	AssignRoomToAppointment(ctx context.Context, arg AssignRoomToAppointmentParams) error
 	CheckinAppointment(ctx context.Context, appointmentID int64) error
 	CountAppointmentsByDateAndTimeSlot(ctx context.Context, arg CountAppointmentsByDateAndTimeSlotParams) (int64, error)
 	CountAppointmentsByDoctorAndDate(ctx context.Context, arg CountAppointmentsByDoctorAndDateParams) (int64, error)
@@ -58,7 +59,8 @@ type Querier interface {
 	DeleteUser(ctx context.Context, id int64) error
 	DeleteVaccination(ctx context.Context, vaccinationid int64) error
 	GetActiveTreatments(ctx context.Context, arg GetActiveTreatmentsParams) ([]GetActiveTreatmentsRow, error)
-	GetAllAppointments(ctx context.Context) ([]GetAllAppointmentsRow, error)
+	GetAllAppointments(ctx context.Context, arg GetAllAppointmentsParams) ([]GetAllAppointmentsRow, error)
+	GetAllAppointmentsByDate(ctx context.Context, arg GetAllAppointmentsByDateParams) ([]GetAllAppointmentsByDateRow, error)
 	GetAllOrders(ctx context.Context, arg GetAllOrdersParams) ([]Order, error)
 	GetAllPets(ctx context.Context) ([]Pet, error)
 	GetAllProducts(ctx context.Context, arg GetAllProductsParams) ([]Product, error)
@@ -74,6 +76,7 @@ type Querier interface {
 	GetAppointmentsOfDoctorWithDetails(ctx context.Context, id int64) ([]GetAppointmentsOfDoctorWithDetailsRow, error)
 	GetAppointmentsQueue(ctx context.Context) ([]Appointment, error)
 	GetAvailableDoctors(ctx context.Context, date pgtype.Date) ([]GetAvailableDoctorsRow, error)
+	GetAvailableRooms(ctx context.Context, availableAt pgtype.Timestamp) ([]Room, error)
 	GetAvailableTimeSlots(ctx context.Context, arg GetAvailableTimeSlotsParams) ([]GetAvailableTimeSlotsRow, error)
 	GetCartByUserId(ctx context.Context, userID int64) ([]Cart, error)
 	GetCartItems(ctx context.Context, cartID int64) ([]GetCartItemsRow, error)
@@ -103,6 +106,7 @@ type Querier interface {
 	GetPetProfileSummary(ctx context.Context, petid int64) ([]GetPetProfileSummaryRow, error)
 	GetPetScheduleById(ctx context.Context, id int64) (PetSchedule, error)
 	GetProductByID(ctx context.Context, productID int64) (Product, error)
+	GetRoomByID(ctx context.Context, id int64) (Room, error)
 	GetSOAP(ctx context.Context, appointmentID pgtype.Int8) (Consultation, error)
 	GetSOAPByAppointmentID(ctx context.Context, appointmentID pgtype.Int8) (Consultation, error)
 	GetServiceByID(ctx context.Context, id int64) (Service, error)
@@ -139,6 +143,7 @@ type Querier interface {
 	ListTreatmentsByPet(ctx context.Context, arg ListTreatmentsByPetParams) ([]PetTreatment, error)
 	ListVaccinationsByPetID(ctx context.Context, arg ListVaccinationsByPetIDParams) ([]Vaccination, error)
 	MarkNotificationAsRead(ctx context.Context, id int64) error
+	ReleaseRoom(ctx context.Context, arg ReleaseRoomParams) error
 	RemoveItemFromCart(ctx context.Context, arg RemoveItemFromCartParams) error
 	SetPetInactive(ctx context.Context, petid int64) error
 	UpdateAppointmentByID(ctx context.Context, arg UpdateAppointmentByIDParams) error

@@ -24,6 +24,8 @@ type Appointment struct {
 	ArrivalTime       pgtype.Timestamp `json:"arrival_time"`
 	RoomID            pgtype.Int8      `json:"room_id"`
 	ConfirmationSent  pgtype.Bool      `json:"confirmation_sent"`
+	Notes             pgtype.Text      `json:"notes"`
+	UpdatedAt         pgtype.Timestamp `json:"updated_at"`
 }
 
 type Cart struct {

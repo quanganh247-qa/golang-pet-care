@@ -18,6 +18,44 @@ type AppointmentApi struct {
 	controller AppointmentControllerInterface
 }
 
+type Pet struct {
+	PetID    int64  `json:"pet_id"`
+	PetName  string `json:"pet_name"`
+	PetBreed string `json:"pet_breed"`
+}
+
+type Owner struct {
+	OwnerName    string `json:"owner_name"`
+	OwnerPhone   string `json:"owner_phone"`
+	OwnerEmail   string `json:"owner_email"`
+	OwnerAddress string `json:"owner_address"`
+}
+
+type Serivce struct {
+	ServiceName     string `json:"service_name"`
+	ServiceDuration int16  `json:"service_duration"`
+}
+
+type Doctor struct {
+	DoctorID   int64  `json:"doctor_id"`
+	DoctorName string `json:"doctor_name"`
+}
+
+type Appointment struct {
+	ID           int64    `json:"id"`
+	Pet          Pet      `json:"pet"`
+	Owner        Owner    `json:"owner"`
+	Serivce      Serivce  `json:"service"`
+	Doctor       Doctor   `json:"doctor"`
+	Room         string   `json:"room"`
+	Date         string   `json:"date"`
+	TimeSlot     timeslot `json:"time_slot"`
+	State        string   `json:"state"`
+	Reason       string   `json:"reason"`
+	ReminderSend bool     `json:"reminder_send"`
+	CreatedAt    string   `json:"created_at"`
+}
+
 type createAppointmentRequest struct {
 	PetID      int64  `json:"pet_id"`
 	DoctorID   int64  `json:"doctor_id"`
@@ -35,30 +73,33 @@ type timeslot struct {
 
 type createAppointmentResponse struct {
 	ID           int64    `json:"id"`
-	PetName      string   `json:"pet_name"`
-	ServiceName  string   `json:"service_name"`
 	DoctorName   string   `json:"doctor_name"`
+	PetName      string   `json:"pet_name"`
+	Reason       string   `json:"reason"`
 	Date         string   `json:"date"`
+	ServiceName  string   `json:"service_name"`
 	TimeSlot     timeslot `json:"time_slot"`
 	State        string   `json:"state"`
-	Reason       string   `json:"reason"`
 	ReminderSend bool     `json:"reminder_send"`
 	CreatedAt    string   `json:"created_at"`
+	RoomType     string   `json:"room_type"`
 }
 type timeSlotResponse struct {
 	ID        int32  `json:"id"`
 	StartTime string `json:"start_time"`
 	EndTime   string `json:"end_time"`
 	Status    string `json:"status"`
-	// BookedPatients int32  `json:"booked_patients"`
-	// MaxPatients    int32  `json:"max_patients"`
 }
 
 type updateAppointmentRequest struct {
-	PaymentStatus string `json:"payment_status"`
-	StateID       string `json:"state_id"`
-	Notes         string `json:"notes"`
-	ReminderSend  bool   `json:"reminder_send"`
+	PaymentStatus     *string `json:"payment_status"`
+	StateID           *int32  `json:"state_id"`
+	RoomID            *int32  `json:"room_id"`
+	Notes             *string `json:"notes"`
+	AppointmentReason *string `json:"appointment_reason"`
+	ReminderSend      *bool   `json:"reminder_send"`
+	ArrivalTime       *string `json:"arrival_time"`
+	Priority          *string `json:"priority"`
 }
 
 type CreateSOAPRequest struct {
