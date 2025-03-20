@@ -220,7 +220,8 @@ UPDATE appointments SET
     arrival_time = $6,
     room_id = $7,
     confirmation_sent = $8,
-    updated_at = now()
+    updated_at = now(),
+    notes = $9
 WHERE appointment_id = $1;
 >>>>>>> e859654 (Elastic search)
 
@@ -867,19 +868,64 @@ SELECT * FROM appointments WHERE state_id = $1;
 
 -- name: GetAllAppointments :many
 SELECT 
-    a.appointment_id, a.date, a.reminder_send, a.created_at,
+    a.appointment_id,
+    a.date ,
+    a.reminder_send,
+    a.created_at,
+    a.appointment_reason,
+    a.priority,
+    a.arrival_time,
+    p.petid as pet_id,
     p.name AS pet_name,
     d.id AS doctor_id,
     s.name AS service_name,
     ts.start_time, ts.end_time, ts.id AS time_slot_id,
     st.state AS state_name,
-    st.id AS state_id
+    st.id AS state_id,
+    r.name AS room_name
 FROM appointments a
 LEFT JOIN pets p ON a.petid = p.petid
 LEFT JOIN services s ON a.service_id = s.id
 LEFT JOIN time_slots ts ON a.time_slot_id = ts.id
 LEFT JOIN doctors d ON a.doctor_id = d.id
-LEFT JOIN states st ON a.state_id = st.id;
+LEFT JOIN states st ON a.state_id = st.id
+LEFT JOIN rooms r ON a.room_id = r.id
+LIMIT $1 OFFSET $2 ;
+
+-- name: GetAllAppointmentsByDate :many
+SELECT 
+    a.appointment_id,
+    a.date ,
+    a.reminder_send,
+    a.created_at,
+    a.appointment_reason,
+    a.priority,
+    a.arrival_time,
+    a.notes,
+    p.petid as pet_id,
+    p.name AS pet_name,
+    p.breed AS pet_breed,
+    d.id AS doctor_id,
+    s.name AS service_name,
+    s.duration AS service_duration,
+    ts.start_time, ts.end_time, ts.id AS time_slot_id,
+    st.state AS state_name,
+    st.id AS state_id,
+    u.full_name AS owner_name,
+    u.phone_number AS owner_phone,
+    u.email AS owner_email,
+    u.address AS owner_address,
+    r.name AS room_name
+FROM appointments a
+LEFT JOIN pets p ON a.petid = p.petid
+LEFT JOIN services s ON a.service_id = s.id
+LEFT JOIN time_slots ts ON a.time_slot_id = ts.id
+LEFT JOIN doctors d ON a.doctor_id = d.id
+LEFT JOIN users u ON a.username = u.username
+LEFT JOIN states st ON a.state_id = st.id
+LEFT JOIN rooms r ON a.room_id = r.id
+WHERE DATE(a.date) = DATE($1)
+LIMIT $2 OFFSET $3 ;
 
 <<<<<<< HEAD
 >>>>>>> ffc9071 (AI suggestion)
@@ -903,19 +949,34 @@ WHERE s.id = $1 AND p.petid = $2 AND st.id = $3;
 
 -- name: GetAppointmentDetailByAppointmentID :one
 SELECT 
-    a.appointment_id, a.date,  a.reminder_send, a.created_at, a.appointment_reason, a.priority, a.arrival_time, a.room_id, a.confirmation_sent,
-    d.id AS doctor_id,
+    a.appointment_id,
+    a.date ,
+    a.reminder_send,
+    a.created_at,
+    a.appointment_reason,
+    a.priority,
+    a.arrival_time,
+    a.notes,
+    p.petid as pet_id,
     p.name AS pet_name,
+    p.breed AS pet_breed,
+    d.id AS doctor_id,
     s.name AS service_name,
+    s.duration AS service_duration,
     ts.start_time, ts.end_time, ts.id AS time_slot_id,
     st.state AS state_name,
-    st.id AS state_id
+    st.id AS state_id,
+    u.full_name AS owner_name,
+    u.phone_number AS owner_phone,
+    u.email AS owner_email,
+    u.address AS owner_address
 FROM appointments a
-LEFT JOIN pets p ON p.petid = a.petid
-LEFT JOIN doctors d ON d.id = a.doctor_id
-LEFT JOIN services s ON s.id = a.service_id
-LEFT JOIN time_slots ts ON ts.id = a.time_slot_id
-LEFT JOIN states st ON st.id = a.state_id
+LEFT JOIN pets p ON a.petid = p.petid
+LEFT JOIN services s ON a.service_id = s.id
+LEFT JOIN time_slots ts ON a.time_slot_id = ts.id
+LEFT JOIN doctors d ON a.doctor_id = d.id
+LEFT JOIN users u ON a.username = u.username
+LEFT JOIN states st ON a.state_id = st.id
 WHERE a.appointment_id = $1;
 
 -- name: GetAppointmentsByUser :many

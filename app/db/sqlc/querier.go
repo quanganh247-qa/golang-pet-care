@@ -31,6 +31,9 @@ type Querier interface {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 71b74e9 (feat(appointment): add room management and update appointment functionality.)
 =======
 >>>>>>> 71b74e9 (feat(appointment): add room management and update appointment functionality.)
 	AssignRoomToAppointment(ctx context.Context, arg AssignRoomToAppointmentParams) error
@@ -376,6 +379,9 @@ type Querier interface {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 71b74e9 (feat(appointment): add room management and update appointment functionality.)
 =======
 >>>>>>> 71b74e9 (feat(appointment): add room management and update appointment functionality.)
 	GetAllAppointments(ctx context.Context, arg GetAllAppointmentsParams) ([]GetAllAppointmentsRow, error)
@@ -591,6 +597,7 @@ type Querier interface {
 >>>>>>> 4ccd381 (Update appointment flow)
 	GetAvailableDoctors(ctx context.Context, date pgtype.Date) ([]GetAvailableDoctorsRow, error)
 <<<<<<< HEAD
+<<<<<<< HEAD
 	GetAvailableRooms(ctx context.Context, arg GetAvailableRoomsParams) ([]Room, error)
 	GetAvailableRoomsForDuration(ctx context.Context, arg GetAvailableRoomsForDurationParams) ([]Room, error)
 =======
@@ -612,6 +619,9 @@ type Querier interface {
 =======
 	GetAvailableDoctors(ctx context.Context, date pgtype.Date) ([]GetAvailableDoctorsRow, error)
 >>>>>>> ffc9071 (AI suggestion)
+=======
+	GetAvailableRooms(ctx context.Context, availableAt pgtype.Timestamp) ([]Room, error)
+>>>>>>> 71b74e9 (feat(appointment): add room management and update appointment functionality.)
 	GetAvailableTimeSlots(ctx context.Context, arg GetAvailableTimeSlotsParams) ([]GetAvailableTimeSlotsRow, error)
 	GetCartByUserId(ctx context.Context, userID int64) ([]Cart, error)
 <<<<<<< HEAD
@@ -862,10 +872,14 @@ type Querier interface {
 	GetPetScheduleById(ctx context.Context, id int64) (PetSchedule, error)
 	GetProductByID(ctx context.Context, productID int64) (Product, error)
 <<<<<<< HEAD
+<<<<<<< HEAD
 	GetRoomByID(ctx context.Context, id int64) (Room, error)
 <<<<<<< HEAD
 <<<<<<< HEAD
 =======
+=======
+	GetRoomByID(ctx context.Context, id int64) (Room, error)
+>>>>>>> 71b74e9 (feat(appointment): add room management and update appointment functionality.)
 	GetSOAP(ctx context.Context, appointmentID pgtype.Int8) (Consultation, error)
 >>>>>>> 71b74e9 (feat(appointment): add room management and update appointment functionality.)
 =======
@@ -1235,9 +1249,13 @@ type Querier interface {
 	ListVaccinationsByPetID(ctx context.Context, arg ListVaccinationsByPetIDParams) ([]Vaccination, error)
 	MarkNotificationAsRead(ctx context.Context, id int64) error
 <<<<<<< HEAD
+<<<<<<< HEAD
 	ReleaseRoom(ctx context.Context, arg ReleaseRoomParams) error
 =======
 >>>>>>> e859654 (Elastic search)
+=======
+	ReleaseRoom(ctx context.Context, arg ReleaseRoomParams) error
+>>>>>>> 71b74e9 (feat(appointment): add room management and update appointment functionality.)
 	RemoveItemFromCart(ctx context.Context, arg RemoveItemFromCartParams) error
 <<<<<<< HEAD
 <<<<<<< HEAD

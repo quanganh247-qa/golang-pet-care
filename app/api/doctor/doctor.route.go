@@ -30,6 +30,7 @@ func Routes(routerGroup middleware.RouterGroup) {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 		authRoute.GET("/", doctorApi.controller.getAllDoctor)
 		authRoute.GET("/:doctor_id", doctorApi.controller.getDoctorById)
 <<<<<<< HEAD
@@ -55,12 +56,19 @@ func Routes(routerGroup middleware.RouterGroup) {
 >>>>>>> 71b74e9 (feat(appointment): add room management and update appointment functionality.)
 =======
 
+=======
+		authRoute.GET("/", doctorApi.controller.getAllDoctor)
+		authRoute.GET("/:doctor_id", doctorApi.controller.getDoctorById)
+>>>>>>> 71b74e9 (feat(appointment): add room management and update appointment functionality.)
 		// Protected routes (require authentication)
 		authRoute.GET("/profile", doctorApi.controller.getDoctorProfile)
 	}
 	{
+<<<<<<< HEAD
 		perRoute([]perms.Permission{perms.ManageDoctor}).GET("/", doctorApi.controller.getAllDoctor)
 >>>>>>> 4ccd381 (Update appointment flow)
+=======
+>>>>>>> 71b74e9 (feat(appointment): add room management and update appointment functionality.)
 		perRoute([]perms.Permission{perms.ManageDoctor}).GET("/shifts", doctorApi.controller.getShifts)
 		perRoute([]perms.Permission{perms.ManageDoctor}).POST("/shifts", doctorApi.controller.createShift)
 	}

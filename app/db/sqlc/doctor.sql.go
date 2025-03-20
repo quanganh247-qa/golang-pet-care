@@ -118,7 +118,9 @@ func (q *Queries) GetAvailableDoctors(ctx context.Context, date pgtype.Date) ([]
 const getDoctor = `-- name: GetDoctor :one
 SELECT 
     d.id, d.user_id, d.specialization, d.years_of_experience, d.education, d.certificate_number, d.bio,
-    u.full_name AS name
+    u.full_name AS name,
+    u.role,
+    u.email
 FROM doctors d
 JOIN users u ON d.user_id = u.id
 WHERE d.id = $1
@@ -133,6 +135,8 @@ type GetDoctorRow struct {
 	CertificateNumber pgtype.Text `json:"certificate_number"`
 	Bio               pgtype.Text `json:"bio"`
 	Name              string      `json:"name"`
+	Role              pgtype.Text `json:"role"`
+	Email             string      `json:"email"`
 }
 
 func (q *Queries) GetDoctor(ctx context.Context, id int64) (GetDoctorRow, error) {
@@ -147,6 +151,8 @@ func (q *Queries) GetDoctor(ctx context.Context, id int64) (GetDoctorRow, error)
 		&i.CertificateNumber,
 		&i.Bio,
 		&i.Name,
+		&i.Role,
+		&i.Email,
 	)
 	return i, err
 }

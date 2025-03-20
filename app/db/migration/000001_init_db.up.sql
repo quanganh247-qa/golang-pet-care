@@ -2976,6 +2976,8 @@ CREATE TABLE public.appointments (
     arrival_time timestamp NULL,
     room_id int8 NULL,
     confirmation_sent bool DEFAULT false NULL,
+	notes text NULL,
+	updated_at timestamp null,
     CONSTRAINT appointments_pkey PRIMARY KEY (appointment_id),
     CONSTRAINT appointment_pet_fk FOREIGN KEY (petid) REFERENCES public.pets(petid),
     CONSTRAINT appointment_service_fk FOREIGN KEY (service_id) REFERENCES public.services(id),

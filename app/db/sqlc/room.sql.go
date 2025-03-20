@@ -15,6 +15,7 @@ const assignRoomToAppointment = `-- name: AssignRoomToAppointment :exec
 UPDATE rooms 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 SET current_appointment_id = $2
 WHERE id = $1
 `
@@ -70,10 +71,13 @@ DELETE FROM rooms WHERE id = $1
 func (q *Queries) DeleteRoom(ctx context.Context, id int64) error {
 	_, err := q.db.Exec(ctx, deleteRoom, id)
 =======
+=======
+>>>>>>> 71b74e9 (feat(appointment): add room management and update appointment functionality.)
 SET status = 'occupied',
     current_appointment_id = $1,
     available_at = $2
 WHERE id = $3
+<<<<<<< HEAD
 =======
 SET current_appointment_id = $2
 WHERE id = $1
@@ -135,6 +139,18 @@ DELETE FROM rooms WHERE id = $1
 func (q *Queries) DeleteRoom(ctx context.Context, id int64) error {
 	_, err := q.db.Exec(ctx, deleteRoom, id)
 >>>>>>> c8bec46 (feat: add chatbot, room management, and pet allergy features)
+=======
+`
+
+type AssignRoomToAppointmentParams struct {
+	CurrentAppointmentID pgtype.Int8      `json:"current_appointment_id"`
+	AvailableAt          pgtype.Timestamp `json:"available_at"`
+	ID                   int64            `json:"id"`
+}
+
+func (q *Queries) AssignRoomToAppointment(ctx context.Context, arg AssignRoomToAppointmentParams) error {
+	_, err := q.db.Exec(ctx, assignRoomToAppointment, arg.CurrentAppointmentID, arg.AvailableAt, arg.ID)
+>>>>>>> 71b74e9 (feat(appointment): add room management and update appointment functionality.)
 	return err
 }
 
@@ -142,6 +158,7 @@ const getAvailableRooms = `-- name: GetAvailableRooms :many
 SELECT id, name, type, status, current_appointment_id, available_at
 FROM rooms
 WHERE status = 'available' 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 LIMIT $1 OFFSET $2
@@ -155,12 +172,15 @@ type GetAvailableRoomsParams struct {
 func (q *Queries) GetAvailableRooms(ctx context.Context, arg GetAvailableRoomsParams) ([]Room, error) {
 	rows, err := q.db.Query(ctx, getAvailableRooms, arg.Limit, arg.Offset)
 =======
+=======
+>>>>>>> 71b74e9 (feat(appointment): add room management and update appointment functionality.)
   AND (available_at IS NULL OR available_at <= $1)
 ORDER BY id
 `
 
 func (q *Queries) GetAvailableRooms(ctx context.Context, availableAt pgtype.Timestamp) ([]Room, error) {
 	rows, err := q.db.Query(ctx, getAvailableRooms, availableAt)
+<<<<<<< HEAD
 >>>>>>> 71b74e9 (feat(appointment): add room management and update appointment functionality.)
 =======
 LIMIT $1 OFFSET $2
@@ -174,6 +194,8 @@ type GetAvailableRoomsParams struct {
 func (q *Queries) GetAvailableRooms(ctx context.Context, arg GetAvailableRoomsParams) ([]Room, error) {
 	rows, err := q.db.Query(ctx, getAvailableRooms, arg.Limit, arg.Offset)
 >>>>>>> c8bec46 (feat: add chatbot, room management, and pet allergy features)
+=======
+>>>>>>> 71b74e9 (feat(appointment): add room management and update appointment functionality.)
 	if err != nil {
 		return nil, err
 	}
@@ -236,6 +258,7 @@ func (q *Queries) ReleaseRoom(ctx context.Context, arg ReleaseRoomParams) error 
 }
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> c8bec46 (feat: add chatbot, room management, and pet allergy features)
 
@@ -274,3 +297,5 @@ func (q *Queries) UpdateRoom(ctx context.Context, arg UpdateRoomParams) error {
 >>>>>>> 71b74e9 (feat(appointment): add room management and update appointment functionality.)
 =======
 >>>>>>> c8bec46 (feat: add chatbot, room management, and pet allergy features)
+=======
+>>>>>>> 71b74e9 (feat(appointment): add room management and update appointment functionality.)
