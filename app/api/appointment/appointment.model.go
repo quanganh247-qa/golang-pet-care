@@ -229,32 +229,43 @@ type QueueItem struct {
 	CreatedAt     string   `json:"created_at"`
 =======
 	ID           int64    `json:"id"`
-	PetName      string   `json:"pet_name"`
-	ServiceName  string   `json:"service_name"`
 	DoctorName   string   `json:"doctor_name"`
+	PetName      string   `json:"pet_name"`
+	Reason       string   `json:"reason"`
 	Date         string   `json:"date"`
+	ServiceName  string   `json:"service_name"`
 	TimeSlot     timeslot `json:"time_slot"`
 	State        string   `json:"state"`
-	Reason       string   `json:"reason"`
 	ReminderSend bool     `json:"reminder_send"`
 	CreatedAt    string   `json:"created_at"`
+<<<<<<< HEAD
 >>>>>>> e859654 (Elastic search)
+=======
+	RoomType     string   `json:"room_type"`
+>>>>>>> 71b74e9 (feat(appointment): add room management and update appointment functionality.)
 }
 type timeSlotResponse struct {
 	ID        int32  `json:"id"`
 	StartTime string `json:"start_time"`
 	EndTime   string `json:"end_time"`
 	Status    string `json:"status"`
+<<<<<<< HEAD
 	// BookedPatients int32  `json:"booked_patients"`
 	// MaxPatients    int32  `json:"max_patients"`
 >>>>>>> b393bb9 (add service and add permission)
+=======
+>>>>>>> 71b74e9 (feat(appointment): add room management and update appointment functionality.)
 }
 
 type updateAppointmentRequest struct {
-	PaymentStatus string `json:"payment_status"`
-	StateID       string `json:"state_id"`
-	Notes         string `json:"notes"`
-	ReminderSend  bool   `json:"reminder_send"`
+	PaymentStatus     *string `json:"payment_status"`
+	StateID           *int32  `json:"state_id"`
+	RoomID            *int32  `json:"room_id"`
+	Notes             *string `json:"notes"`
+	AppointmentReason *string `json:"appointment_reason"`
+	ReminderSend      *bool   `json:"reminder_send"`
+	ArrivalTime       *string `json:"arrival_time"`
+	Priority          *string `json:"priority"`
 }
 
 type CreateSOAPRequest struct {

@@ -127,6 +127,7 @@ func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor, config
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	routerDefault.Use(middleware.LoggingMiddleware())
 =======
 	routerDefault.Use(middleware.IPbasedRateLimitingMiddleware())
@@ -139,6 +140,9 @@ func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor, config
 =======
 	// routerDefault.Use(middleware.LoggingMiddleware())
 >>>>>>> 4ccd381 (Update appointment flow)
+=======
+	routerDefault.Use(middleware.LoggingMiddleware())
+>>>>>>> 71b74e9 (feat(appointment): add room management and update appointment functionality.)
 
 >>>>>>> ada3717 (Docker file)
 	logger, _ := zap.NewProduction()

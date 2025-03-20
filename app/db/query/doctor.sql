@@ -12,7 +12,9 @@ INSERT INTO doctors (
 -- name: GetDoctor :one
 SELECT 
     d.*,
-    u.full_name AS name
+    u.full_name AS name,
+    u.role,
+    u.email
 FROM doctors d
 JOIN users u ON d.user_id = u.id
 WHERE d.id = $1;
