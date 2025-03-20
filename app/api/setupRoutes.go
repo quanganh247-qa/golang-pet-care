@@ -33,7 +33,7 @@ func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor, config
 	routerDefault.SetTrustedProxies(nil)
 	routerDefault.Static("/static", "app/static")
 	routerDefault.Use(middleware.CORSMiddleware())
-	// routerDefault.Use(middleware.LoggingMiddleware())
+	routerDefault.Use(middleware.LoggingMiddleware())
 
 	logger, _ := zap.NewProduction()
 	defer logger.Sync()

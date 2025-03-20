@@ -17,6 +17,9 @@ type AppointmentControllerInterface interface {
 	getAppointmentsByUser(ctx *gin.Context)
 	getAppointmentsByDoctor(ctx *gin.Context)
 	getAllAppointments(ctx *gin.Context)
+	getAllAppointmentsByDate(ctx *gin.Context)
+	updateAppointment(ctx *gin.Context)
+
 	//time slot
 	getAvailableTimeSlots(ctx *gin.Context)
 
@@ -167,12 +170,64 @@ func (c *AppointmentController) getAvailableTimeSlots(ctx *gin.Context) {
 }
 
 func (c *AppointmentController) getAllAppointments(ctx *gin.Context) {
-	res, err := c.service.GetAllAppointments(ctx)
+
+	pagination, err := util.GetPageInQuery(ctx.Request.URL.Query())
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
+		return
+	}
+
+	res, err := c.service.GetAllAppointments(ctx, pagination)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
 		return
 	}
 	ctx.JSON(http.StatusOK, util.SuccessResponse("get all appointments successful", res))
+}
+
+func (c *AppointmentController) getAllAppointmentsByDate(ctx *gin.Context) {
+
+	date := ctx.Query("date")
+	if date == "" {
+		ctx.JSON(http.StatusBadRequest, nil)
+		return
+	}
+
+	pagination, err := util.GetPageInQuery(ctx.Request.URL.Query())
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
+		return
+	}
+
+	res, err := c.service.GetAllAppointmentsByDate(ctx, pagination, date)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
+		return
+	}
+	ctx.JSON(http.StatusOK, util.SuccessResponse("get all appointments by date successful", res))
+}
+func (c *AppointmentController) updateAppointment(ctx *gin.Context) {
+	appointmentID := ctx.Param("id")
+	if appointmentID == "" {
+		ctx.JSON(http.StatusBadRequest, nil)
+		return
+	}
+	id, err := strconv.ParseInt(appointmentID, 10, 64)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
+		return
+	}
+	var req updateAppointmentRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, util.ErrorValidator(err))
+		return
+	}
+	err = c.service.UpdateAppointmentService(ctx, req, id)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
+		return
+	}
+	ctx.JSON(http.StatusOK, util.SuccessResponse("update appointment successful", nil))
 }
 
 func (c *AppointmentController) createSOAP(ctx *gin.Context) {

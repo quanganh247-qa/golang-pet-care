@@ -36,7 +36,7 @@ type loginDoctorResponse struct {
 type DoctorDetail struct {
 	DoctorID       int64  `json:"doctor_id"`
 	Username       string `json:"username"`
-	FullName       string `json:"full_name"`
+	DoctorName     string `json:"doctor_name"`
 	Email          string `json:"email"`
 	Role           string `json:"role"`
 	Specialization string `json:"specialization"`
