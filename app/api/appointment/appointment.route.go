@@ -27,14 +27,17 @@ func Routes(routerGroup middleware.RouterGroup, taskDistributor worker.TaskDistr
 		authRoute.GET("appointment/user", appointmentApi.controller.getAppointmentsByUser)
 		authRoute.GET("appointment/:id", appointmentApi.controller.getAppointmentByID)
 		authRoute.GET("appointment/doctor/:doctor_id", appointmentApi.controller.getAppointmentsByDoctor)
-		// authRoute.GET("/all", appointmentApi.controller.getAllAppointments)
-		authRoute.GET("appointments/", appointmentApi.controller.getAllAppointmentsByDate)
+		authRoute.GET("appointments", appointmentApi.controller.getAllAppointments)
 		authRoute.PUT("appointment/:id", appointmentApi.controller.updateAppointment)
-		authRoute.GET("/doctor/:doctor_id/time-slot", appointmentApi.controller.getAvailableTimeSlots)
+		authRoute.GET("doctor/:doctor_id/time-slot", appointmentApi.controller.getAvailableTimeSlots)
+		authRoute.GET("appointments/pet/:pet_id/history", appointmentApi.controller.getHistoryAppointmentsByPetID)
+		authRoute.GET("appointments/queue", appointmentApi.controller.getQueue)
+		authRoute.PUT("appointments/queue/:id/status", appointmentApi.controller.updateQueueItemStatus)
 
 		// soap
-		authRoute.POST("/soap/:appointment_id", appointmentApi.controller.createSOAP)
-		authRoute.PUT("/soap/:appointment_id", appointmentApi.controller.updateSOAP)
+		authRoute.POST("appointment/:id/soap", appointmentApi.controller.createSOAP)
+		authRoute.PUT("appointment/:id/soap", appointmentApi.controller.updateSOAP)
+		authRoute.GET("appointment/:id/soap", appointmentApi.controller.getSOAPByAppointmentID)
 	}
 
 }

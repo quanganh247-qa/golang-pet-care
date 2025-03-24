@@ -73,3 +73,5 @@ SELECT * FROM diseases WHERE id = $1 LIMIT 1;
 
 -- name: CreateDisease :one
 INSERT INTO diseases (name, description, symptoms, created_at, updated_at) VALUES ($1, $2, $3, now(), now()) RETURNING *;
+
+

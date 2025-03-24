@@ -1,7 +1,7 @@
 
 -- name: CreateTreatment :one
-INSERT INTO pet_treatments (pet_id, disease_id, start_date, end_date, status, notes, created_at)
-VALUES ($1, $2, $3, $4, $5, $6, now()) RETURNING *;
+INSERT INTO pet_treatments (pet_id, disease_id, name, type, start_date, end_date ,status, notes, created_at)
+VALUES ($1, $2, $3, $4, $5, $6 , "In Progress", $7, now()) RETURNING *;
 
 -- name: GetTreatment :one
 SELECT * FROM pet_treatments

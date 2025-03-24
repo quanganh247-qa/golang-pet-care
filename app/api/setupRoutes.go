@@ -4,7 +4,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/quanganh247-qa/go-blog-be/app/api/appointment"
 	"github.com/quanganh247-qa/go-blog-be/app/api/cart"
-	"github.com/quanganh247-qa/go-blog-be/app/api/clinic_reporting"
+	"github.com/quanganh247-qa/go-blog-be/app/api/chatbot"
+	"github.com/quanganh247-qa/go-blog-be/app/api/chatbot/handlers"
 	"github.com/quanganh247-qa/go-blog-be/app/api/device_token"
 	"github.com/quanganh247-qa/go-blog-be/app/api/disease"
 	"github.com/quanganh247-qa/go-blog-be/app/api/doctor"
@@ -15,7 +16,7 @@ import (
 	"github.com/quanganh247-qa/go-blog-be/app/api/pet"
 	petschedule "github.com/quanganh247-qa/go-blog-be/app/api/pet_schedule"
 	"github.com/quanganh247-qa/go-blog-be/app/api/products"
-	"github.com/quanganh247-qa/go-blog-be/app/api/queue"
+	"github.com/quanganh247-qa/go-blog-be/app/api/rooms"
 	"github.com/quanganh247-qa/go-blog-be/app/api/search"
 	"github.com/quanganh247-qa/go-blog-be/app/api/service"
 	"github.com/quanganh247-qa/go-blog-be/app/api/user"
@@ -24,7 +25,6 @@ import (
 	"github.com/quanganh247-qa/go-blog-be/app/service/elasticsearch"
 	"github.com/quanganh247-qa/go-blog-be/app/service/worker"
 	"github.com/quanganh247-qa/go-blog-be/app/util"
-	"go.uber.org/zap"
 )
 
 func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor, config util.Config, es *elasticsearch.ESService) {
@@ -35,14 +35,20 @@ func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor, config
 	routerDefault.Use(middleware.CORSMiddleware())
 	routerDefault.Use(middleware.LoggingMiddleware())
 
-	logger, _ := zap.NewProduction()
-	defer logger.Sync()
+	// Setup route handlers
+	chatHandler := handlers.NewChatHandler(config.GoogleAPIKey, config.OpenFDAAPIKey)
+
+	// logger, _ := zap.NewProduction()
+	// defer logger.Sync()
+
 	v1 := routerDefault.Group(util.Configs.ApiPrefix)
 	router := v1.Group("/")
 	routerGroup := middleware.RouterGroup{
 		RouterDefault: router,
 	}
 	router.GET("/health", server.healthCheck)
+
+	chatbot.Routes(routerGroup, chatHandler)
 	user.Routes(routerGroup, taskDistributor, config)
 	pet.Routes(routerGroup)
 	service.Routes(routerGroup)
@@ -56,11 +62,10 @@ func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor, config
 	cart.Routes(routerGroup)
 	products.Routes(routerGroup)
 	medical_records.Routes(routerGroup)
-	clinic_reporting.Routes(routerGroup)
 	search.Routes(routerGroup, es)
 	medications.Routes(routerGroup, es)
 	doctor.Routes(routerGroup)
-	queue.Routes(routerGroup)
-	server.Router = routerDefault
+	rooms.Routes(routerGroup)
 
+	server.Router = routerDefault
 }

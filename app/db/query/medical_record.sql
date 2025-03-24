@@ -37,3 +37,7 @@ WHERE id = $1;
 -- name: DeleteMedicalHistory :exec
 DELETE FROM medical_history
 WHERE id = $1;
+
+-- name: GetMedicalRecordByPetID :one
+SELECT * FROM medical_records
+WHERE pet_id = $1 LIMIT 1;
