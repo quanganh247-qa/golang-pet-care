@@ -74,3 +74,8 @@ LEFT JOIN vaccinations AS v ON p.petid = v.petid
 WHERE p.is_active = TRUE AND p.petid = $1;
 
 
+-- name: GetPetDetailByUserID :one
+SELECT p.*, u.full_name
+FROM pets AS p
+LEFT JOIN users AS u ON p.username = u.username
+WHERE p.is_active = TRUE AND p.username = $1 AND p.name = $2;

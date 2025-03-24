@@ -22,7 +22,6 @@ type PetControllerInterface interface {
 	DeletePetLog(ctx *gin.Context)
 	UpdatePetLog(ctx *gin.Context)
 	UpdatePetAvatar(ctx *gin.Context)
-	GetPetProfileSummary(ctx *gin.Context)
 }
 
 func (c *PetController) CreatePet(ctx *gin.Context) {
@@ -259,21 +258,4 @@ func (c *PetController) UpdatePetAvatar(ctx *gin.Context) {
 	}
 
 	ctx.JSON(200, gin.H{"message": "Update pet avatar successfully"})
-}
-
-func (c *PetController) GetPetProfileSummary(ctx *gin.Context) {
-	petIDStr := ctx.Param("pet_id")
-	petID, err := strconv.ParseInt(petIDStr, 10, 64)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid pet ID"})
-		return
-	}
-
-	summary, err := c.service.GeneratePetProfileSummary(ctx, petID)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	ctx.JSON(http.StatusOK, summary)
 }

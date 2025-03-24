@@ -79,16 +79,17 @@ func (q *Queries) AssignMedicationToTreatmentPhase(ctx context.Context, arg Assi
 }
 
 const createTreatment = `-- name: CreateTreatment :one
-INSERT INTO pet_treatments (pet_id, disease_id, start_date, end_date, status, notes, created_at)
-VALUES ($1, $2, $3, $4, $5, $6, now()) RETURNING id, pet_id, disease_id, start_date, end_date, status, notes, created_at, doctor_id
+INSERT INTO pet_treatments (pet_id, disease_id, name, type, start_date, end_date ,status, notes, created_at)
+VALUES ($1, $2, $3, $4, $5, $6 , "In Progress", $7, now()) RETURNING id, pet_id, disease_id, start_date, end_date, status, name, type, notes, created_at, doctor_id
 `
 
 type CreateTreatmentParams struct {
 	PetID     pgtype.Int8 `json:"pet_id"`
 	DiseaseID pgtype.Int8 `json:"disease_id"`
+	Name      pgtype.Text `json:"name"`
+	Type      pgtype.Text `json:"type"`
 	StartDate pgtype.Date `json:"start_date"`
 	EndDate   pgtype.Date `json:"end_date"`
-	Status    pgtype.Text `json:"status"`
 	Notes     pgtype.Text `json:"notes"`
 }
 
@@ -96,9 +97,10 @@ func (q *Queries) CreateTreatment(ctx context.Context, arg CreateTreatmentParams
 	row := q.db.QueryRow(ctx, createTreatment,
 		arg.PetID,
 		arg.DiseaseID,
+		arg.Name,
+		arg.Type,
 		arg.StartDate,
 		arg.EndDate,
-		arg.Status,
 		arg.Notes,
 	)
 	var i PetTreatment
@@ -109,6 +111,8 @@ func (q *Queries) CreateTreatment(ctx context.Context, arg CreateTreatmentParams
 		&i.StartDate,
 		&i.EndDate,
 		&i.Status,
+		&i.Name,
+		&i.Type,
 		&i.Notes,
 		&i.CreatedAt,
 		&i.DoctorID,
@@ -339,7 +343,7 @@ func (q *Queries) GetMedicineByTreatmentID(ctx context.Context, treatmentID pgty
 }
 
 const getTreatment = `-- name: GetTreatment :one
-SELECT id, pet_id, disease_id, start_date, end_date, status, notes, created_at, doctor_id FROM pet_treatments
+SELECT id, pet_id, disease_id, start_date, end_date, status, name, type, notes, created_at, doctor_id FROM pet_treatments
 WHERE id = $1 LIMIT 1
 `
 
@@ -353,6 +357,8 @@ func (q *Queries) GetTreatment(ctx context.Context, id int64) (PetTreatment, err
 		&i.StartDate,
 		&i.EndDate,
 		&i.Status,
+		&i.Name,
+		&i.Type,
 		&i.Notes,
 		&i.CreatedAt,
 		&i.DoctorID,
@@ -381,7 +387,7 @@ func (q *Queries) GetTreatmentPhase(ctx context.Context, id int64) (TreatmentPha
 }
 
 const getTreatmentPhasesByTreatment = `-- name: GetTreatmentPhasesByTreatment :many
-SELECT tp.id, treatment_id, phase_name, description, tp.status, tp.start_date, tp.created_at, t.id, pet_id, disease_id, t.start_date, end_date, t.status, notes, t.created_at, doctor_id  FROM treatment_phases as tp
+SELECT tp.id, treatment_id, phase_name, description, tp.status, tp.start_date, tp.created_at, t.id, pet_id, disease_id, t.start_date, end_date, t.status, name, type, notes, t.created_at, doctor_id  FROM treatment_phases as tp
 JOIN pet_treatments t ON t.id = tp.treatment_id
 WHERE t.id = $1 LIMIT $2 OFFSET $3
 `
@@ -406,6 +412,8 @@ type GetTreatmentPhasesByTreatmentRow struct {
 	StartDate_2 pgtype.Date        `json:"start_date_2"`
 	EndDate     pgtype.Date        `json:"end_date"`
 	Status_2    pgtype.Text        `json:"status_2"`
+	Name        pgtype.Text        `json:"name"`
+	Type        pgtype.Text        `json:"type"`
 	Notes       pgtype.Text        `json:"notes"`
 	CreatedAt_2 pgtype.Timestamptz `json:"created_at_2"`
 	DoctorID    pgtype.Int4        `json:"doctor_id"`
@@ -434,6 +442,8 @@ func (q *Queries) GetTreatmentPhasesByTreatment(ctx context.Context, arg GetTrea
 			&i.StartDate_2,
 			&i.EndDate,
 			&i.Status_2,
+			&i.Name,
+			&i.Type,
 			&i.Notes,
 			&i.CreatedAt_2,
 			&i.DoctorID,
@@ -536,7 +546,7 @@ func (q *Queries) GetTreatmentsByPet(ctx context.Context, arg GetTreatmentsByPet
 }
 
 const listTreatmentsByPet = `-- name: ListTreatmentsByPet :many
-SELECT id, pet_id, disease_id, start_date, end_date, status, notes, created_at, doctor_id FROM pet_treatments
+SELECT id, pet_id, disease_id, start_date, end_date, status, name, type, notes, created_at, doctor_id FROM pet_treatments
 WHERE pet_id = $1
 ORDER BY start_date DESC
 LIMIT $2 OFFSET $3
@@ -564,6 +574,8 @@ func (q *Queries) ListTreatmentsByPet(ctx context.Context, arg ListTreatmentsByP
 			&i.StartDate,
 			&i.EndDate,
 			&i.Status,
+			&i.Name,
+			&i.Type,
 			&i.Notes,
 			&i.CreatedAt,
 			&i.DoctorID,

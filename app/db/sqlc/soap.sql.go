@@ -22,7 +22,7 @@ type CreateSOAPParams struct {
 	Subjective    pgtype.Text `json:"subjective"`
 	Objective     pgtype.Text `json:"objective"`
 	Assessment    pgtype.Text `json:"assessment"`
-	Plan          pgtype.Text `json:"plan"`
+	Plan          pgtype.Int8 `json:"plan"`
 }
 
 func (q *Queries) CreateSOAP(ctx context.Context, arg CreateSOAPParams) (Consultation, error) {
@@ -46,12 +46,12 @@ func (q *Queries) CreateSOAP(ctx context.Context, arg CreateSOAPParams) (Consult
 	return i, err
 }
 
-const getSOAP = `-- name: GetSOAP :one
+const getSOAPByAppointmentID = `-- name: GetSOAPByAppointmentID :one
 SELECT id, appointment_id, subjective, objective, assessment, plan, created_at FROM consultations WHERE appointment_id = $1
 `
 
-func (q *Queries) GetSOAP(ctx context.Context, appointmentID pgtype.Int8) (Consultation, error) {
-	row := q.db.QueryRow(ctx, getSOAP, appointmentID)
+func (q *Queries) GetSOAPByAppointmentID(ctx context.Context, appointmentID pgtype.Int8) (Consultation, error) {
+	row := q.db.QueryRow(ctx, getSOAPByAppointmentID, appointmentID)
 	var i Consultation
 	err := row.Scan(
 		&i.ID,
@@ -66,7 +66,7 @@ func (q *Queries) GetSOAP(ctx context.Context, appointmentID pgtype.Int8) (Consu
 }
 
 const updateSOAP = `-- name: UpdateSOAP :one
-UPDATE consultations SET subjective = $2, objective = $3, assessment = $4, plan = $5 
+UPDATE consultations SET subjective = $2, objective = $3, assessment = $4
 WHERE appointment_id = $1 RETURNING id, appointment_id, subjective, objective, assessment, plan, created_at
 `
 
@@ -75,7 +75,6 @@ type UpdateSOAPParams struct {
 	Subjective    pgtype.Text `json:"subjective"`
 	Objective     pgtype.Text `json:"objective"`
 	Assessment    pgtype.Text `json:"assessment"`
-	Plan          pgtype.Text `json:"plan"`
 }
 
 func (q *Queries) UpdateSOAP(ctx context.Context, arg UpdateSOAPParams) (Consultation, error) {
@@ -84,7 +83,6 @@ func (q *Queries) UpdateSOAP(ctx context.Context, arg UpdateSOAPParams) (Consult
 		arg.Subjective,
 		arg.Objective,
 		arg.Assessment,
-		arg.Plan,
 	)
 	var i Consultation
 	err := row.Scan(

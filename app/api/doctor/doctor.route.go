@@ -25,7 +25,6 @@ func Routes(routerGroup middleware.RouterGroup) {
 		doctor.POST("/login", doctorApi.controller.loginDoctor)
 		authRoute.GET("/", doctorApi.controller.getAllDoctor)
 		authRoute.GET("/:doctor_id", doctorApi.controller.getDoctorById)
-		// Protected routes (require authentication)
 		authRoute.GET("/profile", doctorApi.controller.getDoctorProfile)
 	}
 	{

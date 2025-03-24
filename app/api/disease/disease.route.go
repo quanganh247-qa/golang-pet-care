@@ -28,6 +28,10 @@ func Routes(routerGroup middleware.RouterGroup, es *elasticsearch.ESService) {
 		authRoute.GET("/treatment/:treatment_id/phases/:phase_id/medicines", diseaseApi.controller.GetMedicinesByPhaseID)
 	}
 	{
+		authRoute.GET("/pet/:pet_id/allergies", diseaseApi.controller.GetAllergiesByPetID)
+		authRoute.POST("/pet/:pet_id/allerg", diseaseApi.controller.CreateAllergy)
+	}
+	{
 		perRoute([]perms.Permission{perms.ManageDisease, perms.ManageTreatment}).POST("/treatment", diseaseApi.controller.CreateTreatment)
 		perRoute([]perms.Permission{perms.ManageDisease, perms.ManageTreatment}).POST("/treatment/:treatment_id/phase", diseaseApi.controller.CreateTreatmentPhase)
 		perRoute([]perms.Permission{perms.ManageDisease, perms.ManageTreatment}).POST("/treatment/:treatment_id/phase/:phase_id/medicine", diseaseApi.controller.AssignMedicineToTreatmentPhase)

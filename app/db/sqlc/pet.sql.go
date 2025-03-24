@@ -162,8 +162,63 @@ func (q *Queries) GetPetByID(ctx context.Context, petid int64) (Pet, error) {
 	return i, err
 }
 
+const getPetDetailByUserID = `-- name: GetPetDetailByUserID :one
+SELECT p.petid, p.name, p.type, p.breed, p.age, p.gender, p.healthnotes, p.weight, p.birth_date, p.username, p.microchip_number, p.last_checkup_date, p.is_active, p.data_image, p.original_image, u.full_name
+FROM pets AS p
+LEFT JOIN users AS u ON p.username = u.username
+WHERE p.is_active = TRUE AND p.username = $1 AND p.name = $2
+`
+
+type GetPetDetailByUserIDParams struct {
+	Username string `json:"username"`
+	Name     string `json:"name"`
+}
+
+type GetPetDetailByUserIDRow struct {
+	Petid           int64         `json:"petid"`
+	Name            string        `json:"name"`
+	Type            string        `json:"type"`
+	Breed           pgtype.Text   `json:"breed"`
+	Age             pgtype.Int4   `json:"age"`
+	Gender          pgtype.Text   `json:"gender"`
+	Healthnotes     pgtype.Text   `json:"healthnotes"`
+	Weight          pgtype.Float8 `json:"weight"`
+	BirthDate       pgtype.Date   `json:"birth_date"`
+	Username        string        `json:"username"`
+	MicrochipNumber pgtype.Text   `json:"microchip_number"`
+	LastCheckupDate pgtype.Date   `json:"last_checkup_date"`
+	IsActive        pgtype.Bool   `json:"is_active"`
+	DataImage       []byte        `json:"data_image"`
+	OriginalImage   pgtype.Text   `json:"original_image"`
+	FullName        pgtype.Text   `json:"full_name"`
+}
+
+func (q *Queries) GetPetDetailByUserID(ctx context.Context, arg GetPetDetailByUserIDParams) (GetPetDetailByUserIDRow, error) {
+	row := q.db.QueryRow(ctx, getPetDetailByUserID, arg.Username, arg.Name)
+	var i GetPetDetailByUserIDRow
+	err := row.Scan(
+		&i.Petid,
+		&i.Name,
+		&i.Type,
+		&i.Breed,
+		&i.Age,
+		&i.Gender,
+		&i.Healthnotes,
+		&i.Weight,
+		&i.BirthDate,
+		&i.Username,
+		&i.MicrochipNumber,
+		&i.LastCheckupDate,
+		&i.IsActive,
+		&i.DataImage,
+		&i.OriginalImage,
+		&i.FullName,
+	)
+	return i, err
+}
+
 const getPetProfileSummary = `-- name: GetPetProfileSummary :many
-SELECT p.petid, p.name, p.type, p.breed, p.age, p.gender, p.healthnotes, p.weight, p.birth_date, p.username, p.microchip_number, p.last_checkup_date, p.is_active, p.data_image, p.original_image, pt.id, pt.pet_id, pt.disease_id, pt.start_date, pt.end_date, pt.status, pt.notes, pt.created_at, pt.doctor_id, v.vaccinationid, v.petid, v.vaccinename, v.dateadministered, v.nextduedate, v.vaccineprovider, v.batchnumber, v.notes 
+SELECT p.petid, p.name, p.type, p.breed, p.age, p.gender, p.healthnotes, p.weight, p.birth_date, p.username, p.microchip_number, p.last_checkup_date, p.is_active, p.data_image, p.original_image, pt.id, pt.pet_id, pt.disease_id, pt.start_date, pt.end_date, pt.status, pt.name, pt.type, pt.notes, pt.created_at, pt.doctor_id, v.vaccinationid, v.petid, v.vaccinename, v.dateadministered, v.nextduedate, v.vaccineprovider, v.batchnumber, v.notes 
 FROM pets AS p
 LEFT JOIN pet_treatments AS pt ON p.petid = pt.pet_id
 LEFT JOIN vaccinations AS v ON p.petid = v.petid
@@ -192,6 +247,8 @@ type GetPetProfileSummaryRow struct {
 	StartDate        pgtype.Date        `json:"start_date"`
 	EndDate          pgtype.Date        `json:"end_date"`
 	Status           pgtype.Text        `json:"status"`
+	Name_2           pgtype.Text        `json:"name_2"`
+	Type_2           pgtype.Text        `json:"type_2"`
 	Notes            pgtype.Text        `json:"notes"`
 	CreatedAt        pgtype.Timestamptz `json:"created_at"`
 	DoctorID         pgtype.Int4        `json:"doctor_id"`
@@ -236,6 +293,8 @@ func (q *Queries) GetPetProfileSummary(ctx context.Context, petid int64) ([]GetP
 			&i.StartDate,
 			&i.EndDate,
 			&i.Status,
+			&i.Name_2,
+			&i.Type_2,
 			&i.Notes,
 			&i.CreatedAt,
 			&i.DoctorID,

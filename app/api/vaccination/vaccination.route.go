@@ -7,7 +7,7 @@ import (
 
 func Routes(routerGroup middleware.RouterGroup) {
 
-	vaccination := routerGroup.RouterDefault.Group("/vaccination")
+	vaccination := routerGroup.RouterDefault.Group("/")
 	authRoute := routerGroup.RouterAuth(vaccination)
 
 	vaccinationController := &VaccinationController{
@@ -16,10 +16,10 @@ func Routes(routerGroup middleware.RouterGroup) {
 		},
 	}
 	{
-		authRoute.POST("/create", vaccinationController.CreateVaccination)
-		authRoute.GET("/:vaccination_id", vaccinationController.GetVaccinationByID)
-		authRoute.GET("/pet/:pet_id", vaccinationController.ListVaccinationsByPetID)
-		authRoute.PUT("/:vaccination_id", vaccinationController.UpdateVaccination)
-		authRoute.DELETE("/:vaccination_id", vaccinationController.DeleteVaccination)
+		authRoute.POST("vaccination/create", vaccinationController.CreateVaccination)
+		authRoute.GET("vaccination/:vaccination_id", vaccinationController.GetVaccinationByID)
+		authRoute.GET("vaccinations/pet/:pet_id", vaccinationController.ListVaccinationsByPetID)
+		authRoute.PUT("vaccination/:vaccination_id", vaccinationController.UpdateVaccination)
+		authRoute.DELETE("vaccination/:vaccination_id", vaccinationController.DeleteVaccination)
 	}
 }

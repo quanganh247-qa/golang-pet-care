@@ -39,6 +39,8 @@ type Config struct {
 	GoogleRedirectURL  string `mapstructure:"GOOGLE_REDIRECT_URL"`
 	GoogleAPIKey       string `mapstructure:"GOOGLE_API_KEY"`
 
+	OpenFDAAPIKey string `mapstructure:"OPENFDA_API_KEY"`
+
 	GoongAPIKey  string `mapstructure:"GOONG_API_KEY"`
 	GoongBaseURL string `mapstructure:"GOONG_BASE_URL"`
 
