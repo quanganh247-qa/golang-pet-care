@@ -428,6 +428,7 @@ CREATE TABLE public.consultations (
 	assessment text NULL,
 	plan int8 NULL,
 <<<<<<< HEAD
+<<<<<<< HEAD
 	created_at timestamp DEFAULT now() NULL,
 	CONSTRAINT consultations_pkey PRIMARY KEY (id),
 	CONSTRAINT consultations_appointment_id_fkey FOREIGN KEY (appointment_id) REFERENCES public.appointments(appointment_id) ON DELETE CASCADE
@@ -2786,6 +2787,8 @@ CREATE TABLE public.consultations (
 	objective text NULL,
 	assessment text NULL,
 	plan text NULL,
+=======
+>>>>>>> c8bec46 (feat: add chatbot, room management, and pet allergy features)
 	created_at timestamp DEFAULT now() NULL,
 	CONSTRAINT consultations_pkey PRIMARY KEY (id),
 	CONSTRAINT consultations_appointment_id_fkey FOREIGN KEY (appointment_id) REFERENCES public.appointments(appointment_id) ON DELETE CASCADE
@@ -2845,6 +2848,8 @@ CREATE TABLE public.pet_treatments (
 	start_date date NULL,
 	end_date date NULL,
 	status varchar(50) NULL,
+	"name" varchar NULL,
+	"type" varchar NULL,
 	notes text NULL,
 	created_at timestamptz DEFAULT CURRENT_TIMESTAMP NULL,
 	doctor_id int4 NULL,
@@ -3003,8 +3008,14 @@ CREATE TABLE public.rooms (
         FOREIGN KEY (current_appointment_id) REFERENCES public.appointments(appointment_id)
 );
 
--- Indexing for public.allergies
-CREATE INDEX idx_allergies_medical_record_id ON public.allergies (medical_record_id);
+CREATE TABLE public.pet_allergies (
+	id bigserial NOT NULL,
+	pet_id int8 NULL,
+	"type" varchar NULL,
+	detail text NULL,
+	CONSTRAINT pet_alert_pk PRIMARY KEY (id)
+);
+
 
 -- Indexing for public.checkouts
 CREATE INDEX idx_checkouts_petid ON public.checkouts (petid);

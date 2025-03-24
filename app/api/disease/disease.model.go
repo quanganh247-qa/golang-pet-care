@@ -447,7 +447,7 @@ type CreateTreatmentRequest struct {
 	PetID     int64  `json:"pet_id"`
 	DiseaseID int64  `json:"disease_id"`
 	StartDate string `json:"start_date" validate:"required, datetime=2006-01-02"` // have lay out for date
-	Status    string `json:"status" validate:"required,oneof=ongoing completed paused cancelled"`
+	Status    string `json:"status" validate:"required"`
 	Notes     string `json:"notes"`
 }
 
@@ -524,4 +524,16 @@ type CreateDiseaseRequest struct {
 type PrescriptionResponse struct {
 	PrescriptionID  int64  `json:"prescription_id"`
 	PrescriptionURL string `json:"prescription_url"`
+}
+
+type PetAllergy struct {
+	ID     int64  `json:"id"`
+	PetID  int64  `json:"pet_id"`
+	Type   string `json:"type"`
+	Detail string `json:"detail"`
+}
+
+type CreateAllergyRequest struct {
+	Type   string `json:"type"`
+	Detail string `json:"detail"`
 }

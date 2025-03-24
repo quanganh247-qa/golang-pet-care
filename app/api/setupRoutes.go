@@ -26,6 +26,7 @@ import (
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	"github.com/quanganh247-qa/go-blog-be/app/api/chatbot"
 	"github.com/quanganh247-qa/go-blog-be/app/api/chatbot/handlers"
 =======
@@ -44,6 +45,10 @@ import (
 =======
 	"github.com/quanganh247-qa/go-blog-be/app/api/clinic_reporting"
 >>>>>>> ffc9071 (AI suggestion)
+=======
+	"github.com/quanganh247-qa/go-blog-be/app/api/chatbot"
+	"github.com/quanganh247-qa/go-blog-be/app/api/chatbot/handlers"
+>>>>>>> c8bec46 (feat: add chatbot, room management, and pet allergy features)
 	"github.com/quanganh247-qa/go-blog-be/app/api/device_token"
 	"github.com/quanganh247-qa/go-blog-be/app/api/disease"
 <<<<<<< HEAD
@@ -132,6 +137,7 @@ import (
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	"github.com/quanganh247-qa/go-blog-be/app/api/rooms"
 =======
 	"github.com/quanganh247-qa/go-blog-be/app/api/queue"
@@ -142,6 +148,9 @@ import (
 =======
 	"github.com/quanganh247-qa/go-blog-be/app/api/queue"
 >>>>>>> 4ccd381 (Update appointment flow)
+=======
+	"github.com/quanganh247-qa/go-blog-be/app/api/rooms"
+>>>>>>> c8bec46 (feat: add chatbot, room management, and pet allergy features)
 	"github.com/quanganh247-qa/go-blog-be/app/api/search"
 =======
 >>>>>>> e01abc5 (pet schedule api)
@@ -180,7 +189,6 @@ import (
 >>>>>>> e859654 (Elastic search)
 	"github.com/quanganh247-qa/go-blog-be/app/service/worker"
 	"github.com/quanganh247-qa/go-blog-be/app/util"
-	"go.uber.org/zap"
 )
 
 <<<<<<< HEAD
@@ -243,6 +251,7 @@ func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor, config
 >>>>>>> 71b74e9 (feat(appointment): add room management and update appointment functionality.)
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> ada3717 (Docker file)
 	logger, _ := zap.NewProduction()
 	defer logger.Sync()
@@ -303,6 +312,14 @@ func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor, config
 >>>>>>> c8bec46 (feat: add chatbot, room management, and pet allergy features)
 =======
 >>>>>>> 4ccd381 (Update appointment flow)
+=======
+	// Setup route handlers
+	chatHandler := handlers.NewChatHandler(config.GoogleAPIKey, config.OpenFDAAPIKey)
+
+	// logger, _ := zap.NewProduction()
+	// defer logger.Sync()
+
+>>>>>>> c8bec46 (feat: add chatbot, room management, and pet allergy features)
 	v1 := routerDefault.Group(util.Configs.ApiPrefix)
 	router := v1.Group("/")
 	routerGroup := middleware.RouterGroup{
@@ -441,6 +458,7 @@ func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor, config
 	products.Routes(routerGroup)
 	medical_records.Routes(routerGroup)
 <<<<<<< HEAD
+<<<<<<< HEAD
 	search.Routes(routerGroup, es)
 	medications.Routes(routerGroup, es)
 	doctor.Routes(routerGroup)
@@ -502,5 +520,12 @@ func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor, config
 =======
 	medical_records.Routes(routerGroup)
 >>>>>>> 3bf345d (happy new year)
+=======
+	search.Routes(routerGroup, es)
+	medications.Routes(routerGroup, es)
+	doctor.Routes(routerGroup)
+	rooms.Routes(routerGroup)
+
+>>>>>>> c8bec46 (feat: add chatbot, room management, and pet allergy features)
 	server.Router = routerDefault
 }

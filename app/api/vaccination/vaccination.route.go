@@ -10,6 +10,7 @@ func Routes(routerGroup middleware.RouterGroup) {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	vaccination := routerGroup.RouterDefault.Group("/")
 =======
 	vaccination := routerGroup.RouterDefault.Group("/vaccination")
@@ -20,6 +21,9 @@ func Routes(routerGroup middleware.RouterGroup) {
 =======
 	vaccination := routerGroup.RouterDefault.Group("/vaccination")
 >>>>>>> 290baeb (fixed vaccine routes)
+=======
+	vaccination := routerGroup.RouterDefault.Group("/")
+>>>>>>> c8bec46 (feat: add chatbot, room management, and pet allergy features)
 	authRoute := routerGroup.RouterAuth(vaccination)
 
 	vaccinationController := &VaccinationController{
@@ -31,6 +35,9 @@ func Routes(routerGroup middleware.RouterGroup) {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> c8bec46 (feat: add chatbot, room management, and pet allergy features)
 =======
 >>>>>>> c8bec46 (feat: add chatbot, room management, and pet allergy features)
 		authRoute.POST("vaccination/create", vaccinationController.CreateVaccination)
@@ -38,6 +45,7 @@ func Routes(routerGroup middleware.RouterGroup) {
 		authRoute.GET("vaccinations/pet/:pet_id", vaccinationController.ListVaccinationsByPetID)
 		authRoute.PUT("vaccination/:vaccination_id", vaccinationController.UpdateVaccination)
 		authRoute.DELETE("vaccination/:vaccination_id", vaccinationController.DeleteVaccination)
+<<<<<<< HEAD
 <<<<<<< HEAD
 =======
 =======
@@ -53,5 +61,7 @@ func Routes(routerGroup middleware.RouterGroup) {
 >>>>>>> c8bec46 (feat: add chatbot, room management, and pet allergy features)
 =======
 >>>>>>> 290baeb (fixed vaccine routes)
+=======
+>>>>>>> c8bec46 (feat: add chatbot, room management, and pet allergy features)
 	}
 }

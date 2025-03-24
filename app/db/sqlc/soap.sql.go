@@ -25,6 +25,7 @@ type CreateSOAPParams struct {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	Plan          pgtype.Int8 `json:"plan"`
 =======
 	Plan          pgtype.Text `json:"plan"`
@@ -35,6 +36,9 @@ type CreateSOAPParams struct {
 =======
 	Plan          pgtype.Text `json:"plan"`
 >>>>>>> e859654 (Elastic search)
+=======
+	Plan          pgtype.Int8 `json:"plan"`
+>>>>>>> c8bec46 (feat: add chatbot, room management, and pet allergy features)
 }
 
 func (q *Queries) CreateSOAP(ctx context.Context, arg CreateSOAPParams) (Consultation, error) {
@@ -58,6 +62,7 @@ func (q *Queries) CreateSOAP(ctx context.Context, arg CreateSOAPParams) (Consult
 	return i, err
 }
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -88,6 +93,14 @@ func (q *Queries) GetSOAPByAppointmentID(ctx context.Context, appointmentID pgty
 >>>>>>> c8bec46 (feat: add chatbot, room management, and pet allergy features)
 =======
 >>>>>>> e859654 (Elastic search)
+=======
+const getSOAPByAppointmentID = `-- name: GetSOAPByAppointmentID :one
+SELECT id, appointment_id, subjective, objective, assessment, plan, created_at FROM consultations WHERE appointment_id = $1
+`
+
+func (q *Queries) GetSOAPByAppointmentID(ctx context.Context, appointmentID pgtype.Int8) (Consultation, error) {
+	row := q.db.QueryRow(ctx, getSOAPByAppointmentID, appointmentID)
+>>>>>>> c8bec46 (feat: add chatbot, room management, and pet allergy features)
 	var i Consultation
 	err := row.Scan(
 		&i.ID,
@@ -105,6 +118,7 @@ const updateSOAP = `-- name: UpdateSOAP :one
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 UPDATE consultations SET subjective = $2, objective = $3, assessment = $4
 =======
 UPDATE consultations SET subjective = $2, objective = $3, assessment = $4, plan = $5 
@@ -115,6 +129,9 @@ UPDATE consultations SET subjective = $2, objective = $3, assessment = $4
 =======
 UPDATE consultations SET subjective = $2, objective = $3, assessment = $4, plan = $5 
 >>>>>>> e859654 (Elastic search)
+=======
+UPDATE consultations SET subjective = $2, objective = $3, assessment = $4
+>>>>>>> c8bec46 (feat: add chatbot, room management, and pet allergy features)
 WHERE appointment_id = $1 RETURNING id, appointment_id, subjective, objective, assessment, plan, created_at
 `
 
@@ -126,6 +143,7 @@ type UpdateSOAPParams struct {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 	Plan          pgtype.Text `json:"plan"`
 >>>>>>> e859654 (Elastic search)
@@ -134,6 +152,8 @@ type UpdateSOAPParams struct {
 =======
 	Plan          pgtype.Text `json:"plan"`
 >>>>>>> e859654 (Elastic search)
+=======
+>>>>>>> c8bec46 (feat: add chatbot, room management, and pet allergy features)
 }
 
 func (q *Queries) UpdateSOAP(ctx context.Context, arg UpdateSOAPParams) (Consultation, error) {
@@ -145,6 +165,7 @@ func (q *Queries) UpdateSOAP(ctx context.Context, arg UpdateSOAPParams) (Consult
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 		arg.Plan,
 >>>>>>> e859654 (Elastic search)
@@ -153,6 +174,8 @@ func (q *Queries) UpdateSOAP(ctx context.Context, arg UpdateSOAPParams) (Consult
 =======
 		arg.Plan,
 >>>>>>> e859654 (Elastic search)
+=======
+>>>>>>> c8bec46 (feat: add chatbot, room management, and pet allergy features)
 	)
 	var i Consultation
 	err := row.Scan(

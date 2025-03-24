@@ -34,6 +34,7 @@ func Routes(routerGroup middleware.RouterGroup) {
 		authRoute.GET("/", doctorApi.controller.getAllDoctor)
 		authRoute.GET("/:doctor_id", doctorApi.controller.getDoctorById)
 <<<<<<< HEAD
+<<<<<<< HEAD
 		authRoute.GET("/profile", doctorApi.controller.getDoctorProfile)
 	}
 	{
@@ -61,6 +62,8 @@ func Routes(routerGroup middleware.RouterGroup) {
 		authRoute.GET("/:doctor_id", doctorApi.controller.getDoctorById)
 >>>>>>> 71b74e9 (feat(appointment): add room management and update appointment functionality.)
 		// Protected routes (require authentication)
+=======
+>>>>>>> c8bec46 (feat: add chatbot, room management, and pet allergy features)
 		authRoute.GET("/profile", doctorApi.controller.getDoctorProfile)
 	}
 	{

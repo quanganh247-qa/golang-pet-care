@@ -346,6 +346,7 @@ SELECT * FROM appointments WHERE state_id = $1;
 
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 -- name: GetAllAppointments :many
 SELECT 
     a.appointment_id,
@@ -866,31 +867,44 @@ SELECT * FROM appointments;
 -- name: GetAppointmentByStateId :many
 SELECT * FROM appointments WHERE state_id = $1;
 
+=======
+>>>>>>> c8bec46 (feat: add chatbot, room management, and pet allergy features)
 -- name: GetAllAppointments :many
 SELECT 
     a.appointment_id,
-    a.date ,
+    a.date,
     a.reminder_send,
     a.created_at,
     a.appointment_reason,
     a.priority,
     a.arrival_time,
-    p.petid as pet_id,
+    a.notes,
+    p.petid AS pet_id,
     p.name AS pet_name,
+    p.breed AS pet_breed,
     d.id AS doctor_id,
     s.name AS service_name,
+    s.duration AS service_duration,
     ts.start_time, ts.end_time, ts.id AS time_slot_id,
     st.state AS state_name,
     st.id AS state_id,
+    u.full_name AS owner_name,
+    u.phone_number AS owner_phone,
+    u.email AS owner_email,
+    u.address AS owner_address,
     r.name AS room_name
 FROM appointments a
 LEFT JOIN pets p ON a.petid = p.petid
 LEFT JOIN services s ON a.service_id = s.id
 LEFT JOIN time_slots ts ON a.time_slot_id = ts.id
 LEFT JOIN doctors d ON a.doctor_id = d.id
+LEFT JOIN users u ON a.username = u.username
 LEFT JOIN states st ON a.state_id = st.id
 LEFT JOIN rooms r ON a.room_id = r.id
-LIMIT $1 OFFSET $2 ;
+WHERE DATE(a.date) = DATE($1)
+AND ($4 = 'false' OR st.state IN ('Confirmed', 'Scheduled'))
+LIMIT $2 OFFSET $3;
+
 
 -- name: GetAllAppointmentsByDate :many
 SELECT 
@@ -924,9 +938,10 @@ LEFT JOIN doctors d ON a.doctor_id = d.id
 LEFT JOIN users u ON a.username = u.username
 LEFT JOIN states st ON a.state_id = st.id
 LEFT JOIN rooms r ON a.room_id = r.id
-WHERE DATE(a.date) = DATE($1)
+WHERE DATE(a.date) = DATE($1) AND st.state IN ('Confirmed', 'Scheduled')
 LIMIT $2 OFFSET $3 ;
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 >>>>>>> ffc9071 (AI suggestion)
 =======
@@ -935,6 +950,8 @@ SELECT * FROM consultations WHERE appointment_id = $1;
 <<<<<<< HEAD
 >>>>>>> e859654 (Elastic search)
 =======
+=======
+>>>>>>> c8bec46 (feat: add chatbot, room management, and pet allergy features)
 
 <<<<<<< HEAD
 >>>>>>> ada3717 (Docker file)
@@ -1000,6 +1017,36 @@ WHERE a.username = $1;
 
 -- name: GetAppointmentsQueue :many
 SELECT * FROM public.appointments 
-WHERE state_id <> (SELECT id FROM public.states WHERE state = 'Scheduled' LIMIT 1)
+WHERE state_id <> (SELECT id FROM public.states WHERE state = 'Scheduled' LIMIT 1) and doctor_id = $1
 ORDER BY arrival_time ASC;
+<<<<<<< HEAD
 >>>>>>> 4ccd381 (Update appointment flow)
+=======
+
+
+-- name: GetAvailableRoomsForDuration :many
+SELECT r.*
+FROM rooms r
+WHERE r.status = 'available'
+AND NOT EXISTS (
+    SELECT 1
+    FROM appointments a
+    LEFT JOIN time_slots ts ON a.time_slot_id = ts.id
+    LEFT JOIN services s ON a.service_id = s.id
+    WHERE a.room_id = r.id
+    AND ts.start_time < $1 + interval '1 minute' * $2
+    AND ts.start_time + interval '1 minute' * s.duration > $1
+);
+
+
+-- name: GetHistoryAppointmentsByPetID :many
+SELECT 
+    appointments.*,
+    s.name AS service_name,
+    r.name AS room_name
+FROM appointments
+LEFT JOIN services s ON appointments.service_id = s.id
+LEFT JOIN rooms r ON appointments.room_id = r.id
+WHERE petid = $1 AND state_id = (SELECT id FROM states WHERE state = 'Completed' LIMIT 1)
+ORDER BY date DESC;
+>>>>>>> c8bec46 (feat: add chatbot, room management, and pet allergy features)

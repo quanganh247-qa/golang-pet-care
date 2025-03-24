@@ -53,6 +53,7 @@ func Routes(routerGroup middleware.RouterGroup) {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 =======
 >>>>>>> c73e2dc (pagination function)
@@ -131,6 +132,8 @@ func Routes(routerGroup middleware.RouterGroup) {
 		// Pet summary
 		Pet.GET("/summary/:pet_id", petApi.controller.GetPetProfileSummary)
 >>>>>>> ffc9071 (AI suggestion)
+=======
+>>>>>>> c8bec46 (feat: add chatbot, room management, and pet allergy features)
 	}
 
 }

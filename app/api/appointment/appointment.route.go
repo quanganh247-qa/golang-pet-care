@@ -72,6 +72,7 @@ func Routes(routerGroup middleware.RouterGroup, taskDistributor worker.TaskDistr
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 		authRoute.GET("appointments", appointmentApi.controller.getAllAppointments)
 		authRoute.PUT("appointment/:id", appointmentApi.controller.updateAppointment)
 		authRoute.GET("doctor/:doctor_id/time-slot", appointmentApi.controller.getAvailableTimeSlots)
@@ -174,6 +175,19 @@ func Routes(routerGroup middleware.RouterGroup, taskDistributor worker.TaskDistr
 		authRoute.POST("/soap/:appointment_id", appointmentApi.controller.createSOAP)
 		authRoute.PUT("/soap/:appointment_id", appointmentApi.controller.updateSOAP)
 >>>>>>> e859654 (Elastic search)
+=======
+		authRoute.GET("appointments", appointmentApi.controller.getAllAppointments)
+		authRoute.PUT("appointment/:id", appointmentApi.controller.updateAppointment)
+		authRoute.GET("doctor/:doctor_id/time-slot", appointmentApi.controller.getAvailableTimeSlots)
+		authRoute.GET("appointments/pet/:pet_id/history", appointmentApi.controller.getHistoryAppointmentsByPetID)
+		authRoute.GET("appointments/queue", appointmentApi.controller.getQueue)
+		authRoute.PUT("appointments/queue/:id/status", appointmentApi.controller.updateQueueItemStatus)
+
+		// soap
+		authRoute.POST("appointment/:id/soap", appointmentApi.controller.createSOAP)
+		authRoute.PUT("appointment/:id/soap", appointmentApi.controller.updateSOAP)
+		authRoute.GET("appointment/:id/soap", appointmentApi.controller.getSOAPByAppointmentID)
+>>>>>>> c8bec46 (feat: add chatbot, room management, and pet allergy features)
 	}
 
 }

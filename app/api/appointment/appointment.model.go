@@ -124,6 +124,17 @@ type historyAppointmentResponse struct {
 	Room        string `json:"room"`
 }
 
+type historyAppointmentResponse struct {
+	ID          int64  `json:"id"`
+	PetName     string `json:"pet_name"`
+	Reason      string `json:"reason"`
+	Date        string `json:"date"`
+	ServiceName string `json:"service_name"`
+	ArrivalTime string `json:"arrival_time"`
+	DoctorName  string `json:"doctor_name"`
+	Room        string `json:"room"`
+}
+
 type createAppointmentResponse struct {
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -434,6 +445,17 @@ type SOAPResponse struct {
 	Subjective     string `json:"subjective"`
 	Objective      string `json:"objective"`
 	Assessment     string `json:"assessment"`
-	Plan           string `json:"plan"`
-	Notes          string `json:"notes"`
+	// Plan           string `json:"plan"`
+	Notes string `json:"notes"`
+}
+
+type QueueItem struct {
+	ID              int64  `json:"id"`
+	PatientName     string `json:"patientName"`
+	Status          string `json:"status"`
+	Priority        string `json:"priority"`
+	AppointmentType string `json:"appointmentType"`
+	Doctor          string `json:"doctor"`
+	WaitingSince    string `json:"waitingSince"`
+	ActualWaitTime  string `json:"actualWaitTime"`
 }

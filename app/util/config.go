@@ -45,6 +45,7 @@ type Config struct {
 
 	OpenFDAAPIKey string `mapstructure:"OPENFDA_API_KEY"`
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 	GoogleAPIKey       string `mapstructure:"GOOGLE_API_KEY"`
 >>>>>>> e859654 (Elastic search)
@@ -53,6 +54,8 @@ type Config struct {
 =======
 	GoogleAPIKey       string `mapstructure:"GOOGLE_API_KEY"`
 >>>>>>> e859654 (Elastic search)
+=======
+>>>>>>> c8bec46 (feat: add chatbot, room management, and pet allergy features)
 
 	GoongAPIKey  string `mapstructure:"GOONG_API_KEY"`
 	GoongBaseURL string `mapstructure:"GOONG_BASE_URL"`

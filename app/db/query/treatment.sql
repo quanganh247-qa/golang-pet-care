@@ -4,6 +4,7 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 INSERT INTO pet_treatments (pet_id, disease_id,doctor_id, name, type, start_date, end_date ,status, description, created_at)
 VALUES ($1, $2, $3, $4, $5, $6 ,$7 , "In Progress", $8, now()) RETURNING *;
 =======
@@ -22,6 +23,10 @@ VALUES ($1, $2, $3, $4, $5, $6 ,$7 , "In Progress", $8, now()) RETURNING *;
 INSERT INTO pet_treatments (pet_id, disease_id, start_date, end_date, status, notes, created_at)
 VALUES ($1, $2, $3, $4, $5, $6, now()) RETURNING *;
 >>>>>>> 3bf345d (happy new year)
+=======
+INSERT INTO pet_treatments (pet_id, disease_id, name, type, start_date, end_date ,status, notes, created_at)
+VALUES ($1, $2, $3, $4, $5, $6 , "In Progress", $7, now()) RETURNING *;
+>>>>>>> c8bec46 (feat: add chatbot, room management, and pet allergy features)
 
 -- name: GetTreatment :one
 SELECT * FROM pet_treatments

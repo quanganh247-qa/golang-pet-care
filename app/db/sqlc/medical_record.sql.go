@@ -166,6 +166,9 @@ func (q *Queries) GetMedicalRecord(ctx context.Context, id int64) (MedicalRecord
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> c8bec46 (feat: add chatbot, room management, and pet allergy features)
 =======
 >>>>>>> c8bec46 (feat: add chatbot, room management, and pet allergy features)
 const getMedicalRecordByPetID = `-- name: GetMedicalRecordByPetID :one
@@ -186,12 +189,15 @@ func (q *Queries) GetMedicalRecordByPetID(ctx context.Context, petID pgtype.Int8
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> e859654 (Elastic search)
 =======
 >>>>>>> c8bec46 (feat: add chatbot, room management, and pet allergy features)
 =======
 >>>>>>> e859654 (Elastic search)
+=======
+>>>>>>> c8bec46 (feat: add chatbot, room management, and pet allergy features)
 const updateMedicalHistory = `-- name: UpdateMedicalHistory :exec
 UPDATE medical_history
 SET condition = $2, diagnosis_date = $3, treatment = $4, notes = $5, updated_at = NOW()

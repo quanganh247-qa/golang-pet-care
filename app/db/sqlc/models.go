@@ -188,6 +188,9 @@ type Consultation struct {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> c8bec46 (feat: add chatbot, room management, and pet allergy features)
 =======
 >>>>>>> c8bec46 (feat: add chatbot, room management, and pet allergy features)
 	Plan          pgtype.Int8      `json:"plan"`
@@ -602,6 +605,13 @@ type Pet struct {
 >>>>>>> 0fb3f30 (user images)
 =======
 	OriginalImage   pgtype.Text   `json:"original_image"`
+}
+
+type PetAllergy struct {
+	ID     int64       `json:"id"`
+	PetID  pgtype.Int8 `json:"pet_id"`
+	Type   pgtype.Text `json:"type"`
+	Detail pgtype.Text `json:"detail"`
 }
 
 type PetLog struct {

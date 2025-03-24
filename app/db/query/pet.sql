@@ -185,6 +185,9 @@ WHERE p.is_active = TRUE AND p.petid = $1;
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> c8bec46 (feat: add chatbot, room management, and pet allergy features)
 =======
 >>>>>>> c8bec46 (feat: add chatbot, room management, and pet allergy features)
 -- name: GetPetDetailByUserID :one
@@ -193,6 +196,7 @@ FROM pets AS p
 LEFT JOIN users AS u ON p.username = u.username
 WHERE p.is_active = TRUE AND p.username = $1 AND p.name = $2;
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 UPDATE Pet SET is_active = $2 WHERE PetID = $1 AND is_active is true;
 <<<<<<< HEAD
@@ -221,3 +225,5 @@ UPDATE Pet SET data_image = $2, original_image = $3 WHERE PetID = $1 and is_acti
 >>>>>>> 33fcf96 (Big update)
 =======
 >>>>>>> ffc9071 (AI suggestion)
+=======
+>>>>>>> c8bec46 (feat: add chatbot, room management, and pet allergy features)
