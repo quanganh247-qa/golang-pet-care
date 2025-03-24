@@ -24,4 +24,8 @@ RETURNING *;
 
 -- name: DeletePetAllergy :exec
 DELETE FROM pet_allergies
+<<<<<<< HEAD
 WHERE id = $1;
+=======
+WHERE id = $1;
+>>>>>>> c8bec46 (feat: add chatbot, room management, and pet allergy features)

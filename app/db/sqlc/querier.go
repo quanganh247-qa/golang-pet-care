@@ -42,6 +42,9 @@ type Querier interface {
 	CreateOrder(ctx context.Context, arg CreateOrderParams) (Order, error)
 	CreatePet(ctx context.Context, arg CreatePetParams) (Pet, error)
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> c8bec46 (feat: add chatbot, room management, and pet allergy features)
 	CreatePetAllergy(ctx context.Context, arg CreatePetAllergyParams) (PetAllergy, error)
 	CreatePetLog(ctx context.Context, arg CreatePetLogParams) (PetLog, error)
 	CreatePetSchedule(ctx context.Context, arg CreatePetScheduleParams) error
@@ -168,11 +171,17 @@ type Querier interface {
 	DeletePet(ctx context.Context, petid int64) error
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	DeletePetAllergy(ctx context.Context, id int64) error
 	DeletePetLog(ctx context.Context, logID int64) error
 	DeletePetSchedule(ctx context.Context, id int64) error
 <<<<<<< HEAD
 <<<<<<< HEAD
+=======
+	DeletePetAllergy(ctx context.Context, id int64) error
+	DeletePetLog(ctx context.Context, logID int64) error
+	DeletePetSchedule(ctx context.Context, id int64) error
+>>>>>>> c8bec46 (feat: add chatbot, room management, and pet allergy features)
 	DeleteRoom(ctx context.Context, id int64) error
 	DeleteService(ctx context.Context, id int64) error
 <<<<<<< HEAD
@@ -322,6 +331,7 @@ type Querier interface {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	GetAppointmentsQueue(ctx context.Context, doctorID pgtype.Int8) ([]Appointment, error)
 =======
 	GetAppointmentsQueue(ctx context.Context) ([]Appointment, error)
@@ -338,6 +348,12 @@ type Querier interface {
 =======
 	GetAvailableRooms(ctx context.Context, availableAt pgtype.Timestamp) ([]Room, error)
 >>>>>>> 71b74e9 (feat(appointment): add room management and update appointment functionality.)
+=======
+	GetAppointmentsQueue(ctx context.Context, doctorID pgtype.Int8) ([]Appointment, error)
+	GetAvailableDoctors(ctx context.Context, date pgtype.Date) ([]GetAvailableDoctorsRow, error)
+	GetAvailableRooms(ctx context.Context, arg GetAvailableRoomsParams) ([]Room, error)
+	GetAvailableRoomsForDuration(ctx context.Context, arg GetAvailableRoomsForDurationParams) ([]Room, error)
+>>>>>>> c8bec46 (feat: add chatbot, room management, and pet allergy features)
 	GetAvailableTimeSlots(ctx context.Context, arg GetAvailableTimeSlotsParams) ([]GetAvailableTimeSlotsRow, error)
 	GetCartByUserId(ctx context.Context, userID int64) ([]Cart, error)
 <<<<<<< HEAD
@@ -442,12 +458,15 @@ type Querier interface {
 =======
 >>>>>>> dc47646 (Optimize SQL query)
 	GetDoctorByUserId(ctx context.Context, userID int64) (Doctor, error)
+	GetDoctorByUsername(ctx context.Context, username string) (GetDoctorByUsernameRow, error)
 	GetDoctors(ctx context.Context) ([]GetDoctorsRow, error)
 >>>>>>> ada3717 (Docker file)
 	GetFileByID(ctx context.Context, id int64) (File, error)
+	GetHistoryAppointmentsByPetID(ctx context.Context, petid pgtype.Int8) ([]GetHistoryAppointmentsByPetIDRow, error)
 	GetMedicalHistory(ctx context.Context, arg GetMedicalHistoryParams) ([]MedicalHistory, error)
 	GetMedicalHistoryByID(ctx context.Context, id int64) (MedicalHistory, error)
 	GetMedicalRecord(ctx context.Context, id int64) (MedicalRecord, error)
+	GetMedicalRecordByPetID(ctx context.Context, petID pgtype.Int8) (MedicalRecord, error)
 	GetMedicationsByPhase(ctx context.Context, arg GetMedicationsByPhaseParams) ([]GetMedicationsByPhaseRow, error)
 	GetMedicineByID(ctx context.Context, id int64) (Medicine, error)
 <<<<<<< HEAD
@@ -469,9 +488,12 @@ type Querier interface {
 	GetProductByID(ctx context.Context, productID int64) (Product, error)
 	GetRoomByID(ctx context.Context, id int64) (Room, error)
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 	GetSOAP(ctx context.Context, appointmentID pgtype.Int8) (Consultation, error)
 >>>>>>> 71b74e9 (feat(appointment): add room management and update appointment functionality.)
+=======
+>>>>>>> c8bec46 (feat: add chatbot, room management, and pet allergy features)
 	GetSOAPByAppointmentID(ctx context.Context, appointmentID pgtype.Int8) (Consultation, error)
 	GetServiceByID(ctx context.Context, id int64) (Service, error)
 	GetServices(ctx context.Context, arg GetServicesParams) ([]Service, error)
@@ -621,9 +643,13 @@ type Querier interface {
 	ListMedicinesByPet(ctx context.Context, arg ListMedicinesByPetParams) ([]ListMedicinesByPetRow, error)
 	ListNotificationsByUsername(ctx context.Context, arg ListNotificationsByUsernameParams) ([]Notification, error)
 <<<<<<< HEAD
+<<<<<<< HEAD
 	ListPetAllergies(ctx context.Context, arg ListPetAllergiesParams) ([]PetAllergy, error)
 =======
 >>>>>>> e859654 (Elastic search)
+=======
+	ListPetAllergies(ctx context.Context, arg ListPetAllergiesParams) ([]PetAllergy, error)
+>>>>>>> c8bec46 (feat: add chatbot, room management, and pet allergy features)
 	ListPetSchedulesByUsername(ctx context.Context, username string) ([]ListPetSchedulesByUsernameRow, error)
 =======
 	InsertDoctorSchedule(ctx context.Context, arg InsertDoctorScheduleParams) (Doctorschedule, error)
@@ -753,6 +779,7 @@ type Querier interface {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	UpdatePetAllergy(ctx context.Context, arg UpdatePetAllergyParams) (PetAllergy, error)
 =======
 >>>>>>> 5ea33aa (PUT pet info)
@@ -763,6 +790,12 @@ type Querier interface {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+=======
+	UpdatePetAllergy(ctx context.Context, arg UpdatePetAllergyParams) (PetAllergy, error)
+	UpdatePetAvatar(ctx context.Context, arg UpdatePetAvatarParams) error
+	UpdatePetLog(ctx context.Context, arg UpdatePetLogParams) error
+	UpdatePetSchedule(ctx context.Context, arg UpdatePetScheduleParams) error
+>>>>>>> c8bec46 (feat: add chatbot, room management, and pet allergy features)
 	UpdateRoom(ctx context.Context, arg UpdateRoomParams) error
 	UpdateSOAP(ctx context.Context, arg UpdateSOAPParams) (Consultation, error)
 	UpdateService(ctx context.Context, arg UpdateServiceParams) (Service, error)

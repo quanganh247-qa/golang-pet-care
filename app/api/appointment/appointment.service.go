@@ -76,10 +76,17 @@ type AppointmentServiceInterface interface {
 	GetAppointmentsByUser(ctx *gin.Context, username string) ([]createAppointmentResponse, error)
 	GetAppointmentsByDoctor(ctx *gin.Context, doctorID int64) ([]createAppointmentResponse, error)
 	GetAvailableTimeSlots(ctx *gin.Context, doctorID int64, date string) ([]timeSlotResponse, error)
-	GetAllAppointments(ctx *gin.Context, pagination *util.Pagination) ([]createAppointmentResponse, error)
+	GetAllAppointments(ctx *gin.Context, date string, option string, pagination *util.Pagination) ([]Appointment, error)
 	GetAllAppointmentsByDate(ctx *gin.Context, pagination *util.Pagination, date string) ([]Appointment, error)
 	UpdateAppointmentService(ctx *gin.Context, req updateAppointmentRequest, appointmentID int64) error
+<<<<<<< HEAD
 >>>>>>> 71b74e9 (feat(appointment): add room management and update appointment functionality.)
+=======
+	UpdateQueueItemStatusService(ctx *gin.Context, id int64, status string) error
+	GetQueueService(ctx *gin.Context, username string) ([]QueueItem, error)
+	GetHistoryAppointmentsByPetID(ctx *gin.Context, petID int64) ([]historyAppointmentResponse, error)
+	GetSOAPByAppointmentID(ctx *gin.Context, appointmentID int64) (*SOAPResponse, error)
+>>>>>>> c8bec46 (feat: add chatbot, room management, and pet allergy features)
 }
 
 func (s *AppointmentService) CreateAppointment(ctx *gin.Context, req createAppointmentRequest, username string) (*createAppointmentResponse, error) {
@@ -1087,52 +1094,27 @@ func (s *AppointmentService) CheckInAppoinment(ctx *gin.Context, id, roomID int6
 			return fmt.Errorf("failed to get appointment: %w", err)
 		}
 
-		// Get room details
-		room, err := q.GetRoomByID(ctx, roomID)
-		if err != nil {
-			return fmt.Errorf("failed to get room details: %w", err)
+		req := db.UpdateAppointmentByIDParams{
+			AppointmentID:     appointment.AppointmentID,
+			StateID:           pgtype.Int4{Int32: 3, Valid: true},
+			ArrivalTime:       pgtype.Timestamp{Time: time.Now().UTC(), Valid: true},
+			RoomID:            pgtype.Int8{Int64: roomID, Valid: true},
+			AppointmentReason: appointment.AppointmentReason,
+			ReminderSend:      appointment.ReminderSend,
 		}
 
-		// Validate room type matches service requirements
-		if room.Type != appointment.ServiceName.String {
-			return fmt.Errorf("room type %s is incompatible with service requirement %s", room.Type, appointment.ServiceName.String)
+		if priority != "" {
+			req.Priority = pgtype.Text{String: priority, Valid: true}
 		}
-
-		// Check if room is available
-		availableRooms, err := q.GetAvailableRooms(ctx, pgtype.Timestamp{Time: time.Now().UTC(), Valid: true})
-		if err != nil {
-			return fmt.Errorf("failed to check room availability: %w", err)
-		}
-
-		roomAvailable := false
-		for _, room := range availableRooms {
-			if room.ID == roomID {
-				roomAvailable = true
-				break
-			}
-		}
-
-		if !roomAvailable {
-			return fmt.Errorf("room %d is not available", roomID)
-		}
-
-		arrivalTime := time.Now().UTC()
 
 		// Update appointment with room assignment
-		if err = q.UpdateAppointmentByID(ctx, db.UpdateAppointmentByIDParams{
-			AppointmentID: appointment.AppointmentID,
-			StateID:       pgtype.Int4{Int32: 3, Valid: true},
-			ArrivalTime:   pgtype.Timestamp{Time: arrivalTime, Valid: true},
-			RoomID:        pgtype.Int8{Int64: roomID, Valid: true},
-			Priority:      pgtype.Text{String: priority, Valid: true},
-		}); err != nil {
+		if err = q.UpdateAppointmentByID(ctx, req); err != nil {
 			return fmt.Errorf("failed to update appointment status: %w", err)
 		}
 
 		// Mark room as occupied
 		if err = q.AssignRoomToAppointment(ctx, db.AssignRoomToAppointmentParams{
 			CurrentAppointmentID: pgtype.Int8{Int64: id, Valid: true},
-			AvailableAt:          pgtype.Timestamp{Time: time.Now().UTC().Add(30 * time.Minute), Valid: true},
 			ID:                   roomID,
 		}); err != nil {
 			return fmt.Errorf("failed to assign room: %w", err)
@@ -1412,18 +1394,20 @@ func (s *AppointmentService) GetAvailableTimeSlots(ctx *gin.Context, doctorID in
 	return availableTimeSlots, nil
 }
 
-func (s *AppointmentService) GetAllAppointments(ctx *gin.Context, pagination *util.Pagination) ([]createAppointmentResponse, error) {
+func (s *AppointmentService) GetAllAppointments(ctx *gin.Context, date string, option string, pagination *util.Pagination) ([]Appointment, error) {
 	offset := (pagination.Page - 1) * pagination.PageSize
 
 	appointments, err := s.storeDB.GetAllAppointments(ctx, db.GetAllAppointmentsParams{
-		Limit:  int32(pagination.PageSize),
-		Offset: int32(offset),
+		Date:    date,
+		Limit:   int32(pagination.PageSize),
+		Offset:  int32(offset),
+		Column4: option,
 	})
 	if err != nil {
 		return nil, fmt.Errorf("Cannot get appointment")
 	}
 
-	var a []createAppointmentResponse
+	var a []Appointment
 	for _, appointment := range appointments {
 
 		doc, err := s.storeDB.GetDoctor(ctx, appointment.DoctorID.Int64)
@@ -1431,11 +1415,22 @@ func (s *AppointmentService) GetAllAppointments(ctx *gin.Context, pagination *ut
 			return nil, fmt.Errorf("Cannot get doctor")
 		}
 
-		a = append(a, createAppointmentResponse{
-			ID:           appointment.AppointmentID,
-			DoctorName:   doc.Name,
-			PetName:      appointment.PetName.String,
-			ServiceName:  appointment.ServiceName.String,
+		a = append(a, Appointment{
+			ID: appointment.AppointmentID,
+			Pet: Pet{
+				PetID:    appointment.PetID.Int64,
+				PetName:  appointment.PetName.String,
+				PetBreed: appointment.PetBreed.String,
+			},
+			Room: appointment.RoomName.String,
+			Serivce: Serivce{
+				ServiceName:     appointment.ServiceName.String,
+				ServiceDuration: appointment.ServiceDuration.Int16,
+			},
+			Doctor: Doctor{
+				DoctorID:   appointment.DoctorID.Int64,
+				DoctorName: doc.Name,
+			},
 			Date:         appointment.Date.Time.Format("2006-01-02"),
 			State:        appointment.StateName.String,
 			ReminderSend: appointment.ReminderSend.Bool,
@@ -1444,6 +1439,13 @@ func (s *AppointmentService) GetAllAppointments(ctx *gin.Context, pagination *ut
 				StartTime: time.UnixMicro(appointment.StartTime.Microseconds).UTC().Format("15:04:05"),
 				EndTime:   time.UnixMicro(appointment.EndTime.Microseconds).UTC().Format("15:04:05"),
 			},
+			Owner: Owner{
+				OwnerName:    appointment.OwnerName.String,
+				OwnerPhone:   appointment.OwnerPhone.String,
+				OwnerEmail:   appointment.OwnerEmail.String,
+				OwnerAddress: appointment.OwnerAddress.String,
+			},
+			Reason: appointment.AppointmentReason.String,
 		})
 
 	}
@@ -1453,10 +1455,11 @@ func (s *AppointmentService) GetAllAppointments(ctx *gin.Context, pagination *ut
 func (s *AppointmentService) GetAllAppointmentsByDate(ctx *gin.Context, pagination *util.Pagination, date string) ([]Appointment, error) {
 	offset := (pagination.Page - 1) * pagination.PageSize
 
-	appointments, err := s.storeDB.GetAllAppointmentsByDate(ctx, db.GetAllAppointmentsByDateParams{
-		Date:   date,
-		Limit:  int32(pagination.PageSize),
-		Offset: int32(offset),
+	appointments, err := s.storeDB.GetAllAppointments(ctx, db.GetAllAppointmentsParams{
+		Date:    date,
+		Limit:   int32(pagination.PageSize),
+		Offset:  int32(offset),
+		Column4: true,
 	})
 	if err != nil {
 		return nil, fmt.Errorf("Cannot get appointment")
@@ -1511,13 +1514,11 @@ func (s *AppointmentService) CreateSOAPService(ctx *gin.Context, soap CreateSOAP
 
 	var err error
 	var consultation db.Consultation
+
 	err = s.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
 		consultation, err = q.CreateSOAP(ctx, db.CreateSOAPParams{
 			AppointmentID: pgtype.Int8{Int64: appointmentID, Valid: true},
 			Subjective:    pgtype.Text{String: soap.Subjective, Valid: true},
-			Objective:     pgtype.Text{String: soap.Objective, Valid: true},
-			Assessment:    pgtype.Text{String: soap.Assessment, Valid: true},
-			Plan:          pgtype.Text{String: soap.Plan, Valid: true},
 		})
 		if err != nil {
 			return fmt.Errorf("Cannot create SOAP")
@@ -1533,7 +1534,7 @@ func (s *AppointmentService) CreateSOAPService(ctx *gin.Context, soap CreateSOAP
 		Subjective:     consultation.Subjective.String,
 		Objective:      consultation.Objective.String,
 		Assessment:     consultation.Assessment.String,
-		Plan:           consultation.Plan.String,
+		// Plan:           consultation.Plan.Int64,
 	}, nil
 }
 
@@ -1547,7 +1548,7 @@ func (s *AppointmentService) UpdateSOAPService(ctx *gin.Context, soap UpdateSOAP
 			Subjective:    pgtype.Text{String: soap.Subjective, Valid: true},
 			Objective:     pgtype.Text{String: soap.Objective, Valid: true},
 			Assessment:    pgtype.Text{String: soap.Assessment, Valid: true},
-			Plan:          pgtype.Text{String: soap.Plan, Valid: true},
+			// Plan:          pgtype.Text{String: soap.Plan, Valid: true},
 		})
 		if err != nil {
 			return fmt.Errorf("Cannot update SOAP")
@@ -1563,7 +1564,7 @@ func (s *AppointmentService) UpdateSOAPService(ctx *gin.Context, soap UpdateSOAP
 		Subjective:     consultation.Subjective.String,
 		Objective:      consultation.Objective.String,
 		Assessment:     consultation.Assessment.String,
-		Plan:           consultation.Plan.String,
+		// Plan:           consultation.Plan.String,
 	}, nil
 }
 
@@ -1614,4 +1615,120 @@ func (s *AppointmentService) UpdateAppointmentService(ctx *gin.Context, req upda
 		}
 		return nil
 	})
+}
+
+func (s *AppointmentService) GetQueueService(ctx *gin.Context, username string) ([]QueueItem, error) {
+	doctor, err := s.storeDB.GetDoctorByUsername(ctx, username)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get doctor: %v", err)
+	}
+
+	appointments, err := s.storeDB.GetAppointmentsQueue(ctx, pgtype.Int8{Int64: doctor.ID, Valid: true}) // Assuming 1 is the state ID for waiting/arrived
+	if err != nil {
+		return nil, fmt.Errorf("failed to get appointments: %v", err)
+	}
+
+	var queueItems []QueueItem
+	for _, appointment := range appointments {
+
+		a, err := s.storeDB.GetAppointmentDetailByAppointmentID(ctx, appointment.AppointmentID)
+		if err != nil {
+			return nil, fmt.Errorf("failed to get appointment detail: %v", err)
+		}
+
+		doc, err := s.storeDB.GetDoctor(ctx, a.DoctorID.Int64)
+		if err != nil {
+			return nil, fmt.Errorf("failed to get doctor: %v", err)
+		}
+
+		// Calculate waiting time
+		waitingSince := appointment.ArrivalTime.Time
+		actualWaitTime := time.Since(waitingSince).Round(time.Minute).String()
+
+		queueItem := QueueItem{
+			ID:              appointment.AppointmentID,
+			PatientName:     a.PetName.String,
+			Status:          a.StateName.String, // You might want to get this from a separate status field
+			AppointmentType: a.ServiceName.String,
+			Doctor:          doc.Name,
+			Priority:        a.Priority.String,
+			WaitingSince:    waitingSince.Format("3:04 PM"),
+			ActualWaitTime:  actualWaitTime,
+		}
+
+		queueItems = append(queueItems, queueItem)
+	}
+
+	// Sort queue items by priority (high first) and waiting time
+	sortQueueItems(queueItems)
+
+	return queueItems, nil
+}
+
+func (s *AppointmentService) UpdateQueueItemStatusService(ctx *gin.Context, id int64, status string) error {
+	// Update appointment status
+	err := s.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
+		// You might need to add a new query to update appointment status
+		// For now, we'll just update the state_id
+		stateID := int32(1) // You should map status to appropriate state_id
+		if status == "in_progress" {
+			stateID = 2
+		} else if status == "completed" {
+			stateID = 3
+		}
+
+		err := q.UpdateAppointmentStatus(ctx, db.UpdateAppointmentStatusParams{
+			AppointmentID: id,
+			StateID:       pgtype.Int4{Int32: stateID, Valid: true},
+		})
+		return err
+	})
+
+	if err != nil {
+		return fmt.Errorf("failed to update appointment status: %v", err)
+	}
+
+	return nil
+}
+
+func (s *AppointmentService) GetSOAPByAppointmentID(ctx *gin.Context, appointmentID int64) (*SOAPResponse, error) {
+	soap, err := s.storeDB.GetSOAPByAppointmentID(ctx, pgtype.Int8{Int64: appointmentID, Valid: true})
+	if err != nil {
+		return nil, fmt.Errorf("failed to get SOAP: %v", err)
+	}
+
+	return &SOAPResponse{
+		ConsultationID: int64(soap.ID),
+		AppointmentID:  soap.AppointmentID.Int64,
+		Subjective:     soap.Subjective.String,
+		Objective:      soap.Objective.String,
+		Assessment:     soap.Assessment.String,
+		// Plan:           soap.Plan.String,
+	}, nil
+}
+
+func (s *AppointmentService) GetHistoryAppointmentsByPetID(ctx *gin.Context, petID int64) ([]historyAppointmentResponse, error) {
+
+	appointments, err := s.storeDB.GetHistoryAppointmentsByPetID(ctx, pgtype.Int8{Int64: petID, Valid: true})
+	if err != nil {
+		return nil, fmt.Errorf("failed to get appointments: %v", err)
+	}
+
+	var a []historyAppointmentResponse
+	for _, appointment := range appointments {
+		doctor, err := s.storeDB.GetDoctor(ctx, appointment.DoctorID.Int64)
+		if err != nil {
+			return nil, fmt.Errorf("failed to get doctor: %w", err)
+		}
+		a = append(a, historyAppointmentResponse{
+			ID:          appointment.AppointmentID,
+			Reason:      appointment.AppointmentReason.String,
+			Date:        appointment.Date.Time.Format("2006-01-02"),
+			ServiceName: appointment.ServiceName.String,
+			ArrivalTime: appointment.ArrivalTime.Time.Format("2006-01-02 15:04:05"),
+			DoctorName:  doctor.Name,
+			Room:        appointment.RoomName.String,
+		})
+	}
+	return a, nil
 }

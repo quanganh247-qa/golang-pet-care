@@ -19,6 +19,17 @@ FROM doctors d
 JOIN users u ON d.user_id = u.id
 WHERE d.id = $1;
 
+-- name: GetDoctorByUsername :one
+SELECT 
+    d.*,
+    u.full_name AS name,
+    u.role,
+    u.email
+FROM doctors d
+JOIN users u ON d.user_id = u.id
+WHERE u.username = $1;
+
+
 -- name: GetDoctorByUserId :one
 SELECT * FROM doctors
 WHERE user_id = $1;

@@ -137,6 +137,9 @@ type Consultation struct {
 	Objective     pgtype.Text      `json:"objective"`
 	Assessment    pgtype.Text      `json:"assessment"`
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> c8bec46 (feat: add chatbot, room management, and pet allergy features)
 	Plan          pgtype.Int8      `json:"plan"`
 	CreatedAt     pgtype.Timestamp `json:"created_at"`
 }
@@ -466,6 +469,13 @@ type Pet struct {
 	OriginalImage   pgtype.Text   `json:"original_image"`
 }
 
+type PetAllergy struct {
+	ID     int64       `json:"id"`
+	PetID  pgtype.Int8 `json:"pet_id"`
+	Type   pgtype.Text `json:"type"`
+	Detail pgtype.Text `json:"detail"`
+}
+
 type PetLog struct {
 	LogID    int64            `json:"log_id"`
 	Petid    int64            `json:"petid"`
@@ -541,6 +551,7 @@ type PetSchedule struct {
 }
 
 type PetTreatment struct {
+<<<<<<< HEAD
 	ID          int64              `json:"id"`
 	PetID       pgtype.Int8        `json:"pet_id"`
 	DiseaseID   pgtype.Int8        `json:"disease_id"`
@@ -552,6 +563,19 @@ type PetTreatment struct {
 	Description pgtype.Text        `json:"description"`
 	CreatedAt   pgtype.Timestamptz `json:"created_at"`
 	DoctorID    pgtype.Int4        `json:"doctor_id"`
+=======
+	ID        int64              `json:"id"`
+	PetID     pgtype.Int8        `json:"pet_id"`
+	DiseaseID pgtype.Int8        `json:"disease_id"`
+	StartDate pgtype.Date        `json:"start_date"`
+	EndDate   pgtype.Date        `json:"end_date"`
+	Status    pgtype.Text        `json:"status"`
+	Name      pgtype.Text        `json:"name"`
+	Type      pgtype.Text        `json:"type"`
+	Notes     pgtype.Text        `json:"notes"`
+	CreatedAt pgtype.Timestamptz `json:"created_at"`
+	DoctorID  pgtype.Int4        `json:"doctor_id"`
+>>>>>>> c8bec46 (feat: add chatbot, room management, and pet allergy features)
 }
 
 type PhaseMedicine struct {

@@ -177,6 +177,48 @@ func (q *Queries) GetDoctorByUserId(ctx context.Context, userID int64) (Doctor, 
 	return i, err
 }
 
+const getDoctorByUsername = `-- name: GetDoctorByUsername :one
+SELECT 
+    d.id, d.user_id, d.specialization, d.years_of_experience, d.education, d.certificate_number, d.bio,
+    u.full_name AS name,
+    u.role,
+    u.email
+FROM doctors d
+JOIN users u ON d.user_id = u.id
+WHERE u.username = $1
+`
+
+type GetDoctorByUsernameRow struct {
+	ID                int64       `json:"id"`
+	UserID            int64       `json:"user_id"`
+	Specialization    pgtype.Text `json:"specialization"`
+	YearsOfExperience pgtype.Int4 `json:"years_of_experience"`
+	Education         pgtype.Text `json:"education"`
+	CertificateNumber pgtype.Text `json:"certificate_number"`
+	Bio               pgtype.Text `json:"bio"`
+	Name              string      `json:"name"`
+	Role              pgtype.Text `json:"role"`
+	Email             string      `json:"email"`
+}
+
+func (q *Queries) GetDoctorByUsername(ctx context.Context, username string) (GetDoctorByUsernameRow, error) {
+	row := q.db.QueryRow(ctx, getDoctorByUsername, username)
+	var i GetDoctorByUsernameRow
+	err := row.Scan(
+		&i.ID,
+		&i.UserID,
+		&i.Specialization,
+		&i.YearsOfExperience,
+		&i.Education,
+		&i.CertificateNumber,
+		&i.Bio,
+		&i.Name,
+		&i.Role,
+		&i.Email,
+	)
+	return i, err
+}
+
 const listDoctors = `-- name: ListDoctors :many
 SELECT 
     d.id AS doctor_id,
