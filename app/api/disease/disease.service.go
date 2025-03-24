@@ -94,8 +94,10 @@ type DiseaseServiceInterface interface {
 	GetTreatmentProgress(ctx *gin.Context, id int64) ([]TreatmentProgressDetail, error)
 
 	CreateDisease(ctx context.Context, arg CreateDiseaseRequest) (*db.Disease, error)
-
 	GenerateMedicineOnlyPrescriptionPDF(ctx context.Context, treatmentID int64, outputFile string) (*PrescriptionResponse, error)
+
+	CreateAllergyService(ctx *gin.Context, petID int64, req CreateAllergyRequest) (*PetAllergy, error)
+	GetAllergiesByPetID(ctx *gin.Context, petID int64, pagination *util.Pagination) (*[]PetAllergy, error)
 }
 
 func (s *DiseaseService) CreateDisease(ctx context.Context, arg CreateDiseaseRequest) (*db.Disease, error) {
@@ -145,7 +147,6 @@ func (s *DiseaseService) CreateTreatmentService(ctx *gin.Context, treatmentPhase
 			PetID:     pgtype.Int8{Int64: treatmentPhase.PetID, Valid: true},
 			DiseaseID: pgtype.Int8{Int64: treatmentPhase.DiseaseID, Valid: true},
 			StartDate: pgtype.Date{Time: startDate, Valid: true},
-			Status:    pgtype.Text{String: "ongoing", Valid: true},
 			Notes:     pgtype.Text{String: treatmentPhase.Notes, Valid: true},
 		})
 		if err != nil {
@@ -1212,11 +1213,36 @@ func (s *DiseaseService) GenerateMedicineOnlyPrescriptionPDF(ctx context.Context
 	}, nil
 }
 
-// // -- Query lấy phác đồ điều trị đầy đủ
-// func (s *DiceaseService) GetDiceaseAnhMedicinesInfoService(ctx *gin.Context, disease string) ([]DiseaseMedicineInfo, error) {
+// Allergy
+func (s *DiseaseService) CreateAllergyService(ctx *gin.Context, petID int64, req CreateAllergyRequest) (*PetAllergy, error) {
+	var res PetAllergy
+	err := s.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
+		// 2. Create allergy
+		allergy, err := q.CreatePetAllergy(ctx, db.CreatePetAllergyParams{
+			PetID:  pgtype.Int8{Int64: petID, Valid: true},
+			Type:   pgtype.Text{String: req.Type, Valid: true},
+			Detail: pgtype.Text{String: req.Detail, Valid: true},
+		})
+		if err != nil {
+			return fmt.Errorf("error while creating allergy: %w", err)
+		}
+		res = PetAllergy{
+			ID:     allergy.ID,
+			PetID:  petID,
+			Type:   allergy.Type.String,
+			Detail: allergy.Detail.String,
+		}
+		return nil
+	})
+	if err != nil {
+		return nil, fmt.Errorf("error while creating allergy: %w", err)
+	}
+	return &res, nil
+}
 
-// 	// 	searchPattern := "%" + disease + "%"
+func (s *DiseaseService) GetAllergiesByPetID(ctx *gin.Context, petID int64, pagination *util.Pagination) (*[]PetAllergy, error) {
 
+<<<<<<< HEAD
 // 	// 	rows, err := s.storeDB.GetDiceaseAndMedicinesInfo(ctx, searchPattern)
 // 	// 	if err != nil {
 // 	// 		return nil, err
@@ -1452,3 +1478,25 @@ func (s *DiseaseService) GenerateMedicineOnlyPrescriptionPDF(ctx context.Context
 // 	return nil, nil
 // }
 >>>>>>> 883d5b3 (update treatment)
+=======
+	offset := (pagination.Page - 1) * pagination.PageSize
+	allergies, err := s.storeDB.ListPetAllergies(ctx, db.ListPetAllergiesParams{
+		PetID:  pgtype.Int8{Int64: petID, Valid: true},
+		Limit:  int32(pagination.PageSize),
+		Offset: int32(offset),
+	})
+	if err != nil {
+		return nil, fmt.Errorf("error while getting allergies by pet id: %w", err)
+	}
+	var res []PetAllergy
+	for _, allergy := range allergies {
+		res = append(res, PetAllergy{
+			ID:     allergy.ID,
+			PetID:  petID,
+			Type:   allergy.Type.String,
+			Detail: allergy.Detail.String,
+		})
+	}
+	return &res, nil
+}
+>>>>>>> c8bec46 (feat: add chatbot, room management, and pet allergy features)

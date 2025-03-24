@@ -3,6 +3,7 @@ SELECT id, name, type, status, current_appointment_id, available_at
 FROM rooms
 WHERE status = 'available' 
 <<<<<<< HEAD
+<<<<<<< HEAD
 LIMIT $1 OFFSET $2;
   
 -- name: AssignRoomToAppointment :exec
@@ -20,6 +21,14 @@ SET status = 'occupied',
     available_at = $2
 WHERE id = $3;
 >>>>>>> 71b74e9 (feat(appointment): add room management and update appointment functionality.)
+=======
+LIMIT $1 OFFSET $2;
+  
+-- name: AssignRoomToAppointment :exec
+UPDATE rooms 
+SET current_appointment_id = $2
+WHERE id = $1;
+>>>>>>> c8bec46 (feat: add chatbot, room management, and pet allergy features)
 
 -- name: ReleaseRoom :exec
 UPDATE rooms
@@ -30,6 +39,9 @@ WHERE id = $2;
 
 -- name: GetRoomByID :one
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> c8bec46 (feat: add chatbot, room management, and pet allergy features)
 SELECT * FROM rooms WHERE id = $1;
 
 -- name: CreateRoom :one
@@ -48,7 +60,11 @@ WHERE id = $1;
 
 
 -- name: DeleteRoom :exec
+<<<<<<< HEAD
 DELETE FROM rooms WHERE id = $1;
 =======
 SELECT * FROM rooms WHERE id = $1;
 >>>>>>> 71b74e9 (feat(appointment): add room management and update appointment functionality.)
+=======
+DELETE FROM rooms WHERE id = $1;
+>>>>>>> c8bec46 (feat: add chatbot, room management, and pet allergy features)

@@ -386,33 +386,45 @@ func (q *Queries) GetAllAppointments(ctx context.Context, arg GetAllAppointments
 const getAllAppointments = `-- name: GetAllAppointments :many
 SELECT 
     a.appointment_id,
-    a.date ,
+    a.date,
     a.reminder_send,
     a.created_at,
     a.appointment_reason,
     a.priority,
     a.arrival_time,
-    p.petid as pet_id,
+    a.notes,
+    p.petid AS pet_id,
     p.name AS pet_name,
+    p.breed AS pet_breed,
     d.id AS doctor_id,
     s.name AS service_name,
+    s.duration AS service_duration,
     ts.start_time, ts.end_time, ts.id AS time_slot_id,
     st.state AS state_name,
     st.id AS state_id,
+    u.full_name AS owner_name,
+    u.phone_number AS owner_phone,
+    u.email AS owner_email,
+    u.address AS owner_address,
     r.name AS room_name
 FROM appointments a
 LEFT JOIN pets p ON a.petid = p.petid
 LEFT JOIN services s ON a.service_id = s.id
 LEFT JOIN time_slots ts ON a.time_slot_id = ts.id
 LEFT JOIN doctors d ON a.doctor_id = d.id
+LEFT JOIN users u ON a.username = u.username
 LEFT JOIN states st ON a.state_id = st.id
 LEFT JOIN rooms r ON a.room_id = r.id
-LIMIT $1 OFFSET $2
+WHERE DATE(a.date) = DATE($1)
+AND ($4 = 'false' OR st.state IN ('Confirmed', 'Scheduled'))
+LIMIT $2 OFFSET $3
 `
 
 type GetAllAppointmentsParams struct {
-	Limit  int32 `json:"limit"`
-	Offset int32 `json:"offset"`
+	Date    interface{} `json:"date"`
+	Limit   int32       `json:"limit"`
+	Offset  int32       `json:"offset"`
+	Column4 interface{} `json:"column_4"`
 }
 
 <<<<<<< HEAD
@@ -428,21 +440,37 @@ type GetAllAppointmentsRow struct {
 	AppointmentReason pgtype.Text      `json:"appointment_reason"`
 	Priority          pgtype.Text      `json:"priority"`
 	ArrivalTime       pgtype.Timestamp `json:"arrival_time"`
+	Notes             pgtype.Text      `json:"notes"`
 	PetID             pgtype.Int8      `json:"pet_id"`
 	PetName           pgtype.Text      `json:"pet_name"`
+	PetBreed          pgtype.Text      `json:"pet_breed"`
 	DoctorID          pgtype.Int8      `json:"doctor_id"`
 	ServiceName       pgtype.Text      `json:"service_name"`
+	ServiceDuration   pgtype.Int2      `json:"service_duration"`
 	StartTime         pgtype.Time      `json:"start_time"`
 	EndTime           pgtype.Time      `json:"end_time"`
 	TimeSlotID        pgtype.Int8      `json:"time_slot_id"`
 	StateName         pgtype.Text      `json:"state_name"`
 	StateID           pgtype.Int8      `json:"state_id"`
+	OwnerName         pgtype.Text      `json:"owner_name"`
+	OwnerPhone        pgtype.Text      `json:"owner_phone"`
+	OwnerEmail        pgtype.Text      `json:"owner_email"`
+	OwnerAddress      pgtype.Text      `json:"owner_address"`
 	RoomName          pgtype.Text      `json:"room_name"`
 }
 
 func (q *Queries) GetAllAppointments(ctx context.Context, arg GetAllAppointmentsParams) ([]GetAllAppointmentsRow, error) {
+<<<<<<< HEAD
 	rows, err := q.db.Query(ctx, getAllAppointments, arg.Limit, arg.Offset)
 >>>>>>> 71b74e9 (feat(appointment): add room management and update appointment functionality.)
+=======
+	rows, err := q.db.Query(ctx, getAllAppointments,
+		arg.Date,
+		arg.Limit,
+		arg.Offset,
+		arg.Column4,
+	)
+>>>>>>> c8bec46 (feat: add chatbot, room management, and pet allergy features)
 	if err != nil {
 		return nil, err
 	}
@@ -604,10 +632,13 @@ func (q *Queries) GetAllAppointmentsByDate(ctx context.Context, arg GetAllAppoin
 			&i.AppointmentReason,
 			&i.Priority,
 			&i.ArrivalTime,
+			&i.Notes,
 			&i.PetID,
 			&i.PetName,
+			&i.PetBreed,
 			&i.DoctorID,
 			&i.ServiceName,
+			&i.ServiceDuration,
 			&i.StartTime,
 			&i.EndTime,
 <<<<<<< HEAD
@@ -633,8 +664,15 @@ func (q *Queries) GetAllAppointmentsByDate(ctx context.Context, arg GetAllAppoin
 			&i.StateName,
 			&i.StateID,
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> dc47646 (Optimize SQL query)
 =======
+=======
+			&i.OwnerName,
+			&i.OwnerPhone,
+			&i.OwnerEmail,
+			&i.OwnerAddress,
+>>>>>>> c8bec46 (feat: add chatbot, room management, and pet allergy features)
 			&i.RoomName,
 		); err != nil {
 			return nil, err
@@ -679,7 +717,7 @@ LEFT JOIN doctors d ON a.doctor_id = d.id
 LEFT JOIN users u ON a.username = u.username
 LEFT JOIN states st ON a.state_id = st.id
 LEFT JOIN rooms r ON a.room_id = r.id
-WHERE DATE(a.date) = DATE($1)
+WHERE DATE(a.date) = DATE($1) AND st.state IN ('Confirmed', 'Scheduled')
 LIMIT $2 OFFSET $3
 `
 
@@ -1584,13 +1622,18 @@ func (q *Queries) GetAppointmentsQueue(ctx context.Context, doctorID pgtype.Int8
 =======
 const getAppointmentsQueue = `-- name: GetAppointmentsQueue :many
 SELECT appointment_id, petid, username, doctor_id, service_id, date, reminder_send, time_slot_id, created_at, state_id, appointment_reason, priority, arrival_time, room_id, confirmation_sent, notes, updated_at FROM public.appointments 
-WHERE state_id <> (SELECT id FROM public.states WHERE state = 'Scheduled' LIMIT 1)
+WHERE state_id <> (SELECT id FROM public.states WHERE state = 'Scheduled' LIMIT 1) and doctor_id = $1
 ORDER BY arrival_time ASC
 `
 
+<<<<<<< HEAD
 func (q *Queries) GetAppointmentsQueue(ctx context.Context) ([]Appointment, error) {
 	rows, err := q.db.Query(ctx, getAppointmentsQueue)
 >>>>>>> 4ccd381 (Update appointment flow)
+=======
+func (q *Queries) GetAppointmentsQueue(ctx context.Context, doctorID pgtype.Int8) ([]Appointment, error) {
+	rows, err := q.db.Query(ctx, getAppointmentsQueue, doctorID)
+>>>>>>> c8bec46 (feat: add chatbot, room management, and pet allergy features)
 	if err != nil {
 		return nil, err
 	}
@@ -1636,6 +1679,9 @@ func (q *Queries) GetAppointmentsQueue(ctx context.Context) ([]Appointment, erro
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> c8bec46 (feat: add chatbot, room management, and pet allergy features)
 const getAvailableRoomsForDuration = `-- name: GetAvailableRoomsForDuration :many
 SELECT r.id, r.name, r.type, r.status, r.current_appointment_id, r.available_at
 FROM rooms r
@@ -1649,6 +1695,7 @@ AND NOT EXISTS (
     AND ts.start_time < $1 + interval '1 minute' * $2
     AND ts.start_time + interval '1 minute' * s.duration > $1
 )
+<<<<<<< HEAD
 `
 
 type GetAvailableRoomsForDurationParams struct {
@@ -1772,21 +1819,114 @@ SELECT appointment_id, petid, username, doctor_id, service_id, date, notes, remi
 >>>>>>> 4ccd381 (Update appointment flow)
 const getSOAPByAppointmentID = `-- name: GetSOAPByAppointmentID :one
 SELECT id, appointment_id, subjective, objective, assessment, plan, created_at FROM consultations WHERE appointment_id = $1
+=======
+>>>>>>> c8bec46 (feat: add chatbot, room management, and pet allergy features)
 `
 
-func (q *Queries) GetSOAPByAppointmentID(ctx context.Context, appointmentID pgtype.Int8) (Consultation, error) {
-	row := q.db.QueryRow(ctx, getSOAPByAppointmentID, appointmentID)
-	var i Consultation
-	err := row.Scan(
-		&i.ID,
-		&i.AppointmentID,
-		&i.Subjective,
-		&i.Objective,
-		&i.Assessment,
-		&i.Plan,
-		&i.CreatedAt,
-	)
-	return i, err
+type GetAvailableRoomsForDurationParams struct {
+	Column1 interface{} `json:"column_1"`
+	Column2 interface{} `json:"column_2"`
+}
+
+func (q *Queries) GetAvailableRoomsForDuration(ctx context.Context, arg GetAvailableRoomsForDurationParams) ([]Room, error) {
+	rows, err := q.db.Query(ctx, getAvailableRoomsForDuration, arg.Column1, arg.Column2)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []Room{}
+	for rows.Next() {
+		var i Room
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.Type,
+			&i.Status,
+			&i.CurrentAppointmentID,
+			&i.AvailableAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getHistoryAppointmentsByPetID = `-- name: GetHistoryAppointmentsByPetID :many
+SELECT 
+    appointments.appointment_id, appointments.petid, appointments.username, appointments.doctor_id, appointments.service_id, appointments.date, appointments.reminder_send, appointments.time_slot_id, appointments.created_at, appointments.state_id, appointments.appointment_reason, appointments.priority, appointments.arrival_time, appointments.room_id, appointments.confirmation_sent, appointments.notes, appointments.updated_at,
+    s.name AS service_name,
+    r.name AS room_name
+FROM appointments
+LEFT JOIN services s ON appointments.service_id = s.id
+LEFT JOIN rooms r ON appointments.room_id = r.id
+WHERE petid = $1 AND state_id = (SELECT id FROM states WHERE state = 'Completed' LIMIT 1)
+ORDER BY date DESC
+`
+
+type GetHistoryAppointmentsByPetIDRow struct {
+	AppointmentID     int64            `json:"appointment_id"`
+	Petid             pgtype.Int8      `json:"petid"`
+	Username          pgtype.Text      `json:"username"`
+	DoctorID          pgtype.Int8      `json:"doctor_id"`
+	ServiceID         pgtype.Int8      `json:"service_id"`
+	Date              pgtype.Timestamp `json:"date"`
+	ReminderSend      pgtype.Bool      `json:"reminder_send"`
+	TimeSlotID        pgtype.Int8      `json:"time_slot_id"`
+	CreatedAt         pgtype.Timestamp `json:"created_at"`
+	StateID           pgtype.Int4      `json:"state_id"`
+	AppointmentReason pgtype.Text      `json:"appointment_reason"`
+	Priority          pgtype.Text      `json:"priority"`
+	ArrivalTime       pgtype.Timestamp `json:"arrival_time"`
+	RoomID            pgtype.Int8      `json:"room_id"`
+	ConfirmationSent  pgtype.Bool      `json:"confirmation_sent"`
+	Notes             pgtype.Text      `json:"notes"`
+	UpdatedAt         pgtype.Timestamp `json:"updated_at"`
+	ServiceName       pgtype.Text      `json:"service_name"`
+	RoomName          pgtype.Text      `json:"room_name"`
+}
+
+func (q *Queries) GetHistoryAppointmentsByPetID(ctx context.Context, petid pgtype.Int8) ([]GetHistoryAppointmentsByPetIDRow, error) {
+	rows, err := q.db.Query(ctx, getHistoryAppointmentsByPetID, petid)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetHistoryAppointmentsByPetIDRow{}
+	for rows.Next() {
+		var i GetHistoryAppointmentsByPetIDRow
+		if err := rows.Scan(
+			&i.AppointmentID,
+			&i.Petid,
+			&i.Username,
+			&i.DoctorID,
+			&i.ServiceID,
+			&i.Date,
+			&i.ReminderSend,
+			&i.TimeSlotID,
+			&i.CreatedAt,
+			&i.StateID,
+			&i.AppointmentReason,
+			&i.Priority,
+			&i.ArrivalTime,
+			&i.RoomID,
+			&i.ConfirmationSent,
+			&i.Notes,
+			&i.UpdatedAt,
+			&i.ServiceName,
+			&i.RoomName,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
 const listAllAppointments = `-- name: ListAllAppointments :many

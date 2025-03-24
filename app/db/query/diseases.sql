@@ -115,6 +115,7 @@ SELECT * FROM diseases WHERE id = $1 LIMIT 1;
 INSERT INTO diseases (name, description, symptoms, created_at, updated_at) VALUES ($1, $2, $3, now(), now()) RETURNING *;
 
 
+<<<<<<< HEAD
 =======
 ORDER BY tp.phase_number, m.name;
 <<<<<<< HEAD
@@ -162,3 +163,5 @@ SELECT * FROM diseases WHERE id = $1 LIMIT 1;
 -- name: CreateDisease :one
 INSERT INTO diseases (name, description, symptoms, created_at, updated_at) VALUES ($1, $2, $3, now(), now()) RETURNING *;
 >>>>>>> e859654 (Elastic search)
+=======
+>>>>>>> c8bec46 (feat: add chatbot, room management, and pet allergy features)

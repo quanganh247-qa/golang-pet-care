@@ -248,6 +248,9 @@ func (q *Queries) GetPetByID(ctx context.Context, petid int64) (Pet, error) {
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> c8bec46 (feat: add chatbot, room management, and pet allergy features)
 const getPetDetailByUserID = `-- name: GetPetDetailByUserID :one
 SELECT p.petid, p.name, p.type, p.breed, p.age, p.gender, p.healthnotes, p.weight, p.birth_date, p.username, p.microchip_number, p.last_checkup_date, p.is_active, p.data_image, p.original_image, u.full_name
 FROM pets AS p
@@ -304,6 +307,7 @@ func (q *Queries) GetPetDetailByUserID(ctx context.Context, arg GetPetDetailByUs
 }
 
 const getPetProfileSummary = `-- name: GetPetProfileSummary :many
+<<<<<<< HEAD
 SELECT p.petid, p.name, p.type, p.breed, p.age, p.gender, p.healthnotes, p.weight, p.birth_date, p.username, p.microchip_number, p.last_checkup_date, p.is_active, p.data_image, p.original_image, pt.id, pt.pet_id, pt.disease_id, pt.start_date, pt.end_date, pt.status, pt.name, pt.type, pt.description, pt.created_at, pt.doctor_id, v.vaccinationid, v.petid, v.vaccinename, v.dateadministered, v.nextduedate, v.vaccineprovider, v.batchnumber, v.notes 
 =======
 const getPetProfileSummary = `-- name: GetPetProfileSummary :many
@@ -313,6 +317,9 @@ SELECT p.petid, p.name, p.type, p.breed, p.age, p.gender, p.healthnotes, p.weigh
 =======
 SELECT p.petid, p.name, p.type, p.breed, p.age, p.gender, p.healthnotes, p.weight, p.birth_date, p.username, p.microchip_number, p.last_checkup_date, p.is_active, p.data_image, p.original_image, pt.id, pt.pet_id, pt.disease_id, pt.start_date, pt.end_date, pt.status, pt.notes, pt.created_at, pt.doctor_id, v.vaccinationid, v.petid, v.vaccinename, v.dateadministered, v.nextduedate, v.vaccineprovider, v.batchnumber, v.notes 
 >>>>>>> ada3717 (Docker file)
+=======
+SELECT p.petid, p.name, p.type, p.breed, p.age, p.gender, p.healthnotes, p.weight, p.birth_date, p.username, p.microchip_number, p.last_checkup_date, p.is_active, p.data_image, p.original_image, pt.id, pt.pet_id, pt.disease_id, pt.start_date, pt.end_date, pt.status, pt.name, pt.type, pt.notes, pt.created_at, pt.doctor_id, v.vaccinationid, v.petid, v.vaccinename, v.dateadministered, v.nextduedate, v.vaccineprovider, v.batchnumber, v.notes 
+>>>>>>> c8bec46 (feat: add chatbot, room management, and pet allergy features)
 FROM pets AS p
 LEFT JOIN pet_treatments AS pt ON p.petid = pt.pet_id
 LEFT JOIN vaccinations AS v ON p.petid = v.petid
@@ -342,9 +349,15 @@ type GetPetProfileSummaryRow struct {
 	EndDate          pgtype.Date        `json:"end_date"`
 	Status           pgtype.Text        `json:"status"`
 <<<<<<< HEAD
+<<<<<<< HEAD
 	Name_2           pgtype.Text        `json:"name_2"`
 	Type_2           pgtype.Text        `json:"type_2"`
 	Description      pgtype.Text        `json:"description"`
+=======
+	Name_2           pgtype.Text        `json:"name_2"`
+	Type_2           pgtype.Text        `json:"type_2"`
+	Notes            pgtype.Text        `json:"notes"`
+>>>>>>> c8bec46 (feat: add chatbot, room management, and pet allergy features)
 	CreatedAt        pgtype.Timestamptz `json:"created_at"`
 	DoctorID         pgtype.Int4        `json:"doctor_id"`
 =======
@@ -401,9 +414,15 @@ func (q *Queries) GetPetProfileSummary(ctx context.Context, petid int64) ([]GetP
 			&i.EndDate,
 			&i.Status,
 <<<<<<< HEAD
+<<<<<<< HEAD
 			&i.Name_2,
 			&i.Type_2,
 			&i.Description,
+=======
+			&i.Name_2,
+			&i.Type_2,
+			&i.Notes,
+>>>>>>> c8bec46 (feat: add chatbot, room management, and pet allergy features)
 			&i.CreatedAt,
 			&i.DoctorID,
 =======

@@ -30,6 +30,7 @@ type DiseaseControllerInterface interface {
 	GetTreatmentProgress(ctx *gin.Context)
 	GenerateMedicineOnlyPrescription(ctx *gin.Context)
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 	CreateAllergy(ctx *gin.Context)
 	GetAllergiesByPetID(ctx *gin.Context)
@@ -497,147 +498,254 @@ type DiseaseControllerInterface interface {
 	GetTreatmentProgress(ctx *gin.Context)
 =======
 >>>>>>> ada3717 (Docker file)
+=======
+
+	CreateAllergy(ctx *gin.Context)
+	GetAllergiesByPetID(ctx *gin.Context)
+>>>>>>> c8bec46 (feat: add chatbot, room management, and pet allergy features)
 }
 
 func (c *DiseaseController) CreateDisease(ctx *gin.Context) {
 	var disease CreateDiseaseRequest
-	err := ctx.ShouldBindJSON(&disease)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
+	if err := ctx.ShouldBindJSON(&disease); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"success": false,
+			"message": "Invalid request data",
+			"error":   err.Error(),
+		})
 		return
 	}
 
 	res, err := c.service.CreateDisease(ctx, disease)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"success": false,
+			"message": "Failed to create disease",
+			"error":   err.Error(),
+		})
 		return
 	}
-	ctx.JSON(http.StatusOK, util.SuccessResponse("Disease", res))
+	ctx.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"message": "Disease created successfully",
+		"data":    res,
+	})
 }
 
 func (c *DiseaseController) CreateTreatment(ctx *gin.Context) {
 	var treatmentPhase CreateTreatmentRequest
-	err := ctx.ShouldBindJSON(&treatmentPhase)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
+	if err := ctx.ShouldBindJSON(&treatmentPhase); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"success": false,
+			"message": "Invalid treatment data",
+			"error":   err.Error(),
+		})
 		return
 	}
 	treatment, err := c.service.CreateTreatmentService(ctx, treatmentPhase)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"success": false,
+			"message": "Failed to create treatment",
+			"error":   err.Error(),
+		})
 		return
 	}
-	ctx.JSON(http.StatusOK, util.SuccessResponse("Treatment", treatment))
+	ctx.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"message": "Treatment created successfully",
+		"data":    treatment,
+	})
 }
 
 func (c *DiseaseController) CreateTreatmentPhase(ctx *gin.Context) {
 	treatmentID := ctx.Param("treatment_id")
 	id, err := strconv.ParseInt(treatmentID, 10, 64)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"success": false,
+			"message": "Invalid treatment ID",
+			"error":   err.Error(),
+		})
 		return
 	}
 
 	var req []CreateTreatmentPhaseRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, util.ErrorValidator(err))
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"success": false,
+			"message": "Invalid phase data",
+			"error":   err.Error(),
+		})
 		return
 	}
 
 	treatment, err := c.service.CreateTreatmentPhaseService(ctx, req, id)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"success": false,
+			"message": "Failed to create treatment phase",
+			"error":   err.Error(),
+		})
 		return
 	}
-	ctx.JSON(http.StatusOK, util.SuccessResponse("Treatment", treatment))
+	ctx.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"message": "Treatment phase created successfully",
+		"data":    treatment,
+	})
 }
 
 func (c *DiseaseController) AssignMedicineToTreatmentPhase(ctx *gin.Context) {
 	phaseID := ctx.Param("phase_id")
 	id, err := strconv.ParseInt(phaseID, 10, 64)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"success": false,
+			"message": "Invalid phase ID",
+			"error":   err.Error(),
+		})
 		return
 	}
 
 	var req []AssignMedicineRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, util.ErrorValidator(err))
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"success": false,
+			"message": "Invalid medicine assignment data",
+			"error":   err.Error(),
+		})
 		return
 	}
 
 	phase, err := c.service.AssignMedicinesToTreatmentPhase(ctx, req, id)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"success": false,
+			"message": "Failed to assign medicines",
+			"error":   err.Error(),
+		})
 		return
 	}
-	ctx.JSON(http.StatusOK, util.SuccessResponse("Phase", phase))
+	ctx.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"message": "Medicines assigned successfully",
+		"data":    phase,
+	})
 }
 
-// Get Treatment By Disease ID
 func (c *DiseaseController) GetTreatmentsByPetID(ctx *gin.Context) {
-
 	petID := ctx.Param("pet_id")
 	id, err := strconv.ParseInt(petID, 10, 64)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"success": false,
+			"message": "Invalid pet ID",
+			"error":   err.Error(),
+		})
 		return
 	}
 
 	pagination, err := util.GetPageInQuery(ctx.Request.URL.Query())
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"success": false,
+			"message": "Invalid pagination parameters",
+			"error":   err.Error(),
+		})
 		return
 	}
 
 	treatment, err := c.service.GetTreatmentsByPetID(ctx, id, pagination)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"success": false,
+			"message": "Failed to fetch treatments",
+			"error":   err.Error(),
+		})
 		return
 	}
-	ctx.JSON(http.StatusOK, util.SuccessResponse("Treatment", treatment))
+	ctx.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"message": "Treatments retrieved successfully",
+		"data":    treatment,
+	})
 }
 
 func (c *DiseaseController) GetTreatmentPhasesByTreatmentID(ctx *gin.Context) {
 	treatmentID := ctx.Param("treatment_id")
 	id, err := strconv.ParseInt(treatmentID, 10, 64)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"success": false,
+			"message": "Invalid treatment ID",
+			"error":   err.Error(),
+		})
 		return
 	}
+
 	pagination, err := util.GetPageInQuery(ctx.Request.URL.Query())
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"success": false,
+			"message": "Invalid pagination parameters",
+			"error":   err.Error(),
+		})
 		return
 	}
+
 	phases, err := c.service.GetTreatmentPhasesByTreatmentID(ctx, id, pagination)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"success": false,
+			"message": "Failed to fetch treatment phases",
+			"error":   err.Error(),
+		})
 		return
 	}
-	ctx.JSON(http.StatusOK, util.SuccessResponse("Phases", phases))
+	ctx.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"message": "Treatment phases retrieved successfully",
+		"data":    phases,
+	})
 }
 
 func (c *DiseaseController) GetMedicinesByPhaseID(ctx *gin.Context) {
 	phaseID := ctx.Param("phase_id")
 	id, err := strconv.ParseInt(phaseID, 10, 64)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"success": false,
+			"message": "Invalid phase ID",
+			"error":   err.Error(),
+		})
 		return
 	}
 
 	pagination, err := util.GetPageInQuery(ctx.Request.URL.Query())
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"success": false,
+			"message": "Invalid pagination parameters",
+			"error":   err.Error(),
+		})
 		return
 	}
 
 	medicines, err := c.service.GetMedicinesByPhase(ctx, id, pagination)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"success": false,
+			"message": "Failed to fetch medicines",
+			"error":   err.Error(),
+		})
 		return
 	}
-	ctx.JSON(http.StatusOK, util.SuccessResponse("Medicines", medicines))
+	ctx.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"message": "Medicines retrieved successfully",
+		"data":    medicines,
+	})
 }
 
 <<<<<<< HEAD
@@ -654,22 +762,35 @@ func (c *DiseaseController) UpdateTreatmentPhaseStatus(ctx *gin.Context) {
 	phaseID := ctx.Param("phase_id")
 	id, err := strconv.ParseInt(phaseID, 10, 64)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"success": false,
+			"message": "Invalid phase ID",
+			"error":   err.Error(),
+		})
 		return
 	}
 
 	var req UpdateTreatmentPhaseStatusRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, util.ErrorValidator(err))
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"success": false,
+			"message": "Invalid status update data",
+			"error":   err.Error(),
+		})
 		return
 	}
 
 	err = c.service.UpdateTreatmentPhaseStatus(ctx, id, req)
 >>>>>>> 883d5b3 (update treatment)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"success": false,
+			"message": "Failed to update phase status",
+			"error":   err.Error(),
+		})
 		return
 	}
+<<<<<<< HEAD
 <<<<<<< HEAD
 	ctx.JSON(http.StatusOK, util.SuccessResponse("Treatment Plan", treatment))
 
@@ -683,6 +804,12 @@ func (c *DiceaseController) getTreatmentByDiseaseId(ctx *gin.Context) {
 	id, err := strconv.ParseInt(diseaseID, 10, 64)
 =======
 	ctx.JSON(http.StatusOK, util.SuccessResponse("Phase", nil))
+=======
+	ctx.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"message": "Phase status updated successfully",
+	})
+>>>>>>> c8bec46 (feat: add chatbot, room management, and pet allergy features)
 }
 
 func (c *DiseaseController) GetActiveTreatments(ctx *gin.Context) {
@@ -690,80 +817,165 @@ func (c *DiseaseController) GetActiveTreatments(ctx *gin.Context) {
 	id, err := strconv.ParseInt(petID, 10, 64)
 >>>>>>> 883d5b3 (update treatment)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"success": false,
+			"message": "Invalid pet ID",
+			"error":   err.Error(),
+		})
 		return
 	}
+
 	pagination, err := util.GetPageInQuery(ctx.Request.URL.Query())
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"success": false,
+			"message": "Invalid pagination parameters",
+			"error":   err.Error(),
+		})
 		return
 	}
+
 	treatments, err := c.service.GetActiveTreatments(ctx, id, pagination)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"success": false,
+			"message": "Failed to fetch active treatments",
+			"error":   err.Error(),
+		})
 		return
 	}
-	ctx.JSON(http.StatusOK, util.SuccessResponse("Treatments", treatments))
+	ctx.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"message": "Active treatments retrieved successfully",
+		"data":    treatments,
+	})
 }
 
 func (c *DiseaseController) GetTreatmentProgress(ctx *gin.Context) {
 	treatmentID := ctx.Param("treatment_id")
 	id, err := strconv.ParseInt(treatmentID, 10, 64)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"success": false,
+			"message": "Invalid treatment ID",
+			"error":   err.Error(),
+		})
 		return
 	}
+
 	progress, err := c.service.GetTreatmentProgress(ctx, id)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"success": false,
+			"message": "Failed to fetch treatment progress",
+			"error":   err.Error(),
+		})
 		return
 	}
-	ctx.JSON(http.StatusOK, util.SuccessResponse("Progress", progress))
+	ctx.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"message": "Treatment progress retrieved successfully",
+		"data":    progress,
+	})
 }
-
-// func (c *DiceaseController) getDiceaseAnhMedicinesInfo(ctx *gin.Context) {
-// 	disease := ctx.Query("disease")
-// 	info, err := c.service.GetDiceaseAnhMedicinesInfoService(ctx, disease)
-// 	if err != nil {
-// 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-// 		return
-// 	}
-// 	ctx.JSON(http.StatusOK, util.SuccessResponse("Information", info))
-
-// }
-
-// func (c *DiceaseController) getTreatmentByDiseaseId(ctx *gin.Context) {
-// 	diseaseID := ctx.Param("disease_id")
-// 	id, err := strconv.ParseInt(diseaseID, 10, 64)
-// 	if err != nil {
-// 		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
-// 		return
-// 	}
-// 	pagination, err := util.GetPageInQuery(ctx.Request.URL.Query())
-// 	if err != nil {
-// 		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
-// 		return
-// 	}
-// 	treatment, err := c.service.GetTreatmentByDiseaseID(ctx, id, pagination)
-// 	if err != nil {
-// 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-// 		return
-// 	}
-// 	ctx.JSON(http.StatusOK, util.SuccessResponse("Treatment", treatment))
-// }
 
 func (c *DiseaseController) GenerateMedicineOnlyPrescription(ctx *gin.Context) {
 	treatmentID := ctx.Param("treatment_id")
 	id, err := strconv.ParseInt(treatmentID, 10, 64)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"success": false,
+			"message": "Invalid treatment ID",
+			"error":   err.Error(),
+		})
 		return
 	}
 
 	prescription, err := c.service.GenerateMedicineOnlyPrescriptionPDF(ctx, id, "prescription.pdf")
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"success": false,
+			"message": "Failed to generate prescription",
+			"error":   err.Error(),
+		})
 		return
 	}
-	ctx.JSON(http.StatusOK, util.SuccessResponse("Prescription", prescription))
+	ctx.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"message": "Prescription generated successfully",
+		"data":    prescription,
+	})
+}
+
+func (c *DiseaseController) CreateAllergy(ctx *gin.Context) {
+	petID := ctx.Param("pet_id")
+	id, err := strconv.ParseInt(petID, 10, 64)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"success": false,
+			"message": "Invalid pet ID",
+			"error":   err.Error(),
+		})
+		return
+	}
+
+	var req CreateAllergyRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"success": false,
+			"message": "Invalid allergy data",
+			"error":   err.Error(),
+		})
+		return
+	}
+
+	allergy, err := c.service.CreateAllergyService(ctx, id, req)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"success": false,
+			"message": "Failed to create allergy",
+			"error":   err.Error(),
+		})
+		return
+	}
+	ctx.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"message": "Allergy created successfully",
+		"data":    allergy,
+	})
+}
+
+func (c *DiseaseController) GetAllergiesByPetID(ctx *gin.Context) {
+	petID := ctx.Param("pet_id")
+	id, err := strconv.ParseInt(petID, 10, 64)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"success": false,
+			"message": "Invalid pet ID",
+			"error":   err.Error(),
+		})
+	}
+	pagination, err := util.GetPageInQuery(ctx.Request.URL.Query())
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"success": false,
+			"message": "Invalid pagination parameters",
+			"error":   err.Error(),
+		})
+		return
+	}
+	allergies, err := c.service.GetAllergiesByPetID(ctx, id, pagination)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"success": false,
+			"message": "Failed to fetch allergies",
+			"error":   err.Error(),
+		})
+		return
+	}
+	ctx.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"message": "Allergies retrieved successfully",
+		"data":    allergies,
+	})
 }

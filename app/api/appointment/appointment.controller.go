@@ -53,6 +53,9 @@ type AppointmentControllerInterface interface {
 	getAllAppointments(ctx *gin.Context)
 	getAllAppointmentsByDate(ctx *gin.Context)
 	updateAppointment(ctx *gin.Context)
+	getQueue(ctx *gin.Context)
+	updateQueueItemStatus(ctx *gin.Context)
+	getHistoryAppointmentsByPetID(ctx *gin.Context)
 
 	//time slot
 	getAvailableTimeSlots(ctx *gin.Context)
@@ -63,7 +66,11 @@ type AppointmentControllerInterface interface {
 	// SOAP
 	createSOAP(ctx *gin.Context)
 	updateSOAP(ctx *gin.Context)
+<<<<<<< HEAD
 >>>>>>> e859654 (Elastic search)
+=======
+	getSOAPByAppointmentID(ctx *gin.Context)
+>>>>>>> c8bec46 (feat: add chatbot, room management, and pet allergy features)
 }
 
 func (c *AppointmentController) createAppointment(ctx *gin.Context) {
@@ -527,13 +534,21 @@ func (c *AppointmentController) getAvailableTimeSlots(ctx *gin.Context) {
 
 func (c *AppointmentController) getAllAppointments(ctx *gin.Context) {
 
+	date := ctx.Query("date")
+	if date == "" {
+		ctx.JSON(http.StatusBadRequest, nil)
+		return
+	}
+
+	option := ctx.Query("option")
+
 	pagination, err := util.GetPageInQuery(ctx.Request.URL.Query())
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
 		return
 	}
 
-	res, err := c.service.GetAllAppointments(ctx, pagination)
+	res, err := c.service.GetAllAppointments(ctx, date, option, pagination)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
 		return
@@ -612,7 +627,7 @@ func (c *AppointmentController) createSOAP(ctx *gin.Context) {
 }
 
 func (c *AppointmentController) updateSOAP(ctx *gin.Context) {
-	appointmentID := ctx.Param("appointment_id")
+	appointmentID := ctx.Param("id")
 	if appointmentID == "" {
 		ctx.JSON(http.StatusBadRequest, nil)
 		return
@@ -633,4 +648,84 @@ func (c *AppointmentController) updateSOAP(ctx *gin.Context) {
 		return
 	}
 	ctx.JSON(http.StatusOK, util.SuccessResponse("SOAP", soapResponse))
+}
+
+func (c *AppointmentController) getQueue(ctx *gin.Context) {
+
+	authPayload, err := middleware.GetAuthorizationPayload(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	queueItems, err := c.service.GetQueueService(ctx, authPayload.Username)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, queueItems)
+}
+
+func (c *AppointmentController) updateQueueItemStatus(ctx *gin.Context) {
+	idStr := ctx.Param("id")
+	id, err := strconv.ParseInt(idStr, 10, 64)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
+		return
+	}
+
+	var req struct {
+		Status string `json:"status" binding:"required"`
+	}
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	err = c.service.UpdateQueueItemStatusService(ctx, id, req.Status)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"message": "Status updated successfully"})
+}
+
+func (c *AppointmentController) getHistoryAppointmentsByPetID(ctx *gin.Context) {
+	petID := ctx.Param("pet_id")
+	if petID == "" {
+		ctx.JSON(http.StatusBadRequest, nil)
+		return
+	}
+	id, err := strconv.ParseInt(petID, 10, 64)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
+		return
+	}
+
+	historyAppointments, err := c.service.GetHistoryAppointmentsByPetID(ctx, id)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	ctx.JSON(http.StatusOK, historyAppointments)
+}
+
+func (c *AppointmentController) getSOAPByAppointmentID(ctx *gin.Context) {
+	appointmentID := ctx.Param("id")
+	if appointmentID == "" {
+		ctx.JSON(http.StatusBadRequest, nil)
+		return
+	}
+	id, err := strconv.ParseInt(appointmentID, 10, 64)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
+		return
+	}
+	soap, err := c.service.GetSOAPByAppointmentID(ctx, id)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	ctx.JSON(http.StatusOK, soap)
 }
