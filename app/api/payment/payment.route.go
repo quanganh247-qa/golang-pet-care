@@ -28,6 +28,9 @@ func Routes(routerGroup middleware.RouterGroup, config *util.Config) {
 			service: &PaymentService{
 				config: &PaymentConfig{
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 6b24d88 (feat(payment): add PayOS payment integration and enhance treatment module)
 					VietQRAPIKey:       config.VietQRAPIKey,
 					VietQRClientKey:    config.VietQRClientKey,
 					VietQRBaseURL:      config.VietQRBaseURL,

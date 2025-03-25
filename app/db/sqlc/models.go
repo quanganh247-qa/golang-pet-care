@@ -494,6 +494,9 @@ type PetSchedule struct {
 
 type PetTreatment struct {
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 6b24d88 (feat(payment): add PayOS payment integration and enhance treatment module)
 	ID          int64              `json:"id"`
 	PetID       pgtype.Int8        `json:"pet_id"`
 	DiseaseID   pgtype.Int8        `json:"disease_id"`
@@ -505,6 +508,7 @@ type PetTreatment struct {
 	Description pgtype.Text        `json:"description"`
 	CreatedAt   pgtype.Timestamptz `json:"created_at"`
 	DoctorID    pgtype.Int4        `json:"doctor_id"`
+<<<<<<< HEAD
 =======
 	ID        int64              `json:"id"`
 	PetID     pgtype.Int8        `json:"pet_id"`
@@ -518,6 +522,8 @@ type PetTreatment struct {
 	CreatedAt pgtype.Timestamptz `json:"created_at"`
 	DoctorID  pgtype.Int4        `json:"doctor_id"`
 >>>>>>> c8bec46 (feat: add chatbot, room management, and pet allergy features)
+=======
+>>>>>>> 6b24d88 (feat(payment): add PayOS payment integration and enhance treatment module)
 }
 
 type PhaseMedicine struct {
