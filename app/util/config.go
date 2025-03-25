@@ -81,6 +81,7 @@ type Config struct {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 
 	GoongAPIKey  string `mapstructure:"GOONG_API_KEY"`
@@ -134,6 +135,8 @@ type Config struct {
 >>>>>>> e859654 (Elastic search)
 =======
 >>>>>>> 4ccd381 (Update appointment flow)
+=======
+>>>>>>> 6b24d88 (feat(payment): add PayOS payment integration and enhance treatment module)
 }
 
 var Configs = Config{}

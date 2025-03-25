@@ -425,6 +425,7 @@ type Querier interface {
 	GetAllSchedulesByPet(ctx context.Context, arg GetAllSchedulesByPetParams) ([]PetSchedule, error)
 	GetAllTreatmentPhasesByTreatmentID(ctx context.Context, treatmentID pgtype.Int8) ([]TreatmentPhase, error)
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 	GetActiveDoctors(ctx context.Context, arg GetActiveDoctorsParams) ([]GetActiveDoctorsRow, error)
 <<<<<<< HEAD
@@ -484,6 +485,8 @@ type Querier interface {
 >>>>>>> e9037c6 (update sqlc)
 =======
 >>>>>>> b393bb9 (add service and add permission)
+=======
+>>>>>>> 6b24d88 (feat(payment): add PayOS payment integration and enhance treatment module)
 	GetAllUsers(ctx context.Context) ([]User, error)
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -671,6 +674,7 @@ type Querier interface {
 >>>>>>> 33fcf96 (Big update)
 =======
 	GetCartItems(ctx context.Context, cartID int64) ([]GetCartItemsRow, error)
+	GetCartItemsByUserId(ctx context.Context, userID int64) ([]GetCartItemsByUserIdRow, error)
 	GetCartTotal(ctx context.Context, cartID int64) (float64, error)
 	GetClinicInfo(ctx context.Context, id int64) (GetClinicInfoRow, error)
 <<<<<<< HEAD
@@ -853,7 +857,7 @@ type Querier interface {
 	GetMedicalHistoryByID(ctx context.Context, id int64) (MedicalHistory, error)
 	GetMedicalRecord(ctx context.Context, id int64) (MedicalRecord, error)
 	GetMedicalRecordByPetID(ctx context.Context, petID pgtype.Int8) (MedicalRecord, error)
-	GetMedicationsByPhase(ctx context.Context, arg GetMedicationsByPhaseParams) ([]GetMedicationsByPhaseRow, error)
+	GetMedicationsByPhase(ctx context.Context, phaseID int64) ([]GetMedicationsByPhaseRow, error)
 	GetMedicineByID(ctx context.Context, id int64) (Medicine, error)
 <<<<<<< HEAD
 	GetNotificationPreferencesByUsername(ctx context.Context, username string) ([]NotificationPreference, error)

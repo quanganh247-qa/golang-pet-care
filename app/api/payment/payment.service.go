@@ -6,6 +6,7 @@ import (
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	"errors"
 	"fmt"
 	"io/ioutil"
@@ -85,11 +86,17 @@ func (s *PaymentService) GetToken(c *gin.Context) (*TokenResponse, error) {
 	baseURL := fmt.Sprintf("%s/token_generate", s.config.VietQRBaseURL)
 >>>>>>> 6b24d88 (feat(payment): add PayOS payment integration and enhance treatment module)
 =======
+=======
+	"errors"
+>>>>>>> 6b24d88 (feat(payment): add PayOS payment integration and enhance treatment module)
 	"fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
+	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/payOSHQ/payos-lib-golang"
 	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
 )
 
@@ -106,16 +113,23 @@ type PaymentServiceInterface interface {
 	updateOrder(accessToken string, orderID string, updates []OrderUpdateRequest) (map[string]interface{}, error)
 	trackOrder(accessToken string, orderID string) (map[string]interface{}, error)
 	getPayPalAccessToken() (string, error)
+
+	// payos
+	createPaymentLink(ctx *gin.Context, request CreatePaymentLinkRequest) (string, error)
 }
 
 func (s *PaymentService) GetToken(c *gin.Context) (*TokenResponse, error) {
 	// Build base URL
+<<<<<<< HEAD
 <<<<<<< HEAD
 	baseURL := fmt.Sprintf("%s/token_generate", s.config.BaseURL)
 >>>>>>> c449ffc (feat: cart api)
 =======
 	baseURL := fmt.Sprintf("%s/token_generate", s.config.PaymentBaseURL)
 >>>>>>> e859654 (Elastic search)
+=======
+	baseURL := fmt.Sprintf("%s/token_generate", s.config.VietQRBaseURL)
+>>>>>>> 6b24d88 (feat(payment): add PayOS payment integration and enhance treatment module)
 	fmt.Println(baseURL)
 	// Make request
 	resp, err := s.client.Post(baseURL, "application/json", nil)
@@ -168,8 +182,12 @@ func (s *VietQRService) GetBanksService(c *gin.Context) (*BankResponse, error) {
 =======
 func (s *PaymentService) GetBanksService(c *gin.Context) (*BankResponse, error) {
 	// Build base URL
+<<<<<<< HEAD
 	baseURL := fmt.Sprintf("%s/banks", s.config.PaymentBaseURL)
 >>>>>>> e859654 (Elastic search)
+=======
+	baseURL := fmt.Sprintf("%s/banks", s.config.VietQRBaseURL)
+>>>>>>> 6b24d88 (feat(payment): add PayOS payment integration and enhance treatment module)
 	fmt.Println(baseURL)
 	// Make request
 	resp, err := s.client.Get(baseURL)
@@ -195,6 +213,7 @@ func (s *PaymentService) GetBanksService(c *gin.Context) (*BankResponse, error) 
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 func (s *PaymentService) GenerateQRService(c *gin.Context, qrRequest QRRequest) (*GenerateQRCodeResponse, error) {
 	// Build base URL
 
@@ -227,6 +246,12 @@ func (s *PaymentService) GenerateQRService(c *gin.Context, qrRequest QRRequest) 
 =======
 	baseURL := fmt.Sprintf("%s/generate", s.config.PaymentBaseURL)
 >>>>>>> e859654 (Elastic search)
+=======
+func (s *PaymentService) GenerateQRService(c *gin.Context, qrRequest QRRequest) (*GenerateQRCodeResponse, error) {
+	// Build base URL
+
+	baseURL := fmt.Sprintf("%s/generate", s.config.VietQRBaseURL)
+>>>>>>> 6b24d88 (feat(payment): add PayOS payment integration and enhance treatment module)
 
 	// Make request
 	reqBody, _ := json.Marshal(qrRequest)
@@ -240,6 +265,7 @@ func (s *PaymentService) GenerateQRService(c *gin.Context, qrRequest QRRequest) 
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	resp.Header.Set("x-client-id", s.config.VietQRClientKey)
 	resp.Header.Set("x-api-key", s.config.VietQRAPIKey)
 =======
@@ -262,6 +288,10 @@ func (s *PaymentService) GenerateQRService(c *gin.Context, qrRequest QRRequest) 
 	resp.Header.Set("x-client-id", s.config.PaymentClientKey)
 	resp.Header.Set("x-api-key", s.config.PaymentAPIKey)
 >>>>>>> e859654 (Elastic search)
+=======
+	resp.Header.Set("x-client-id", s.config.VietQRClientKey)
+	resp.Header.Set("x-api-key", s.config.VietQRAPIKey)
+>>>>>>> 6b24d88 (feat(payment): add PayOS payment integration and enhance treatment module)
 	defer resp.Body.Close()
 
 	// Check response status
@@ -659,6 +689,9 @@ func (s *PaymentService) getPayPalAccessToken() (string, error) {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 6b24d88 (feat(payment): add PayOS payment integration and enhance treatment module)
 =======
 >>>>>>> 6b24d88 (feat(payment): add PayOS payment integration and enhance treatment module)
 
@@ -728,6 +761,7 @@ func calculateTotalAmount(items []payos.Item) int {
 	return total
 }
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 	return &result, nil
 }
@@ -746,3 +780,5 @@ func calculateTotalAmount(items []payos.Item) int {
 >>>>>>> e859654 (Elastic search)
 =======
 >>>>>>> ada3717 (Docker file)
+=======
+>>>>>>> 6b24d88 (feat(payment): add PayOS payment integration and enhance treatment module)

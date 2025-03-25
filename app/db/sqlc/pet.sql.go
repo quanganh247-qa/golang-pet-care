@@ -390,6 +390,7 @@ const getPetProfileSummary = `-- name: GetPetProfileSummary :many
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 SELECT p.petid, p.name, p.type, p.breed, p.age, p.gender, p.healthnotes, p.weight, p.birth_date, p.username, p.microchip_number, p.last_checkup_date, p.is_active, p.data_image, p.original_image, pt.id, pt.pet_id, pt.disease_id, pt.start_date, pt.end_date, pt.status, pt.name, pt.type, pt.description, pt.created_at, pt.doctor_id, v.vaccinationid, v.petid, v.vaccinename, v.dateadministered, v.nextduedate, v.vaccineprovider, v.batchnumber, v.notes 
 =======
 const getPetProfileSummary = `-- name: GetPetProfileSummary :many
@@ -416,6 +417,9 @@ SELECT p.petid, p.name, p.type, p.breed, p.age, p.gender, p.healthnotes, p.weigh
 =======
 SELECT p.petid, p.name, p.type, p.breed, p.age, p.gender, p.healthnotes, p.weight, p.birth_date, p.username, p.microchip_number, p.last_checkup_date, p.is_active, p.data_image, p.original_image, pt.id, pt.pet_id, pt.disease_id, pt.start_date, pt.end_date, pt.status, pt.name, pt.type, pt.notes, pt.created_at, pt.doctor_id, v.vaccinationid, v.petid, v.vaccinename, v.dateadministered, v.nextduedate, v.vaccineprovider, v.batchnumber, v.notes 
 >>>>>>> c8bec46 (feat: add chatbot, room management, and pet allergy features)
+=======
+SELECT p.petid, p.name, p.type, p.breed, p.age, p.gender, p.healthnotes, p.weight, p.birth_date, p.username, p.microchip_number, p.last_checkup_date, p.is_active, p.data_image, p.original_image, pt.id, pt.pet_id, pt.disease_id, pt.start_date, pt.end_date, pt.status, pt.name, pt.type, pt.description, pt.created_at, pt.doctor_id, v.vaccinationid, v.petid, v.vaccinename, v.dateadministered, v.nextduedate, v.vaccineprovider, v.batchnumber, v.notes 
+>>>>>>> 6b24d88 (feat(payment): add PayOS payment integration and enhance treatment module)
 FROM pets AS p
 LEFT JOIN pet_treatments AS pt ON p.petid = pt.pet_id
 LEFT JOIN vaccinations AS v ON p.petid = v.petid
@@ -451,6 +455,7 @@ type GetPetProfileSummaryRow struct {
 	Name_2           pgtype.Text        `json:"name_2"`
 	Type_2           pgtype.Text        `json:"type_2"`
 	Description      pgtype.Text        `json:"description"`
+<<<<<<< HEAD
 =======
 	Name_2           pgtype.Text        `json:"name_2"`
 	Type_2           pgtype.Text        `json:"type_2"`
@@ -463,6 +468,8 @@ type GetPetProfileSummaryRow struct {
 >>>>>>> c8bec46 (feat: add chatbot, room management, and pet allergy features)
 =======
 	Description      pgtype.Text        `json:"description"`
+>>>>>>> 6b24d88 (feat(payment): add PayOS payment integration and enhance treatment module)
+=======
 >>>>>>> 6b24d88 (feat(payment): add PayOS payment integration and enhance treatment module)
 	CreatedAt        pgtype.Timestamptz `json:"created_at"`
 	DoctorID         pgtype.Int4        `json:"doctor_id"`
@@ -492,6 +499,7 @@ type GetPetProfileSummaryRow struct {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	Notes            pgtype.Text        `json:"notes"`
 =======
 	Notes_2          pgtype.Text        `json:"notes_2"`
@@ -502,6 +510,9 @@ type GetPetProfileSummaryRow struct {
 =======
 	Notes_2          pgtype.Text        `json:"notes_2"`
 >>>>>>> ffc9071 (AI suggestion)
+=======
+	Notes            pgtype.Text        `json:"notes"`
+>>>>>>> 6b24d88 (feat(payment): add PayOS payment integration and enhance treatment module)
 }
 
 func (q *Queries) GetPetProfileSummary(ctx context.Context, petid int64) ([]GetPetProfileSummaryRow, error) {
@@ -542,6 +553,7 @@ func (q *Queries) GetPetProfileSummary(ctx context.Context, petid int64) ([]GetP
 			&i.Name_2,
 			&i.Type_2,
 			&i.Description,
+<<<<<<< HEAD
 =======
 			&i.Name_2,
 			&i.Type_2,
@@ -554,6 +566,8 @@ func (q *Queries) GetPetProfileSummary(ctx context.Context, petid int64) ([]GetP
 >>>>>>> c8bec46 (feat: add chatbot, room management, and pet allergy features)
 =======
 			&i.Description,
+>>>>>>> 6b24d88 (feat(payment): add PayOS payment integration and enhance treatment module)
+=======
 >>>>>>> 6b24d88 (feat(payment): add PayOS payment integration and enhance treatment module)
 			&i.CreatedAt,
 			&i.DoctorID,
@@ -583,6 +597,7 @@ func (q *Queries) GetPetProfileSummary(ctx context.Context, petid int64) ([]GetP
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 			&i.Notes,
 =======
 			&i.Notes_2,
@@ -593,6 +608,9 @@ func (q *Queries) GetPetProfileSummary(ctx context.Context, petid int64) ([]GetP
 =======
 			&i.Notes_2,
 >>>>>>> ffc9071 (AI suggestion)
+=======
+			&i.Notes,
+>>>>>>> 6b24d88 (feat(payment): add PayOS payment integration and enhance treatment module)
 		); err != nil {
 			return nil, err
 		}

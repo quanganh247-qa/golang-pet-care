@@ -299,6 +299,7 @@ type TreatmentPlan struct {
 >>>>>>> ada3717 (Docker file)
 }
 
+<<<<<<< HEAD
 type TreatmentPlan struct {
 <<<<<<< HEAD
 >>>>>>> 6c35562 (dicease and treatment plan)
@@ -443,6 +444,8 @@ type CreateAllergyRequest struct {
 >>>>>>> 6a85052 (get treatment by disease)
 }
 
+=======
+>>>>>>> 6b24d88 (feat(payment): add PayOS payment integration and enhance treatment module)
 type CreateTreatmentRequest struct {
 	PetID     int64  `json:"pet_id"`
 	DiseaseID int64  `json:"disease_id"`
@@ -452,12 +455,15 @@ type CreateTreatmentRequest struct {
 }
 
 type Treatment struct {
-	ID        int64  `json:"id"`
-	PetName   string `json:"pet_name"`
-	Disease   string `json:"disease"`
-	StartDate string `json:"start_date"`
-	EndDate   string `json:"end_date"`
-	Status    string `json:"status"`
+	ID          int64            `json:"id"`
+	Type        string           `json:"type"`
+	Disease     string           `json:"disease"`
+	StartDate   string           `json:"start_date"`
+	EndDate     string           `json:"end_date"`
+	Status      string           `json:"status"`
+	Description string           `json:"description"`
+	DoctorName  string           `json:"doctor_name"`
+	Phases      []TreatmentPhase `json:"phases"`
 }
 
 type CreateTreatmentResponse struct {
@@ -466,6 +472,7 @@ type CreateTreatmentResponse struct {
 	StartDate   string `json:"start_date"`
 	EndDate     string `json:"end_date"`
 	Status      string `json:"status"`
+	DoctorName  string `json:"doctor_name"`
 }
 
 type CreateTreatmentPhaseRequest struct {
@@ -485,13 +492,14 @@ type AssignMedicineRequest struct {
 }
 
 type TreatmentPhase struct {
-	ID          int64  `json:"id"`
-	TreatmentID int64  `json:"treatment_id"`
-	PhaseName   string `json:"phase_name"`
-	Description string `json:"description"`
-	Status      string `json:"status"`
-	StartDate   string `json:"start_date"`
-	CreatedAt   string `json:"created_at"`
+	ID          int64           `json:"id"`
+	TreatmentID int64           `json:"treatment_id"`
+	PhaseName   string          `json:"phase_name"`
+	Description string          `json:"description"`
+	Status      string          `json:"status"`
+	StartDate   string          `json:"start_date"`
+	CreatedAt   string          `json:"created_at"`
+	Medications []PhaseMedicine `json:"medications"`
 }
 
 type PhaseMedicine struct {

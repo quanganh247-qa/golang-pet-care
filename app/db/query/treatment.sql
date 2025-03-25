@@ -5,6 +5,7 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 INSERT INTO pet_treatments (pet_id, disease_id,doctor_id, name, type, start_date, end_date ,status, description, created_at)
 VALUES ($1, $2, $3, $4, $5, $6 ,$7 , "In Progress", $8, now()) RETURNING *;
 =======
@@ -27,6 +28,10 @@ VALUES ($1, $2, $3, $4, $5, $6, now()) RETURNING *;
 INSERT INTO pet_treatments (pet_id, disease_id, name, type, start_date, end_date ,status, notes, created_at)
 VALUES ($1, $2, $3, $4, $5, $6 , "In Progress", $7, now()) RETURNING *;
 >>>>>>> c8bec46 (feat: add chatbot, room management, and pet allergy features)
+=======
+INSERT INTO pet_treatments (pet_id, disease_id,doctor_id, name, type, start_date, end_date ,status, description, created_at)
+VALUES ($1, $2, $3, $4, $5, $6 ,$7 , "In Progress", $8, now()) RETURNING *;
+>>>>>>> 6b24d88 (feat(payment): add PayOS payment integration and enhance treatment module)
 
 -- name: GetTreatment :one
 SELECT * FROM pet_treatments
@@ -37,6 +42,7 @@ UPDATE pet_treatments
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 SET disease_id = $2, start_date = $3, end_date = $4, status = $5, description = $6
 =======
 SET disease_id = $2, start_date = $3, end_date = $4, status = $5, notes = $6
@@ -47,6 +53,9 @@ SET disease_id = $2, start_date = $3, end_date = $4, status = $5, description = 
 =======
 SET disease_id = $2, start_date = $3, end_date = $4, status = $5, notes = $6
 >>>>>>> 3bf345d (happy new year)
+=======
+SET disease_id = $2, start_date = $3, end_date = $4, status = $5, description = $6
+>>>>>>> 6b24d88 (feat(payment): add PayOS payment integration and enhance treatment module)
 WHERE id = $1;
 
 -- name: DeleteTreatment :exec
@@ -154,7 +163,7 @@ VALUES ($1, $2, $3, $4, $5, $6, $7, now()) RETURNING *;
 
 
 -- name: GetTreatmentsByPet :many
-SELECT t.id as treatment_id, d.name AS disease, t.start_date, t.end_date, t.status
+SELECT t.*, d.name AS disease
 FROM pet_treatments t
 JOIN diseases d ON t.disease_id = d.id
 WHERE t.pet_id = $1 LIMIT $2 OFFSET $3;
@@ -163,6 +172,10 @@ WHERE t.pet_id = $1 LIMIT $2 OFFSET $3;
 SELECT *  FROM treatment_phases as tp
 JOIN pet_treatments t ON t.id = tp.treatment_id
 WHERE t.id = $1 LIMIT $2 OFFSET $3;
+
+-- name: GetAllTreatmentPhasesByTreatmentID :many
+SELECT * FROM treatment_phases
+WHERE treatment_id = $1;
 
 -- name: GetMedicationsByPhase :many
 <<<<<<< HEAD
@@ -173,7 +186,7 @@ SELECT m.id, m.name, pm.dosage, pm.frequency, pm.duration, pm.notes ,pm.Created_
 >>>>>>> 883d5b3 (update treatment)
 FROM medicines m
 JOIN phase_medicines pm ON m.id = pm.medicine_id
-WHERE pm.phase_id = $1 LIMIT $2 OFFSET $3;
+WHERE pm.phase_id = $1;
 
 <<<<<<< HEAD
 <<<<<<< HEAD

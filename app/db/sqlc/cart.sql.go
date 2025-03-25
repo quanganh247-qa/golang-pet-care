@@ -810,6 +810,7 @@ func (q *Queries) GetCartItemsByUserId(ctx context.Context, userID int64) ([]Get
 			&i.UnitPrice_2,
 			&i.TotalPrice_2,
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> 21608b5 (cart and order api)
 =======
@@ -831,6 +832,8 @@ func (q *Queries) GetCartItemsByUserId(ctx context.Context, userID int64) ([]Get
 			&i.UnitPrice_2,
 			&i.TotalPrice_2,
 >>>>>>> ada3717 (Docker file)
+=======
+>>>>>>> 6b24d88 (feat(payment): add PayOS payment integration and enhance treatment module)
 		); err != nil {
 			return nil, err
 		}
