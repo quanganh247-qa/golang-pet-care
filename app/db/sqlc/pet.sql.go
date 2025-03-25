@@ -218,7 +218,7 @@ func (q *Queries) GetPetDetailByUserID(ctx context.Context, arg GetPetDetailByUs
 }
 
 const getPetProfileSummary = `-- name: GetPetProfileSummary :many
-SELECT p.petid, p.name, p.type, p.breed, p.age, p.gender, p.healthnotes, p.weight, p.birth_date, p.username, p.microchip_number, p.last_checkup_date, p.is_active, p.data_image, p.original_image, pt.id, pt.pet_id, pt.disease_id, pt.start_date, pt.end_date, pt.status, pt.name, pt.type, pt.notes, pt.created_at, pt.doctor_id, v.vaccinationid, v.petid, v.vaccinename, v.dateadministered, v.nextduedate, v.vaccineprovider, v.batchnumber, v.notes 
+SELECT p.petid, p.name, p.type, p.breed, p.age, p.gender, p.healthnotes, p.weight, p.birth_date, p.username, p.microchip_number, p.last_checkup_date, p.is_active, p.data_image, p.original_image, pt.id, pt.pet_id, pt.disease_id, pt.start_date, pt.end_date, pt.status, pt.name, pt.type, pt.description, pt.created_at, pt.doctor_id, v.vaccinationid, v.petid, v.vaccinename, v.dateadministered, v.nextduedate, v.vaccineprovider, v.batchnumber, v.notes 
 FROM pets AS p
 LEFT JOIN pet_treatments AS pt ON p.petid = pt.pet_id
 LEFT JOIN vaccinations AS v ON p.petid = v.petid
@@ -249,7 +249,7 @@ type GetPetProfileSummaryRow struct {
 	Status           pgtype.Text        `json:"status"`
 	Name_2           pgtype.Text        `json:"name_2"`
 	Type_2           pgtype.Text        `json:"type_2"`
-	Notes            pgtype.Text        `json:"notes"`
+	Description      pgtype.Text        `json:"description"`
 	CreatedAt        pgtype.Timestamptz `json:"created_at"`
 	DoctorID         pgtype.Int4        `json:"doctor_id"`
 	Vaccinationid    pgtype.Int8        `json:"vaccinationid"`
@@ -259,7 +259,7 @@ type GetPetProfileSummaryRow struct {
 	Nextduedate      pgtype.Timestamp   `json:"nextduedate"`
 	Vaccineprovider  pgtype.Text        `json:"vaccineprovider"`
 	Batchnumber      pgtype.Text        `json:"batchnumber"`
-	Notes_2          pgtype.Text        `json:"notes_2"`
+	Notes            pgtype.Text        `json:"notes"`
 }
 
 func (q *Queries) GetPetProfileSummary(ctx context.Context, petid int64) ([]GetPetProfileSummaryRow, error) {
@@ -295,7 +295,7 @@ func (q *Queries) GetPetProfileSummary(ctx context.Context, petid int64) ([]GetP
 			&i.Status,
 			&i.Name_2,
 			&i.Type_2,
-			&i.Notes,
+			&i.Description,
 			&i.CreatedAt,
 			&i.DoctorID,
 			&i.Vaccinationid,
@@ -305,7 +305,7 @@ func (q *Queries) GetPetProfileSummary(ctx context.Context, petid int64) ([]GetP
 			&i.Nextduedate,
 			&i.Vaccineprovider,
 			&i.Batchnumber,
-			&i.Notes_2,
+			&i.Notes,
 		); err != nil {
 			return nil, err
 		}

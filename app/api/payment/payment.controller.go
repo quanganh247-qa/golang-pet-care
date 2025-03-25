@@ -16,6 +16,8 @@ type PaymentControllerInterface interface {
 	GetOrderDetails(c *gin.Context)
 	UpdateOrder(c *gin.Context)
 	TrackOrder(c *gin.Context)
+
+	CreatePayOSLink(c *gin.Context)
 }
 
 func (c *PaymentController) GetToken(ctx *gin.Context) {
@@ -144,5 +146,19 @@ func (c *PaymentController) TrackOrder(ctx *gin.Context) {
 		return
 	}
 
+	ctx.JSON(http.StatusOK, result)
+}
+
+func (c *PaymentController) CreatePayOSLink(ctx *gin.Context) {
+	var orderRequest CreatePaymentLinkRequest
+	if err := ctx.ShouldBindJSON(&orderRequest); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	result, err := c.service.createPaymentLink(ctx, orderRequest)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
 	ctx.JSON(http.StatusOK, result)
 }

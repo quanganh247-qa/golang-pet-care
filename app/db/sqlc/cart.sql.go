@@ -259,6 +259,60 @@ func (q *Queries) GetCartItems(ctx context.Context, cartID int64) ([]GetCartItem
 	return items, nil
 }
 
+const getCartItemsByUserId = `-- name: GetCartItemsByUserId :many
+SELECT
+    ci.id, ci.cart_id, ci.product_id, ci.quantity, ci.unit_price, ci.total_price,
+    p.name as product_name,
+    p.price as unit_price,
+    (p.price * ci.quantity) as total_price
+FROM cart_items ci
+JOIN products p ON ci.product_id = p.product_id
+LEFT JOIN carts c ON ci.cart_id = c.id
+WHERE c.user_id = $1
+`
+
+type GetCartItemsByUserIdRow struct {
+	ID           int64         `json:"id"`
+	CartID       int64         `json:"cart_id"`
+	ProductID    int64         `json:"product_id"`
+	Quantity     pgtype.Int4   `json:"quantity"`
+	UnitPrice    float64       `json:"unit_price"`
+	TotalPrice   pgtype.Float8 `json:"total_price"`
+	ProductName  string        `json:"product_name"`
+	UnitPrice_2  float64       `json:"unit_price_2"`
+	TotalPrice_2 int32         `json:"total_price_2"`
+}
+
+func (q *Queries) GetCartItemsByUserId(ctx context.Context, userID int64) ([]GetCartItemsByUserIdRow, error) {
+	rows, err := q.db.Query(ctx, getCartItemsByUserId, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetCartItemsByUserIdRow{}
+	for rows.Next() {
+		var i GetCartItemsByUserIdRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.CartID,
+			&i.ProductID,
+			&i.Quantity,
+			&i.UnitPrice,
+			&i.TotalPrice,
+			&i.ProductName,
+			&i.UnitPrice_2,
+			&i.TotalPrice_2,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getCartTotal = `-- name: GetCartTotal :one
 SELECT SUM(total_price)::FLOAT8
 FROM cart_items

@@ -58,10 +58,6 @@ type Config struct {
 	MinIOAccessKey   string `mapstructure:"MINIO_ACCESS_KEY"`
 	MinIOSecretKey   string `mapstructure:"MINIO_SECRET_KEY"`
 	MinIOSSL         bool   `mapstructure:"MINIO_SSL"`
-
-	ClickatellAPIKey string `mapstructure:"CLICKATELL_API_KEY"`
-	ClickatellAPIID  string `mapstructure:"CLICKATELL_API_ID"`
-	ClickatellURL    string `mapstructure:"CLICKATELL_URL"`
 }
 
 var Configs = Config{}

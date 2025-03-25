@@ -3,19 +3,23 @@ package payment
 import (
 	"net/http"
 
+	"github.com/payOSHQ/payos-lib-golang"
 	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
 )
 
-// GoongConfig contains configuration for VierQR Maps API
 type PaymentConfig struct {
-	PaymentAPIKey    string
-	PaymentClientKey string
-	PaymentBaseURL   string
+	VietQRAPIKey    string
+	VietQRClientKey string
+	VietQRBaseURL   string
 
 	PayPalClientID     string
 	PayPalClientSecret string
 	PayPalBaseURL      string
 	PayPalEnvironment  string
+
+	PayOSAPIKey     string
+	PayOSClientKey  string
+	PayOSChecsumKey string
 }
 
 // GoongService handles interactions with VierQR Maps API
@@ -197,4 +201,11 @@ type OrderUpdateRequest struct {
 	Op    string `json:"op"`
 	Path  string `json:"path"`
 	Value string `json:"value"`
+}
+
+type CreatePaymentLinkRequest struct {
+	MobilePayment bool         // option 2: Use for order_id
+	Items         []payos.Item // option 1: using without order_id
+	Description   string
+	UserID        int64
 }
