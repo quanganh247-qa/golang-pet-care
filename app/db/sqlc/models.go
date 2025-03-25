@@ -226,17 +226,17 @@ type PetSchedule struct {
 }
 
 type PetTreatment struct {
-	ID        int64              `json:"id"`
-	PetID     pgtype.Int8        `json:"pet_id"`
-	DiseaseID pgtype.Int8        `json:"disease_id"`
-	StartDate pgtype.Date        `json:"start_date"`
-	EndDate   pgtype.Date        `json:"end_date"`
-	Status    pgtype.Text        `json:"status"`
-	Name      pgtype.Text        `json:"name"`
-	Type      pgtype.Text        `json:"type"`
-	Notes     pgtype.Text        `json:"notes"`
-	CreatedAt pgtype.Timestamptz `json:"created_at"`
-	DoctorID  pgtype.Int4        `json:"doctor_id"`
+	ID          int64              `json:"id"`
+	PetID       pgtype.Int8        `json:"pet_id"`
+	DiseaseID   pgtype.Int8        `json:"disease_id"`
+	StartDate   pgtype.Date        `json:"start_date"`
+	EndDate     pgtype.Date        `json:"end_date"`
+	Status      pgtype.Text        `json:"status"`
+	Name        pgtype.Text        `json:"name"`
+	Type        pgtype.Text        `json:"type"`
+	Description pgtype.Text        `json:"description"`
+	CreatedAt   pgtype.Timestamptz `json:"created_at"`
+	DoctorID    pgtype.Int4        `json:"doctor_id"`
 }
 
 type PhaseMedicine struct {

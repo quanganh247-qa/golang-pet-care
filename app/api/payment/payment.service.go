@@ -3,11 +3,15 @@ package payment
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
+	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/payOSHQ/payos-lib-golang"
 	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
 )
 
@@ -24,11 +28,14 @@ type PaymentServiceInterface interface {
 	updateOrder(accessToken string, orderID string, updates []OrderUpdateRequest) (map[string]interface{}, error)
 	trackOrder(accessToken string, orderID string) (map[string]interface{}, error)
 	getPayPalAccessToken() (string, error)
+
+	// payos
+	createPaymentLink(ctx *gin.Context, request CreatePaymentLinkRequest) (string, error)
 }
 
 func (s *PaymentService) GetToken(c *gin.Context) (*TokenResponse, error) {
 	// Build base URL
-	baseURL := fmt.Sprintf("%s/token_generate", s.config.PaymentBaseURL)
+	baseURL := fmt.Sprintf("%s/token_generate", s.config.VietQRBaseURL)
 	fmt.Println(baseURL)
 	// Make request
 	resp, err := s.client.Post(baseURL, "application/json", nil)
@@ -54,7 +61,7 @@ func (s *PaymentService) GetToken(c *gin.Context) (*TokenResponse, error) {
 // get banks
 func (s *PaymentService) GetBanksService(c *gin.Context) (*BankResponse, error) {
 	// Build base URL
-	baseURL := fmt.Sprintf("%s/banks", s.config.PaymentBaseURL)
+	baseURL := fmt.Sprintf("%s/banks", s.config.VietQRBaseURL)
 	fmt.Println(baseURL)
 	// Make request
 	resp, err := s.client.Get(baseURL)
@@ -77,11 +84,10 @@ func (s *PaymentService) GetBanksService(c *gin.Context) (*BankResponse, error) 
 	return &result, nil
 }
 
-// generate qr
 func (s *PaymentService) GenerateQRService(c *gin.Context, qrRequest QRRequest) (*GenerateQRCodeResponse, error) {
 	// Build base URL
 
-	baseURL := fmt.Sprintf("%s/generate", s.config.PaymentBaseURL)
+	baseURL := fmt.Sprintf("%s/generate", s.config.VietQRBaseURL)
 
 	// Make request
 	reqBody, _ := json.Marshal(qrRequest)
@@ -90,8 +96,8 @@ func (s *PaymentService) GenerateQRService(c *gin.Context, qrRequest QRRequest) 
 		return nil, fmt.Errorf("failed to make request: %v", err)
 	}
 	// Thêm các Header cần thiết
-	resp.Header.Set("x-client-id", s.config.PaymentClientKey)
-	resp.Header.Set("x-api-key", s.config.PaymentAPIKey)
+	resp.Header.Set("x-client-id", s.config.VietQRClientKey)
+	resp.Header.Set("x-api-key", s.config.VietQRAPIKey)
 	defer resp.Body.Close()
 
 	// Check response status
@@ -469,4 +475,70 @@ func (s *PaymentService) getPayPalAccessToken() (string, error) {
 	}
 
 	return tokenResponse.AccessToken, nil
+}
+
+func (s *PaymentService) createPaymentLink(ctx *gin.Context, request CreatePaymentLinkRequest) (string, error) {
+
+	var (
+		orderCode   = time.Now().UnixNano() / int64(time.Millisecond)
+		amount      int
+		items       []payos.Item
+		description string
+	)
+
+	// Xử lý trường hợp có OrderID
+	if request.MobilePayment == true {
+
+		cartItems, err := s.storeDB.GetCartItemsByUserId(ctx, request.UserID)
+		if err != nil {
+			return "", err
+		}
+		if cartItems == nil {
+			return "", errors.New("cart not found")
+		}
+		// Tạo danh sách sản phẩm từ giỏ hàng
+		items = make([]payos.Item, len(cartItems))
+		for i, item := range cartItems {
+			items[i] = payos.Item{
+				Name:     item.ProductName,
+				Quantity: int(item.Quantity.Int32),
+				Price:    int(item.TotalPrice.Float64),
+			}
+		}
+
+	} else { // Trường hợp không có OrderID
+		if len(request.Items) == 0 {
+			return "", errors.New("items are required when order ID is not provided")
+		}
+
+		amount = calculateTotalAmount(request.Items)
+		items = request.Items
+		description = request.Description
+	}
+	// Tạo checkout request
+	paymentLinkRequest := payos.CheckoutRequestType{
+		OrderCode:   orderCode,
+		Amount:      amount,
+		Description: description,
+		Items:       items,
+		CancelUrl:   "",
+		ReturnUrl:   "",
+	}
+
+	paymentLinkResponse, err := payos.CreatePaymentLink(paymentLinkRequest)
+	if err != nil {
+		log.Printf("Create payment link failed: %v", err)
+		return "", fmt.Errorf("payment link creation failed: %w", err)
+	}
+
+	return paymentLinkResponse.CheckoutUrl, nil
+}
+
+// Hàm tính tổng tiền từ items
+func calculateTotalAmount(items []payos.Item) int {
+	var total int
+	for _, item := range items {
+		total += item.Price * item.Quantity
+	}
+	return total
 }

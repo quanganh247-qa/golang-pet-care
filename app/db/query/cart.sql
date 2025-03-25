@@ -20,6 +20,18 @@ LEFT JOIN cart_items ci ON ci.cart_id = c.id
 WHERE c.user_id = $1
 GROUP BY c.id, c.user_id, c.created_at, c.updated_at;
 
+-- name: GetCartItemsByUserId :many
+SELECT
+    ci.*,
+    p.name as product_name,
+    p.price as unit_price,
+    (p.price * ci.quantity) as total_price
+FROM cart_items ci
+JOIN products p ON ci.product_id = p.product_id
+LEFT JOIN carts c ON ci.cart_id = c.id
+WHERE c.user_id = $1;
+
+
 -- name: CreateCartForUser :one
 INSERT INTO carts (
     user_id,

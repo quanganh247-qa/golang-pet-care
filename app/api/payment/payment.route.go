@@ -18,6 +18,9 @@ func Routes(routerGroup middleware.RouterGroup, config *util.Config) {
 		&PaymentController{
 			service: &PaymentService{
 				config: &PaymentConfig{
+					VietQRAPIKey:       config.VietQRAPIKey,
+					VietQRClientKey:    config.VietQRClientKey,
+					VietQRBaseURL:      config.VietQRBaseURL,
 					PayPalClientID:     config.PaypalClientID,
 					PayPalClientSecret: config.PaypalClientSecret,
 					PayPalBaseURL:      config.PaypalURL,

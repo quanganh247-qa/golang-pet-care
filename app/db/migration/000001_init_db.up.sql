@@ -473,7 +473,7 @@ CREATE TABLE public.pet_treatments (
 	status varchar(50) NULL,
 	"name" varchar NULL,
 	"type" varchar NULL,
-	notes text NULL,
+	description text NULL,
 	created_at timestamptz DEFAULT CURRENT_TIMESTAMP NULL,
 	doctor_id int4 NULL,
 	CONSTRAINT pet_treatments_pkey PRIMARY KEY (id),
