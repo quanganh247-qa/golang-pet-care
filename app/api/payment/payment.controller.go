@@ -19,6 +19,9 @@ type PaymentControllerInterface interface {
 	UpdateOrder(c *gin.Context)
 	TrackOrder(c *gin.Context)
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 6b24d88 (feat(payment): add PayOS payment integration and enhance treatment module)
 
 	CreatePayOSLink(c *gin.Context)
 }
@@ -190,6 +193,9 @@ func (c *PaymentController) TrackOrder(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, result)
 }
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 6b24d88 (feat(payment): add PayOS payment integration and enhance treatment module)
 
 func (c *PaymentController) CreatePayOSLink(ctx *gin.Context) {
 	var orderRequest CreatePaymentLinkRequest
@@ -204,7 +210,10 @@ func (c *PaymentController) CreatePayOSLink(ctx *gin.Context) {
 	}
 	ctx.JSON(http.StatusOK, result)
 }
+<<<<<<< HEAD
 =======
 >>>>>>> c449ffc (feat: cart api)
 =======
 >>>>>>> ada3717 (Docker file)
+=======
+>>>>>>> 6b24d88 (feat(payment): add PayOS payment integration and enhance treatment module)

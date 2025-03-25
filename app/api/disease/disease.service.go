@@ -86,7 +86,7 @@ type DiseaseServiceInterface interface {
 	CreateTreatmentService(ctx *gin.Context, treatmentPhase CreateTreatmentRequest) (*db.PetTreatment, error)
 	CreateTreatmentPhaseService(ctx *gin.Context, treatmentPhases []CreateTreatmentPhaseRequest, id int64) (*[]db.TreatmentPhase, error)
 	AssignMedicinesToTreatmentPhase(ctx *gin.Context, treatmentPhases []AssignMedicineRequest, phaseID int64) (*[]db.PhaseMedicine, error)
-	GetTreatmentsByPetID(ctx *gin.Context, petID int64, pagination *util.Pagination) (*[]CreateTreatmentResponse, error)
+	GetTreatmentsByPetID(ctx *gin.Context, petID int64, pagination *util.Pagination) (*[]Treatment, error)
 	GetTreatmentPhasesByTreatmentID(ctx *gin.Context, treatmentID int64, pagination *util.Pagination) (*[]TreatmentPhase, error)
 	GetMedicinesByPhase(ctx *gin.Context, phaseID int64, pagination *util.Pagination) ([]PhaseMedicine, error)
 	UpdateTreatmentPhaseStatus(ctx *gin.Context, phaseID int64, req UpdateTreatmentPhaseStatusRequest) error
@@ -144,10 +144,10 @@ func (s *DiseaseService) CreateTreatmentService(ctx *gin.Context, treatmentPhase
 
 	err = s.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
 		PetTreatment, err = q.CreateTreatment(ctx, db.CreateTreatmentParams{
-			PetID:     pgtype.Int8{Int64: treatmentPhase.PetID, Valid: true},
-			DiseaseID: pgtype.Int8{Int64: treatmentPhase.DiseaseID, Valid: true},
-			StartDate: pgtype.Date{Time: startDate, Valid: true},
-			Notes:     pgtype.Text{String: treatmentPhase.Notes, Valid: true},
+			PetID:       pgtype.Int8{Int64: treatmentPhase.PetID, Valid: true},
+			DiseaseID:   pgtype.Int8{Int64: treatmentPhase.DiseaseID, Valid: true},
+			StartDate:   pgtype.Date{Time: startDate, Valid: true},
+			Description: pgtype.Text{String: treatmentPhase.Notes, Valid: true},
 		})
 		if err != nil {
 			log.Println("error while creating pet treatment: ", err)
@@ -232,8 +232,11 @@ func (s *DiseaseService) AssignMedicinesToTreatmentPhase(ctx *gin.Context, treat
 }
 
 // Get All Treatments for a Pet
-func (s *DiseaseService) GetTreatmentsByPetID(ctx *gin.Context, petID int64, pagination *util.Pagination) (*[]CreateTreatmentResponse, error) {
+func (s *DiseaseService) GetTreatmentsByPetID(ctx *gin.Context, petID int64, pagination *util.Pagination) (*[]Treatment, error) {
+	// Calculate pagination offset
 	offset := (pagination.Page - 1) * pagination.PageSize
+
+	// Fetch treatments for the pet
 	treatments, err := s.storeDB.GetTreatmentsByPet(ctx, db.GetTreatmentsByPetParams{
 		PetID:  pgtype.Int8{Int64: petID, Valid: true},
 		Limit:  int32(pagination.PageSize),
@@ -243,16 +246,79 @@ func (s *DiseaseService) GetTreatmentsByPetID(ctx *gin.Context, petID int64, pag
 		return nil, fmt.Errorf("error while getting treatment by pet id: %w", err)
 	}
 
-	var result []CreateTreatmentResponse
+	// Initialize the result slice
+	var result []Treatment
+
+	// Iterate over each treatment
 	for _, treatment := range treatments {
-		result = append(result, CreateTreatmentResponse{
-			TreatmentID: treatment.TreatmentID,
+		// Fetch the doctor for the treatment
+		doctor, err := s.storeDB.GetDoctor(ctx, int64(treatment.DoctorID.Int32))
+		if err != nil {
+			log.Println("error while getting doctor: ", err)
+			return nil, fmt.Errorf("error while getting doctor: %w", err)
+		}
+
+		// Fetch all phases for the treatment
+		phases, err := s.storeDB.GetAllTreatmentPhasesByTreatmentID(ctx, pgtype.Int8{Int64: treatment.ID, Valid: true})
+		if err != nil {
+			return nil, fmt.Errorf("error while getting treatment phases by treatment id: %w", err)
+		}
+
+		// Initialize slice for treatment phases
+		var phaseResult []TreatmentPhase
+
+		// Iterate over each phase
+		for _, phase := range phases {
+			// Fetch medications for the phase
+			medicines, err := s.storeDB.GetMedicationsByPhase(ctx, phase.ID)
+			if err != nil {
+				log.Println("error while getting medications for phase: ", err)
+				return nil, fmt.Errorf("failed to get medications for phase %d: %w", phase.ID, err)
+			}
+
+			// Initialize slice for phase medications
+			var meds []PhaseMedicine
+
+			// Construct PhaseMedicine structs for each medication
+			for _, medicine := range medicines {
+				meds = append(meds, PhaseMedicine{
+					PhaseID:      phase.ID,
+					MedicineName: medicine.Name,
+					Dosage:       medicine.Dosage.String,
+					Frequency:    medicine.Frequency.String,
+					Duration:     medicine.Duration.String,
+					Notes:        medicine.Notes.String,
+					CreatedAt:    medicine.CreatedAt.Time.Format("2006-01-02 15:04:05"),
+				})
+			}
+
+			// Construct TreatmentPhase struct with medications
+			phaseResult = append(phaseResult, TreatmentPhase{
+				ID:          phase.ID,
+				TreatmentID: treatment.ID,
+				PhaseName:   phase.PhaseName.String,
+				Description: phase.Description.String,
+				Status:      phase.Status.String,
+				StartDate:   phase.StartDate.Time.Format("2006-01-02"),
+				CreatedAt:   phase.CreatedAt.Time.Format("2006-01-02 15:04:05"),
+				Medications: meds,
+			})
+		}
+
+		// Construct Treatment struct with phases
+		result = append(result, Treatment{
+			ID:          treatment.ID,
+			Type:        treatment.Type.String,
 			Disease:     treatment.Disease,
 			StartDate:   treatment.StartDate.Time.Format("2006-01-02"),
 			EndDate:     treatment.EndDate.Time.Format("2006-01-02"),
 			Status:      treatment.Status.String,
+			DoctorName:  doctor.Name,
+			Phases:      phaseResult,
+			Description: treatment.Description.String,
 		})
 	}
+
 	return &result, nil
 }
 
@@ -264,11 +330,30 @@ func (s *DiseaseService) GetTreatmentPhasesByTreatmentID(ctx *gin.Context, treat
 		Limit:  int32(pagination.PageSize),
 		Offset: int32(offset),
 	})
+
 	if err != nil {
 		return nil, fmt.Errorf("error while getting treatment phases by treatment id: %w", err)
 	}
 	var result []TreatmentPhase
 	for _, phase := range phases {
+		medicines, err := s.storeDB.GetMedicationsByPhase(ctx, phase.ID)
+		if err != nil {
+			log.Println("error while getting medications for phase: ", err)
+			return nil, fmt.Errorf("failed to get medications for phase %d: %w", phase.ID, err)
+		}
+
+		meds := make([]PhaseMedicine, 0, len(medicines))
+		for _, medicine := range medicines {
+			meds = append(meds, PhaseMedicine{
+				PhaseID:      phase.ID,
+				MedicineName: medicine.Name,
+				Dosage:       medicine.Dosage.String,
+				Frequency:    medicine.Frequency.String,
+				Duration:     medicine.Duration.String,
+				Notes:        medicine.Notes.String,
+				CreatedAt:    medicine.CreatedAt.Time.Format("2006-01-02 15:04:05"),
+			})
+		}
 		result = append(result, TreatmentPhase{
 			ID:          phase.ID,
 			TreatmentID: treatmentID,
@@ -277,6 +362,7 @@ func (s *DiseaseService) GetTreatmentPhasesByTreatmentID(ctx *gin.Context, treat
 			Status:      phase.Status.String,
 			StartDate:   phase.StartDate.Time.Format("2006-01-02"),
 			CreatedAt:   phase.CreatedAt.Time.Format("2006-01-02 15:04:05"),
+			Medications: meds,
 		})
 	}
 
@@ -286,8 +372,9 @@ func (s *DiseaseService) GetTreatmentPhasesByTreatmentID(ctx *gin.Context, treat
 // Get Medicines for a Treatment Phase
 func (s *DiseaseService) GetMedicinesByPhase(ctx *gin.Context, phaseID int64, pagination *util.Pagination) ([]PhaseMedicine, error) {
 
-	offset := (pagination.Page - 1) * pagination.PageSize
+	// offset := (pagination.Page - 1) * pagination.PageSize
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 	rows, err := s.storeDB.GetDiceaseAndMedicinesInfo(ctx, searchPattern)
@@ -547,12 +634,15 @@ func (s *DiseaseService) GetMedicinesByPhase(ctx *gin.Context, phaseID int64, pa
 
 	// offset := (pagination.Page - 1) * pagination.PageSize
 
+=======
+>>>>>>> 6b24d88 (feat(payment): add PayOS payment integration and enhance treatment module)
 	// medicines, err := s.storeDB.GetMedicationsByPhase(ctx, db.GetMedicationsByPhaseParams{
 	// 	PhaseID: phaseID,
 	// 	Limit:   int32(pagination.PageSize),
 	// 	Offset:  int32(offset),
 	// })
 	medicines, err := s.storeDB.GetMedicationsByPhase(ctx, phaseID)
+<<<<<<< HEAD
 	if err != nil {
 		log.Println("error while getting medications for phase: ", err)
 		return nil, fmt.Errorf("failed to get medications for phase %d: %w", phaseID, err)
@@ -987,6 +1077,8 @@ func (s *DiceaseService) GetDiseaseTreatmentPlanWithPhasesService(ctx *gin.Conte
 		Limit:   int32(pagination.PageSize),
 		Offset:  int32(offset),
 	})
+=======
+>>>>>>> 6b24d88 (feat(payment): add PayOS payment integration and enhance treatment module)
 	if err != nil {
 		log.Println("error while getting medications for phase: ", err)
 		return nil, fmt.Errorf("failed to get medications for phase %d: %w", phaseID, err)
@@ -1052,7 +1144,6 @@ func (s *DiseaseService) GetActiveTreatments(ctx *gin.Context, petID int64, pagi
 	for _, treatment := range treatments {
 		result = append(result, Treatment{
 			ID:        treatment.ID,
-			PetName:   treatment.PetName,
 			Disease:   treatment.Disease,
 			StartDate: treatment.StartDate.Time.Format("2006-01-02"),
 			EndDate:   treatment.EndDate.Time.Format("2006-01-02"),
@@ -1141,7 +1232,7 @@ func (s *DiseaseService) GenerateMedicineOnlyPrescriptionPDF(ctx context.Context
 			PatientGender:   pet.Gender.String,
 			PatientAge:      int(pet.Age.Int32),
 			Diagnosis:       fmt.Sprintf("Disease ID: %d", treatment.DiseaseID.Int64),
-			Notes:           treatment.Notes.String,
+			Notes:           treatment.Description.String,
 			PrescribedDate:  treatment.StartDate.Time,
 			DoctorName:      doctor.Name,
 			DoctorTitle:     doctor.Specialization.String,

@@ -146,6 +146,7 @@ func (q *Queries) AssignMedicationToTreatmentPhase(ctx context.Context, arg Assi
 const createTreatment = `-- name: CreateTreatment :one
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 INSERT INTO pet_treatments (pet_id, disease_id,doctor_id, name, type, start_date, end_date ,status, description, created_at)
 VALUES ($1, $2, $3, $4, $5, $6 ,$7 , "In Progress", $8, now()) RETURNING id, pet_id, disease_id, start_date, end_date, status, name, type, description, created_at, doctor_id
 `
@@ -177,6 +178,21 @@ type CreateTreatmentParams struct {
 	EndDate   pgtype.Date `json:"end_date"`
 	Notes     pgtype.Text `json:"notes"`
 >>>>>>> 3bf345d (happy new year)
+=======
+INSERT INTO pet_treatments (pet_id, disease_id,doctor_id, name, type, start_date, end_date ,status, description, created_at)
+VALUES ($1, $2, $3, $4, $5, $6 ,$7 , "In Progress", $8, now()) RETURNING id, pet_id, disease_id, start_date, end_date, status, name, type, description, created_at, doctor_id
+`
+
+type CreateTreatmentParams struct {
+	PetID       pgtype.Int8 `json:"pet_id"`
+	DiseaseID   pgtype.Int8 `json:"disease_id"`
+	DoctorID    pgtype.Int4 `json:"doctor_id"`
+	Name        pgtype.Text `json:"name"`
+	Type        pgtype.Text `json:"type"`
+	StartDate   pgtype.Date `json:"start_date"`
+	EndDate     pgtype.Date `json:"end_date"`
+	Description pgtype.Text `json:"description"`
+>>>>>>> 6b24d88 (feat(payment): add PayOS payment integration and enhance treatment module)
 }
 
 func (q *Queries) CreateTreatment(ctx context.Context, arg CreateTreatmentParams) (PetTreatment, error) {
@@ -185,12 +201,16 @@ func (q *Queries) CreateTreatment(ctx context.Context, arg CreateTreatmentParams
 		arg.DiseaseID,
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 6b24d88 (feat(payment): add PayOS payment integration and enhance treatment module)
 		arg.DoctorID,
 		arg.Name,
 		arg.Type,
 		arg.StartDate,
 		arg.EndDate,
 		arg.Description,
+<<<<<<< HEAD
 =======
 =======
 		arg.Name,
@@ -200,6 +220,8 @@ func (q *Queries) CreateTreatment(ctx context.Context, arg CreateTreatmentParams
 		arg.EndDate,
 		arg.Notes,
 >>>>>>> 3bf345d (happy new year)
+=======
+>>>>>>> 6b24d88 (feat(payment): add PayOS payment integration and enhance treatment module)
 	)
 	var i PetTreatment
 	err := row.Scan(
@@ -217,8 +239,12 @@ func (q *Queries) CreateTreatment(ctx context.Context, arg CreateTreatmentParams
 =======
 		&i.Name,
 		&i.Type,
+<<<<<<< HEAD
 		&i.Notes,
 >>>>>>> c8bec46 (feat: add chatbot, room management, and pet allergy features)
+=======
+		&i.Description,
+>>>>>>> 6b24d88 (feat(payment): add PayOS payment integration and enhance treatment module)
 		&i.CreatedAt,
 		&i.DoctorID,
 =======
@@ -375,6 +401,9 @@ func (q *Queries) GetActiveTreatments(ctx context.Context, arg GetActiveTreatmen
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 6b24d88 (feat(payment): add PayOS payment integration and enhance treatment module)
 const getAllTreatmentPhasesByTreatmentID = `-- name: GetAllTreatmentPhasesByTreatmentID :many
 SELECT id, treatment_id, phase_name, description, status, start_date, created_at FROM treatment_phases
 WHERE treatment_id = $1
@@ -382,8 +411,37 @@ WHERE treatment_id = $1
 
 func (q *Queries) GetAllTreatmentPhasesByTreatmentID(ctx context.Context, treatmentID pgtype.Int8) ([]TreatmentPhase, error) {
 	rows, err := q.db.Query(ctx, getAllTreatmentPhasesByTreatmentID, treatmentID)
+<<<<<<< HEAD
 =======
 =======
+=======
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []TreatmentPhase{}
+	for rows.Next() {
+		var i TreatmentPhase
+		if err := rows.Scan(
+			&i.ID,
+			&i.TreatmentID,
+			&i.PhaseName,
+			&i.Description,
+			&i.Status,
+			&i.StartDate,
+			&i.CreatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+>>>>>>> 6b24d88 (feat(payment): add PayOS payment integration and enhance treatment module)
 const getClinicInfo = `-- name: GetClinicInfo :one
 SELECT 
     name, 
@@ -411,14 +469,8 @@ const getMedicationsByPhase = `-- name: GetMedicationsByPhase :many
 SELECT m.id, m.name, pm.dosage, pm.frequency, pm.duration, pm.notes ,pm.Created_at
 FROM medicines m
 JOIN phase_medicines pm ON m.id = pm.medicine_id
-WHERE pm.phase_id = $1 LIMIT $2 OFFSET $3
+WHERE pm.phase_id = $1
 `
-
-type GetMedicationsByPhaseParams struct {
-	PhaseID int64 `json:"phase_id"`
-	Limit   int32 `json:"limit"`
-	Offset  int32 `json:"offset"`
-}
 
 type GetMedicationsByPhaseRow struct {
 	ID        int64              `json:"id"`
@@ -430,8 +482,8 @@ type GetMedicationsByPhaseRow struct {
 	CreatedAt pgtype.Timestamptz `json:"created_at"`
 }
 
-func (q *Queries) GetMedicationsByPhase(ctx context.Context, arg GetMedicationsByPhaseParams) ([]GetMedicationsByPhaseRow, error) {
-	rows, err := q.db.Query(ctx, getMedicationsByPhase, arg.PhaseID, arg.Limit, arg.Offset)
+func (q *Queries) GetMedicationsByPhase(ctx context.Context, phaseID int64) ([]GetMedicationsByPhaseRow, error) {
+	rows, err := q.db.Query(ctx, getMedicationsByPhase, phaseID)
 	if err != nil {
 		return nil, err
 	}
@@ -504,7 +556,7 @@ func (q *Queries) GetMedicineByTreatmentID(ctx context.Context, treatmentID pgty
 }
 
 const getTreatment = `-- name: GetTreatment :one
-SELECT id, pet_id, disease_id, start_date, end_date, status, name, type, notes, created_at, doctor_id FROM pet_treatments
+SELECT id, pet_id, disease_id, start_date, end_date, status, name, type, description, created_at, doctor_id FROM pet_treatments
 WHERE id = $1 LIMIT 1
 `
 
@@ -520,7 +572,7 @@ func (q *Queries) GetTreatment(ctx context.Context, id int64) (PetTreatment, err
 		&i.Status,
 		&i.Name,
 		&i.Type,
-		&i.Notes,
+		&i.Description,
 		&i.CreatedAt,
 		&i.DoctorID,
 	)
@@ -548,7 +600,7 @@ func (q *Queries) GetTreatmentPhase(ctx context.Context, id int64) (TreatmentPha
 }
 
 const getTreatmentPhasesByTreatment = `-- name: GetTreatmentPhasesByTreatment :many
-SELECT tp.id, treatment_id, phase_name, description, tp.status, tp.start_date, tp.created_at, t.id, pet_id, disease_id, t.start_date, end_date, t.status, name, type, notes, t.created_at, doctor_id  FROM treatment_phases as tp
+SELECT tp.id, treatment_id, phase_name, tp.description, tp.status, tp.start_date, tp.created_at, t.id, pet_id, disease_id, t.start_date, end_date, t.status, name, type, t.description, t.created_at, doctor_id  FROM treatment_phases as tp
 JOIN pet_treatments t ON t.id = tp.treatment_id
 WHERE t.id = $1 LIMIT $2 OFFSET $3
 `
@@ -560,24 +612,24 @@ type GetTreatmentPhasesByTreatmentParams struct {
 }
 
 type GetTreatmentPhasesByTreatmentRow struct {
-	ID          int64              `json:"id"`
-	TreatmentID pgtype.Int8        `json:"treatment_id"`
-	PhaseName   pgtype.Text        `json:"phase_name"`
-	Description pgtype.Text        `json:"description"`
-	Status      pgtype.Text        `json:"status"`
-	StartDate   pgtype.Date        `json:"start_date"`
-	CreatedAt   pgtype.Timestamptz `json:"created_at"`
-	ID_2        int64              `json:"id_2"`
-	PetID       pgtype.Int8        `json:"pet_id"`
-	DiseaseID   pgtype.Int8        `json:"disease_id"`
-	StartDate_2 pgtype.Date        `json:"start_date_2"`
-	EndDate     pgtype.Date        `json:"end_date"`
-	Status_2    pgtype.Text        `json:"status_2"`
-	Name        pgtype.Text        `json:"name"`
-	Type        pgtype.Text        `json:"type"`
-	Notes       pgtype.Text        `json:"notes"`
-	CreatedAt_2 pgtype.Timestamptz `json:"created_at_2"`
-	DoctorID    pgtype.Int4        `json:"doctor_id"`
+	ID            int64              `json:"id"`
+	TreatmentID   pgtype.Int8        `json:"treatment_id"`
+	PhaseName     pgtype.Text        `json:"phase_name"`
+	Description   pgtype.Text        `json:"description"`
+	Status        pgtype.Text        `json:"status"`
+	StartDate     pgtype.Date        `json:"start_date"`
+	CreatedAt     pgtype.Timestamptz `json:"created_at"`
+	ID_2          int64              `json:"id_2"`
+	PetID         pgtype.Int8        `json:"pet_id"`
+	DiseaseID     pgtype.Int8        `json:"disease_id"`
+	StartDate_2   pgtype.Date        `json:"start_date_2"`
+	EndDate       pgtype.Date        `json:"end_date"`
+	Status_2      pgtype.Text        `json:"status_2"`
+	Name          pgtype.Text        `json:"name"`
+	Type          pgtype.Text        `json:"type"`
+	Description_2 pgtype.Text        `json:"description_2"`
+	CreatedAt_2   pgtype.Timestamptz `json:"created_at_2"`
+	DoctorID      pgtype.Int4        `json:"doctor_id"`
 }
 
 <<<<<<< HEAD
@@ -615,7 +667,7 @@ func (q *Queries) GetTreatmentPhasesByTreatment(ctx context.Context, arg GetTrea
 			&i.Status_2,
 			&i.Name,
 			&i.Type,
-			&i.Notes,
+			&i.Description_2,
 			&i.CreatedAt_2,
 			&i.DoctorID,
 		); err != nil {
@@ -910,6 +962,7 @@ func (q *Queries) GetTreatmentProgress(ctx context.Context, id int64) ([]GetTrea
 const getTreatmentsByPet = `-- name: GetTreatmentsByPet :many
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 SELECT t.id, t.pet_id, t.disease_id, t.start_date, t.end_date, t.status, t.name, t.type, t.description, t.created_at, t.doctor_id, d.name AS disease
 FROM pet_treatments t
 JOIN diseases d ON t.disease_id = d.id
@@ -944,6 +997,9 @@ SELECT t.id, d.name AS disease, t.start_date, t.end_date, t.status
 =======
 SELECT t.id as treatment_id, d.name AS disease, t.start_date, t.end_date, t.status
 >>>>>>> 2fe5baf (treatment phase)
+=======
+SELECT t.id, t.pet_id, t.disease_id, t.start_date, t.end_date, t.status, t.name, t.type, t.description, t.created_at, t.doctor_id, d.name AS disease
+>>>>>>> 6b24d88 (feat(payment): add PayOS payment integration and enhance treatment module)
 FROM pet_treatments t
 JOIN diseases d ON t.disease_id = d.id
 WHERE t.pet_id = $1 LIMIT $2 OFFSET $3
@@ -956,11 +1012,18 @@ type GetTreatmentsByPetParams struct {
 }
 
 type GetTreatmentsByPetRow struct {
-	TreatmentID int64       `json:"treatment_id"`
-	Disease     string      `json:"disease"`
-	StartDate   pgtype.Date `json:"start_date"`
-	EndDate     pgtype.Date `json:"end_date"`
-	Status      pgtype.Text `json:"status"`
+	ID          int64              `json:"id"`
+	PetID       pgtype.Int8        `json:"pet_id"`
+	DiseaseID   pgtype.Int8        `json:"disease_id"`
+	StartDate   pgtype.Date        `json:"start_date"`
+	EndDate     pgtype.Date        `json:"end_date"`
+	Status      pgtype.Text        `json:"status"`
+	Name        pgtype.Text        `json:"name"`
+	Type        pgtype.Text        `json:"type"`
+	Description pgtype.Text        `json:"description"`
+	CreatedAt   pgtype.Timestamptz `json:"created_at"`
+	DoctorID    pgtype.Int4        `json:"doctor_id"`
+	Disease     string             `json:"disease"`
 }
 
 <<<<<<< HEAD
@@ -984,6 +1047,7 @@ func (q *Queries) GetTreatmentsByPet(ctx context.Context, arg GetTreatmentsByPet
 		var i GetTreatmentsByPetRow
 		if err := rows.Scan(
 <<<<<<< HEAD
+<<<<<<< HEAD
 			&i.ID,
 <<<<<<< HEAD
 			&i.PetID,
@@ -1006,6 +1070,20 @@ func (q *Queries) GetTreatmentsByPet(ctx context.Context, arg GetTreatmentsByPet
 			&i.EndDate,
 			&i.Status,
 >>>>>>> 3bf345d (happy new year)
+=======
+			&i.ID,
+			&i.PetID,
+			&i.DiseaseID,
+			&i.StartDate,
+			&i.EndDate,
+			&i.Status,
+			&i.Name,
+			&i.Type,
+			&i.Description,
+			&i.CreatedAt,
+			&i.DoctorID,
+			&i.Disease,
+>>>>>>> 6b24d88 (feat(payment): add PayOS payment integration and enhance treatment module)
 		); err != nil {
 			return nil, err
 		}
@@ -1021,6 +1099,7 @@ const listTreatmentsByPet = `-- name: ListTreatmentsByPet :many
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 SELECT id, pet_id, disease_id, start_date, end_date, status, name, type, description, created_at, doctor_id FROM pet_treatments
 =======
 SELECT id, pet_id, disease_id, start_date, end_date, status, notes, created_at FROM pet_treatments
@@ -1031,6 +1110,9 @@ SELECT id, pet_id, disease_id, start_date, end_date, status, notes, created_at, 
 =======
 SELECT id, pet_id, disease_id, start_date, end_date, status, name, type, notes, created_at, doctor_id FROM pet_treatments
 >>>>>>> c8bec46 (feat: add chatbot, room management, and pet allergy features)
+=======
+SELECT id, pet_id, disease_id, start_date, end_date, status, name, type, description, created_at, doctor_id FROM pet_treatments
+>>>>>>> 6b24d88 (feat(payment): add PayOS payment integration and enhance treatment module)
 WHERE pet_id = $1
 ORDER BY start_date DESC
 LIMIT $2 OFFSET $3
@@ -1066,8 +1148,12 @@ func (q *Queries) ListTreatmentsByPet(ctx context.Context, arg ListTreatmentsByP
 =======
 			&i.Name,
 			&i.Type,
+<<<<<<< HEAD
 			&i.Notes,
 >>>>>>> c8bec46 (feat: add chatbot, room management, and pet allergy features)
+=======
+			&i.Description,
+>>>>>>> 6b24d88 (feat(payment): add PayOS payment integration and enhance treatment module)
 			&i.CreatedAt,
 			&i.DoctorID,
 =======
@@ -1092,21 +1178,29 @@ func (q *Queries) ListTreatmentsByPet(ctx context.Context, arg ListTreatmentsByP
 const updateTreatment = `-- name: UpdateTreatment :exec
 UPDATE pet_treatments
 <<<<<<< HEAD
+<<<<<<< HEAD
 SET disease_id = $2, start_date = $3, end_date = $4, status = $5, description = $6
 =======
 SET disease_id = $2, start_date = $3, end_date = $4, status = $5, notes = $6
 >>>>>>> 3bf345d (happy new year)
+=======
+SET disease_id = $2, start_date = $3, end_date = $4, status = $5, description = $6
+>>>>>>> 6b24d88 (feat(payment): add PayOS payment integration and enhance treatment module)
 WHERE id = $1
 `
 
 type UpdateTreatmentParams struct {
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 6b24d88 (feat(payment): add PayOS payment integration and enhance treatment module)
 	ID          int64       `json:"id"`
 	DiseaseID   pgtype.Int8 `json:"disease_id"`
 	StartDate   pgtype.Date `json:"start_date"`
 	EndDate     pgtype.Date `json:"end_date"`
 	Status      pgtype.Text `json:"status"`
 	Description pgtype.Text `json:"description"`
+<<<<<<< HEAD
 =======
 	ID        int64       `json:"id"`
 	DiseaseID pgtype.Int8 `json:"disease_id"`
@@ -1115,6 +1209,8 @@ type UpdateTreatmentParams struct {
 	Status    pgtype.Text `json:"status"`
 	Notes     pgtype.Text `json:"notes"`
 >>>>>>> 3bf345d (happy new year)
+=======
+>>>>>>> 6b24d88 (feat(payment): add PayOS payment integration and enhance treatment module)
 }
 
 func (q *Queries) UpdateTreatment(ctx context.Context, arg UpdateTreatmentParams) error {
@@ -1125,10 +1221,14 @@ func (q *Queries) UpdateTreatment(ctx context.Context, arg UpdateTreatmentParams
 		arg.EndDate,
 		arg.Status,
 <<<<<<< HEAD
+<<<<<<< HEAD
 		arg.Description,
 =======
 		arg.Notes,
 >>>>>>> 3bf345d (happy new year)
+=======
+		arg.Description,
+>>>>>>> 6b24d88 (feat(payment): add PayOS payment integration and enhance treatment module)
 	)
 	return err
 }

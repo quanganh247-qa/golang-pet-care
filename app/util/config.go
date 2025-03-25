@@ -69,6 +69,7 @@ type Config struct {
 	MinIOSecretKey   string `mapstructure:"MINIO_SECRET_KEY"`
 	MinIOSSL         bool   `mapstructure:"MINIO_SSL"`
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 
 	GoongAPIKey  string `mapstructure:"GOONG_API_KEY"`
@@ -95,6 +96,8 @@ type Config struct {
 	ClickatellAPIID  string `mapstructure:"CLICKATELL_API_ID"`
 	ClickatellURL    string `mapstructure:"CLICKATELL_URL"`
 >>>>>>> 4ccd381 (Update appointment flow)
+=======
+>>>>>>> 6b24d88 (feat(payment): add PayOS payment integration and enhance treatment module)
 }
 
 var Configs = Config{}
