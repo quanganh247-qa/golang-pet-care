@@ -199,8 +199,6 @@ func UpdateCoverFileUpload(c *gin.Context, email, username string, coverID int64
 }
 
 // HandleFileUpload handles file uploads and returns the URL of the uploaded file
-<<<<<<< HEAD
-<<<<<<< HEAD
 func HandleFileUpload(c *gin.Context, folderName string) (string, error) {
 	mcclient, err := GetMinIOClient()
 	if err != nil {
@@ -219,39 +217,10 @@ func HandleFileUpload(c *gin.Context, folderName string) (string, error) {
 	file, fileHeader, err := c.Request.FormFile("file")
 	if err != nil {
 		return "", fmt.Errorf("failed to get the file: %v", err)
-=======
-func HandleFileUpload(c *gin.Context, username string) (string, int64, error) {
-=======
-func HandleFileUpload(c *gin.Context, folderName string) (string, error) {
->>>>>>> ada3717 (Docker file)
-	mcclient, err := GetMinIOClient()
-	if err != nil {
-		return "", fmt.Errorf("error getting MinIO client: %v", err)
-	}
-
-	//check if bucket exists
-	exists, err := mcclient.Client.BucketExists(c, folderName)
-	if err != nil {
-		return "", fmt.Errorf("failed to check bucket %s: %v", folderName, err)
-	}
-	if !exists {
-		mcclient.CreateBucket(c, folderName)
-	}
-
-	file, fileHeader, err := c.Request.FormFile("file")
-	if err != nil {
-<<<<<<< HEAD
-		return "", 0, fmt.Errorf("failed to get the file: %v", err)
->>>>>>> e859654 (Elastic search)
-=======
-		return "", fmt.Errorf("failed to get the file: %v", err)
->>>>>>> ada3717 (Docker file)
 	}
 	defer file.Close()
 
 	fileName := fileHeader.Filename
-<<<<<<< HEAD
-<<<<<<< HEAD
 	// fileSize := fileHeader.Size
 	// fileType := fileHeader.Header.Get("Content-Type")
 
@@ -280,52 +249,4 @@ func HandleFileUpload(c *gin.Context, folderName string) (string, error) {
 	// 	return "", 0, fmt.Errorf("failed to create file: %v", err)
 	// }
 	return url, nil
-=======
-	// Create ProjectFile record
-	fileSize := fileHeader.Size                       // Get the file size
-	fileType := fileHeader.Header.Get("Content-Type") // Get the file type
-=======
-	// fileSize := fileHeader.Size
-	// fileType := fileHeader.Header.Get("Content-Type")
->>>>>>> ada3717 (Docker file)
-
-	fileContent, err := io.ReadAll(file)
-	if err != nil {
-		return "", fmt.Errorf("failed to read file content for %s: %v", fileName, err)
-	}
-
-	err = mcclient.UploadFile(c, folderName, fileName, fileContent)
-	if err != nil {
-		return "", fmt.Errorf("failed to upload file %s to MinIO: %v", fileName, err)
-	}
-
-	url, err := mcclient.GetPresignedURL(c, folderName, fileName, time.Duration(24)*time.Hour)
-	if err != nil {
-		return "", fmt.Errorf("failed to get presigned URL for file %s: %v", fileName, err)
-	}
-
-<<<<<<< HEAD
-	newFile, err := db.StoreDB.CreateFile(c, db.CreateFileParams{
-		FileName: fileName,
-		FilePath: username,
-		FileSize: fileSize,
-		FileType: fileType,
-	})
-	if err != nil {
-		return "", 0, fmt.Errorf("failed to create file: %v", err)
-	}
-	return imageURL, newFile.ID, nil
->>>>>>> e859654 (Elastic search)
-=======
-	// newFile, err := db.StoreDB.CreateFile(c, db.CreateFileParams{
-	// 	FileName: fileName,
-	// 	FilePath: url,
-	// 	FileSize: fileSize,
-	// 	FileType: fileType,
-	// })
-	// if err != nil {
-	// 	return "", 0, fmt.Errorf("failed to create file: %v", err)
-	// }
-	return url, nil
->>>>>>> ada3717 (Docker file)
 }

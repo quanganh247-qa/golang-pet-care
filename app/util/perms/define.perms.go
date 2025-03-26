@@ -13,19 +13,10 @@ const (
 
 // Define permissions
 const (
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> 4ccd381 (Update appointment flow)
 	// Doctor
 	ManageDoctor Permission = "MANAGE_DOCTOR"
 
 	// Appointment
-<<<<<<< HEAD
-=======
->>>>>>> b393bb9 (add service and add permission)
-=======
->>>>>>> 4ccd381 (Update appointment flow)
 	CreateAppointment Permission = "CREATE_APPOINTMENT"
 	ReadAppointment   Permission = "READ_APPOINTMENT"
 	UpdateAppointment Permission = "UPDATE_APPOINTMENT"
@@ -40,10 +31,6 @@ const (
 	UpdateService  Permission = "UPDATE_SERVICE"
 	DeleteService  Permission = "DELETE_SERVICE"
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> 3bf345d (happy new year)
 	// Medical Records
 	ManageMedicalRecords Permission = "MANAGE_MEDICAL_RECORDS"
 	ReadMedicalRecord    Permission = "READ_MEDICAL_RECORD"
@@ -52,11 +39,6 @@ const (
 	ManageDisease   Permission = "MANAGE_DISEASE"
 	ManageTreatment Permission = "MANAGE_TREATMENT"
 
-<<<<<<< HEAD
-=======
->>>>>>> b393bb9 (add service and add permission)
-=======
->>>>>>> 3bf345d (happy new year)
 	// Pet
 	ManagePets Permission = "MANAGE_PETS"
 	ReadPet    Permission = "READ_PET"
@@ -69,11 +51,6 @@ const (
 
 // RolePermissions maps roles to their respective permissions
 var RolePermissions = map[string][]Permission{
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> 4ccd381 (Update appointment flow)
 	RoleAdmin: {CreateAppointment, ReadAppointment, UpdateAppointment,
 		DeleteAppointment, ManageUsers, ManageDoctors,
 		ViewReports, ManageServices, ManageMedicalRecords,
@@ -83,19 +60,6 @@ var RolePermissions = map[string][]Permission{
 		ManageTreatment, ManageDisease, ManageDoctor},
 	RoleUser: {CreateAppointment, ReadAppointment, ReadMedicalRecord,
 		ReadService, ReadPet},
-<<<<<<< HEAD
-=======
-	RoleAdmin:  {CreateAppointment, ReadAppointment, UpdateAppointment, DeleteAppointment, ManageUsers, ManageDoctors, ViewReports, ManageServices},
-	RoleDoctor: {CreateAppointment, ReadAppointment, UpdateAppointment, ViewReports, ManageServices},
-	RoleUser:   {CreateAppointment, ReadAppointment},
->>>>>>> b393bb9 (add service and add permission)
-=======
-	RoleAdmin:  {CreateAppointment, ReadAppointment, UpdateAppointment, DeleteAppointment, ManageUsers, ManageDoctors, ViewReports, ManageServices, ManageMedicalRecords},
-	RoleDoctor: {CreateAppointment, ReadAppointment, UpdateAppointment, ViewReports, ManageServices, ManageMedicalRecords, ManageTreatment, ManageDisease},
-	RoleUser:   {CreateAppointment, ReadAppointment, ReadMedicalRecord, ReadService, ReadPet},
->>>>>>> 3bf345d (happy new year)
-=======
->>>>>>> 4ccd381 (Update appointment flow)
 }
 
 // CheckPermission checks if the user's role has the required permissions

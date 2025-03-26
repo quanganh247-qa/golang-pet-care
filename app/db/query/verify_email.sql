@@ -16,8 +16,4 @@ WHERE
     AND secret_code = $2
     AND is_used = FALSE
 RETURNING *;
-<<<<<<< HEAD
 -- AND expired_at > now()
-=======
--- AND expired_at > now()
->>>>>>> 6610455 (feat: redis queue)

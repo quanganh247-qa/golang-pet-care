@@ -20,27 +20,12 @@ func (c *ClientType) LoadCacheByKey(key string, result interface{}, duration tim
 	return // Return closure
 }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
 type UserInfo struct {
-=======
-type userInfo struct {
->>>>>>> 272832d (redis cache)
-=======
-type UserInfo struct {
->>>>>>> dc47646 (Optimize SQL query)
 	UserID          int64  `json:"user_id"`
 	Username        string `json:"username"`
 	FullName        string `json:"full_name"`
 	Email           string `json:"email"`
-<<<<<<< HEAD
-<<<<<<< HEAD
 	HashedPassword  string `json:"hashed_password"`
-=======
->>>>>>> 272832d (redis cache)
-=======
-	HashedPassword  string `json:"hashed_password"`
->>>>>>> c449ffc (feat: cart api)
 	PhoneNumber     string `json:"phone_number"`
 	Address         string `json:"address"`
 	Role            string `json:"role"`
@@ -52,15 +37,7 @@ type UserInfo struct {
 func (c *ClientType) UserInfoLoadCache(username string) (*UserInfo, error) {
 	userKey := fmt.Sprintf("%s:%s", USER_INFO_KEY, username)
 	// log.Printf("User key: %s", userKey)
-<<<<<<< HEAD
-<<<<<<< HEAD
 	userInformation := UserInfo{}
-=======
-	userInformation := userInfo{}
->>>>>>> b393bb9 (add service and add permission)
-=======
-	userInformation := UserInfo{}
->>>>>>> dc47646 (Optimize SQL query)
 	err := c.GetWithBackground(userKey, &userInformation)
 	if err != nil {
 		// log.Printf("Error when get cache for key %s: %v", userKey, err)
@@ -72,10 +49,6 @@ func (c *ClientType) UserInfoLoadCache(username string) (*UserInfo, error) {
 			return nil, err
 		}
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> dc47646 (Optimize SQL query)
 		userRes := UserInfo{
 			UserID:          userData.ID,
 			Username:        userData.Username,
@@ -88,39 +61,6 @@ func (c *ClientType) UserInfoLoadCache(username string) (*UserInfo, error) {
 			PhoneNumber:     userData.PhoneNumber.String,
 			Address:         userData.Address.String,
 			Role:            userData.Role.String,
-=======
-		userRes := userInfo{
-<<<<<<< HEAD
-<<<<<<< HEAD
-			UserID:   userData.ID,
-			Username: userData.Username,
-			Email:    userData.Email,
-			FullName: userData.FullName,
->>>>>>> 79a3bcc (medicine api)
-=======
-			UserID:        userData.ID,
-			Username:      userData.Username,
-			Email:         userData.Email,
-			FullName:      userData.FullName,
-			DataImage:     string(userData.DataImage),
-			OriginalImage: userData.OriginalImage.String,
-			PhoneNumber:   userData.PhoneNumber.String,
-			Address:       userData.Address.String,
-			Role:          userData.Role.String,
->>>>>>> 272832d (redis cache)
-=======
-			UserID:          userData.ID,
-			Username:        userData.Username,
-			Email:           userData.Email,
-			HashedPassword:  userData.HashedPassword,
-			IsVerifiedEmail: userData.IsVerifiedEmail.Bool,
-			FullName:        userData.FullName,
-			DataImage:       string(userData.DataImage),
-			OriginalImage:   userData.OriginalImage.String,
-			PhoneNumber:     userData.PhoneNumber.String,
-			Address:         userData.Address.String,
-			Role:            userData.Role.String,
->>>>>>> c449ffc (feat: cart api)
 		}
 		err = c.SetWithBackground(userKey, &userRes, time.Hour*12)
 		if err != nil {
@@ -130,47 +70,7 @@ func (c *ClientType) UserInfoLoadCache(username string) (*UserInfo, error) {
 	}
 	return &userInformation, nil
 }
-<<<<<<< HEAD
-=======
 
-<<<<<<< HEAD
-// func (c *ClientType) OTPCache(username string) (*userInfo, error) {
-// 	otpKey := fmt.Sprintf("%s:%s", OTP_KEY, username)
-// 	var otp int64
-// 	err := c.GetWithBackground(otpKey, otp)
-// 	if err != nil {
-// 		log.Printf("Error when get cache for key %s: %v", userKey, err)
-// 		userData, err := db.StoreDB.GetUser(ctxRedis, username)
-// 		if err != nil {
-// 			if err == pgx.ErrNoRows {
-// 				return nil, fmt.Errorf("Không tìm thấy user với username = %s", username)
-// 			}
-// 			return nil, err
-// 		}
-
-// 		userRes := userInfo{
-// 			UserID:        userData.ID,
-// 			Username:      userData.Username,
-// 			Email:         userData.Email,
-// 			FullName:      userData.FullName,
-// 			DataImage:     string(userData.DataImage),
-// 			OriginalImage: userData.OriginalImage.String,
-// 			PhoneNumber:   userData.PhoneNumber.String,
-// 			Address:       userData.Address.String,
-// 			Role:          userData.Role.String,
-// 		}
-// 		err = c.SetWithBackground(userKey, &userRes, time.Hour*12)
-// 		if err != nil {
-// 			log.Printf("Error when set cache for key %s: %v", userKey, err)
-// 		}
-// 		return &userRes, nil
-// 	}
-// 	return &userInformation, nil
-// }
->>>>>>> 79a3bcc (medicine api)
-
-=======
->>>>>>> 290baeb (fixed vaccine routes)
 func (client *ClientType) RemoveUserInfoCache(username string) {
 	userInfoKey := fmt.Sprintf("%s:%s", USER_INFO_KEY, username)
 	client.RemoveCacheByKey(userInfoKey)
@@ -185,10 +85,6 @@ func (client *ClientType) ClearUserInfoCache() {
 		}
 	}
 }
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> 98e9e45 (ratelimit and recovery function)
 
 type PetInfo struct {
 	Petid           int64   `json:"petid"`
@@ -239,21 +135,9 @@ func (c *ClientType) PetInfoLoadCache(petid int64) (*PetInfo, error) {
 }
 
 func (client *ClientType) RemovePetInfoCache(petid int64) {
-<<<<<<< HEAD
-<<<<<<< HEAD
 	petKey := fmt.Sprintf("%s:%d", PET_INFO_KEY, petid)
 	client.RemoveCacheByKey(petKey)
 	fmt.Println("Remove cache for key: ", petKey)
-<<<<<<< HEAD
-=======
-	petKey := fmt.Sprintf("%s:%s", PET_INFO_KEY, string(petid))
-=======
-	petKey := fmt.Sprintf("%s:%d", PET_INFO_KEY, petid)
->>>>>>> 6d9728e (updated remove pet cache)
-	client.RemoveCacheByKey(petKey)
->>>>>>> 98e9e45 (ratelimit and recovery function)
-=======
->>>>>>> 3b2f7a7 (fix appointment)
 }
 
 func (client *ClientType) ClearPetInfoCache() {
@@ -265,8 +149,3 @@ func (client *ClientType) ClearPetInfoCache() {
 		}
 	}
 }
-<<<<<<< HEAD
-=======
->>>>>>> 1f24c18 (feat: OTP with redis)
-=======
->>>>>>> 98e9e45 (ratelimit and recovery function)

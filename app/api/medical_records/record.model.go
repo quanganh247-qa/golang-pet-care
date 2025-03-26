@@ -1,34 +1,18 @@
 package medical_records
 
 import (
-<<<<<<< HEAD
-<<<<<<< HEAD
 	"errors"
-=======
->>>>>>> 3bf345d (happy new year)
-=======
-	"errors"
->>>>>>> e859654 (Elastic search)
 	"time"
 
 	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
 )
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> e859654 (Elastic search)
 var (
 	ErrMedicalRecordNotFound = errors.New("medical record not found")
 	ErrInvalidDiagnosisDate  = errors.New("invalid diagnosis date format")
 	ErrInvalidPetID          = errors.New("invalid pet ID")
 )
 
-<<<<<<< HEAD
-=======
->>>>>>> 3bf345d (happy new year)
-=======
->>>>>>> e859654 (Elastic search)
 type MedicalRecordApi struct {
 	controller MedicalRecordControllerInterface
 }
@@ -55,21 +39,9 @@ type MedicalRecordResponse struct {
 }
 
 type MedicalHistoryRequest struct {
-<<<<<<< HEAD
-<<<<<<< HEAD
 	Condition     string `json:"condition" binding:"required"`
 	DiagnosisDate string `json:"diagnosis_date" binding:"required,datetime=2006-01-02 15:04:05"`
 	Treatment     int64  `json:"treatment" binding:"required"`
-=======
-	Condition     string `json:"condition"`
-	DiagnosisDate string `json:"diagnosis_date"`
-	Treatment     int64  `json:"treatment"`
->>>>>>> 3bf345d (happy new year)
-=======
-	Condition     string `json:"condition" binding:"required"`
-	DiagnosisDate string `json:"diagnosis_date" binding:"required,datetime=2006-01-02 15:04:05"`
-	Treatment     int64  `json:"treatment" binding:"required"`
->>>>>>> e859654 (Elastic search)
 	Notes         string `json:"notes"`
 }
 
@@ -85,8 +57,6 @@ type MedicalHistoryResponse struct {
 }
 
 type Allergy struct {
-<<<<<<< HEAD
-<<<<<<< HEAD
 	ID              int64  `json:"id"`
 	MedicalRecordID int64  `json:"medical_record_id"`
 	Allergen        string `json:"allergen"`
@@ -102,30 +72,4 @@ type AllergyRequest struct {
 	Severity string `json:"severity" binding:"required,oneof=mild moderate severe"`
 	Reaction string `json:"reaction" binding:"required"`
 	Notes    string `json:"notes"`
-=======
-	ID              string    `json:"id"`
-	MedicalRecordID string    `json:"medical_record_id"`
-=======
-	ID              int64     `json:"id"`
-	MedicalRecordID int64     `json:"medical_record_id"`
->>>>>>> e859654 (Elastic search)
-	Allergen        string    `json:"allergen"`
-	Severity        string    `json:"severity"`
-	Reaction        string    `json:"reaction"`
-	Notes           string    `json:"notes"`
-<<<<<<< HEAD
-	CreatedAt       time.Time `json:"created_at"`
-	UpdatedAt       time.Time `json:"updated_at"`
->>>>>>> 3bf345d (happy new year)
-=======
-	CreatedAt       string    `json:"created_at"`
-	UpdatedAt       string    `json:"updated_at"`
-}
-
-type AllergyRequest struct {
-	Allergen string `json:"allergen" binding:"required"`
-	Severity string `json:"severity" binding:"required,oneof=mild moderate severe"`
-	Reaction string `json:"reaction" binding:"required"`
-	Notes    string `json:"notes"`
->>>>>>> e859654 (Elastic search)
 }

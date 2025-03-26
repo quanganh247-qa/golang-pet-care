@@ -9,10 +9,6 @@ import (
 )
 
 type Appointment struct {
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> 4ccd381 (Update appointment flow)
 	AppointmentID     int64            `json:"appointment_id"`
 	Petid             pgtype.Int8      `json:"petid"`
 	Username          pgtype.Text      `json:"username"`
@@ -28,52 +24,8 @@ type Appointment struct {
 	ArrivalTime       pgtype.Timestamp `json:"arrival_time"`
 	RoomID            pgtype.Int8      `json:"room_id"`
 	ConfirmationSent  pgtype.Bool      `json:"confirmation_sent"`
-<<<<<<< HEAD
-<<<<<<< HEAD
 	Notes             pgtype.Text      `json:"notes"`
 	UpdatedAt         pgtype.Timestamp `json:"updated_at"`
-}
-
-type Cart struct {
-	ID        int64            `json:"id"`
-	UserID    int64            `json:"user_id"`
-	CreatedAt pgtype.Timestamp `json:"created_at"`
-	UpdatedAt pgtype.Timestamp `json:"updated_at"`
-}
-
-type CartItem struct {
-	ID         int64         `json:"id"`
-	CartID     int64         `json:"cart_id"`
-	ProductID  int64         `json:"product_id"`
-	Quantity   pgtype.Int4   `json:"quantity"`
-	UnitPrice  float64       `json:"unit_price"`
-	TotalPrice pgtype.Float8 `json:"total_price"`
-=======
-	AppointmentID int64            `json:"appointment_id"`
-	Petid         pgtype.Int8      `json:"petid"`
-	Username      pgtype.Text      `json:"username"`
-	DoctorID      pgtype.Int8      `json:"doctor_id"`
-	ServiceID     pgtype.Int8      `json:"service_id"`
-	Date          pgtype.Timestamp `json:"date"`
-	Notes         pgtype.Text      `json:"notes"`
-	ReminderSend  pgtype.Bool      `json:"reminder_send"`
-	TimeSlotID    pgtype.Int8      `json:"time_slot_id"`
-	CreatedAt     pgtype.Timestamp `json:"created_at"`
-<<<<<<< HEAD
-<<<<<<< HEAD
->>>>>>> 272832d (redis cache)
-=======
-	StateID       pgtype.UUID      `json:"state_id"`
->>>>>>> ffc9071 (AI suggestion)
-=======
-	StateID       pgtype.Int4      `json:"state_id"`
->>>>>>> e859654 (Elastic search)
-=======
->>>>>>> 4ccd381 (Update appointment flow)
-=======
-	Notes             pgtype.Text      `json:"notes"`
-	UpdatedAt         pgtype.Timestamp `json:"updated_at"`
->>>>>>> 71b74e9 (feat(appointment): add room management and update appointment functionality.)
 }
 
 type Cart struct {
@@ -112,12 +64,6 @@ type CheckoutService struct {
 	Subtotal          pgtype.Float8 `json:"subtotal"`
 }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> ada3717 (Docker file)
 type Clinic struct {
 	ID      int64       `json:"id"`
 	Name    pgtype.Text `json:"name"`
@@ -125,52 +71,17 @@ type Clinic struct {
 	Phone   pgtype.Text `json:"phone"`
 }
 
-<<<<<<< HEAD
-=======
->>>>>>> e859654 (Elastic search)
-=======
->>>>>>> ada3717 (Docker file)
 type Consultation struct {
 	ID            int32            `json:"id"`
 	AppointmentID pgtype.Int8      `json:"appointment_id"`
 	Subjective    pgtype.Text      `json:"subjective"`
 	Objective     pgtype.Text      `json:"objective"`
 	Assessment    pgtype.Text      `json:"assessment"`
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> c8bec46 (feat: add chatbot, room management, and pet allergy features)
 	Plan          pgtype.Int8      `json:"plan"`
 	CreatedAt     pgtype.Timestamp `json:"created_at"`
 }
 
 type DeviceToken struct {
-=======
-=======
-=======
-	Plan          pgtype.Text      `json:"plan"`
-	CreatedAt     pgtype.Timestamp `json:"created_at"`
-}
-
-<<<<<<< HEAD
->>>>>>> e859654 (Elastic search)
-type Department struct {
-	ID          int64            `json:"id"`
-	Name        string           `json:"name"`
-	Description pgtype.Text      `json:"description"`
-	CreatedAt   pgtype.Timestamp `json:"created_at"`
-	UpdatedAt   pgtype.Timestamp `json:"updated_at"`
-}
-
-<<<<<<< HEAD
->>>>>>> e9037c6 (update sqlc)
-type Devicetoken struct {
->>>>>>> 0fb3f30 (user images)
-=======
-=======
->>>>>>> 4ccd381 (Update appointment flow)
-type DeviceToken struct {
->>>>>>> 33fcf96 (Big update)
 	ID         int64            `json:"id"`
 	Username   string           `json:"username"`
 	Token      string           `json:"token"`
@@ -180,10 +91,6 @@ type DeviceToken struct {
 	ExpiredAt  pgtype.Timestamp `json:"expired_at"`
 }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> 6c35562 (dicease and treatment plan)
 type Disease struct {
 	ID          int64              `json:"id"`
 	Name        string             `json:"name"`
@@ -193,24 +100,7 @@ type Disease struct {
 	UpdatedAt   pgtype.Timestamptz `json:"updated_at"`
 }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> 0fb3f30 (user images)
-=======
-type DiseaseMedicine struct {
-	DiseaseID  int64 `json:"disease_id"`
-	MedicineID int64 `json:"medicine_id"`
-}
-
->>>>>>> 6c35562 (dicease and treatment plan)
-=======
->>>>>>> e859654 (Elastic search)
 type Doctor struct {
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> ada3717 (Docker file)
 	ID                int64       `json:"id"`
 	UserID            int64       `json:"user_id"`
 	Specialization    pgtype.Text `json:"specialization"`
@@ -218,19 +108,6 @@ type Doctor struct {
 	Education         pgtype.Text `json:"education"`
 	CertificateNumber pgtype.Text `json:"certificate_number"`
 	Bio               pgtype.Text `json:"bio"`
-<<<<<<< HEAD
-}
-
-type File struct {
-	ID         int64            `json:"id"`
-	FileName   string           `json:"file_name"`
-	FilePath   string           `json:"file_path"`
-	FileSize   int64            `json:"file_size"`
-	FileType   string           `json:"file_type"`
-	UploadedAt pgtype.Timestamp `json:"uploaded_at"`
-	UserID     pgtype.Int8      `json:"user_id"`
-=======
->>>>>>> ada3717 (Docker file)
 }
 
 type File struct {
@@ -252,47 +129,8 @@ type MedicalHistory struct {
 	Treatment       pgtype.Int8      `json:"treatment"`
 	CreatedAt       pgtype.Timestamp `json:"created_at"`
 	UpdatedAt       pgtype.Timestamp `json:"updated_at"`
-=======
-	ID                int64         `json:"id"`
-	UserID            int64         `json:"user_id"`
-	Specialization    pgtype.Text   `json:"specialization"`
-	YearsOfExperience pgtype.Int4   `json:"years_of_experience"`
-	Education         pgtype.Text   `json:"education"`
-	CertificateNumber pgtype.Text   `json:"certificate_number"`
-	Bio               pgtype.Text   `json:"bio"`
-	ConsultationFee   pgtype.Float8 `json:"consultation_fee"`
 }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-type Doctorschedule struct {
-	ID        int64            `json:"id"`
-	DoctorID  int32            `json:"doctor_id"`
-	DayOfWeek pgtype.Text      `json:"day_of_week"`
-	Shift     string           `json:"shift"`
-	StartTime pgtype.Time      `json:"start_time"`
-	EndTime   pgtype.Time      `json:"end_time"`
-	IsActive  pgtype.Bool      `json:"is_active"`
-	CreatedAt pgtype.Timestamp `json:"created_at"`
-	UpdatedAt pgtype.Timestamp `json:"updated_at"`
->>>>>>> e9037c6 (update sqlc)
-}
-
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-type MedicalHistory struct {
-	ID              int64            `json:"id"`
-	MedicalRecordID pgtype.Int8      `json:"medical_record_id"`
-	Condition       pgtype.Text      `json:"condition"`
-	DiagnosisDate   pgtype.Timestamp `json:"diagnosis_date"`
-	Notes           pgtype.Text      `json:"notes"`
-	Treatment       pgtype.Int8      `json:"treatment"`
-	CreatedAt       pgtype.Timestamp `json:"created_at"`
-	UpdatedAt       pgtype.Timestamp `json:"updated_at"`
-}
-
->>>>>>> 3bf345d (happy new year)
 type MedicalRecord struct {
 	ID        int64            `json:"id"`
 	PetID     pgtype.Int8      `json:"pet_id"`
@@ -300,7 +138,6 @@ type MedicalRecord struct {
 	UpdatedAt pgtype.Timestamp `json:"updated_at"`
 }
 
-<<<<<<< HEAD
 type Medicine struct {
 	ID             int64              `json:"id"`
 	Name           string             `json:"name"`
@@ -312,113 +149,10 @@ type Medicine struct {
 	SideEffects    pgtype.Text        `json:"side_effects"`
 	StartDate      pgtype.Date        `json:"start_date"`
 	EndDate        pgtype.Date        `json:"end_date"`
-<<<<<<< HEAD
 	CreatedAt      pgtype.Timestamptz `json:"created_at"`
 	UpdatedAt      pgtype.Timestamptz `json:"updated_at"`
 	ExpirationDate pgtype.Date        `json:"expiration_date"`
 	Quantity       pgtype.Int8        `json:"quantity"`
-}
-
-type Notification struct {
-	ID          int64            `json:"id"`
-	Username    string           `json:"username"`
-	Title       string           `json:"title"`
-	Content     pgtype.Text      `json:"content"`
-	IsRead      pgtype.Bool      `json:"is_read"`
-	RelatedID   pgtype.Int4      `json:"related_id"`
-	RelatedType pgtype.Text      `json:"related_type"`
-	Datetime    pgtype.Timestamp `json:"datetime"`
-	NotifyType  pgtype.Text      `json:"notify_type"`
-}
-
-type Order struct {
-	ID              int64            `json:"id"`
-	UserID          int64            `json:"user_id"`
-	OrderDate       pgtype.Timestamp `json:"order_date"`
-	TotalAmount     float64          `json:"total_amount"`
-	PaymentStatus   pgtype.Text      `json:"payment_status"`
-	CartItems       []byte           `json:"cart_items"`
-	ShippingAddress pgtype.Text      `json:"shipping_address"`
-	Notes           pgtype.Text      `json:"notes"`
-=======
-type Feedingschedule struct {
-	Feedingscheduleid int64            `json:"feedingscheduleid"`
-	Petid             pgtype.Int8      `json:"petid"`
-	Mealtime          pgtype.Time      `json:"mealtime"`
-	Foodtype          string           `json:"foodtype"`
-	Quantity          float64          `json:"quantity"`
-	Frequency         string           `json:"frequency"`
-	Lastfed           pgtype.Timestamp `json:"lastfed"`
-	Notes             pgtype.Text      `json:"notes"`
-	Isactive          pgtype.Bool      `json:"isactive"`
-}
-
-<<<<<<< HEAD
-type Medication struct {
-	MedicationID   int64            `json:"medication_id"`
-	PetID          int64            `json:"pet_id"`
-	MedicationName string           `json:"medication_name"`
-	Dosage         string           `json:"dosage"`
-	Frequency      string           `json:"frequency"`
-	StartDate      pgtype.Timestamp `json:"start_date"`
-	EndDate        pgtype.Timestamp `json:"end_date"`
-	Notes          pgtype.Text      `json:"notes"`
->>>>>>> 79a3bcc (medicine api)
-=======
-=======
->>>>>>> 272832d (redis cache)
-=======
->>>>>>> 685da65 (latest update)
-type Medicine struct {
-	ID          int64              `json:"id"`
-	Name        string             `json:"name"`
-	Description pgtype.Text        `json:"description"`
-	Usage       pgtype.Text        `json:"usage"`
-	Dosage      pgtype.Text        `json:"dosage"`
-	Frequency   pgtype.Text        `json:"frequency"`
-	Duration    pgtype.Text        `json:"duration"`
-	SideEffects pgtype.Text        `json:"side_effects"`
-	CreatedAt   pgtype.Timestamptz `json:"created_at"`
-	UpdatedAt   pgtype.Timestamptz `json:"updated_at"`
->>>>>>> 6c35562 (dicease and treatment plan)
-=======
-type Medicine struct {
-<<<<<<< HEAD
-	ID              int64              `json:"id"`
-	Name            string             `json:"name"`
-	Description     pgtype.Text        `json:"description"`
-	Usage           pgtype.Text        `json:"usage"`
-	Dosage          pgtype.Text        `json:"dosage"`
-	Frequency       pgtype.Text        `json:"frequency"`
-	Duration        pgtype.Text        `json:"duration"`
-	SideEffects     pgtype.Text        `json:"side_effects"`
-	MedicalRecordID pgtype.Int8        `json:"medical_record_id"`
-	PrescribingVet  pgtype.Text        `json:"prescribing_vet"`
-	StartDate       pgtype.Date        `json:"start_date"`
-	EndDate         pgtype.Date        `json:"end_date"`
-	CreatedAt       pgtype.Timestamptz `json:"created_at"`
-	UpdatedAt       pgtype.Timestamptz `json:"updated_at"`
->>>>>>> 3bf345d (happy new year)
-=======
-	ID             int64              `json:"id"`
-	Name           string             `json:"name"`
-	Description    pgtype.Text        `json:"description"`
-	Usage          pgtype.Text        `json:"usage"`
-	Dosage         pgtype.Text        `json:"dosage"`
-	Frequency      pgtype.Text        `json:"frequency"`
-	Duration       pgtype.Text        `json:"duration"`
-	SideEffects    pgtype.Text        `json:"side_effects"`
-	ExpirationDate pgtype.Date        `json:"expiration_date"`
-	Quantity       pgtype.Int8        `json:"quantity"`
-	CreatedAt      pgtype.Timestamptz `json:"created_at"`
-	UpdatedAt      pgtype.Timestamptz `json:"updated_at"`
->>>>>>> e859654 (Elastic search)
-=======
-	CreatedAt      pgtype.Timestamptz `json:"created_at"`
-	UpdatedAt      pgtype.Timestamptz `json:"updated_at"`
-	ExpirationDate pgtype.Date        `json:"expiration_date"`
-	Quantity       pgtype.Int8        `json:"quantity"`
->>>>>>> ada3717 (Docker file)
 }
 
 type Notification struct {
@@ -459,13 +193,6 @@ type Pet struct {
 	LastCheckupDate pgtype.Date   `json:"last_checkup_date"`
 	IsActive        pgtype.Bool   `json:"is_active"`
 	DataImage       []byte        `json:"data_image"`
-<<<<<<< HEAD
-<<<<<<< HEAD
-	OriginalImage   pgtype.Text   `json:"original_image"`
-=======
-	OriginalImage   string        `json:"original_image"`
->>>>>>> 0fb3f30 (user images)
-=======
 	OriginalImage   pgtype.Text   `json:"original_image"`
 }
 
@@ -476,51 +203,6 @@ type PetAllergy struct {
 	Detail pgtype.Text `json:"detail"`
 }
 
-type PetLog struct {
-	LogID    int64            `json:"log_id"`
-	Petid    int64            `json:"petid"`
-	Datetime pgtype.Timestamp `json:"datetime"`
-	Title    pgtype.Text      `json:"title"`
-	Notes    pgtype.Text      `json:"notes"`
-}
-
-type PetSchedule struct {
-<<<<<<< HEAD
-	ID           int64            `json:"id"`
-	PetID        pgtype.Int8      `json:"pet_id"`
-	ScheduleType string           `json:"schedule_type"`
-	EventTime    pgtype.Timestamp `json:"event_time"`
-	Duration     pgtype.Text      `json:"duration"`
-	FoodType     pgtype.Text      `json:"food_type"`
-	Quantity     pgtype.Float8    `json:"quantity"`
-	ActivityType pgtype.Text      `json:"activity_type"`
-	Frequency    pgtype.Text      `json:"frequency"`
-	Notes        pgtype.Text      `json:"notes"`
-	CreatedAt    pgtype.Timestamp `json:"created_at"`
-	IsActive     pgtype.Bool      `json:"is_active"`
->>>>>>> 272832d (redis cache)
-=======
-	ID               int64            `json:"id"`
-	PetID            pgtype.Int8      `json:"pet_id"`
-	Title            pgtype.Text      `json:"title"`
-	ReminderDatetime pgtype.Timestamp `json:"reminder_datetime"`
-	EventRepeat      pgtype.Text      `json:"event_repeat"`
-	EndType          pgtype.Text      `json:"end_type"`
-	EndDate          pgtype.Date      `json:"end_date"`
-	Notes            pgtype.Text      `json:"notes"`
-	CreatedAt        pgtype.Timestamp `json:"created_at"`
->>>>>>> 3835eb4 (update pet_schedule api)
-}
-
-<<<<<<< HEAD
-type PetAllergy struct {
-	ID     int64       `json:"id"`
-	PetID  pgtype.Int8 `json:"pet_id"`
-	Type   pgtype.Text `json:"type"`
-	Detail pgtype.Text `json:"detail"`
-}
-
-<<<<<<< HEAD
 type PetLog struct {
 	LogID    int64            `json:"log_id"`
 	Petid    int64            `json:"petid"`
@@ -540,21 +222,10 @@ type PetSchedule struct {
 	Notes            pgtype.Text      `json:"notes"`
 	IsActive         pgtype.Bool      `json:"is_active"`
 	CreatedAt        pgtype.Timestamp `json:"created_at"`
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-	IsActive         pgtype.Bool      `json:"is_active"`
->>>>>>> eb8d761 (updated pet schedule)
-=======
->>>>>>> 9fd7fc8 (feat: validate notification schema and APIs)
 	Removedat        pgtype.Timestamp `json:"removedat"`
 }
 
 type PetTreatment struct {
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> 6b24d88 (feat(payment): add PayOS payment integration and enhance treatment module)
 	ID          int64              `json:"id"`
 	PetID       pgtype.Int8        `json:"pet_id"`
 	DiseaseID   pgtype.Int8        `json:"disease_id"`
@@ -566,22 +237,6 @@ type PetTreatment struct {
 	Description pgtype.Text        `json:"description"`
 	CreatedAt   pgtype.Timestamptz `json:"created_at"`
 	DoctorID    pgtype.Int4        `json:"doctor_id"`
-<<<<<<< HEAD
-=======
-	ID        int64              `json:"id"`
-	PetID     pgtype.Int8        `json:"pet_id"`
-	DiseaseID pgtype.Int8        `json:"disease_id"`
-	StartDate pgtype.Date        `json:"start_date"`
-	EndDate   pgtype.Date        `json:"end_date"`
-	Status    pgtype.Text        `json:"status"`
-	Name      pgtype.Text        `json:"name"`
-	Type      pgtype.Text        `json:"type"`
-	Notes     pgtype.Text        `json:"notes"`
-	CreatedAt pgtype.Timestamptz `json:"created_at"`
-	DoctorID  pgtype.Int4        `json:"doctor_id"`
->>>>>>> c8bec46 (feat: add chatbot, room management, and pet allergy features)
-=======
->>>>>>> 6b24d88 (feat(payment): add PayOS payment integration and enhance treatment module)
 }
 
 type PhaseMedicine struct {
@@ -619,54 +274,6 @@ type Room struct {
 	AvailableAt          pgtype.Timestamp `json:"available_at"`
 }
 
-<<<<<<< HEAD
-=======
->>>>>>> 0fb3f30 (user images)
-=======
-type PetTreatment struct {
-	ID        int64              `json:"id"`
-	PetID     pgtype.Int8        `json:"pet_id"`
-	DiseaseID pgtype.Int8        `json:"disease_id"`
-	StartDate pgtype.Date        `json:"start_date"`
-	EndDate   pgtype.Date        `json:"end_date"`
-	Status    pgtype.Text        `json:"status"`
-	Notes     pgtype.Text        `json:"notes"`
-	CreatedAt pgtype.Timestamptz `json:"created_at"`
-	DoctorID  pgtype.Int4        `json:"doctor_id"`
-}
-
-type PhaseMedicine struct {
-	PhaseID    int64              `json:"phase_id"`
-	MedicineID int64              `json:"medicine_id"`
-	Dosage     pgtype.Text        `json:"dosage"`
-	Frequency  pgtype.Text        `json:"frequency"`
-	Duration   pgtype.Text        `json:"duration"`
-	Notes      pgtype.Text        `json:"notes"`
-	CreatedAt  pgtype.Timestamptz `json:"created_at"`
-	Quantity   pgtype.Int4        `json:"quantity"`
-	IsReceived pgtype.Bool        `json:"is_received"`
-}
-
-<<<<<<< HEAD
->>>>>>> 6c35562 (dicease and treatment plan)
-=======
-type Product struct {
-	ProductID     int64            `json:"product_id"`
-	Name          string           `json:"name"`
-	Description   pgtype.Text      `json:"description"`
-	Price         float64          `json:"price"`
-	StockQuantity pgtype.Int4      `json:"stock_quantity"`
-	Category      pgtype.Text      `json:"category"`
-	DataImage     []byte           `json:"data_image"`
-	OriginalImage pgtype.Text      `json:"original_image"`
-	CreatedAt     pgtype.Timestamp `json:"created_at"`
-	IsAvailable   pgtype.Bool      `json:"is_available"`
-	RemovedAt     pgtype.Timestamp `json:"removed_at"`
-}
-
->>>>>>> c449ffc (feat: cart api)
-=======
->>>>>>> 4ccd381 (Update appointment flow)
 type Service struct {
 	ID          int64            `json:"id"`
 	Name        pgtype.Text      `json:"name"`
@@ -674,8 +281,6 @@ type Service struct {
 	Duration    pgtype.Int2      `json:"duration"`
 	Cost        pgtype.Float8    `json:"cost"`
 	Category    pgtype.Text      `json:"category"`
-<<<<<<< HEAD
-<<<<<<< HEAD
 	Priority    pgtype.Int2      `json:"priority"`
 	CreatedAt   pgtype.Timestamp `json:"created_at"`
 }
@@ -688,85 +293,6 @@ type Shift struct {
 	MaxPatients      pgtype.Int4      `json:"max_patients"`
 	AssignedPatients pgtype.Int4      `json:"assigned_patients"`
 	CreatedAt        pgtype.Timestamp `json:"created_at"`
-=======
-	Notes       pgtype.Text      `json:"notes"`
-	CreatedAt   pgtype.Timestamp `json:"created_at"`
-	UpdatedAt   pgtype.Timestamp `json:"updated_at"`
->>>>>>> b393bb9 (add service and add permission)
-}
-
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-type State struct {
-	ID        int64            `json:"id"`
-	State     string           `json:"state"`
-	CreatedAt pgtype.Timestamp `json:"created_at"`
-	UpdatedAt pgtype.Timestamp `json:"updated_at"`
-=======
-type Timeslot struct {
-<<<<<<< HEAD
-<<<<<<< HEAD
-	ID          int64            `json:"id"`
-	DoctorID    int32            `json:"doctor_id"`
-	ScheduleID  int32            `json:"schedule_id"`
-	Date        pgtype.Date      `json:"date"`
-	StartTime   pgtype.Time      `json:"start_time"`
-	EndTime     pgtype.Time      `json:"end_time"`
-	MaxPatients pgtype.Int4      `json:"max_patients"`
-	SlotStatus  pgtype.Bool      `json:"slot_status"`
-	CreatedAt   pgtype.Timestamp `json:"created_at"`
-	UpdatedAt   pgtype.Timestamp `json:"updated_at"`
->>>>>>> e9037c6 (update sqlc)
-=======
-	ID        int64            `json:"id"`
-	DoctorID  int32            `json:"doctor_id"`
-	Date      pgtype.Date      `json:"date"`
-	StartTime pgtype.Time      `json:"start_time"`
-	EndTime   pgtype.Time      `json:"end_time"`
-	Status    pgtype.Text      `json:"status"`
-	CreatedAt pgtype.Timestamp `json:"created_at"`
-	UpdatedAt pgtype.Timestamp `json:"updated_at"`
->>>>>>> 685da65 (latest update)
-=======
-=======
-type TimeSlot struct {
->>>>>>> 33fcf96 (Big update)
-	ID             int64            `json:"id"`
-	DoctorID       int32            `json:"doctor_id"`
-	Date           pgtype.Date      `json:"date"`
-	StartTime      pgtype.Time      `json:"start_time"`
-	EndTime        pgtype.Time      `json:"end_time"`
-	MaxPatients    pgtype.Int4      `json:"max_patients"`
-	BookedPatients pgtype.Int4      `json:"booked_patients"`
-	CreatedAt      pgtype.Timestamp `json:"created_at"`
-	UpdatedAt      pgtype.Timestamp `json:"updated_at"`
->>>>>>> b393bb9 (add service and add permission)
-}
-
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-type SoapNote struct {
-	ID            pgtype.UUID      `json:"id"`
-	AppointmentID int32            `json:"appointment_id"`
-	Note          []byte           `json:"note"`
-	CreatedAt     pgtype.Timestamp `json:"created_at"`
-	UpdatedAt     pgtype.Timestamp `json:"updated_at"`
-=======
-	Priority    pgtype.Int2      `json:"priority"`
-	CreatedAt   pgtype.Timestamp `json:"created_at"`
-}
-
-type Shift struct {
-	ID               int64            `json:"id"`
-	DoctorID         int64            `json:"doctor_id"`
-	StartTime        pgtype.Timestamp `json:"start_time"`
-	EndTime          pgtype.Timestamp `json:"end_time"`
-	MaxPatients      pgtype.Int4      `json:"max_patients"`
-	AssignedPatients pgtype.Int4      `json:"assigned_patients"`
-	CreatedAt        pgtype.Timestamp `json:"created_at"`
->>>>>>> ada3717 (Docker file)
 }
 
 type State struct {
@@ -776,7 +302,6 @@ type State struct {
 	UpdatedAt pgtype.Timestamp `json:"updated_at"`
 }
 
->>>>>>> ffc9071 (AI suggestion)
 type TimeSlot struct {
 	ID             int64            `json:"id"`
 	DoctorID       int32            `json:"doctor_id"`
@@ -800,20 +325,6 @@ type TreatmentPhase struct {
 	CreatedAt   pgtype.Timestamptz `json:"created_at"`
 }
 
-=======
->>>>>>> 0fb3f30 (user images)
-=======
-type TreatmentPhase struct {
-	ID          int64              `json:"id"`
-	TreatmentID pgtype.Int8        `json:"treatment_id"`
-	PhaseName   pgtype.Text        `json:"phase_name"`
-	Description pgtype.Text        `json:"description"`
-	Status      pgtype.Text        `json:"status"`
-	StartDate   pgtype.Date        `json:"start_date"`
-	CreatedAt   pgtype.Timestamptz `json:"created_at"`
-}
-
->>>>>>> 6c35562 (dicease and treatment plan)
 type User struct {
 	ID              int64            `json:"id"`
 	Username        string           `json:"username"`
@@ -823,15 +334,7 @@ type User struct {
 	PhoneNumber     pgtype.Text      `json:"phone_number"`
 	Address         pgtype.Text      `json:"address"`
 	DataImage       []byte           `json:"data_image"`
-<<<<<<< HEAD
-<<<<<<< HEAD
 	OriginalImage   pgtype.Text      `json:"original_image"`
-=======
-	OriginalImage   string           `json:"original_image"`
->>>>>>> 0fb3f30 (user images)
-=======
-	OriginalImage   pgtype.Text      `json:"original_image"`
->>>>>>> 272832d (redis cache)
 	Role            pgtype.Text      `json:"role"`
 	Status          pgtype.Text      `json:"status"`
 	CreatedAt       pgtype.Timestamp `json:"created_at"`

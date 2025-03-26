@@ -11,10 +11,6 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
 const createtNotification = `-- name: CreatetNotification :one
 INSERT INTO notifications (
     username,
@@ -79,226 +75,11 @@ LIMIT $2 OFFSET $3
 `
 
 type ListNotificationsByUsernameParams struct {
-=======
-const deleteAllNotifications = `-- name: DeleteAllNotifications :exec
-DELETE FROM notifications
-=======
-const deleteAllNotificationsByUser = `-- name: DeleteAllNotificationsByUser :exec
-DELETE FROM notifications WHERE username = $1
->>>>>>> 9fd7fc8 (feat: validate notification schema and APIs)
-=======
-const createNotificationPreference = `-- name: CreateNotificationPreference :exec
-INSERT INTO notification_preferences (
-    username,
-    topic,
-    enabled
-) VALUES (
-    $1, $2, $3
-)
->>>>>>> e859654 (Elastic search)
-`
-
-type CreateNotificationPreferenceParams struct {
-	Username string      `json:"username"`
-	Topic    string      `json:"topic"`
-	Enabled  pgtype.Bool `json:"enabled"`
-}
-
-func (q *Queries) CreateNotificationPreference(ctx context.Context, arg CreateNotificationPreferenceParams) error {
-	_, err := q.db.Exec(ctx, createNotificationPreference, arg.Username, arg.Topic, arg.Enabled)
-	return err
-}
-
-=======
->>>>>>> ada3717 (Docker file)
-const createtNotification = `-- name: CreatetNotification :one
-INSERT INTO notifications (
-    username,
-    title,
-    content,
-    notify_type,
-    related_id,
-    related_type,
-    is_read
-) VALUES (
-    $1, $2, $3, $4, $5, $6, false
-) RETURNING id, username, title, content, is_read, related_id, related_type, datetime, notify_type
-`
-
-type CreatetNotificationParams struct {
-	Username    string      `json:"username"`
-	Title       string      `json:"title"`
-	Content     pgtype.Text `json:"content"`
-	NotifyType  pgtype.Text `json:"notify_type"`
-	RelatedID   pgtype.Int4 `json:"related_id"`
-	RelatedType pgtype.Text `json:"related_type"`
-}
-
-func (q *Queries) CreatetNotification(ctx context.Context, arg CreatetNotificationParams) (Notification, error) {
-	row := q.db.QueryRow(ctx, createtNotification,
-		arg.Username,
-		arg.Title,
-		arg.Content,
-		arg.NotifyType,
-		arg.RelatedID,
-		arg.RelatedType,
-	)
-	var i Notification
-	err := row.Scan(
-		&i.ID,
-		&i.Username,
-		&i.Title,
-		&i.Content,
-		&i.IsRead,
-		&i.RelatedID,
-		&i.RelatedType,
-		&i.Datetime,
-		&i.NotifyType,
-	)
-	return i, err
-}
-
-const deleteNotificationsByUsername = `-- name: DeleteNotificationsByUsername :exec
-DELETE FROM notifications
-WHERE username = $1
-`
-
-func (q *Queries) DeleteNotificationsByUsername(ctx context.Context, username string) error {
-	_, err := q.db.Exec(ctx, deleteNotificationsByUsername, username)
-	return err
-}
-
-<<<<<<< HEAD
-const getNotificationPreferencesByUsername = `-- name: GetNotificationPreferencesByUsername :many
-SELECT id, username, topic, enabled, created_at, updated_at FROM notification_preferences
-WHERE username = $1
-`
-
-<<<<<<< HEAD
-type GetNotificationsByUsernameParams struct {
->>>>>>> eb8d761 (updated pet schedule)
 	Username string `json:"username"`
 	Limit    int32  `json:"limit"`
 	Offset   int32  `json:"offset"`
 }
 
-<<<<<<< HEAD
-func (q *Queries) ListNotificationsByUsername(ctx context.Context, arg ListNotificationsByUsernameParams) ([]Notification, error) {
-	rows, err := q.db.Query(ctx, listNotificationsByUsername, arg.Username, arg.Limit, arg.Offset)
-=======
-func (q *Queries) GetNotificationsByUsername(ctx context.Context, arg GetNotificationsByUsernameParams) ([]Notification, error) {
-	rows, err := q.db.Query(ctx, getNotificationsByUsername, arg.Username, arg.Limit, arg.Offset)
->>>>>>> eb8d761 (updated pet schedule)
-=======
-func (q *Queries) GetNotificationPreferencesByUsername(ctx context.Context, username string) ([]NotificationPreference, error) {
-	rows, err := q.db.Query(ctx, getNotificationPreferencesByUsername, username)
->>>>>>> e859654 (Elastic search)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	items := []NotificationPreference{}
-	for rows.Next() {
-		var i NotificationPreference
-		if err := rows.Scan(
-<<<<<<< HEAD
-<<<<<<< HEAD
-			&i.ID,
-			&i.Username,
-			&i.Title,
-			&i.Content,
-			&i.IsRead,
-			&i.RelatedID,
-			&i.RelatedType,
-			&i.Datetime,
-			&i.NotifyType,
-=======
-			&i.Notificationid,
-			&i.Username,
-			&i.Title,
-<<<<<<< HEAD
-			&i.Body,
-			&i.Duedate,
-			&i.Repeatinterval,
-			&i.Iscompleted,
-			&i.Notificationsent,
->>>>>>> eb8d761 (updated pet schedule)
-=======
-			&i.Description,
-			&i.Datetime,
-			&i.IsRead,
->>>>>>> 9fd7fc8 (feat: validate notification schema and APIs)
-=======
-			&i.ID,
-			&i.Username,
-			&i.Topic,
-			&i.Enabled,
-			&i.CreatedAt,
-			&i.UpdatedAt,
->>>>>>> e859654 (Elastic search)
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
-}
-
-<<<<<<< HEAD
-<<<<<<< HEAD
-const markNotificationAsRead = `-- name: MarkNotificationAsRead :exec
-UPDATE notifications
-SET is_read = true
-WHERE id = $1
-`
-
-func (q *Queries) MarkNotificationAsRead(ctx context.Context, id int64) error {
-	_, err := q.db.Exec(ctx, markNotificationAsRead, id)
-	return err
-=======
-const insertNotification = `-- name: InsertNotification :one
-INSERT INTO notifications (username, title, description,datetime)
-VALUES ($1, $2, $3, $4)
-RETURNING notificationid, username, title, description, datetime, is_read
-=======
-=======
->>>>>>> ada3717 (Docker file)
-const listNotificationsByUsername = `-- name: ListNotificationsByUsername :many
-SELECT id, username, title, content, is_read, related_id, related_type, datetime, notify_type FROM notifications
-WHERE username = $1
-LIMIT $2 OFFSET $3
->>>>>>> e859654 (Elastic search)
-`
-
-type ListNotificationsByUsernameParams struct {
-	Username string `json:"username"`
-	Limit    int32  `json:"limit"`
-	Offset   int32  `json:"offset"`
-}
-
-<<<<<<< HEAD
-func (q *Queries) InsertNotification(ctx context.Context, arg InsertNotificationParams) (Notification, error) {
-	row := q.db.QueryRow(ctx, insertNotification,
-		arg.Username,
-		arg.Title,
-		arg.Description,
-		arg.Datetime,
-	)
-	var i Notification
-	err := row.Scan(
-		&i.Notificationid,
-		&i.Username,
-		&i.Title,
-		&i.Description,
-		&i.Datetime,
-		&i.IsRead,
-	)
-	return i, err
->>>>>>> eb8d761 (updated pet schedule)
-=======
 func (q *Queries) ListNotificationsByUsername(ctx context.Context, arg ListNotificationsByUsernameParams) ([]Notification, error) {
 	rows, err := q.db.Query(ctx, listNotificationsByUsername, arg.Username, arg.Limit, arg.Offset)
 	if err != nil {
@@ -327,7 +108,6 @@ func (q *Queries) ListNotificationsByUsername(ctx context.Context, arg ListNotif
 		return nil, err
 	}
 	return items, nil
->>>>>>> e859654 (Elastic search)
 }
 
 const markNotificationAsRead = `-- name: MarkNotificationAsRead :exec

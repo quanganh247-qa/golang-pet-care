@@ -11,21 +11,11 @@ import (
 )
 
 type Querier interface {
-<<<<<<< HEAD
-<<<<<<< HEAD
 	ActiveReminder(ctx context.Context, arg ActiveReminderParams) error
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
 	AddItemToCart(ctx context.Context, arg AddItemToCartParams) (CartItem, error)
 	// Assign Carprofen to the Initial Phase
 	AssignCarprofenToInitialPhase(ctx context.Context, arg AssignCarprofenToInitialPhaseParams) error
 	AssignMedicationToTreatmentPhase(ctx context.Context, arg AssignMedicationToTreatmentPhaseParams) (PhaseMedicine, error)
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> 71b74e9 (feat(appointment): add room management and update appointment functionality.)
 	AssignRoomToAppointment(ctx context.Context, arg AssignRoomToAppointmentParams) error
 	CheckinAppointment(ctx context.Context, appointmentID int64) error
 	CountAppointmentsByDateAndTimeSlot(ctx context.Context, arg CountAppointmentsByDateAndTimeSlotParams) (int64, error)
@@ -41,10 +31,6 @@ type Querier interface {
 	CreateMedicine(ctx context.Context, arg CreateMedicineParams) (Medicine, error)
 	CreateOrder(ctx context.Context, arg CreateOrderParams) (Order, error)
 	CreatePet(ctx context.Context, arg CreatePetParams) (Pet, error)
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> c8bec46 (feat: add chatbot, room management, and pet allergy features)
 	CreatePetAllergy(ctx context.Context, arg CreatePetAllergyParams) (PetAllergy, error)
 	CreatePetLog(ctx context.Context, arg CreatePetLogParams) (PetLog, error)
 	CreatePetSchedule(ctx context.Context, arg CreatePetScheduleParams) error
@@ -56,370 +42,61 @@ type Querier interface {
 	CreateTreatment(ctx context.Context, arg CreateTreatmentParams) (PetTreatment, error)
 	CreateTreatmentPhase(ctx context.Context, arg CreateTreatmentPhaseParams) (TreatmentPhase, error)
 	CreateUser(ctx context.Context, arg CreateUserParams) (User, error)
-=======
-=======
-=======
-	ActiveReminder(ctx context.Context, arg ActiveReminderParams) error
->>>>>>> eb8d761 (updated pet schedule)
-=======
-	AddItemToCart(ctx context.Context, arg AddItemToCartParams) error
->>>>>>> c449ffc (feat: cart api)
-=======
-	AddItemToCart(ctx context.Context, arg AddItemToCartParams) (Cartitem, error)
-<<<<<<< HEAD
->>>>>>> 21608b5 (cart and order api)
-=======
-	CountAppointmentsByDateAndTimeSlot(ctx context.Context, arg CountAppointmentsByDateAndTimeSlotParams) (int64, error)
->>>>>>> b393bb9 (add service and add permission)
-=======
-	AddItemToCart(ctx context.Context, arg AddItemToCartParams) (Cartitem, error)
-=======
-	AddItemToCart(ctx context.Context, arg AddItemToCartParams) (CartItem, error)
->>>>>>> 33fcf96 (Big update)
-	// Assign Carprofen to the Initial Phase
-	AssignCarprofenToInitialPhase(ctx context.Context, arg AssignCarprofenToInitialPhaseParams) error
-	AssignMedicationToTreatmentPhase(ctx context.Context, arg AssignMedicationToTreatmentPhaseParams) (PhaseMedicine, error)
-	CountAppointmentsByDateAndTimeSlot(ctx context.Context, arg CountAppointmentsByDateAndTimeSlotParams) (int64, error)
-	CountAppointmentsByDoctorAndDate(ctx context.Context, arg CountAppointmentsByDoctorAndDateParams) (int64, error)
-	CountShiftsByDoctorAndDate(ctx context.Context, arg CountShiftsByDoctorAndDateParams) (int64, error)
-	CreateAllergy(ctx context.Context, arg CreateAllergyParams) (Allergy, error)
->>>>>>> 3bf345d (happy new year)
-=======
-	CheckinAppointment(ctx context.Context, appointmentID int64) error
-	CountAppointmentsByDateAndTimeSlot(ctx context.Context, arg CountAppointmentsByDateAndTimeSlotParams) (int64, error)
-	CountAppointmentsByDoctorAndDate(ctx context.Context, arg CountAppointmentsByDoctorAndDateParams) (int64, error)
-	CountShiftsByDoctorAndDate(ctx context.Context, arg CountShiftsByDoctorAndDateParams) (int64, error)
->>>>>>> 4ccd381 (Update appointment flow)
-	CreateAppointment(ctx context.Context, arg CreateAppointmentParams) (Appointment, error)
-	CreateCartForUser(ctx context.Context, userID int64) (Cart, error)
-	CreateDisease(ctx context.Context, arg CreateDiseaseParams) (Disease, error)
-	CreateDoctor(ctx context.Context, arg CreateDoctorParams) (Doctor, error)
-	CreateFile(ctx context.Context, arg CreateFileParams) (File, error)
-	CreateMedicalHistory(ctx context.Context, arg CreateMedicalHistoryParams) (MedicalHistory, error)
-	CreateMedicalRecord(ctx context.Context, petID pgtype.Int8) (MedicalRecord, error)
-	CreateMedicine(ctx context.Context, arg CreateMedicineParams) (Medicine, error)
-	CreateOrder(ctx context.Context, arg CreateOrderParams) (Order, error)
-	CreatePet(ctx context.Context, arg CreatePetParams) (Pet, error)
-	CreatePetLog(ctx context.Context, arg CreatePetLogParams) (PetLog, error)
-	CreatePetSchedule(ctx context.Context, arg CreatePetScheduleParams) error
-<<<<<<< HEAD
->>>>>>> 272832d (redis cache)
-=======
-	CreateSOAP(ctx context.Context, arg CreateSOAPParams) (Consultation, error)
->>>>>>> e859654 (Elastic search)
-	CreateService(ctx context.Context, arg CreateServiceParams) (Service, error)
-	CreateShift(ctx context.Context, arg CreateShiftParams) (CreateShiftRow, error)
-	CreateTimeSlot(ctx context.Context, arg CreateTimeSlotParams) (TimeSlot, error)
-	CreateTreatment(ctx context.Context, arg CreateTreatmentParams) (PetTreatment, error)
-	CreateTreatmentPhase(ctx context.Context, arg CreateTreatmentPhaseParams) (TreatmentPhase, error)
-<<<<<<< HEAD
-	CreateUser(ctx context.Context, arg CreateUserParams) (int64, error)
->>>>>>> 0fb3f30 (user images)
-=======
-	CreateUser(ctx context.Context, arg CreateUserParams) (User, error)
->>>>>>> ada3717 (Docker file)
 	CreateVaccination(ctx context.Context, arg CreateVaccinationParams) (Vaccination, error)
 	CreateVerifyEmail(ctx context.Context, arg CreateVerifyEmailParams) (VerifyEmail, error)
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
 	CreatetNotification(ctx context.Context, arg CreatetNotificationParams) (Notification, error)
 	DecreaseItemQuantity(ctx context.Context, arg DecreaseItemQuantityParams) error
-<<<<<<< HEAD
-=======
-	// Delete all notifications
-	DeleteAllNotifications(ctx context.Context) error
->>>>>>> eb8d761 (updated pet schedule)
-=======
->>>>>>> 4ccd381 (Update appointment flow)
 	DeleteDeviceToken(ctx context.Context, arg DeleteDeviceTokenParams) error
 	DeleteDoctor(ctx context.Context, id int64) error
 	DeleteMedicalHistory(ctx context.Context, id int64) error
 	DeleteMedicalRecord(ctx context.Context, id int64) error
 	DeleteNotificationsByUsername(ctx context.Context, username string) error
-=======
-	DeleteActivityLog(ctx context.Context, logid int64) error
-	DeleteDeviceToken(ctx context.Context, arg DeleteDeviceTokenParams) error
-	DeleteFeedingSchedule(ctx context.Context, feedingscheduleid int64) error
->>>>>>> 9d28896 (image pet)
-=======
-	DeleteDeviceToken(ctx context.Context, arg DeleteDeviceTokenParams) error
->>>>>>> 272832d (redis cache)
-=======
-=======
-	DecreaseItemQuantity(ctx context.Context, arg DecreaseItemQuantityParams) error
->>>>>>> 4a16bfc (remove item in cart)
-	DeleteAllNotificationsByUser(ctx context.Context, username string) error
-=======
-	CreatetNotification(ctx context.Context, arg CreatetNotificationParams) (Notification, error)
-	DecreaseItemQuantity(ctx context.Context, arg DecreaseItemQuantityParams) error
->>>>>>> e859654 (Elastic search)
-	DeleteAllergy(ctx context.Context, id int64) error
-	DeleteDeviceToken(ctx context.Context, arg DeleteDeviceTokenParams) error
-	DeleteDoctor(ctx context.Context, id int64) error
-	DeleteMedicalHistory(ctx context.Context, id int64) error
-	DeleteMedicalRecord(ctx context.Context, id int64) error
-<<<<<<< HEAD
-	DeleteNotificationByID(ctx context.Context, notificationid int64) error
->>>>>>> 9fd7fc8 (feat: validate notification schema and APIs)
-=======
-	DeleteNotificationsByUsername(ctx context.Context, username string) error
->>>>>>> e859654 (Elastic search)
 	DeletePet(ctx context.Context, petid int64) error
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
 	DeletePetAllergy(ctx context.Context, id int64) error
 	DeletePetLog(ctx context.Context, logID int64) error
 	DeletePetSchedule(ctx context.Context, id int64) error
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-	DeletePetAllergy(ctx context.Context, id int64) error
-	DeletePetLog(ctx context.Context, logID int64) error
-	DeletePetSchedule(ctx context.Context, id int64) error
->>>>>>> c8bec46 (feat: add chatbot, room management, and pet allergy features)
 	DeleteRoom(ctx context.Context, id int64) error
 	DeleteService(ctx context.Context, id int64) error
-<<<<<<< HEAD
-<<<<<<< HEAD
 	DeleteShiftsByDate(ctx context.Context, arg DeleteShiftsByDateParams) error
-=======
->>>>>>> 3bf345d (happy new year)
-=======
-	DeleteShiftsByDate(ctx context.Context, arg DeleteShiftsByDateParams) error
->>>>>>> ada3717 (Docker file)
 	DeleteTreatment(ctx context.Context, id int64) error
 	DeleteTreatmentPhase(ctx context.Context, id int64) error
 	DeleteUser(ctx context.Context, id int64) error
-=======
-	DeletePetLog(ctx context.Context, petid int64) error
-=======
-	DeletePetLog(ctx context.Context, logID int64) error
->>>>>>> 884b92e (update pet logs api)
-=======
->>>>>>> eb8d761 (updated pet schedule)
-	DeleteService(ctx context.Context, serviceid int64) error
-	DeleteServiceType(ctx context.Context, typeid int64) error
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
->>>>>>> 7e616af (add pet log schema)
-=======
-=======
-	DeleteTimeSlot(ctx context.Context, id int64) error
->>>>>>> e9037c6 (update sqlc)
-=======
->>>>>>> 685da65 (latest update)
-=======
-	DeleteService(ctx context.Context, id int64) error
->>>>>>> b393bb9 (add service and add permission)
-	DeleteUser(ctx context.Context, id int64) error
->>>>>>> 1f24c18 (feat: OTP with redis)
 	DeleteVaccination(ctx context.Context, vaccinationid int64) error
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> e859654 (Elastic search)
 	GetActiveTreatments(ctx context.Context, arg GetActiveTreatmentsParams) ([]GetActiveTreatmentsRow, error)
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> 71b74e9 (feat(appointment): add room management and update appointment functionality.)
 	GetAllAppointments(ctx context.Context, arg GetAllAppointmentsParams) ([]GetAllAppointmentsRow, error)
 	GetAllAppointmentsByDate(ctx context.Context, arg GetAllAppointmentsByDateParams) ([]GetAllAppointmentsByDateRow, error)
 	GetAllOrders(ctx context.Context, arg GetAllOrdersParams) ([]Order, error)
-=======
-	GetAllAppointments(ctx context.Context) ([]GetAllAppointmentsRow, error)
-<<<<<<< HEAD
->>>>>>> ffc9071 (AI suggestion)
-=======
-	GetAllOrders(ctx context.Context, arg GetAllOrdersParams) ([]Order, error)
->>>>>>> dc47646 (Optimize SQL query)
 	GetAllPets(ctx context.Context) ([]Pet, error)
 	GetAllProducts(ctx context.Context, arg GetAllProductsParams) ([]Product, error)
 	GetAllRole(ctx context.Context) ([]pgtype.Text, error)
 	GetAllSchedulesByPet(ctx context.Context, arg GetAllSchedulesByPetParams) ([]PetSchedule, error)
 	GetAllTreatmentPhasesByTreatmentID(ctx context.Context, treatmentID pgtype.Int8) ([]TreatmentPhase, error)
-<<<<<<< HEAD
-=======
-	GetActiveDoctors(ctx context.Context, arg GetActiveDoctorsParams) ([]GetActiveDoctorsRow, error)
-=======
->>>>>>> 6f3ea8a (update sqlc)
-=======
-	// Get All Active Treatments
-<<<<<<< HEAD
-	GetActiveTreatments(ctx context.Context) ([]GetActiveTreatmentsRow, error)
->>>>>>> 3bf345d (happy new year)
-=======
-	GetActiveTreatments(ctx context.Context, arg GetActiveTreatmentsParams) ([]GetActiveTreatmentsRow, error)
->>>>>>> 883d5b3 (update treatment)
-=======
-	GetAllDoctors(ctx context.Context) ([]Doctor, error)
-	GetAllPets(ctx context.Context) ([]Pet, error)
->>>>>>> 33fcf96 (Big update)
-	GetAllProducts(ctx context.Context, arg GetAllProductsParams) ([]Product, error)
-	GetAllSchedulesByPet(ctx context.Context, arg GetAllSchedulesByPetParams) ([]PetSchedule, error)
-<<<<<<< HEAD
-	GetAllServices(ctx context.Context, arg GetAllServicesParams) ([]Service, error)
-<<<<<<< HEAD
-	GetAllTimeSlots(ctx context.Context, arg GetAllTimeSlotsParams) ([]GetAllTimeSlotsRow, error)
->>>>>>> 79a3bcc (medicine api)
-=======
->>>>>>> e9037c6 (update sqlc)
-=======
->>>>>>> b393bb9 (add service and add permission)
-=======
->>>>>>> 6b24d88 (feat(payment): add PayOS payment integration and enhance treatment module)
 	GetAllUsers(ctx context.Context) ([]User, error)
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> 4ccd381 (Update appointment flow)
 	GetAppointmentByStateId(ctx context.Context, stateID pgtype.Int4) ([]Appointment, error)
 	GetAppointmentDetail(ctx context.Context, arg GetAppointmentDetailParams) (GetAppointmentDetailRow, error)
 	GetAppointmentDetailByAppointmentID(ctx context.Context, appointmentID int64) (GetAppointmentDetailByAppointmentIDRow, error)
-=======
-	GetAllergies(ctx context.Context, medicalRecordID pgtype.Int8) ([]Allergy, error)
-	GetAppointmentByStateId(ctx context.Context, stateID pgtype.Int4) ([]Appointment, error)
-<<<<<<< HEAD
-	// Tính tỷ lệ xác nhận và hủy lịch hẹn
-	GetAppointmentConfirmationStats(ctx context.Context, arg GetAppointmentConfirmationStatsParams) (GetAppointmentConfirmationStatsRow, error)
-	// Đếm số lượng lịch hẹn theo từng ngày trong khoảng thời gian
-	GetAppointmentCountByDateRange(ctx context.Context, arg GetAppointmentCountByDateRangeParams) ([]GetAppointmentCountByDateRangeRow, error)
-	GetAppointmentDetailById(ctx context.Context, appointmentID int64) (Appointment, error)
-<<<<<<< HEAD
->>>>>>> 3bf345d (happy new year)
 	GetAppointmentsByDoctor(ctx context.Context, doctorID pgtype.Int8) ([]GetAppointmentsByDoctorRow, error)
-=======
-	// Đếm số lượng lịch hẹn theo từng giờ trong ngày
-	GetAppointmentTrendsByHour(ctx context.Context, arg GetAppointmentTrendsByHourParams) ([]GetAppointmentTrendsByHourRow, error)
-	GetAppointmentsByDoctor(ctx context.Context, doctorID pgtype.Int8) ([]GetAppointmentsByDoctorRow, error)
-	// Thống kê số lượng lịch hẹn theo trạng thái và khoảng thời gian (ngày/tuần/tháng)
-	GetAppointmentsByStatus(ctx context.Context, dollar_1 string) ([]GetAppointmentsByStatusRow, error)
->>>>>>> ada3717 (Docker file)
-=======
-	GetAppointmentDetail(ctx context.Context, arg GetAppointmentDetailParams) (GetAppointmentDetailRow, error)
-	GetAppointmentDetailByAppointmentID(ctx context.Context, appointmentID int64) (GetAppointmentDetailByAppointmentIDRow, error)
-	GetAppointmentsByDoctor(ctx context.Context, doctorID pgtype.Int8) ([]GetAppointmentsByDoctorRow, error)
->>>>>>> dc47646 (Optimize SQL query)
 	GetAppointmentsByTimeSlot(ctx context.Context, timeSlotID pgtype.Int8) ([]GetAppointmentsByTimeSlotRow, error)
 	GetAppointmentsByUser(ctx context.Context, username pgtype.Text) ([]GetAppointmentsByUserRow, error)
-=======
-	GetAppointmentDetailById(ctx context.Context, appointmentID int64) (Appointment, error)
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
->>>>>>> 7e35c2e (get appointment detail)
-=======
-	GetAppointmentsByPetOfUser(ctx context.Context, username string) ([]Appointment, error)
->>>>>>> e30b070 (Get list appoinment by user)
-=======
-	GetAppointmentsByDoctor(ctx context.Context, arg GetAppointmentsByDoctorParams) (int64, error)
-=======
-	GetAppointmentsByDoctor(ctx context.Context, doctorID pgtype.Int8) ([]GetAppointmentsByDoctorRow, error)
->>>>>>> b393bb9 (add service and add permission)
-	GetAppointmentsByUser(ctx context.Context, username pgtype.Text) ([]GetAppointmentsByUserRow, error)
->>>>>>> 685da65 (latest update)
 	GetAppointmentsOfDoctorWithDetails(ctx context.Context, id int64) ([]GetAppointmentsOfDoctorWithDetailsRow, error)
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-	GetAppointmentsQueue(ctx context.Context, doctorID pgtype.Int8) ([]Appointment, error)
-=======
-	GetAppointmentsQueue(ctx context.Context) ([]Appointment, error)
->>>>>>> 4ccd381 (Update appointment flow)
-	GetAvailableDoctors(ctx context.Context, date pgtype.Date) ([]GetAvailableDoctorsRow, error)
-<<<<<<< HEAD
-	GetAvailableRooms(ctx context.Context, arg GetAvailableRoomsParams) ([]Room, error)
-	GetAvailableRoomsForDuration(ctx context.Context, arg GetAvailableRoomsForDurationParams) ([]Room, error)
-=======
->>>>>>> b393bb9 (add service and add permission)
-=======
-	GetAvailableDoctors(ctx context.Context, date pgtype.Date) ([]GetAvailableDoctorsRow, error)
->>>>>>> ffc9071 (AI suggestion)
-=======
-	GetAvailableRooms(ctx context.Context, availableAt pgtype.Timestamp) ([]Room, error)
->>>>>>> 71b74e9 (feat(appointment): add room management and update appointment functionality.)
-=======
 	GetAppointmentsQueue(ctx context.Context, doctorID pgtype.Int8) ([]Appointment, error)
 	GetAvailableDoctors(ctx context.Context, date pgtype.Date) ([]GetAvailableDoctorsRow, error)
 	GetAvailableRooms(ctx context.Context, arg GetAvailableRoomsParams) ([]Room, error)
 	GetAvailableRoomsForDuration(ctx context.Context, arg GetAvailableRoomsForDurationParams) ([]Room, error)
->>>>>>> c8bec46 (feat: add chatbot, room management, and pet allergy features)
 	GetAvailableTimeSlots(ctx context.Context, arg GetAvailableTimeSlotsParams) ([]GetAvailableTimeSlotsRow, error)
 	GetCartByUserId(ctx context.Context, userID int64) ([]Cart, error)
-<<<<<<< HEAD
-<<<<<<< HEAD
-	GetCartItems(ctx context.Context, cartID int64) ([]GetCartItemsRow, error)
-<<<<<<< HEAD
-	GetCartItemsByUserId(ctx context.Context, userID int64) ([]GetCartItemsByUserIdRow, error)
-	GetCartTotal(ctx context.Context, cartID int64) (float64, error)
-	GetClinicInfo(ctx context.Context, id int64) (GetClinicInfoRow, error)
-=======
-	GetCartItems(ctx context.Context, cartID pgtype.Int8) ([]GetCartItemsRow, error)
-	GetCartTotal(ctx context.Context, cartID pgtype.Int8) (float64, error)
->>>>>>> 33fcf96 (Big update)
-=======
 	GetCartItems(ctx context.Context, cartID int64) ([]GetCartItemsRow, error)
 	GetCartItemsByUserId(ctx context.Context, userID int64) ([]GetCartItemsByUserIdRow, error)
 	GetCartTotal(ctx context.Context, cartID int64) (float64, error)
 	GetClinicInfo(ctx context.Context, id int64) (GetClinicInfoRow, error)
-<<<<<<< HEAD
-	// Tính số lượng lịch hẹn, số lượng bác sĩ và thú cưng trong ngày
-	GetDailyAppointmentStats(ctx context.Context) (GetDailyAppointmentStatsRow, error)
->>>>>>> ada3717 (Docker file)
-=======
->>>>>>> dc47646 (Optimize SQL query)
 	GetDeviceTokenByUsername(ctx context.Context, username string) ([]DeviceToken, error)
 	// 1. Query cơ bản để lấy thông tin bệnh và thuốc điều trị
 	GetDiceaseAndMedicinesInfo(ctx context.Context, lower string) ([]GetDiceaseAndMedicinesInfoRow, error)
 	GetDiseaseByID(ctx context.Context, id int64) (Disease, error)
 	GetDiseaseTreatmentPlanWithPhases(ctx context.Context, lower string) ([]GetDiseaseTreatmentPlanWithPhasesRow, error)
-=======
-=======
-	GetCartByUserId(ctx context.Context, userID int64) ([]Cart, error)
->>>>>>> c449ffc (feat: cart api)
-=======
-	GetCartTotal(ctx context.Context, cartID int64) (float64, error)
->>>>>>> 21608b5 (cart and order api)
-	GetDeviceTokenByUsername(ctx context.Context, username string) ([]Devicetoken, error)
-<<<<<<< HEAD
->>>>>>> 0fb3f30 (user images)
-=======
-	// 1. Query cơ bản để lấy thông tin bệnh và thuốc điều trị
-	GetDiceaseAndMedicinesInfo(ctx context.Context, lower string) ([]GetDiceaseAndMedicinesInfoRow, error)
-	GetDiseaseByID(ctx context.Context, id int64) (Disease, error)
-	GetDiseaseTreatmentPlanWithPhases(ctx context.Context, lower string) ([]GetDiseaseTreatmentPlanWithPhasesRow, error)
-<<<<<<< HEAD
-<<<<<<< HEAD
->>>>>>> 6c35562 (dicease and treatment plan)
 	GetDoctor(ctx context.Context, id int64) (GetDoctorRow, error)
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
 	GetDoctorByUserId(ctx context.Context, userID int64) (Doctor, error)
-<<<<<<< HEAD
 	GetDoctorByUsername(ctx context.Context, username string) (GetDoctorByUsernameRow, error)
-=======
-	GetDoctorById(ctx context.Context, id int64) (Doctor, error)
-	GetDoctorSchedules(ctx context.Context, doctorID int32) ([]Doctorschedule, error)
-	GetDoctorTimeSlots(ctx context.Context, arg GetDoctorTimeSlotsParams) ([]Timeslot, error)
->>>>>>> e9037c6 (update sqlc)
 	GetDoctors(ctx context.Context) ([]GetDoctorsRow, error)
 	GetFileByID(ctx context.Context, id int64) (File, error)
 	GetHistoryAppointmentsByPetID(ctx context.Context, petid pgtype.Int8) ([]GetHistoryAppointmentsByPetIDRow, error)
@@ -430,55 +107,6 @@ type Querier interface {
 	GetMedicationsByPhase(ctx context.Context, phaseID int64) ([]GetMedicationsByPhaseRow, error)
 	GetMedicineByID(ctx context.Context, id int64) (Medicine, error)
 	GetMedicineByTreatmentID(ctx context.Context, treatmentID pgtype.Int8) ([]GetMedicineByTreatmentIDRow, error)
-=======
-	GetDoctorSchedules(ctx context.Context, doctorID int32) ([]Doctorschedule, error)
-	GetDoctorTimeSlots(ctx context.Context, arg GetDoctorTimeSlotsParams) ([]Timeslot, error)
-=======
-	GetDoctor(ctx context.Context, id int64) (GetDoctorRow, error)
-<<<<<<< HEAD
-	GetDoctorById(ctx context.Context, id int64) (Doctor, error)
-	GetDoctors(ctx context.Context) ([]GetDoctorsRow, error)
-<<<<<<< HEAD
->>>>>>> 685da65 (latest update)
-=======
-=======
-	GetDoctorByUserId(ctx context.Context, userID int64) (Doctor, error)
->>>>>>> ffc9071 (AI suggestion)
-	GetMedicalHistory(ctx context.Context, medicalRecordID pgtype.Int8) ([]MedicalHistory, error)
-	GetMedicalRecord(ctx context.Context, id int64) (MedicalRecord, error)
-	// Get Medications for a Treatment Phase
-<<<<<<< HEAD
-	GetMedicationsByPhase(ctx context.Context, phaseID int64) ([]GetMedicationsByPhaseRow, error)
->>>>>>> 3bf345d (happy new year)
-=======
-	GetMedicationsByPhase(ctx context.Context, arg GetMedicationsByPhaseParams) ([]GetMedicationsByPhaseRow, error)
->>>>>>> 883d5b3 (update treatment)
-	GetNotificationsByUsername(ctx context.Context, arg GetNotificationsByUsernameParams) ([]Notification, error)
->>>>>>> 6f3ea8a (update sqlc)
-=======
-=======
-	// Tính số ca khám trung bình mỗi bác sĩ/ngày
-	GetDoctorAppointmentStats(ctx context.Context, arg GetDoctorAppointmentStatsParams) ([]GetDoctorAppointmentStatsRow, error)
-=======
->>>>>>> dc47646 (Optimize SQL query)
-	GetDoctorByUserId(ctx context.Context, userID int64) (Doctor, error)
-	GetDoctorByUsername(ctx context.Context, username string) (GetDoctorByUsernameRow, error)
-	GetDoctors(ctx context.Context) ([]GetDoctorsRow, error)
->>>>>>> ada3717 (Docker file)
-	GetFileByID(ctx context.Context, id int64) (File, error)
-	GetHistoryAppointmentsByPetID(ctx context.Context, petid pgtype.Int8) ([]GetHistoryAppointmentsByPetIDRow, error)
-	GetMedicalHistory(ctx context.Context, arg GetMedicalHistoryParams) ([]MedicalHistory, error)
-	GetMedicalHistoryByID(ctx context.Context, id int64) (MedicalHistory, error)
-	GetMedicalRecord(ctx context.Context, id int64) (MedicalRecord, error)
-	GetMedicalRecordByPetID(ctx context.Context, petID pgtype.Int8) (MedicalRecord, error)
-	GetMedicationsByPhase(ctx context.Context, phaseID int64) ([]GetMedicationsByPhaseRow, error)
-	GetMedicineByID(ctx context.Context, id int64) (Medicine, error)
-<<<<<<< HEAD
-	GetNotificationPreferencesByUsername(ctx context.Context, username string) ([]NotificationPreference, error)
->>>>>>> e859654 (Elastic search)
-=======
-	GetMedicineByTreatmentID(ctx context.Context, treatmentID pgtype.Int8) ([]GetMedicineByTreatmentIDRow, error)
->>>>>>> ada3717 (Docker file)
 	GetOrderById(ctx context.Context, id int64) (Order, error)
 	// Returning fields you may want to use
 	GetOrdersByUserId(ctx context.Context, userID int64) ([]Order, error)
@@ -491,24 +119,10 @@ type Querier interface {
 	GetPetScheduleById(ctx context.Context, id int64) (PetSchedule, error)
 	GetProductByID(ctx context.Context, productID int64) (Product, error)
 	GetRoomByID(ctx context.Context, id int64) (Room, error)
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-	GetSOAP(ctx context.Context, appointmentID pgtype.Int8) (Consultation, error)
->>>>>>> 71b74e9 (feat(appointment): add room management and update appointment functionality.)
-=======
->>>>>>> c8bec46 (feat: add chatbot, room management, and pet allergy features)
 	GetSOAPByAppointmentID(ctx context.Context, appointmentID pgtype.Int8) (Consultation, error)
 	GetServiceByID(ctx context.Context, id int64) (Service, error)
 	GetServices(ctx context.Context, arg GetServicesParams) ([]Service, error)
-<<<<<<< HEAD
-<<<<<<< HEAD
 	GetShiftByDoctorId(ctx context.Context, doctorID int64) ([]GetShiftByDoctorIdRow, error)
-=======
->>>>>>> ada3717 (Docker file)
-=======
-	GetShiftByDoctorId(ctx context.Context, doctorID int64) ([]GetShiftByDoctorIdRow, error)
->>>>>>> 4ccd381 (Update appointment flow)
 	GetShifts(ctx context.Context) ([]GetShiftsRow, error)
 	GetState(ctx context.Context, id int64) (State, error)
 	// -- name: GetTimeSlotsByDoctorAndDate :many
@@ -518,14 +132,6 @@ type Querier interface {
 	GetTimeSlotById(ctx context.Context, id int64) (TimeSlot, error)
 	GetTimeSlotForUpdate(ctx context.Context, id int64) (GetTimeSlotForUpdateRow, error)
 	GetTimeSlotsByDoctorAndDate(ctx context.Context, arg GetTimeSlotsByDoctorAndDateParams) ([]GetTimeSlotsByDoctorAndDateRow, error)
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-	// Lấy top 10 dịch vụ được đặt nhiều nhất
-	GetTopBookedServices(ctx context.Context, arg GetTopBookedServicesParams) ([]GetTopBookedServicesRow, error)
->>>>>>> ada3717 (Docker file)
-=======
->>>>>>> dc47646 (Optimize SQL query)
 	GetTreatment(ctx context.Context, id int64) (PetTreatment, error)
 	GetTreatmentByDiseaseId(ctx context.Context, arg GetTreatmentByDiseaseIdParams) ([]GetTreatmentByDiseaseIdRow, error)
 	GetTreatmentPhase(ctx context.Context, id int64) (TreatmentPhase, error)
@@ -534,144 +140,16 @@ type Querier interface {
 	GetTreatmentsByPet(ctx context.Context, arg GetTreatmentsByPetParams) ([]GetTreatmentsByPetRow, error)
 	GetUser(ctx context.Context, username string) (GetUserRow, error)
 	GetUserByEmail(ctx context.Context, email string) (User, error)
-=======
-	GetFeedingScheduleByPetID(ctx context.Context, petid pgtype.Int8) ([]Feedingschedule, error)
-=======
->>>>>>> 272832d (redis cache)
-=======
-=======
-	GetDoctorById(ctx context.Context, id int64) (Doctor, error)
-<<<<<<< HEAD
->>>>>>> cfbe865 (updated service response)
-=======
-	GetDoctors(ctx context.Context) ([]GetDoctorsRow, error)
->>>>>>> e30b070 (Get list appoinment by user)
-	GetNotificationsByUsername(ctx context.Context, arg GetNotificationsByUsernameParams) ([]Notification, error)
-<<<<<<< HEAD
->>>>>>> eb8d761 (updated pet schedule)
-=======
-	GetOrderById(ctx context.Context, id int64) (Order, error)
-	// Returning fields you may want to use
-	GetOrdersByUserId(ctx context.Context, userID int64) ([]Order, error)
->>>>>>> b0fe977 (place order and make payment)
-	GetPetByID(ctx context.Context, petid int64) (Pet, error)
-	GetPetLogByID(ctx context.Context, arg GetPetLogByIDParams) (GetPetLogByIDRow, error)
-	GetPetLogsByPetID(ctx context.Context, arg GetPetLogsByPetIDParams) ([]PetLog, error)
-	GetPetProfileSummary(ctx context.Context, petid int64) ([]GetPetProfileSummaryRow, error)
-	GetPetScheduleById(ctx context.Context, id int64) (PetSchedule, error)
-	GetProductByID(ctx context.Context, productID int64) (Product, error)
-<<<<<<< HEAD
-<<<<<<< HEAD
-	GetServiceByID(ctx context.Context, serviceid int64) (Service, error)
-	GetServiceType(ctx context.Context, typeid int64) (Servicetype, error)
-<<<<<<< HEAD
-<<<<<<< HEAD
-	GetTimeSlotByID(ctx context.Context, id int64) (GetTimeSlotByIDRow, error)
-	GetTimeslotsAvailable(ctx context.Context, arg GetTimeslotsAvailableParams) ([]GetTimeslotsAvailableRow, error)
-<<<<<<< HEAD
-<<<<<<< HEAD
-	GetUser(ctx context.Context, username string) (User, error)
->>>>>>> 79a3bcc (medicine api)
 	GetVaccinationByID(ctx context.Context, vaccinationid int64) (Vaccination, error)
 	InsertDeviceToken(ctx context.Context, arg InsertDeviceTokenParams) (DeviceToken, error)
-=======
-=======
-=======
->>>>>>> e9037c6 (update sqlc)
-=======
-=======
-	GetServiceByID(ctx context.Context, id int64) (Service, error)
-	GetServices(ctx context.Context, arg GetServicesParams) ([]Service, error)
-<<<<<<< HEAD
-<<<<<<< HEAD
-	GetTimeSlot(ctx context.Context, arg GetTimeSlotParams) (Timeslot, error)
-	// Khóa bản ghi để tránh race condition
->>>>>>> b393bb9 (add service and add permission)
-	GetTimeSlotById(ctx context.Context, id int64) (Timeslot, error)
-	GetTimeSlotsByDoctorAndDate(ctx context.Context, arg GetTimeSlotsByDoctorAndDateParams) ([]Timeslot, error)
-<<<<<<< HEAD
->>>>>>> 685da65 (latest update)
-	GetTreatmentByDiseaseId(ctx context.Context, arg GetTreatmentByDiseaseIdParams) ([]GetTreatmentByDiseaseIdRow, error)
->>>>>>> 6a85052 (get treatment by disease)
-=======
-=======
-=======
-	GetSoapNote(ctx context.Context, appointmentID int32) (SoapNote, error)
->>>>>>> ffc9071 (AI suggestion)
-=======
-	GetSOAP(ctx context.Context, appointmentID pgtype.Int8) (Consultation, error)
-	GetSOAPByAppointmentID(ctx context.Context, appointmentID pgtype.Int8) (Consultation, error)
-	GetServiceByID(ctx context.Context, id int64) (Service, error)
-	GetServices(ctx context.Context, arg GetServicesParams) ([]Service, error)
-	GetState(ctx context.Context, id int64) (State, error)
->>>>>>> e859654 (Elastic search)
-	GetTimeSlot(ctx context.Context, arg GetTimeSlotParams) (TimeSlot, error)
-	// Lock record to avoid race condition
-	GetTimeSlotById(ctx context.Context, id int64) (TimeSlot, error)
-	GetTimeSlotsByDoctorAndDate(ctx context.Context, arg GetTimeSlotsByDoctorAndDateParams) ([]TimeSlot, error)
->>>>>>> 33fcf96 (Big update)
-	GetTreatment(ctx context.Context, id int64) (PetTreatment, error)
-	GetTreatmentByDiseaseId(ctx context.Context, arg GetTreatmentByDiseaseIdParams) ([]GetTreatmentByDiseaseIdRow, error)
-	GetTreatmentPhase(ctx context.Context, id int64) (TreatmentPhase, error)
-	GetTreatmentPhasesByTreatment(ctx context.Context, arg GetTreatmentPhasesByTreatmentParams) ([]GetTreatmentPhasesByTreatmentRow, error)
-	GetTreatmentProgress(ctx context.Context, id int64) ([]GetTreatmentProgressRow, error)
-<<<<<<< HEAD
-	// Get All Treatments for a Pet
-<<<<<<< HEAD
-	GetTreatmentsByPet(ctx context.Context, petID pgtype.Int8) ([]GetTreatmentsByPetRow, error)
->>>>>>> 3bf345d (happy new year)
-=======
-=======
->>>>>>> e859654 (Elastic search)
-	GetTreatmentsByPet(ctx context.Context, arg GetTreatmentsByPetParams) ([]GetTreatmentsByPetRow, error)
->>>>>>> 2fe5baf (treatment phase)
-	GetUser(ctx context.Context, username string) (GetUserRow, error)
-	GetUserByEmail(ctx context.Context, email string) (User, error)
-	GetVaccinationByID(ctx context.Context, vaccinationid int64) (Vaccination, error)
-<<<<<<< HEAD
-	InsertDeviceToken(ctx context.Context, arg InsertDeviceTokenParams) (Devicetoken, error)
-<<<<<<< HEAD
-<<<<<<< HEAD
->>>>>>> 0fb3f30 (user images)
-=======
-	InsertDeviceToken(ctx context.Context, arg InsertDeviceTokenParams) (DeviceToken, error)
->>>>>>> 33fcf96 (Big update)
 	InsertDoctor(ctx context.Context, arg InsertDoctorParams) (Doctor, error)
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> e859654 (Elastic search)
 	InsertProduct(ctx context.Context, arg InsertProductParams) (Product, error)
 	ListAllAppointments(ctx context.Context) ([]Appointment, error)
 	ListDoctors(ctx context.Context) ([]ListDoctorsRow, error)
 	ListMedicinesByPet(ctx context.Context, arg ListMedicinesByPetParams) ([]ListMedicinesByPetRow, error)
 	ListNotificationsByUsername(ctx context.Context, arg ListNotificationsByUsernameParams) ([]Notification, error)
-<<<<<<< HEAD
-<<<<<<< HEAD
 	ListPetAllergies(ctx context.Context, arg ListPetAllergiesParams) ([]PetAllergy, error)
-=======
->>>>>>> e859654 (Elastic search)
-=======
-	ListPetAllergies(ctx context.Context, arg ListPetAllergiesParams) ([]PetAllergy, error)
->>>>>>> c8bec46 (feat: add chatbot, room management, and pet allergy features)
 	ListPetSchedulesByUsername(ctx context.Context, username string) ([]ListPetSchedulesByUsernameRow, error)
-=======
-	InsertDoctorSchedule(ctx context.Context, arg InsertDoctorScheduleParams) (Doctorschedule, error)
-=======
->>>>>>> 6f3ea8a (update sqlc)
-=======
-	InsertDoctor(ctx context.Context, arg InsertDoctorParams) (Doctor, error)
->>>>>>> 3003e08 (update sqlc)
-	InsertNotification(ctx context.Context, arg InsertNotificationParams) (Notification, error)
-	InsertProduct(ctx context.Context, arg InsertProductParams) (Product, error)
-<<<<<<< HEAD
-	InsertTimeslot(ctx context.Context, arg InsertTimeslotParams) (Timeslot, error)
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-	ListActiveFeedingSchedules(ctx context.Context) ([]Feedingschedule, error)
-	ListActivityLogs(ctx context.Context, arg ListActivityLogsParams) ([]Activitylog, error)
->>>>>>> 79a3bcc (medicine api)
 	ListPets(ctx context.Context, arg ListPetsParams) ([]Pet, error)
 	ListPetsByUsername(ctx context.Context, arg ListPetsByUsernameParams) ([]Pet, error)
 	ListTreatmentsByPet(ctx context.Context, arg ListTreatmentsByPetParams) ([]PetTreatment, error)
@@ -681,177 +159,31 @@ type Querier interface {
 	RemoveItemFromCart(ctx context.Context, arg RemoveItemFromCartParams) error
 	SetPetInactive(ctx context.Context, petid int64) error
 	UpdateAppointmentByID(ctx context.Context, arg UpdateAppointmentByIDParams) error
-=======
-=======
-=======
-=======
->>>>>>> e9037c6 (update sqlc)
-	IsReadNotification(ctx context.Context, notificationid int64) error
-<<<<<<< HEAD
-<<<<<<< HEAD
->>>>>>> 9fd7fc8 (feat: validate notification schema and APIs)
-=======
-=======
-	ListAllAppointments(ctx context.Context) ([]Appointment, error)
-<<<<<<< HEAD
->>>>>>> 33fcf96 (Big update)
-=======
-	ListDoctors(ctx context.Context) ([]ListDoctorsRow, error)
->>>>>>> ffc9071 (AI suggestion)
-	ListMedicinesByPet(ctx context.Context, arg ListMedicinesByPetParams) ([]ListMedicinesByPetRow, error)
->>>>>>> a415f25 (new data)
-	ListPetSchedulesByUsername(ctx context.Context, username string) ([]ListPetSchedulesByUsernameRow, error)
->>>>>>> 6610455 (feat: redis queue)
-	ListPets(ctx context.Context, arg ListPetsParams) ([]Pet, error)
-	ListPetsByUsername(ctx context.Context, arg ListPetsByUsernameParams) ([]Pet, error)
-	ListTreatmentsByPet(ctx context.Context, arg ListTreatmentsByPetParams) ([]PetTreatment, error)
-	ListVaccinationsByPetID(ctx context.Context, arg ListVaccinationsByPetIDParams) ([]Vaccination, error)
-	MarkNotificationAsRead(ctx context.Context, id int64) error
-	ReleaseRoom(ctx context.Context, arg ReleaseRoomParams) error
-	RemoveItemFromCart(ctx context.Context, arg RemoveItemFromCartParams) error
-<<<<<<< HEAD
-	SetPetInactive(ctx context.Context, arg SetPetInactiveParams) error
-<<<<<<< HEAD
->>>>>>> 272832d (redis cache)
-=======
-=======
-	SetPetInactive(ctx context.Context, petid int64) error
-<<<<<<< HEAD
->>>>>>> 33fcf96 (Big update)
-	UpdateAllergy(ctx context.Context, arg UpdateAllergyParams) error
-<<<<<<< HEAD
->>>>>>> 3bf345d (happy new year)
-=======
-=======
->>>>>>> 4ccd381 (Update appointment flow)
-	UpdateAppointmentByID(ctx context.Context, arg UpdateAppointmentByIDParams) error
->>>>>>> e859654 (Elastic search)
 	UpdateAppointmentStatus(ctx context.Context, arg UpdateAppointmentStatusParams) error
-<<<<<<< HEAD
-<<<<<<< HEAD
 	UpdateAvatarUser(ctx context.Context, arg UpdateAvatarUserParams) (User, error)
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
 	UpdateCartItemQuantity(ctx context.Context, arg UpdateCartItemQuantityParams) error
 	UpdateDoctor(ctx context.Context, arg UpdateDoctorParams) (Doctor, error)
-<<<<<<< HEAD
-<<<<<<< HEAD
 	UpdateFile(ctx context.Context, arg UpdateFileParams) (File, error)
-=======
-	UpdateCartItemQuantity(ctx context.Context, arg UpdateCartItemQuantityParams) error
->>>>>>> 33fcf96 (Big update)
-=======
->>>>>>> ffc9071 (AI suggestion)
-=======
-	UpdateFile(ctx context.Context, arg UpdateFileParams) (File, error)
->>>>>>> e859654 (Elastic search)
 	UpdateMedicalHistory(ctx context.Context, arg UpdateMedicalHistoryParams) error
 	UpdateMedicalRecord(ctx context.Context, id int64) error
-=======
-=======
-	UpdateAvatarUser(ctx context.Context, arg UpdateAvatarUserParams) (User, error)
->>>>>>> a415f25 (new data)
-	// Replace $2 with the specific date (YYYY-MM-DD)
-	UpdateDoctorAvailable(ctx context.Context, arg UpdateDoctorAvailableParams) error
-<<<<<<< HEAD
-	UpdateFeedingSchedule(ctx context.Context, arg UpdateFeedingScheduleParams) error
-<<<<<<< HEAD
-	// -- name: UpdateMedicine :exec
-	// UPDATE Medications
-	// SET medication_name = $2, dosage = $3, frequency = $4, start_date = $5, end_date = $6, notes = $7
-	// WHERE medication_id = $1;
-	UpdateMedicine(ctx context.Context, arg UpdateMedicineParams) (Medication, error)
->>>>>>> 79a3bcc (medicine api)
-=======
->>>>>>> 6c35562 (dicease and treatment plan)
-=======
->>>>>>> 272832d (redis cache)
-=======
-	UpdateDoctorSchedule(ctx context.Context, arg UpdateDoctorScheduleParams) (Doctorschedule, error)
->>>>>>> e9037c6 (update sqlc)
-=======
->>>>>>> 685da65 (latest update)
-=======
-	UpdateMedicalHistory(ctx context.Context, arg UpdateMedicalHistoryParams) error
-	UpdateMedicalRecord(ctx context.Context, id int64) error
->>>>>>> 3bf345d (happy new year)
 	UpdateNotification(ctx context.Context, appointmentID int64) error
 	UpdateOrderPaymentStatus(ctx context.Context, id int64) (Order, error)
 	UpdatePet(ctx context.Context, arg UpdatePetParams) error
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-	UpdatePetAllergy(ctx context.Context, arg UpdatePetAllergyParams) (PetAllergy, error)
-=======
->>>>>>> 5ea33aa (PUT pet info)
-	UpdatePetAvatar(ctx context.Context, arg UpdatePetAvatarParams) error
-	UpdatePetLog(ctx context.Context, arg UpdatePetLogParams) error
-	UpdatePetSchedule(ctx context.Context, arg UpdatePetScheduleParams) error
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 	UpdatePetAllergy(ctx context.Context, arg UpdatePetAllergyParams) (PetAllergy, error)
 	UpdatePetAvatar(ctx context.Context, arg UpdatePetAvatarParams) error
 	UpdatePetLog(ctx context.Context, arg UpdatePetLogParams) error
 	UpdatePetSchedule(ctx context.Context, arg UpdatePetScheduleParams) error
->>>>>>> c8bec46 (feat: add chatbot, room management, and pet allergy features)
 	UpdateRoom(ctx context.Context, arg UpdateRoomParams) error
 	UpdateSOAP(ctx context.Context, arg UpdateSOAPParams) (Consultation, error)
 	UpdateService(ctx context.Context, arg UpdateServiceParams) (Service, error)
 	UpdateTimeSlotBookedPatients(ctx context.Context, id int64) error
 	UpdateTreatment(ctx context.Context, arg UpdateTreatmentParams) error
 	UpdateTreatmentPhaseStatus(ctx context.Context, arg UpdateTreatmentPhaseStatusParams) error
-=======
-	UpdateService(ctx context.Context, arg UpdateServiceParams) error
-<<<<<<< HEAD
-	UpdateTimeSlot(ctx context.Context, arg UpdateTimeSlotParams) (Timeslot, error)
->>>>>>> e9037c6 (update sqlc)
-=======
-	UpdateTimeSlotStatus(ctx context.Context, arg UpdateTimeSlotStatusParams) error
->>>>>>> 685da65 (latest update)
-=======
-=======
-	UpdateSOAP(ctx context.Context, arg UpdateSOAPParams) (Consultation, error)
->>>>>>> e859654 (Elastic search)
-	UpdateService(ctx context.Context, arg UpdateServiceParams) (Service, error)
-	UpdateTimeSlotBookedPatients(ctx context.Context, arg UpdateTimeSlotBookedPatientsParams) error
-<<<<<<< HEAD
->>>>>>> b393bb9 (add service and add permission)
-=======
-	UpdateTreatment(ctx context.Context, arg UpdateTreatmentParams) error
-	UpdateTreatmentPhaseStatus(ctx context.Context, arg UpdateTreatmentPhaseStatusParams) error
->>>>>>> 3bf345d (happy new year)
 	UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error)
 	UpdateUserPassword(ctx context.Context, arg UpdateUserPasswordParams) (User, error)
-=======
-	UpdateService(ctx context.Context, arg UpdateServiceParams) error
-<<<<<<< HEAD
->>>>>>> 4c66ef3 (feat: update schedule API)
-=======
-	UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error)
-	UpdateUserPassword(ctx context.Context, arg UpdateUserPasswordParams) (User, error)
->>>>>>> 473cd1d (uplaod image method)
 	UpdateVaccination(ctx context.Context, arg UpdateVaccinationParams) error
 	UpdateVerifyEmail(ctx context.Context, arg UpdateVerifyEmailParams) (VerifyEmail, error)
 	VerifiedUser(ctx context.Context, username string) (User, error)
-=======
-=======
-	UpdatePetLog(ctx context.Context, arg UpdatePetLogParams) error
->>>>>>> 7e616af (add pet log schema)
-	UpdateService(ctx context.Context, arg UpdateServiceParams) error
-	UpdateVaccination(ctx context.Context, arg UpdateVaccinationParams) error
-	UpdateVerifyEmail(ctx context.Context, arg UpdateVerifyEmailParams) (VerifyEmail, error)
-<<<<<<< HEAD
-	VerifiedUser(ctx context.Context, arg VerifiedUserParams) (User, error)
->>>>>>> 6610455 (feat: redis queue)
-=======
-	VerifiedUser(ctx context.Context, username string) (User, error)
->>>>>>> edfe5ad (OTP verifycation)
 }
 
 var _ Querier = (*Queries)(nil)

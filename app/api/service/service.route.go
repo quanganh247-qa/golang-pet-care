@@ -24,10 +24,6 @@ func Routes(routerGroup middleware.RouterGroup) {
 	}
 
 	{
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> b393bb9 (add service and add permission)
 		// authRoute.POST("/", SVApi.controller.CreateServiceController)
 		// authRoute.DELETE("/:id", SVApi.controller.DeleteService)
 		authRoute.GET("/", SVApi.controller.GetAllServices)
@@ -40,24 +36,6 @@ func Routes(routerGroup middleware.RouterGroup) {
 		perRoute([]perms.Permission{perms.ManageServices}).POST("/", SVApi.controller.CreateServiceController)
 		perRoute([]perms.Permission{perms.ManageServices}).DELETE("/:id", SVApi.controller.DeleteService)
 		perRoute([]perms.Permission{perms.ManageServices}).PUT("/:id", SVApi.controller.UpdateService)
-<<<<<<< HEAD
-=======
-		authRoute.POST("/create", SVApi.controller.CreateService)
-		authRoute.POST("/delete", SVApi.controller.DeleteService)
-		authRoute.GET("/list", SVApi.controller.GetAllServices)
-		authRoute.PUT("/update/:serviceid", SVApi.controller.UpdateService)
-		authRoute.GET("/getbyid/:serviceid", SVApi.controller.GetServiceByID)
-<<<<<<< HEAD
-<<<<<<< HEAD
-		// authRoute.POST("/create", userApi.controller.createUser)
->>>>>>> cfbe865 (updated service response)
-=======
->>>>>>> e30b070 (Get list appoinment by user)
-=======
-		authRoute.GET("/", SVApi.controller.getAllServices)
->>>>>>> 5e493e4 (get all services)
-=======
->>>>>>> b393bb9 (add service and add permission)
 
 	}
 

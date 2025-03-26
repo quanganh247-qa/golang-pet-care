@@ -6,12 +6,6 @@ app/static/images/
 app.env
 gin-bin
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
 
 # Thêm vào .gitignore
 *.log
@@ -48,94 +42,4 @@ docker-compose.override.yml
 .txt
 
 .github/
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
 .github/workflows/
-=======
-llm-service
-go.work.sum
-
-vendor
->>>>>>> ffc9071 (AI suggestion)
-=======
-
-=======
-
->>>>>>> ada3717 (Docker file)
-=======
-
->>>>>>> ada3717 (Docker file)
-# Thêm vào .gitignore
-*.log
-*.tmp
-/tmp
-/logs
-/dist
-/build
-*.test
-/vendor
-.env*
-*.out
-/coverage
-.DS_Store
-
-.vscode
-
-# Docker
-.docker/
-docker-compose.override.yml
-
-# Environment
-.env
-.env.*
-!.env.example
-
-# Build
-/dist
-/tmp
-*.log
-
-
-
-.txt
-<<<<<<< HEAD
-<<<<<<< HEAD
->>>>>>> ada3717 (Docker file)
-=======
-    
->>>>>>> 0db8c45 (Docker file)
-=======
-.github/workflows/
->>>>>>> 07558db (Docker file)
-=======
-llm-service
-go.work.sum
-
-vendor
->>>>>>> ffc9071 (AI suggestion)
-=======
->>>>>>> ada3717 (Docker file)
-=======
-    
->>>>>>> 0db8c45 (Docker file)
-=======
-.github/workflows/
->>>>>>> 07558db (Docker file)
-=======
-llm-service
-go.work.sum
-
-vendor
->>>>>>> ffc9071 (AI suggestion)
-=======
->>>>>>> ada3717 (Docker file)
-=======
-    
->>>>>>> 0db8c45 (Docker file)
-=======
-.github/workflows/
->>>>>>> 07558db (Docker file)

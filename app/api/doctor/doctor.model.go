@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-<<<<<<< HEAD
 package doctor
 
 import (
@@ -38,15 +36,7 @@ type loginDoctorResponse struct {
 type DoctorDetail struct {
 	DoctorID       int64  `json:"doctor_id"`
 	Username       string `json:"username"`
-<<<<<<< HEAD
-<<<<<<< HEAD
 	DoctorName     string `json:"doctor_name"`
-=======
-	FullName       string `json:"full_name"`
->>>>>>> 4ccd381 (Update appointment flow)
-=======
-	DoctorName     string `json:"doctor_name"`
->>>>>>> 71b74e9 (feat(appointment): add room management and update appointment functionality.)
 	Email          string `json:"email"`
 	Role           string `json:"role"`
 	Specialization string `json:"specialization"`
@@ -71,12 +61,3 @@ type CreateShiftRequest struct {
 	EndTime   time.Time `json:"end_time"`
 	DoctorID  int64     `json:"doctor_id"`
 }
-<<<<<<< HEAD
-=======
-package doctor
->>>>>>> ffc9071 (AI suggestion)
-=======
-package doctor
->>>>>>> ada3717 (Docker file)
-=======
->>>>>>> 4ccd381 (Update appointment flow)

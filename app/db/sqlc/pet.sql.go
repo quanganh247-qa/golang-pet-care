@@ -12,11 +12,6 @@ import (
 )
 
 const createPet = `-- name: CreatePet :one
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> 33fcf96 (Big update)
 INSERT INTO pets (
     name,
     type,
@@ -35,7 +30,6 @@ INSERT INTO pets (
 ) VALUES (
     $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, true, $12, $13
 ) RETURNING petid, name, type, breed, age, gender, healthnotes, weight, birth_date, username, microchip_number, last_checkup_date, is_active, data_image, original_image
-<<<<<<< HEAD
 `
 
 type CreatePetParams struct {
@@ -52,55 +46,6 @@ type CreatePetParams struct {
 	LastCheckupDate pgtype.Date   `json:"last_checkup_date"`
 	DataImage       []byte        `json:"data_image"`
 	OriginalImage   pgtype.Text   `json:"original_image"`
-=======
-INSERT INTO Pet (username, Name, Type, Breed, Age, Weight, Gender, HealthNotes, data_image, is_active)
-VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
-=======
-INSERT INTO Pet (username, Name, Type, Breed, Age, Weight, Gender, HealthNotes, data_image, original_image, birth_date, microchip_number, is_active)
-VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, true)
->>>>>>> 9d28896 (image pet)
-RETURNING petid, name, type, breed, age, gender, healthnotes, weight, birth_date, username, microchip_number, last_checkup_date, is_active, data_image, original_image
-`
-
-type CreatePetParams struct {
-<<<<<<< HEAD
-	Username    string        `json:"username"`
-	Name        string        `json:"name"`
-	Type        string        `json:"type"`
-	Breed       pgtype.Text   `json:"breed"`
-	Age         pgtype.Int4   `json:"age"`
-	Weight      pgtype.Float8 `json:"weight"`
-	Gender      pgtype.Text   `json:"gender"`
-	Healthnotes pgtype.Text   `json:"healthnotes"`
-	DataImage   []byte        `json:"data_image"`
-	IsActive    pgtype.Bool   `json:"is_active"`
->>>>>>> 0fb3f30 (user images)
-=======
-	Username        string        `json:"username"`
-=======
-`
-
-type CreatePetParams struct {
->>>>>>> 33fcf96 (Big update)
-	Name            string        `json:"name"`
-	Type            string        `json:"type"`
-	Breed           pgtype.Text   `json:"breed"`
-	Age             pgtype.Int4   `json:"age"`
-	Gender          pgtype.Text   `json:"gender"`
-	Healthnotes     pgtype.Text   `json:"healthnotes"`
-	Weight          pgtype.Float8 `json:"weight"`
-	BirthDate       pgtype.Date   `json:"birth_date"`
-	Username        string        `json:"username"`
-	MicrochipNumber pgtype.Text   `json:"microchip_number"`
-	LastCheckupDate pgtype.Date   `json:"last_checkup_date"`
-	DataImage       []byte        `json:"data_image"`
-	OriginalImage   pgtype.Text   `json:"original_image"`
-<<<<<<< HEAD
-	BirthDate       pgtype.Date   `json:"birth_date"`
-	MicrochipNumber pgtype.Text   `json:"microchip_number"`
->>>>>>> 9d28896 (image pet)
-=======
->>>>>>> 33fcf96 (Big update)
 }
 
 func (q *Queries) CreatePet(ctx context.Context, arg CreatePetParams) (Pet, error) {
@@ -111,10 +56,6 @@ func (q *Queries) CreatePet(ctx context.Context, arg CreatePetParams) (Pet, erro
 		arg.Age,
 		arg.Gender,
 		arg.Healthnotes,
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> 33fcf96 (Big update)
 		arg.Weight,
 		arg.BirthDate,
 		arg.Username,
@@ -122,19 +63,6 @@ func (q *Queries) CreatePet(ctx context.Context, arg CreatePetParams) (Pet, erro
 		arg.LastCheckupDate,
 		arg.DataImage,
 		arg.OriginalImage,
-<<<<<<< HEAD
-=======
-		arg.DataImage,
-<<<<<<< HEAD
-		arg.IsActive,
->>>>>>> 0fb3f30 (user images)
-=======
-		arg.OriginalImage,
-		arg.BirthDate,
-		arg.MicrochipNumber,
->>>>>>> 9d28896 (image pet)
-=======
->>>>>>> 33fcf96 (Big update)
 	)
 	var i Pet
 	err := row.Scan(
@@ -207,21 +135,8 @@ func (q *Queries) GetAllPets(ctx context.Context) ([]Pet, error) {
 }
 
 const getPetByID = `-- name: GetPetByID :one
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
 SELECT petid, name, type, breed, age, gender, healthnotes, weight, birth_date, username, microchip_number, last_checkup_date, is_active, data_image, original_image FROM pets 
 WHERE petid = $1
-=======
-SELECT petid, name, type, breed, age, gender, healthnotes, weight, birth_date, username, microchip_number, last_checkup_date, is_active, data_image, original_image FROM Pet WHERE PetID = $1
->>>>>>> 0fb3f30 (user images)
-=======
-SELECT petid, name, type, breed, age, gender, healthnotes, weight, birth_date, username, microchip_number, last_checkup_date, is_active, data_image, original_image FROM Pet WHERE PetID = $1 AND is_active is true
->>>>>>> 3fdf0ad (updated pet status)
-=======
-SELECT petid, name, type, breed, age, gender, healthnotes, weight, birth_date, username, microchip_number, last_checkup_date, is_active, data_image, original_image FROM pets 
-WHERE petid = $1
->>>>>>> 33fcf96 (Big update)
 `
 
 func (q *Queries) GetPetByID(ctx context.Context, petid int64) (Pet, error) {
@@ -247,10 +162,6 @@ func (q *Queries) GetPetByID(ctx context.Context, petid int64) (Pet, error) {
 	return i, err
 }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> c8bec46 (feat: add chatbot, room management, and pet allergy features)
 const getPetDetailByUserID = `-- name: GetPetDetailByUserID :one
 SELECT p.petid, p.name, p.type, p.breed, p.age, p.gender, p.healthnotes, p.weight, p.birth_date, p.username, p.microchip_number, p.last_checkup_date, p.is_active, p.data_image, p.original_image, u.full_name
 FROM pets AS p
@@ -307,23 +218,7 @@ func (q *Queries) GetPetDetailByUserID(ctx context.Context, arg GetPetDetailByUs
 }
 
 const getPetProfileSummary = `-- name: GetPetProfileSummary :many
-<<<<<<< HEAD
-<<<<<<< HEAD
 SELECT p.petid, p.name, p.type, p.breed, p.age, p.gender, p.healthnotes, p.weight, p.birth_date, p.username, p.microchip_number, p.last_checkup_date, p.is_active, p.data_image, p.original_image, pt.id, pt.pet_id, pt.disease_id, pt.start_date, pt.end_date, pt.status, pt.name, pt.type, pt.description, pt.created_at, pt.doctor_id, v.vaccinationid, v.petid, v.vaccinename, v.dateadministered, v.nextduedate, v.vaccineprovider, v.batchnumber, v.notes 
-=======
-const getPetProfileSummary = `-- name: GetPetProfileSummary :many
-<<<<<<< HEAD
-SELECT p.petid, p.name, p.type, p.breed, p.age, p.gender, p.healthnotes, p.weight, p.birth_date, p.username, p.microchip_number, p.last_checkup_date, p.is_active, p.data_image, p.original_image, pt.id, pt.pet_id, pt.disease_id, pt.start_date, pt.end_date, pt.status, pt.notes, pt.created_at, v.vaccinationid, v.petid, v.vaccinename, v.dateadministered, v.nextduedate, v.vaccineprovider, v.batchnumber, v.notes 
->>>>>>> ffc9071 (AI suggestion)
-=======
-SELECT p.petid, p.name, p.type, p.breed, p.age, p.gender, p.healthnotes, p.weight, p.birth_date, p.username, p.microchip_number, p.last_checkup_date, p.is_active, p.data_image, p.original_image, pt.id, pt.pet_id, pt.disease_id, pt.start_date, pt.end_date, pt.status, pt.notes, pt.created_at, pt.doctor_id, v.vaccinationid, v.petid, v.vaccinename, v.dateadministered, v.nextduedate, v.vaccineprovider, v.batchnumber, v.notes 
->>>>>>> ada3717 (Docker file)
-=======
-SELECT p.petid, p.name, p.type, p.breed, p.age, p.gender, p.healthnotes, p.weight, p.birth_date, p.username, p.microchip_number, p.last_checkup_date, p.is_active, p.data_image, p.original_image, pt.id, pt.pet_id, pt.disease_id, pt.start_date, pt.end_date, pt.status, pt.name, pt.type, pt.notes, pt.created_at, pt.doctor_id, v.vaccinationid, v.petid, v.vaccinename, v.dateadministered, v.nextduedate, v.vaccineprovider, v.batchnumber, v.notes 
->>>>>>> c8bec46 (feat: add chatbot, room management, and pet allergy features)
-=======
-SELECT p.petid, p.name, p.type, p.breed, p.age, p.gender, p.healthnotes, p.weight, p.birth_date, p.username, p.microchip_number, p.last_checkup_date, p.is_active, p.data_image, p.original_image, pt.id, pt.pet_id, pt.disease_id, pt.start_date, pt.end_date, pt.status, pt.name, pt.type, pt.description, pt.created_at, pt.doctor_id, v.vaccinationid, v.petid, v.vaccinename, v.dateadministered, v.nextduedate, v.vaccineprovider, v.batchnumber, v.notes 
->>>>>>> 6b24d88 (feat(payment): add PayOS payment integration and enhance treatment module)
 FROM pets AS p
 LEFT JOIN pet_treatments AS pt ON p.petid = pt.pet_id
 LEFT JOIN vaccinations AS v ON p.petid = v.petid
@@ -352,30 +247,11 @@ type GetPetProfileSummaryRow struct {
 	StartDate        pgtype.Date        `json:"start_date"`
 	EndDate          pgtype.Date        `json:"end_date"`
 	Status           pgtype.Text        `json:"status"`
-<<<<<<< HEAD
-<<<<<<< HEAD
 	Name_2           pgtype.Text        `json:"name_2"`
 	Type_2           pgtype.Text        `json:"type_2"`
 	Description      pgtype.Text        `json:"description"`
-=======
-	Name_2           pgtype.Text        `json:"name_2"`
-	Type_2           pgtype.Text        `json:"type_2"`
-<<<<<<< HEAD
-	Notes            pgtype.Text        `json:"notes"`
->>>>>>> c8bec46 (feat: add chatbot, room management, and pet allergy features)
-=======
-	Description      pgtype.Text        `json:"description"`
->>>>>>> 6b24d88 (feat(payment): add PayOS payment integration and enhance treatment module)
 	CreatedAt        pgtype.Timestamptz `json:"created_at"`
 	DoctorID         pgtype.Int4        `json:"doctor_id"`
-=======
-	Notes            pgtype.Text        `json:"notes"`
-	CreatedAt        pgtype.Timestamptz `json:"created_at"`
-<<<<<<< HEAD
->>>>>>> ffc9071 (AI suggestion)
-=======
-	DoctorID         pgtype.Int4        `json:"doctor_id"`
->>>>>>> ada3717 (Docker file)
 	Vaccinationid    pgtype.Int8        `json:"vaccinationid"`
 	Petid_2          pgtype.Int8        `json:"petid_2"`
 	Vaccinename      pgtype.Text        `json:"vaccinename"`
@@ -383,15 +259,7 @@ type GetPetProfileSummaryRow struct {
 	Nextduedate      pgtype.Timestamp   `json:"nextduedate"`
 	Vaccineprovider  pgtype.Text        `json:"vaccineprovider"`
 	Batchnumber      pgtype.Text        `json:"batchnumber"`
-<<<<<<< HEAD
-<<<<<<< HEAD
 	Notes            pgtype.Text        `json:"notes"`
-=======
-	Notes_2          pgtype.Text        `json:"notes_2"`
->>>>>>> ffc9071 (AI suggestion)
-=======
-	Notes            pgtype.Text        `json:"notes"`
->>>>>>> 6b24d88 (feat(payment): add PayOS payment integration and enhance treatment module)
 }
 
 func (q *Queries) GetPetProfileSummary(ctx context.Context, petid int64) ([]GetPetProfileSummaryRow, error) {
@@ -425,30 +293,11 @@ func (q *Queries) GetPetProfileSummary(ctx context.Context, petid int64) ([]GetP
 			&i.StartDate,
 			&i.EndDate,
 			&i.Status,
-<<<<<<< HEAD
-<<<<<<< HEAD
 			&i.Name_2,
 			&i.Type_2,
 			&i.Description,
-=======
-			&i.Name_2,
-			&i.Type_2,
-<<<<<<< HEAD
-			&i.Notes,
->>>>>>> c8bec46 (feat: add chatbot, room management, and pet allergy features)
-=======
-			&i.Description,
->>>>>>> 6b24d88 (feat(payment): add PayOS payment integration and enhance treatment module)
 			&i.CreatedAt,
 			&i.DoctorID,
-=======
-			&i.Notes,
-			&i.CreatedAt,
-<<<<<<< HEAD
->>>>>>> ffc9071 (AI suggestion)
-=======
-			&i.DoctorID,
->>>>>>> ada3717 (Docker file)
 			&i.Vaccinationid,
 			&i.Petid_2,
 			&i.Vaccinename,
@@ -456,15 +305,7 @@ func (q *Queries) GetPetProfileSummary(ctx context.Context, petid int64) ([]GetP
 			&i.Nextduedate,
 			&i.Vaccineprovider,
 			&i.Batchnumber,
-<<<<<<< HEAD
-<<<<<<< HEAD
 			&i.Notes,
-=======
-			&i.Notes_2,
->>>>>>> ffc9071 (AI suggestion)
-=======
-			&i.Notes,
->>>>>>> 6b24d88 (feat(payment): add PayOS payment integration and enhance treatment module)
 		); err != nil {
 			return nil, err
 		}
@@ -477,23 +318,9 @@ func (q *Queries) GetPetProfileSummary(ctx context.Context, petid int64) ([]GetP
 }
 
 const listPets = `-- name: ListPets :many
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
 SELECT petid, name, type, breed, age, gender, healthnotes, weight, birth_date, username, microchip_number, last_checkup_date, is_active, data_image, original_image FROM pets
 WHERE is_active = true 
 ORDER BY name LIMIT $1 OFFSET $2
-=======
-SELECT petid, name, type, breed, age, gender, healthnotes, weight, birth_date, username, microchip_number, last_checkup_date, is_active, data_image, original_image FROM Pet ORDER BY PetID LIMIT $1 OFFSET $2
->>>>>>> 0fb3f30 (user images)
-=======
-SELECT petid, name, type, breed, age, gender, healthnotes, weight, birth_date, username, microchip_number, last_checkup_date, is_active, data_image, original_image FROM Pet WHERE is_active is true ORDER BY PetID LIMIT $1 OFFSET $2
->>>>>>> 3fdf0ad (updated pet status)
-=======
-SELECT petid, name, type, breed, age, gender, healthnotes, weight, birth_date, username, microchip_number, last_checkup_date, is_active, data_image, original_image FROM pets
-WHERE is_active = true 
-ORDER BY name LIMIT $1 OFFSET $2
->>>>>>> 33fcf96 (Big update)
 `
 
 type ListPetsParams struct {
@@ -538,23 +365,9 @@ func (q *Queries) ListPets(ctx context.Context, arg ListPetsParams) ([]Pet, erro
 }
 
 const listPetsByUsername = `-- name: ListPetsByUsername :many
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
 SELECT petid, name, type, breed, age, gender, healthnotes, weight, birth_date, username, microchip_number, last_checkup_date, is_active, data_image, original_image FROM pets
 WHERE username = $1 AND is_active = true
 ORDER BY name LIMIT $2 OFFSET $3
-=======
-SELECT petid, name, type, breed, age, gender, healthnotes, weight, birth_date, username, microchip_number, last_checkup_date, is_active, data_image, original_image FROM Pet WHERE username = $1 ORDER BY PetID LIMIT $2 OFFSET $3
->>>>>>> 0fb3f30 (user images)
-=======
-SELECT petid, name, type, breed, age, gender, healthnotes, weight, birth_date, username, microchip_number, last_checkup_date, is_active, data_image, original_image FROM Pet WHERE username = $1 and is_active is true ORDER BY PetID LIMIT $2 OFFSET $3
->>>>>>> c97bf6c (updated remove pet cache)
-=======
-SELECT petid, name, type, breed, age, gender, healthnotes, weight, birth_date, username, microchip_number, last_checkup_date, is_active, data_image, original_image FROM pets
-WHERE username = $1 AND is_active = true
-ORDER BY name LIMIT $2 OFFSET $3
->>>>>>> 33fcf96 (Big update)
 `
 
 type ListPetsByUsernameParams struct {
@@ -600,19 +413,9 @@ func (q *Queries) ListPetsByUsername(ctx context.Context, arg ListPetsByUsername
 }
 
 const setPetInactive = `-- name: SetPetInactive :exec
-<<<<<<< HEAD
-<<<<<<< HEAD
 UPDATE pets
 SET is_active = false
 WHERE petid = $1
-=======
-UPDATE Pet SET is_active = $2 WHERE PetID = $1 AND is_active is true
->>>>>>> 3fdf0ad (updated pet status)
-=======
-UPDATE pets
-SET is_active = false
-WHERE petid = $1
->>>>>>> 33fcf96 (Big update)
 `
 
 func (q *Queries) SetPetInactive(ctx context.Context, petid int64) error {
@@ -621,10 +424,6 @@ func (q *Queries) SetPetInactive(ctx context.Context, petid int64) error {
 }
 
 const updatePet = `-- name: UpdatePet :exec
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> 33fcf96 (Big update)
 UPDATE pets
 SET 
     name = $2,
@@ -638,7 +437,6 @@ SET
     microchip_number = $10,
     last_checkup_date = $11
 WHERE petid = $1
-<<<<<<< HEAD
 `
 
 type UpdatePetParams struct {
@@ -653,44 +451,6 @@ type UpdatePetParams struct {
 	BirthDate       pgtype.Date   `json:"birth_date"`
 	MicrochipNumber pgtype.Text   `json:"microchip_number"`
 	LastCheckupDate pgtype.Date   `json:"last_checkup_date"`
-=======
-UPDATE Pet
-SET Name = $2, Type = $3, Breed = $4, Age = $5, Weight = $6, Gender = $7, HealthNotes = $8, birth_date = $9
-WHERE PetID = $1
-`
-
-type UpdatePetParams struct {
-	Petid       int64         `json:"petid"`
-	Name        string        `json:"name"`
-	Type        string        `json:"type"`
-	Breed       pgtype.Text   `json:"breed"`
-	Age         pgtype.Int4   `json:"age"`
-	Weight      pgtype.Float8 `json:"weight"`
-	Gender      pgtype.Text   `json:"gender"`
-	Healthnotes pgtype.Text   `json:"healthnotes"`
-<<<<<<< HEAD
-	DataImage   []byte        `json:"data_image"`
-	IsActive    pgtype.Bool   `json:"is_active"`
->>>>>>> 0fb3f30 (user images)
-=======
-	BirthDate   pgtype.Date   `json:"birth_date"`
->>>>>>> 5ea33aa (PUT pet info)
-=======
-`
-
-type UpdatePetParams struct {
-	Petid           int64         `json:"petid"`
-	Name            string        `json:"name"`
-	Type            string        `json:"type"`
-	Breed           pgtype.Text   `json:"breed"`
-	Age             pgtype.Int4   `json:"age"`
-	Gender          pgtype.Text   `json:"gender"`
-	Healthnotes     pgtype.Text   `json:"healthnotes"`
-	Weight          pgtype.Float8 `json:"weight"`
-	BirthDate       pgtype.Date   `json:"birth_date"`
-	MicrochipNumber pgtype.Text   `json:"microchip_number"`
-	LastCheckupDate pgtype.Date   `json:"last_checkup_date"`
->>>>>>> 33fcf96 (Big update)
 }
 
 func (q *Queries) UpdatePet(ctx context.Context, arg UpdatePetParams) error {
@@ -702,45 +462,20 @@ func (q *Queries) UpdatePet(ctx context.Context, arg UpdatePetParams) error {
 		arg.Age,
 		arg.Gender,
 		arg.Healthnotes,
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> 33fcf96 (Big update)
 		arg.Weight,
 		arg.BirthDate,
 		arg.MicrochipNumber,
 		arg.LastCheckupDate,
-<<<<<<< HEAD
-=======
-		arg.DataImage,
-		arg.IsActive,
->>>>>>> 0fb3f30 (user images)
-=======
-		arg.BirthDate,
->>>>>>> 5ea33aa (PUT pet info)
-=======
->>>>>>> 33fcf96 (Big update)
 	)
 	return err
 }
 
 const updatePetAvatar = `-- name: UpdatePetAvatar :exec
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> 33fcf96 (Big update)
 UPDATE pets
 SET 
     data_image = $2,
     original_image = $3
 WHERE petid = $1
-<<<<<<< HEAD
-=======
-UPDATE Pet SET data_image = $2, original_image = $3 WHERE PetID = $1 and is_active is true
->>>>>>> 5ea33aa (PUT pet info)
-=======
->>>>>>> 33fcf96 (Big update)
 `
 
 type UpdatePetAvatarParams struct {

@@ -27,10 +27,6 @@ type ProductResponse struct {
 	DataImage     []byte  `json:"data_image"`
 	OriginalImage string  `json:"original_name"`
 }
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> 1ec1fee (create product api)
 
 // CreateProductRequest represents the structure for creating a new product
 type CreateProductRequest struct {
@@ -43,8 +39,3 @@ type CreateProductRequest struct {
 	OriginalImage string  `json:"original_image,omitempty"`              // Image file name or URL (optional)
 	IsAvailable   *bool   `json:"is_available,omitempty" default:"true"` // Availability status (optional, default true)
 }
-<<<<<<< HEAD
-=======
->>>>>>> bd5945b (get list products)
-=======
->>>>>>> 1ec1fee (create product api)

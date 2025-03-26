@@ -1,7 +1,3 @@
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> 33fcf96 (Big update)
 -- name: CreatePetLog :one
 INSERT INTO pet_logs (
     petid,
@@ -11,7 +7,6 @@ INSERT INTO pet_logs (
 ) VALUES (
     $1, $2, $3, $4
 ) RETURNING *;
-<<<<<<< HEAD
 
 -- name: GetPetLogsByPetID :many
 SELECT * FROM pet_logs
@@ -28,56 +23,10 @@ SET
     title = $2,
     notes = $3
 WHERE log_id = $1;
-=======
--- name: InsertPetLog :one
-INSERT INTO pet_logs (petid, datetime, title, notes)
-VALUES ($1, $2, $3, $4) RETURNING *;
-=======
->>>>>>> 33fcf96 (Big update)
-
--- name: GetPetLogsByPetID :many
-SELECT * FROM pet_logs
-WHERE petid = $1
-ORDER BY datetime DESC LIMIT $2 OFFSET $3;
-
--- name: DeletePetLog :exec
-DELETE FROM pet_logs
-WHERE  log_id = $1;
-
--- name: UpdatePetLog :exec
-UPDATE pet_logs
-<<<<<<< HEAD
-<<<<<<< HEAD
-SET datetime = $2, title = $3, notes = $4
-<<<<<<< HEAD
-WHERE petid = $1;
->>>>>>> 7e616af (add pet log schema)
-=======
-=======
-SET title = $2, notes = $3
->>>>>>> b13e1cd (feat: logs  API)
-=======
-SET 
-    title = $2,
-    notes = $3
->>>>>>> 33fcf96 (Big update)
-WHERE log_id = $1;
->>>>>>> 884b92e (update pet logs api)
 
 -- name: GetPetLogByID :one
 SELECT pet_logs.petid, pet_logs.datetime, pet_logs.title, pet_logs.notes
 FROM pet_logs
-<<<<<<< HEAD
-<<<<<<< HEAD
 LEFT JOIN pets ON pet_logs.petid = pets.petid
 WHERE pet_logs.petid = $1 AND pet_logs.log_id = $2 AND pets.is_active = true 
 ORDER BY pet_logs.datetime DESC;
-=======
-LEFT JOIN pet ON pet_logs.petid = pet.petid
-WHERE pet_logs.petid = $1 AND pet_logs.log_id = $2 AND pet.is_active = true;
->>>>>>> 7e616af (add pet log schema)
-=======
-LEFT JOIN pets ON pet_logs.petid = pets.petid
-WHERE pet_logs.petid = $1 AND pet_logs.log_id = $2 AND pets.is_active = true 
-ORDER BY pet_logs.datetime DESC;
->>>>>>> 33fcf96 (Big update)

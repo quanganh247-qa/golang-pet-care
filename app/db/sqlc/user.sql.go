@@ -13,18 +13,8 @@ import (
 
 const createUser = `-- name: CreateUser :one
 INSERT INTO users (username, hashed_password, full_name, email, phone_number, address, data_image, original_image, role, created_at, is_verified_email)
-<<<<<<< HEAD
-<<<<<<< HEAD
 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, NOW(), false)
-<<<<<<< HEAD
-<<<<<<< HEAD
 RETURNING id, username, hashed_password, full_name, email, phone_number, address, data_image, original_image, role, status, created_at, is_verified_email, removed_at
-=======
-RETURNING id, username, hashed_password, full_name, email, phone_number, address, data_image, original_image, role, created_at, is_verified_email, removed_at
->>>>>>> ada3717 (Docker file)
-=======
-RETURNING id, username, hashed_password, full_name, email, phone_number, address, data_image, original_image, role, status, created_at, is_verified_email, removed_at
->>>>>>> 4ccd381 (Update appointment flow)
 `
 
 type CreateUserParams struct {
@@ -37,38 +27,6 @@ type CreateUserParams struct {
 	DataImage      []byte      `json:"data_image"`
 	OriginalImage  pgtype.Text `json:"original_image"`
 	Role           pgtype.Text `json:"role"`
-=======
-VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, NOW(), $10)
-=======
-VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, NOW(), false)
->>>>>>> eefcc96 (date time in log)
-RETURNING id
-`
-
-type CreateUserParams struct {
-<<<<<<< HEAD
-	Username        string      `json:"username"`
-	HashedPassword  string      `json:"hashed_password"`
-	FullName        string      `json:"full_name"`
-	Email           string      `json:"email"`
-	PhoneNumber     pgtype.Text `json:"phone_number"`
-	Address         pgtype.Text `json:"address"`
-	DataImage       []byte      `json:"data_image"`
-	OriginalImage   pgtype.Text `json:"original_image"`
-	Role            pgtype.Text `json:"role"`
-	IsVerifiedEmail pgtype.Bool `json:"is_verified_email"`
->>>>>>> 0fb3f30 (user images)
-=======
-	Username       string      `json:"username"`
-	HashedPassword string      `json:"hashed_password"`
-	FullName       string      `json:"full_name"`
-	Email          string      `json:"email"`
-	PhoneNumber    pgtype.Text `json:"phone_number"`
-	Address        pgtype.Text `json:"address"`
-	DataImage      []byte      `json:"data_image"`
-	OriginalImage  pgtype.Text `json:"original_image"`
-	Role           pgtype.Text `json:"role"`
->>>>>>> eefcc96 (date time in log)
 }
 
 func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, error) {
@@ -82,8 +40,6 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 		arg.DataImage,
 		arg.OriginalImage,
 		arg.Role,
-<<<<<<< HEAD
-<<<<<<< HEAD
 	)
 	var i User
 	err := row.Scan(
@@ -98,50 +54,16 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 		&i.OriginalImage,
 		&i.Role,
 		&i.Status,
-<<<<<<< HEAD
 		&i.CreatedAt,
 		&i.IsVerifiedEmail,
 		&i.RemovedAt,
 	)
 	return i, err
-=======
-		arg.IsVerifiedEmail,
-=======
->>>>>>> eefcc96 (date time in log)
-	)
-<<<<<<< HEAD
-	var id int64
-	err := row.Scan(&id)
-	return id, err
->>>>>>> 0fb3f30 (user images)
-=======
-	var i User
-	err := row.Scan(
-		&i.ID,
-		&i.Username,
-		&i.HashedPassword,
-		&i.FullName,
-		&i.Email,
-		&i.PhoneNumber,
-		&i.Address,
-		&i.DataImage,
-		&i.OriginalImage,
-		&i.Role,
-=======
->>>>>>> 4ccd381 (Update appointment flow)
-		&i.CreatedAt,
-		&i.IsVerifiedEmail,
-		&i.RemovedAt,
-	)
-	return i, err
->>>>>>> ada3717 (Docker file)
 }
 
 const deleteUser = `-- name: DeleteUser :exec
 DELETE FROM users
 WHERE id = $1
-<<<<<<< HEAD
-=======
 `
 
 func (q *Queries) DeleteUser(ctx context.Context, id int64) error {
@@ -149,78 +71,16 @@ func (q *Queries) DeleteUser(ctx context.Context, id int64) error {
 	return err
 }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-const getActiveDoctors = `-- name: GetActiveDoctors :many
-SELECT 
-  d.id,
-  u.full_name AS name,
-  d.specialization,
-  d.years_of_experience,
-  d.consultation_fee
-FROM 
-  Doctors d
-JOIN 
-  users u ON d.user_id = u.id
-LEFT JOIN 
-  DoctorSchedules ds ON d.id = ds.doctor_id
-WHERE 
-  d.is_active = true
-  AND (ds.is_active = true OR ds.is_active IS NULL)
-  AND ($1::VARCHAR IS NULL OR d.specialization = $1)
-  AND ($2::INT IS NULL OR ds.day_of_week = $2)
-ORDER BY 
-  u.full_name
->>>>>>> 1f24c18 (feat: OTP with redis)
-`
-
-func (q *Queries) DeleteUser(ctx context.Context, id int64) error {
-	_, err := q.db.Exec(ctx, deleteUser, id)
-	return err
-}
-
-<<<<<<< HEAD
-const getAllRole = `-- name: GetAllRole :many
-SELECT distinct (role) FROM users
-`
-=======
-type GetActiveDoctorsRow struct {
-	ID                int64         `json:"id"`
-	Name              string        `json:"name"`
-	Specialization    pgtype.Text   `json:"specialization"`
-	YearsOfExperience pgtype.Int4   `json:"years_of_experience"`
-	ConsultationFee   pgtype.Float8 `json:"consultation_fee"`
-}
->>>>>>> e9037c6 (update sqlc)
-
-func (q *Queries) GetAllRole(ctx context.Context) ([]pgtype.Text, error) {
-	rows, err := q.db.Query(ctx, getAllRole)
-=======
-const getAllDoctors = `-- name: GetAllDoctors :many
-SELECT id, user_id, specialization, years_of_experience, education, certificate_number, bio, consultation_fee FROM Doctors WHERE is_active is true
-`
-
-func (q *Queries) GetAllDoctors(ctx context.Context) ([]Doctor, error) {
-	rows, err := q.db.Query(ctx, getAllDoctors)
->>>>>>> 33fcf96 (Big update)
-=======
 const getAllRole = `-- name: GetAllRole :many
 SELECT distinct (role) FROM users
 `
 
 func (q *Queries) GetAllRole(ctx context.Context) ([]pgtype.Text, error) {
 	rows, err := q.db.Query(ctx, getAllRole)
->>>>>>> 4ccd381 (Update appointment flow)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> 4ccd381 (Update appointment flow)
 	items := []pgtype.Text{}
 	for rows.Next() {
 		var role pgtype.Text
@@ -228,27 +88,6 @@ func (q *Queries) GetAllRole(ctx context.Context) ([]pgtype.Text, error) {
 			return nil, err
 		}
 		items = append(items, role)
-<<<<<<< HEAD
-=======
-	items := []Doctor{}
-	for rows.Next() {
-		var i Doctor
-		if err := rows.Scan(
-			&i.ID,
-			&i.UserID,
-			&i.Specialization,
-			&i.YearsOfExperience,
-			&i.Education,
-			&i.CertificateNumber,
-			&i.Bio,
-			&i.ConsultationFee,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
->>>>>>> 33fcf96 (Big update)
-=======
->>>>>>> 4ccd381 (Update appointment flow)
 	}
 	if err := rows.Err(); err != nil {
 		return nil, err
@@ -256,24 +95,8 @@ func (q *Queries) GetAllRole(ctx context.Context) ([]pgtype.Text, error) {
 	return items, nil
 }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> 6f3ea8a (update sqlc)
-=======
->>>>>>> 33fcf96 (Big update)
-=======
->>>>>>> ffc9071 (AI suggestion)
-const getAllUsers = `-- name: GetAllUsers :many
-<<<<<<< HEAD
-SELECT id, username, hashed_password, full_name, email, phone_number, address, data_image, original_image, role, status, created_at, is_verified_email, removed_at FROM users
-=======
-SELECT id, username, hashed_password, full_name, email, phone_number, address, data_image, original_image, role, created_at, is_verified_email, removed_at FROM users
->>>>>>> 0fb3f30 (user images)
-=======
 const getAllUsers = `-- name: GetAllUsers :many
 SELECT id, username, hashed_password, full_name, email, phone_number, address, data_image, original_image, role, status, created_at, is_verified_email, removed_at FROM users
->>>>>>> 4ccd381 (Update appointment flow)
 `
 
 func (q *Queries) GetAllUsers(ctx context.Context) ([]User, error) {
@@ -311,156 +134,6 @@ func (q *Queries) GetAllUsers(ctx context.Context) ([]User, error) {
 	return items, nil
 }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-=======
->>>>>>> 685da65 (latest update)
-const getDoctor = `-- name: GetDoctor :one
-SELECT 
-  d.id,
-  u.full_name AS name,
-  d.specialization,
-  d.years_of_experience,
-  d.education,
-  d.certificate_number,
-  d.bio,
-  d.consultation_fee
-FROM
-  Doctors d
-JOIN
-  users u ON d.user_id = u.id
-WHERE
-  d.id = $1
-`
-
-type GetDoctorRow struct {
-	ID                int64         `json:"id"`
-	Name              string        `json:"name"`
-	Specialization    pgtype.Text   `json:"specialization"`
-	YearsOfExperience pgtype.Int4   `json:"years_of_experience"`
-	Education         pgtype.Text   `json:"education"`
-	CertificateNumber pgtype.Text   `json:"certificate_number"`
-	Bio               pgtype.Text   `json:"bio"`
-	ConsultationFee   pgtype.Float8 `json:"consultation_fee"`
-}
-
-func (q *Queries) GetDoctor(ctx context.Context, id int64) (GetDoctorRow, error) {
-	row := q.db.QueryRow(ctx, getDoctor, id)
-	var i GetDoctorRow
-	err := row.Scan(
-		&i.ID,
-		&i.Name,
-		&i.Specialization,
-		&i.YearsOfExperience,
-		&i.Education,
-		&i.CertificateNumber,
-		&i.Bio,
-		&i.ConsultationFee,
-	)
-	return i, err
-}
-
-const getDoctorById = `-- name: GetDoctorById :one
-select id, user_id, specialization, years_of_experience, education, certificate_number, bio, consultation_fee from Doctors where id = $1
-`
-
-func (q *Queries) GetDoctorById(ctx context.Context, id int64) (Doctor, error) {
-	row := q.db.QueryRow(ctx, getDoctorById, id)
-	var i Doctor
-	err := row.Scan(
-		&i.ID,
-		&i.UserID,
-		&i.Specialization,
-		&i.YearsOfExperience,
-		&i.Education,
-		&i.CertificateNumber,
-		&i.Bio,
-		&i.ConsultationFee,
-	)
-	return i, err
-}
-
-<<<<<<< HEAD
-<<<<<<< HEAD
->>>>>>> cfbe865 (updated service response)
-=======
-=======
->>>>>>> 685da65 (latest update)
-const getDoctors = `-- name: GetDoctors :many
-SELECT 
-    d.id AS doctor_id,
-    u.username,
-    u.full_name,
-    u.role,
-    d.specialization,
-    d.years_of_experience,
-    d.education,
-    d.certificate_number,
-    d.bio,
-    d.consultation_fee
-FROM 
-    Doctors d
-JOIN 
-    users u ON d.user_id = u.id
-ORDER BY 
-    u.full_name
-`
-
-type GetDoctorsRow struct {
-	DoctorID          int64         `json:"doctor_id"`
-	Username          string        `json:"username"`
-	FullName          string        `json:"full_name"`
-	Role              pgtype.Text   `json:"role"`
-	Specialization    pgtype.Text   `json:"specialization"`
-	YearsOfExperience pgtype.Int4   `json:"years_of_experience"`
-	Education         pgtype.Text   `json:"education"`
-	CertificateNumber pgtype.Text   `json:"certificate_number"`
-	Bio               pgtype.Text   `json:"bio"`
-	ConsultationFee   pgtype.Float8 `json:"consultation_fee"`
-}
-
-func (q *Queries) GetDoctors(ctx context.Context) ([]GetDoctorsRow, error) {
-	rows, err := q.db.Query(ctx, getDoctors)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	items := []GetDoctorsRow{}
-	for rows.Next() {
-		var i GetDoctorsRow
-		if err := rows.Scan(
-			&i.DoctorID,
-			&i.Username,
-			&i.FullName,
-			&i.Role,
-			&i.Specialization,
-			&i.YearsOfExperience,
-			&i.Education,
-			&i.CertificateNumber,
-			&i.Bio,
-			&i.ConsultationFee,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
-}
-
-<<<<<<< HEAD
->>>>>>> e30b070 (Get list appoinment by user)
-=======
->>>>>>> 6f3ea8a (update sqlc)
-=======
->>>>>>> 685da65 (latest update)
-=======
->>>>>>> ffc9071 (AI suggestion)
 const getUser = `-- name: GetUser :one
 SELECT id, username, hashed_password, full_name, email, phone_number, address, data_image, original_image, role, created_at, is_verified_email
 FROM users
@@ -502,18 +175,8 @@ func (q *Queries) GetUser(ctx context.Context, username string) (GetUserRow, err
 	return i, err
 }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
 const getUserByEmail = `-- name: GetUserByEmail :one
 SELECT id, username, hashed_password, full_name, email, phone_number, address, data_image, original_image, role, status, created_at, is_verified_email, removed_at
-=======
-const getUserByEmail = `-- name: GetUserByEmail :one
-<<<<<<< HEAD
-SELECT id, username, hashed_password, full_name, email, phone_number, address, data_image, original_image, role, created_at, is_verified_email, removed_at
->>>>>>> 1a9e82a (reset password api)
-=======
-SELECT id, username, hashed_password, full_name, email, phone_number, address, data_image, original_image, role, status, created_at, is_verified_email, removed_at
->>>>>>> 4ccd381 (Update appointment flow)
 FROM users
 WHERE email = $1
 `
@@ -521,35 +184,6 @@ WHERE email = $1
 func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error) {
 	row := q.db.QueryRow(ctx, getUserByEmail, email)
 	var i User
-<<<<<<< HEAD
-=======
-const getUser = `-- name: GetUser :one
-SELECT id, username, hashed_password, full_name, email, phone_number, address, data_image, original_image, role, created_at, is_verified_email
-FROM users
-WHERE username = $1
-`
-
-type GetUserRow struct {
-	ID              int64            `json:"id"`
-	Username        string           `json:"username"`
-	HashedPassword  string           `json:"hashed_password"`
-	FullName        string           `json:"full_name"`
-	Email           string           `json:"email"`
-	PhoneNumber     pgtype.Text      `json:"phone_number"`
-	Address         pgtype.Text      `json:"address"`
-	DataImage       []byte           `json:"data_image"`
-	OriginalImage   string           `json:"original_image"`
-	Role            pgtype.Text      `json:"role"`
-	CreatedAt       pgtype.Timestamp `json:"created_at"`
-	IsVerifiedEmail pgtype.Bool      `json:"is_verified_email"`
-}
-
-func (q *Queries) GetUser(ctx context.Context, username string) (GetUserRow, error) {
-	row := q.db.QueryRow(ctx, getUser, username)
-	var i GetUserRow
->>>>>>> 0fb3f30 (user images)
-=======
->>>>>>> 1a9e82a (reset password api)
 	err := row.Scan(
 		&i.ID,
 		&i.Username,
@@ -561,19 +195,10 @@ func (q *Queries) GetUser(ctx context.Context, username string) (GetUserRow, err
 		&i.DataImage,
 		&i.OriginalImage,
 		&i.Role,
-<<<<<<< HEAD
-<<<<<<< HEAD
 		&i.Status,
-		&i.CreatedAt,
-		&i.IsVerifiedEmail,
-=======
-=======
-		&i.Status,
->>>>>>> 4ccd381 (Update appointment flow)
 		&i.CreatedAt,
 		&i.IsVerifiedEmail,
 		&i.RemovedAt,
->>>>>>> 1a9e82a (reset password api)
 	)
 	return i, err
 }
@@ -622,266 +247,6 @@ func (q *Queries) InsertDoctor(ctx context.Context, arg InsertDoctorParams) (Doc
 	return i, err
 }
 
-const updateAvatarUser = `-- name: UpdateAvatarUser :one
-UPDATE users
-<<<<<<< HEAD
-SET data_image = $2, original_image = $3
-=======
-SET is_verified_email = true
->>>>>>> edfe5ad (OTP verifycation)
-WHERE username = $1
-RETURNING id, username, hashed_password, full_name, email, phone_number, address, data_image, original_image, role, status, created_at, is_verified_email, removed_at
-`
-
-<<<<<<< HEAD
-type UpdateAvatarUserParams struct {
-	Username      string      `json:"username"`
-	DataImage     []byte      `json:"data_image"`
-	OriginalImage pgtype.Text `json:"original_image"`
-}
-
-func (q *Queries) UpdateAvatarUser(ctx context.Context, arg UpdateAvatarUserParams) (User, error) {
-	row := q.db.QueryRow(ctx, updateAvatarUser, arg.Username, arg.DataImage, arg.OriginalImage)
-=======
-func (q *Queries) VerifiedUser(ctx context.Context, username string) (User, error) {
-	row := q.db.QueryRow(ctx, verifiedUser, username)
->>>>>>> edfe5ad (OTP verifycation)
-	var i User
-	err := row.Scan(
-		&i.ID,
-		&i.Username,
-		&i.HashedPassword,
-		&i.FullName,
-		&i.Email,
-		&i.PhoneNumber,
-		&i.Address,
-		&i.DataImage,
-		&i.OriginalImage,
-		&i.Role,
-		&i.Status,
-		&i.CreatedAt,
-		&i.IsVerifiedEmail,
-		&i.RemovedAt,
-	)
-	return i, err
-}
-
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-const updateUser = `-- name: UpdateUser :one
-<<<<<<< HEAD
-UPDATE users
-SET full_name = $2, email = $3, phone_number = $4, address = $5
-WHERE username = $1
-RETURNING id, username, hashed_password, full_name, email, phone_number, address, data_image, original_image, role, status, created_at, is_verified_email, removed_at
-=======
-UPDATE users 
-SET 
-  hashed_password = COALESCE($1, hashed_password),
-  full_name =  COALESCE($2,full_name),
-  email = COALESCE($3,email),
-  is_verified_email = COALESCE($4,is_verified_email)
-WHERE
-  username = $5
-=======
-const verifiedUser = `-- name: VerifiedUser :one
-UPDATE users
-SET is_verified_email = $2
-WHERE username = $1
->>>>>>> 6610455 (feat: redis queue)
-RETURNING id, username, hashed_password, full_name, email, phone_number, address, data_image, original_image, role, created_at, is_verified_email, removed_at
->>>>>>> 0fb3f30 (user images)
-`
-
-<<<<<<< HEAD
-<<<<<<< HEAD
-type UpdateUserParams struct {
-	Username    string      `json:"username"`
-	FullName    string      `json:"full_name"`
-	Email       string      `json:"email"`
-	PhoneNumber pgtype.Text `json:"phone_number"`
-	Address     pgtype.Text `json:"address"`
-=======
-=======
-const insertDoctor = `-- name: InsertDoctor :one
-INSERT INTO Doctors (
-    user_id,
-    specialization,
-    years_of_experience,
-    education,
-    certificate_number,
-    bio
-) VALUES (
-    $1, $2, $3, $4, $5, $6
-) RETURNING id, user_id, specialization, years_of_experience, education, certificate_number, bio
-`
-
->>>>>>> 3003e08 (update sqlc)
-type InsertDoctorParams struct {
-<<<<<<< HEAD
-	UserID            int64         `json:"user_id"`
-	Specialization    pgtype.Text   `json:"specialization"`
-	YearsOfExperience pgtype.Int4   `json:"years_of_experience"`
-	Education         pgtype.Text   `json:"education"`
-	CertificateNumber pgtype.Text   `json:"certificate_number"`
-	Bio               pgtype.Text   `json:"bio"`
-	ConsultationFee   pgtype.Float8 `json:"consultation_fee"`
-<<<<<<< HEAD
->>>>>>> e9037c6 (update sqlc)
-}
-
-func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error) {
-	row := q.db.QueryRow(ctx, updateUser,
-		arg.Username,
-		arg.FullName,
-		arg.Email,
-		arg.PhoneNumber,
-		arg.Address,
-	)
-=======
-type VerifiedUserParams struct {
-	Username        string      `json:"username"`
-	IsVerifiedEmail pgtype.Bool `json:"is_verified_email"`
-}
-
-func (q *Queries) VerifiedUser(ctx context.Context, arg VerifiedUserParams) (User, error) {
-	row := q.db.QueryRow(ctx, verifiedUser, arg.Username, arg.IsVerifiedEmail)
->>>>>>> 6610455 (feat: redis queue)
-	var i User
-	err := row.Scan(
-		&i.ID,
-		&i.Username,
-		&i.HashedPassword,
-		&i.FullName,
-		&i.Email,
-		&i.PhoneNumber,
-		&i.Address,
-		&i.DataImage,
-		&i.OriginalImage,
-		&i.Role,
-		&i.Status,
-		&i.CreatedAt,
-		&i.IsVerifiedEmail,
-		&i.RemovedAt,
-=======
-=======
-	UserID            int64       `json:"user_id"`
-	Specialization    pgtype.Text `json:"specialization"`
-	YearsOfExperience pgtype.Int4 `json:"years_of_experience"`
-	Education         pgtype.Text `json:"education"`
-	CertificateNumber pgtype.Text `json:"certificate_number"`
-	Bio               pgtype.Text `json:"bio"`
->>>>>>> ada3717 (Docker file)
-}
-
-func (q *Queries) InsertDoctor(ctx context.Context, arg InsertDoctorParams) (Doctor, error) {
-	row := q.db.QueryRow(ctx, insertDoctor,
-		arg.UserID,
-		arg.Specialization,
-		arg.YearsOfExperience,
-		arg.Education,
-		arg.CertificateNumber,
-		arg.Bio,
-	)
-	var i Doctor
-	err := row.Scan(
-		&i.ID,
-		&i.UserID,
-		&i.Specialization,
-		&i.YearsOfExperience,
-		&i.Education,
-		&i.CertificateNumber,
-		&i.Bio,
-<<<<<<< HEAD
-		&i.ConsultationFee,
->>>>>>> 3003e08 (update sqlc)
-=======
->>>>>>> ada3717 (Docker file)
-	)
-	return i, err
-}
-
-<<<<<<< HEAD
-<<<<<<< HEAD
-const updateUserPassword = `-- name: UpdateUserPassword :one
-UPDATE users
-SET hashed_password = $2
-WHERE username = $1 RETURNING id, username, hashed_password, full_name, email, phone_number, address, data_image, original_image, role, status, created_at, is_verified_email, removed_at
-`
-
-type UpdateUserPasswordParams struct {
-	Username       string `json:"username"`
-	HashedPassword string `json:"hashed_password"`
-}
-
-func (q *Queries) UpdateUserPassword(ctx context.Context, arg UpdateUserPasswordParams) (User, error) {
-	row := q.db.QueryRow(ctx, updateUserPassword, arg.Username, arg.HashedPassword)
-	var i User
-	err := row.Scan(
-		&i.ID,
-		&i.Username,
-		&i.HashedPassword,
-		&i.FullName,
-		&i.Email,
-		&i.PhoneNumber,
-		&i.Address,
-		&i.DataImage,
-		&i.OriginalImage,
-		&i.Role,
-		&i.Status,
-		&i.CreatedAt,
-		&i.IsVerifiedEmail,
-		&i.RemovedAt,
-=======
-const insertDoctorSchedule = `-- name: InsertDoctorSchedule :one
-INSERT INTO DoctorSchedules (
-    doctor_id,
-    day_of_week,
-    start_time,
-    end_time,
-    is_active
-  ) VALUES (
-    $1, $2, $3, $4, $5
-) RETURNING id, doctor_id, day_of_week, shift, start_time, end_time, is_active, created_at, updated_at
-`
-
-type InsertDoctorScheduleParams struct {
-	DoctorID  int32       `json:"doctor_id"`
-	DayOfWeek pgtype.Text `json:"day_of_week"`
-	StartTime pgtype.Time `json:"start_time"`
-	EndTime   pgtype.Time `json:"end_time"`
-	IsActive  pgtype.Bool `json:"is_active"`
-}
-
-func (q *Queries) InsertDoctorSchedule(ctx context.Context, arg InsertDoctorScheduleParams) (Doctorschedule, error) {
-	row := q.db.QueryRow(ctx, insertDoctorSchedule,
-		arg.DoctorID,
-		arg.DayOfWeek,
-		arg.StartTime,
-		arg.EndTime,
-		arg.IsActive,
-	)
-	var i Doctorschedule
-	err := row.Scan(
-		&i.ID,
-		&i.DoctorID,
-		&i.DayOfWeek,
-		&i.Shift,
-		&i.StartTime,
-		&i.EndTime,
-		&i.IsActive,
-		&i.CreatedAt,
-		&i.UpdatedAt,
->>>>>>> e9037c6 (update sqlc)
-	)
-	return i, err
-}
-
-=======
->>>>>>> 6f3ea8a (update sqlc)
-=======
->>>>>>> 3003e08 (update sqlc)
 const updateAvatarUser = `-- name: UpdateAvatarUser :one
 UPDATE users
 SET data_image = $2, original_image = $3
