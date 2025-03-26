@@ -4,20 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-	"log"
->>>>>>> 9d28896 (image pet)
-=======
->>>>>>> 98e9e45 (ratelimit and recovery function)
-=======
-	"log"
->>>>>>> 9d28896 (image pet)
-=======
->>>>>>> 98e9e45 (ratelimit and recovery function)
 	"time"
 
 	"github.com/redis/go-redis/v9"

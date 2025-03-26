@@ -3,40 +3,10 @@ package redis
 type redisKey string
 
 const (
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
 	CONFIG_ENV_KEY redisKey = "CONFIG_ENV"
 	USER_INFO_KEY  redisKey = "USER_INFO"
 	OTP_KEY        redisKey = "OTP"
 	PET_INFO_KEY   redisKey = "PET_INFO"
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-	CONFIG_ENV_KEY      redisKey = "CONFIG_ENV"
-	USER_INFO_KEY       redisKey = "USER_INFO"
-	TOKEN_USER_INFO_KEY redisKey = "TOKEN_USER_INFO"
->>>>>>> dff4498 (calendar api)
-=======
-	CONFIG_ENV_KEY redisKey = "CONFIG_ENV"
-	USER_INFO_KEY  redisKey = "USER_INFO"
-	OTP_KEY        redisKey = "OTP"
->>>>>>> 1f24c18 (feat: OTP with redis)
-=======
->>>>>>> 98e9e45 (ratelimit and recovery function)
-=======
-	CONFIG_ENV_KEY      redisKey = "CONFIG_ENV"
-	USER_INFO_KEY       redisKey = "USER_INFO"
-	TOKEN_USER_INFO_KEY redisKey = "TOKEN_USER_INFO"
->>>>>>> dff4498 (calendar api)
-=======
-	CONFIG_ENV_KEY redisKey = "CONFIG_ENV"
-	USER_INFO_KEY  redisKey = "USER_INFO"
-	OTP_KEY        redisKey = "OTP"
->>>>>>> 1f24c18 (feat: OTP with redis)
-=======
->>>>>>> 98e9e45 (ratelimit and recovery function)
 )
 
 // type keyType struct {

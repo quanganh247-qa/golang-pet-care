@@ -37,27 +37,7 @@ WHERE id = $1;
 -- name: DeleteMedicalHistory :exec
 DELETE FROM medical_history
 WHERE id = $1;
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
 
 -- name: GetMedicalRecordByPetID :one
 SELECT * FROM medical_records
 WHERE pet_id = $1 LIMIT 1;
-=======
->>>>>>> e859654 (Elastic search)
-=======
-
--- name: GetMedicalRecordByPetID :one
-SELECT * FROM medical_records
-WHERE pet_id = $1 LIMIT 1;
->>>>>>> c8bec46 (feat: add chatbot, room management, and pet allergy features)
-=======
->>>>>>> e859654 (Elastic search)
-=======
-
--- name: GetMedicalRecordByPetID :one
-SELECT * FROM medical_records
-WHERE pet_id = $1 LIMIT 1;
->>>>>>> c8bec46 (feat: add chatbot, room management, and pet allergy features)

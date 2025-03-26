@@ -1,7 +1,3 @@
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
 package doctor
 
 import (
@@ -27,70 +23,12 @@ func Routes(routerGroup middleware.RouterGroup) {
 	{
 		// Public routes
 		doctor.POST("/login", doctorApi.controller.loginDoctor)
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
 		authRoute.GET("/", doctorApi.controller.getAllDoctor)
 		authRoute.GET("/:doctor_id", doctorApi.controller.getDoctorById)
-<<<<<<< HEAD
-<<<<<<< HEAD
 		authRoute.GET("/profile", doctorApi.controller.getDoctorProfile)
 	}
 	{
-=======
-
-=======
-		authRoute.GET("/", doctorApi.controller.getAllDoctor)
-		authRoute.GET("/:doctor_id", doctorApi.controller.getDoctorById)
->>>>>>> 71b74e9 (feat(appointment): add room management and update appointment functionality.)
-		// Protected routes (require authentication)
-=======
->>>>>>> c8bec46 (feat: add chatbot, room management, and pet allergy features)
-		authRoute.GET("/profile", doctorApi.controller.getDoctorProfile)
-	}
-	{
-<<<<<<< HEAD
-		perRoute([]perms.Permission{perms.ManageDoctor}).GET("/", doctorApi.controller.getAllDoctor)
->>>>>>> 4ccd381 (Update appointment flow)
-=======
->>>>>>> 71b74e9 (feat(appointment): add room management and update appointment functionality.)
-=======
-
-=======
-		authRoute.GET("/", doctorApi.controller.getAllDoctor)
-		authRoute.GET("/:doctor_id", doctorApi.controller.getDoctorById)
->>>>>>> 71b74e9 (feat(appointment): add room management and update appointment functionality.)
-		// Protected routes (require authentication)
-=======
->>>>>>> c8bec46 (feat: add chatbot, room management, and pet allergy features)
-		authRoute.GET("/profile", doctorApi.controller.getDoctorProfile)
-	}
-	{
-<<<<<<< HEAD
-		perRoute([]perms.Permission{perms.ManageDoctor}).GET("/", doctorApi.controller.getAllDoctor)
->>>>>>> 4ccd381 (Update appointment flow)
-=======
->>>>>>> 71b74e9 (feat(appointment): add room management and update appointment functionality.)
 		perRoute([]perms.Permission{perms.ManageDoctor}).GET("/shifts", doctorApi.controller.getShifts)
 		perRoute([]perms.Permission{perms.ManageDoctor}).POST("/shifts", doctorApi.controller.createShift)
 	}
 }
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-package doctor
->>>>>>> ffc9071 (AI suggestion)
-=======
-package doctor
->>>>>>> ada3717 (Docker file)
-=======
->>>>>>> 4ccd381 (Update appointment flow)
-=======
-package doctor
->>>>>>> ffc9071 (AI suggestion)
-=======
-package doctor
->>>>>>> ada3717 (Docker file)
-=======
->>>>>>> 4ccd381 (Update appointment flow)

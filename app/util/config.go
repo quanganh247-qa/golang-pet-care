@@ -37,25 +37,9 @@ type Config struct {
 	GoogleClientID     string `mapstructure:"GOOGLE_CLIENT_ID"`
 	GoogleClientSecret string `mapstructure:"GOOGLE_CLIENT_SECRET"`
 	GoogleRedirectURL  string `mapstructure:"GOOGLE_REDIRECT_URL"`
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
 	GoogleAPIKey       string `mapstructure:"GOOGLE_API_KEY"`
 
 	OpenFDAAPIKey string `mapstructure:"OPENFDA_API_KEY"`
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-	GoogleAPIKey       string `mapstructure:"GOOGLE_API_KEY"`
->>>>>>> e859654 (Elastic search)
-=======
->>>>>>> c8bec46 (feat: add chatbot, room management, and pet allergy features)
-=======
-	GoogleAPIKey       string `mapstructure:"GOOGLE_API_KEY"`
->>>>>>> e859654 (Elastic search)
-=======
->>>>>>> c8bec46 (feat: add chatbot, room management, and pet allergy features)
 
 	GoongAPIKey  string `mapstructure:"GOONG_API_KEY"`
 	GoongBaseURL string `mapstructure:"GOONG_BASE_URL"`
@@ -63,10 +47,6 @@ type Config struct {
 	VietQRBaseURL   string `mapstructure:"VIETQR_BASE_URL"`
 	VietQRAPIKey    string `mapstructure:"VIETQR_API_KEY"`
 	VietQRClientKey string `mapstructure:"VIETQR_CLIENT_KEY"`
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
 
 	PaypalClientID     string `mapstructure:"PAYPAL_CLIENT_ID"`
 	PaypalClientSecret string `mapstructure:"PAYPAL_CLIENT_SECRET"`
@@ -78,65 +58,6 @@ type Config struct {
 	MinIOAccessKey   string `mapstructure:"MINIO_ACCESS_KEY"`
 	MinIOSecretKey   string `mapstructure:"MINIO_SECRET_KEY"`
 	MinIOSSL         bool   `mapstructure:"MINIO_SSL"`
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-
-	GoongAPIKey  string `mapstructure:"GOONG_API_KEY"`
-	GoongBaseURL string `mapstructure:"GOONG_BASE_URL"`
->>>>>>> 4625843 (added goong maps api)
-=======
->>>>>>> c449ffc (feat: cart api)
-=======
-
-	PaypalClientID     string `mapstructure:"PAYPAL_CLIENT_ID"`
-	PaypalClientSecret string `mapstructure:"PAYPAL_CLIENT_SECRET"`
-	PaypalEnvironment  string `mapstructure:"PAYPAL_ENVIRONMENT"`
-	PaypalURL          string `mapstructure:"PAYPAL_URL"`
-
-	ElasticsearchURL string `mapstructure:"ELASTICSEARCH_URL"`
-	MinIOEndpoint    string `mapstructure:"MINIO_ENDPOINT"`
-	MinIOAccessKey   string `mapstructure:"MINIO_ACCESS_KEY"`
-	MinIOSecretKey   string `mapstructure:"MINIO_SECRET_KEY"`
-	MinIOSSL         bool   `mapstructure:"MINIO_SSL"`
->>>>>>> e859654 (Elastic search)
-=======
-=======
->>>>>>> 4ccd381 (Update appointment flow)
-
-	ClickatellAPIKey string `mapstructure:"CLICKATELL_API_KEY"`
-	ClickatellAPIID  string `mapstructure:"CLICKATELL_API_ID"`
-	ClickatellURL    string `mapstructure:"CLICKATELL_URL"`
-<<<<<<< HEAD
->>>>>>> 4ccd381 (Update appointment flow)
-=======
->>>>>>> 6b24d88 (feat(payment): add PayOS payment integration and enhance treatment module)
-=======
-
-	GoongAPIKey  string `mapstructure:"GOONG_API_KEY"`
-	GoongBaseURL string `mapstructure:"GOONG_BASE_URL"`
->>>>>>> 4625843 (added goong maps api)
-=======
->>>>>>> c449ffc (feat: cart api)
-=======
-
-	PaypalClientID     string `mapstructure:"PAYPAL_CLIENT_ID"`
-	PaypalClientSecret string `mapstructure:"PAYPAL_CLIENT_SECRET"`
-	PaypalEnvironment  string `mapstructure:"PAYPAL_ENVIRONMENT"`
-	PaypalURL          string `mapstructure:"PAYPAL_URL"`
-
-	ElasticsearchURL string `mapstructure:"ELASTICSEARCH_URL"`
-	MinIOEndpoint    string `mapstructure:"MINIO_ENDPOINT"`
-	MinIOAccessKey   string `mapstructure:"MINIO_ACCESS_KEY"`
-	MinIOSecretKey   string `mapstructure:"MINIO_SECRET_KEY"`
-	MinIOSSL         bool   `mapstructure:"MINIO_SSL"`
->>>>>>> e859654 (Elastic search)
-=======
->>>>>>> 4ccd381 (Update appointment flow)
-=======
->>>>>>> 6b24d88 (feat(payment): add PayOS payment integration and enhance treatment module)
 }
 
 var Configs = Config{}

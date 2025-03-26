@@ -3,10 +3,6 @@ package payment
 import (
 	"bytes"
 	"encoding/json"
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
 	"errors"
 	"fmt"
 	"io/ioutil"
@@ -40,96 +36,6 @@ type PaymentServiceInterface interface {
 func (s *PaymentService) GetToken(c *gin.Context) (*TokenResponse, error) {
 	// Build base URL
 	baseURL := fmt.Sprintf("%s/token_generate", s.config.VietQRBaseURL)
-=======
-=======
-	"errors"
->>>>>>> 6b24d88 (feat(payment): add PayOS payment integration and enhance treatment module)
-	"fmt"
-	"io/ioutil"
-	"log"
-	"net/http"
-	"time"
-
-	"github.com/gin-gonic/gin"
-	"github.com/payOSHQ/payos-lib-golang"
-	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
-)
-
-type PaymentServiceInterface interface {
-	GetToken(c *gin.Context) (*TokenResponse, error)
-	GetBanksService(c *gin.Context) (*BankResponse, error)
-	GenerateQRService(c *gin.Context, qrRequest QRRequest) (*GenerateQRCodeResponse, error)
-
-	GenerateOauthToken(c *gin.Context) (*OauthTokenResponse, error)
-
-	createPayPalOrder(accessToken string, orderRequest OrderRequest) (*PayPalOrderResponse, error)
-	capturePayPalOrder(accessToken string, orderID string) (*OrderCaptureResponse, error)
-	getOrderDetails(accessToken string, orderID string) (map[string]interface{}, error)
-	updateOrder(accessToken string, orderID string, updates []OrderUpdateRequest) (map[string]interface{}, error)
-	trackOrder(accessToken string, orderID string) (map[string]interface{}, error)
-	getPayPalAccessToken() (string, error)
-
-	// payos
-	createPaymentLink(ctx *gin.Context, request CreatePaymentLinkRequest) (string, error)
-}
-
-func (s *PaymentService) GetToken(c *gin.Context) (*TokenResponse, error) {
-	// Build base URL
-<<<<<<< HEAD
-<<<<<<< HEAD
-	baseURL := fmt.Sprintf("%s/token_generate", s.config.BaseURL)
->>>>>>> c449ffc (feat: cart api)
-=======
-	baseURL := fmt.Sprintf("%s/token_generate", s.config.PaymentBaseURL)
->>>>>>> e859654 (Elastic search)
-=======
-	baseURL := fmt.Sprintf("%s/token_generate", s.config.VietQRBaseURL)
->>>>>>> 6b24d88 (feat(payment): add PayOS payment integration and enhance treatment module)
-=======
-=======
-	"errors"
->>>>>>> 6b24d88 (feat(payment): add PayOS payment integration and enhance treatment module)
-	"fmt"
-	"io/ioutil"
-	"log"
-	"net/http"
-	"time"
-
-	"github.com/gin-gonic/gin"
-	"github.com/payOSHQ/payos-lib-golang"
-	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
-)
-
-type PaymentServiceInterface interface {
-	GetToken(c *gin.Context) (*TokenResponse, error)
-	GetBanksService(c *gin.Context) (*BankResponse, error)
-	GenerateQRService(c *gin.Context, qrRequest QRRequest) (*GenerateQRCodeResponse, error)
-
-	GenerateOauthToken(c *gin.Context) (*OauthTokenResponse, error)
-
-	createPayPalOrder(accessToken string, orderRequest OrderRequest) (*PayPalOrderResponse, error)
-	capturePayPalOrder(accessToken string, orderID string) (*OrderCaptureResponse, error)
-	getOrderDetails(accessToken string, orderID string) (map[string]interface{}, error)
-	updateOrder(accessToken string, orderID string, updates []OrderUpdateRequest) (map[string]interface{}, error)
-	trackOrder(accessToken string, orderID string) (map[string]interface{}, error)
-	getPayPalAccessToken() (string, error)
-
-	// payos
-	createPaymentLink(ctx *gin.Context, request CreatePaymentLinkRequest) (string, error)
-}
-
-func (s *PaymentService) GetToken(c *gin.Context) (*TokenResponse, error) {
-	// Build base URL
-<<<<<<< HEAD
-<<<<<<< HEAD
-	baseURL := fmt.Sprintf("%s/token_generate", s.config.BaseURL)
->>>>>>> c449ffc (feat: cart api)
-=======
-	baseURL := fmt.Sprintf("%s/token_generate", s.config.PaymentBaseURL)
->>>>>>> e859654 (Elastic search)
-=======
-	baseURL := fmt.Sprintf("%s/token_generate", s.config.VietQRBaseURL)
->>>>>>> 6b24d88 (feat(payment): add PayOS payment integration and enhance treatment module)
 	fmt.Println(baseURL)
 	// Make request
 	resp, err := s.client.Post(baseURL, "application/json", nil)
@@ -153,41 +59,9 @@ func (s *PaymentService) GetToken(c *gin.Context) (*TokenResponse, error) {
 }
 
 // get banks
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
 func (s *PaymentService) GetBanksService(c *gin.Context) (*BankResponse, error) {
 	// Build base URL
 	baseURL := fmt.Sprintf("%s/banks", s.config.VietQRBaseURL)
-=======
-func (s *VietQRService) GetBanksService(c *gin.Context) (*BankResponse, error) {
-	// Build base URL
-	baseURL := fmt.Sprintf("%s/banks", s.config.BaseURL)
->>>>>>> c449ffc (feat: cart api)
-=======
-func (s *PaymentService) GetBanksService(c *gin.Context) (*BankResponse, error) {
-	// Build base URL
-<<<<<<< HEAD
-	baseURL := fmt.Sprintf("%s/banks", s.config.PaymentBaseURL)
->>>>>>> e859654 (Elastic search)
-=======
-	baseURL := fmt.Sprintf("%s/banks", s.config.VietQRBaseURL)
->>>>>>> 6b24d88 (feat(payment): add PayOS payment integration and enhance treatment module)
-=======
-func (s *VietQRService) GetBanksService(c *gin.Context) (*BankResponse, error) {
-	// Build base URL
-	baseURL := fmt.Sprintf("%s/banks", s.config.BaseURL)
->>>>>>> c449ffc (feat: cart api)
-=======
-func (s *PaymentService) GetBanksService(c *gin.Context) (*BankResponse, error) {
-	// Build base URL
-<<<<<<< HEAD
-	baseURL := fmt.Sprintf("%s/banks", s.config.PaymentBaseURL)
->>>>>>> e859654 (Elastic search)
-=======
-	baseURL := fmt.Sprintf("%s/banks", s.config.VietQRBaseURL)
->>>>>>> 6b24d88 (feat(payment): add PayOS payment integration and enhance treatment module)
 	fmt.Println(baseURL)
 	// Make request
 	resp, err := s.client.Get(baseURL)
@@ -210,48 +84,10 @@ func (s *PaymentService) GetBanksService(c *gin.Context) (*BankResponse, error) 
 	return &result, nil
 }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
 func (s *PaymentService) GenerateQRService(c *gin.Context, qrRequest QRRequest) (*GenerateQRCodeResponse, error) {
 	// Build base URL
 
 	baseURL := fmt.Sprintf("%s/generate", s.config.VietQRBaseURL)
-=======
-// generate qr
-func (s *PaymentService) GenerateQRService(c *gin.Context, qrRequest QRRequest) (*GenerateQRCodeResponse, error) {
-	// Build base URL
-
-<<<<<<< HEAD
-	baseURL := fmt.Sprintf("%s/generate", s.config.BaseURL)
->>>>>>> c449ffc (feat: cart api)
-=======
-	baseURL := fmt.Sprintf("%s/generate", s.config.PaymentBaseURL)
->>>>>>> e859654 (Elastic search)
-=======
-func (s *PaymentService) GenerateQRService(c *gin.Context, qrRequest QRRequest) (*GenerateQRCodeResponse, error) {
-	// Build base URL
-
-	baseURL := fmt.Sprintf("%s/generate", s.config.VietQRBaseURL)
->>>>>>> 6b24d88 (feat(payment): add PayOS payment integration and enhance treatment module)
-=======
-// generate qr
-func (s *PaymentService) GenerateQRService(c *gin.Context, qrRequest QRRequest) (*GenerateQRCodeResponse, error) {
-	// Build base URL
-
-<<<<<<< HEAD
-	baseURL := fmt.Sprintf("%s/generate", s.config.BaseURL)
->>>>>>> c449ffc (feat: cart api)
-=======
-	baseURL := fmt.Sprintf("%s/generate", s.config.PaymentBaseURL)
->>>>>>> e859654 (Elastic search)
-=======
-func (s *PaymentService) GenerateQRService(c *gin.Context, qrRequest QRRequest) (*GenerateQRCodeResponse, error) {
-	// Build base URL
-
-	baseURL := fmt.Sprintf("%s/generate", s.config.VietQRBaseURL)
->>>>>>> 6b24d88 (feat(payment): add PayOS payment integration and enhance treatment module)
 
 	// Make request
 	reqBody, _ := json.Marshal(qrRequest)
@@ -260,38 +96,8 @@ func (s *PaymentService) GenerateQRService(c *gin.Context, qrRequest QRRequest) 
 		return nil, fmt.Errorf("failed to make request: %v", err)
 	}
 	// Thêm các Header cần thiết
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
 	resp.Header.Set("x-client-id", s.config.VietQRClientKey)
 	resp.Header.Set("x-api-key", s.config.VietQRAPIKey)
-=======
-	resp.Header.Set("x-client-id", s.config.ClientKey)
-	resp.Header.Set("x-api-key", s.config.APIKey)
->>>>>>> c449ffc (feat: cart api)
-=======
-	resp.Header.Set("x-client-id", s.config.PaymentClientKey)
-	resp.Header.Set("x-api-key", s.config.PaymentAPIKey)
->>>>>>> e859654 (Elastic search)
-=======
-	resp.Header.Set("x-client-id", s.config.VietQRClientKey)
-	resp.Header.Set("x-api-key", s.config.VietQRAPIKey)
->>>>>>> 6b24d88 (feat(payment): add PayOS payment integration and enhance treatment module)
-=======
-	resp.Header.Set("x-client-id", s.config.ClientKey)
-	resp.Header.Set("x-api-key", s.config.APIKey)
->>>>>>> c449ffc (feat: cart api)
-=======
-	resp.Header.Set("x-client-id", s.config.PaymentClientKey)
-	resp.Header.Set("x-api-key", s.config.PaymentAPIKey)
->>>>>>> e859654 (Elastic search)
-=======
-	resp.Header.Set("x-client-id", s.config.VietQRClientKey)
-	resp.Header.Set("x-api-key", s.config.VietQRAPIKey)
->>>>>>> 6b24d88 (feat(payment): add PayOS payment integration and enhance treatment module)
 	defer resp.Body.Close()
 
 	// Check response status
@@ -305,14 +111,6 @@ func (s *PaymentService) GenerateQRService(c *gin.Context, qrRequest QRRequest) 
 		return nil, fmt.Errorf("failed to decode response: %v", err)
 	}
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> b0fe977 (place order and make payment)
-=======
->>>>>>> b0fe977 (place order and make payment)
 	err = s.storeDB.ExecWithTransaction(c, func(q *db.Queries) error {
 		// UpdateOrderPaymentStatus
 		_, err := q.UpdateOrderPaymentStatus(c, int64(qrRequest.OrderID))
@@ -333,14 +131,6 @@ func (s *PaymentService) GenerateQRService(c *gin.Context, qrRequest QRRequest) 
 func (s *PaymentService) GenerateOauthToken(c *gin.Context) (*OauthTokenResponse, error) {
 	return nil, nil
 }
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> ada3717 (Docker file)
-=======
->>>>>>> ada3717 (Docker file)
 
 // Create a PayPal order
 func (s *PaymentService) createPayPalOrder(accessToken string, orderRequest OrderRequest) (*PayPalOrderResponse, error) {
@@ -686,14 +476,6 @@ func (s *PaymentService) getPayPalAccessToken() (string, error) {
 
 	return tokenResponse.AccessToken, nil
 }
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> 6b24d88 (feat(payment): add PayOS payment integration and enhance treatment module)
-=======
->>>>>>> 6b24d88 (feat(payment): add PayOS payment integration and enhance treatment module)
 
 func (s *PaymentService) createPaymentLink(ctx *gin.Context, request CreatePaymentLinkRequest) (string, error) {
 
@@ -760,25 +542,3 @@ func calculateTotalAmount(items []payos.Item) int {
 	}
 	return total
 }
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-	return &result, nil
-}
->>>>>>> c449ffc (feat: cart api)
-=======
->>>>>>> e859654 (Elastic search)
-=======
->>>>>>> ada3717 (Docker file)
-=======
->>>>>>> 6b24d88 (feat(payment): add PayOS payment integration and enhance treatment module)
-=======
-	return &result, nil
-}
->>>>>>> c449ffc (feat: cart api)
-=======
->>>>>>> e859654 (Elastic search)
-=======
->>>>>>> ada3717 (Docker file)
-=======
->>>>>>> 6b24d88 (feat(payment): add PayOS payment integration and enhance treatment module)

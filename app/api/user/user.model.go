@@ -5,39 +5,9 @@ import (
 
 	"github.com/jackc/pgx/v5/pgtype"
 	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
 	"github.com/quanganh247-qa/go-blog-be/app/service/redis"
 	"github.com/quanganh247-qa/go-blog-be/app/service/worker"
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
 	"github.com/quanganh247-qa/go-blog-be/app/util"
-=======
-=======
->>>>>>> 9d28896 (image pet)
-	"github.com/quanganh247-qa/go-blog-be/app/service/mail"
-	"github.com/quanganh247-qa/go-blog-be/app/service/rabbitmq"
->>>>>>> 9d28896 (image pet)
-=======
-	"github.com/quanganh247-qa/go-blog-be/app/service/redis"
->>>>>>> 272832d (redis cache)
-=======
->>>>>>> 6610455 (feat: redis queue)
-=======
-	"github.com/quanganh247-qa/go-blog-be/app/util"
->>>>>>> 1a9e82a (reset password api)
-=======
-	"github.com/quanganh247-qa/go-blog-be/app/service/redis"
->>>>>>> 272832d (redis cache)
-=======
->>>>>>> 6610455 (feat: redis queue)
-=======
-	"github.com/quanganh247-qa/go-blog-be/app/util"
->>>>>>> 1a9e82a (reset password api)
 )
 
 type UserController struct {
@@ -45,47 +15,10 @@ type UserController struct {
 }
 
 type UserService struct {
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
 	storeDB         db.Store
 	redis           *redis.ClientType
 	taskDistributor worker.TaskDistributor
 	config          util.Config
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-	storeDB    db.Store
-	emailQueue *rabbitmq.EmailQueue
-	mailer     mail.EmailSender
-<<<<<<< HEAD
->>>>>>> 9d28896 (image pet)
-=======
-	storeDB db.Store
-	redis   *redis.ClientType
->>>>>>> 272832d (redis cache)
-=======
-	storeDB         db.Store
-	redis           *redis.ClientType
-	taskDistributor worker.TaskDistributor
->>>>>>> 6610455 (feat: redis queue)
-=======
->>>>>>> 1a9e82a (reset password api)
-=======
->>>>>>> 9d28896 (image pet)
-=======
-	storeDB db.Store
-	redis   *redis.ClientType
->>>>>>> 272832d (redis cache)
-=======
-	storeDB         db.Store
-	redis           *redis.ClientType
-	taskDistributor worker.TaskDistributor
->>>>>>> 6610455 (feat: redis queue)
-=======
->>>>>>> 1a9e82a (reset password api)
 }
 
 // route
@@ -107,14 +40,6 @@ type createUserRequest struct {
 }
 
 type UserResponse struct {
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> 272832d (redis cache)
-=======
->>>>>>> 272832d (redis cache)
 	Username      string    `json:"username"`
 	FullName      string    `json:"full_name"`
 	Email         string    `json:"email"`
@@ -124,53 +49,6 @@ type UserResponse struct {
 	DataImage     []byte    `json:"data_image"`
 	OriginalImage string    `json:"original_image"`
 	RemovedAt     time.Time `json:"removed_at"`
-<<<<<<< HEAD
-<<<<<<< HEAD
-}
-
-type UpdateUserParams struct {
-	Username    string `json:"username"`
-	FullName    string `json:"full_name"`
-	Email       string `json:"email"`
-	PhoneNumber string `json:"phone_number"`
-	Address     string `json:"address"`
-}
-type UpdateUserImageParams struct {
-	DataImage     []byte `json:"data_image"`
-	OriginalImage string `json:"original_image"`
-=======
-=======
->>>>>>> 0fb3f30 (user images)
-	Username        string    `json:"username"`
-	FullName        string    `json:"full_name"`
-	Email           string    `json:"email"`
-	PhoneNumber     string    `json:"phone_number"`
-	Address         string    `json:"address"`
-	Role            string    `json:"role"`
-	IsVerifiedEmail bool      `json:"is_verified_email"`
-	DataImage       []byte    `json:"data_image"`
-	OriginalImage   string    `json:"original_image"`
-	RemovedAt       time.Time `json:"removed_at"`
-<<<<<<< HEAD
->>>>>>> 0fb3f30 (user images)
-=======
->>>>>>> 272832d (redis cache)
-}
-
-type UpdateUserParams struct {
-	Username    string `json:"username"`
-	FullName    string `json:"full_name"`
-	Email       string `json:"email"`
-	PhoneNumber string `json:"phone_number"`
-	Address     string `json:"address"`
-}
-type UpdateUserImageParams struct {
-	DataImage     []byte `json:"data_image"`
-	OriginalImage string `json:"original_image"`
-=======
->>>>>>> 0fb3f30 (user images)
-=======
->>>>>>> 272832d (redis cache)
 }
 
 type UpdateUserParams struct {
@@ -186,27 +64,8 @@ type UpdateUserImageParams struct {
 }
 
 type loginUserRequest struct {
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
 	Username   string `json:"username" binding:"required,alphanum"`
 	Password   string `json:"password" binding:"required,min=6,max=25"`
-=======
-	Username string `json:"username" binding:"required,alphanum"`
-	Password string `json:"password" binding:"required,min=6,max=25"`
-	// Token      string `json:"token" binding:"required"`
-<<<<<<< HEAD
->>>>>>> c3c833d (login api)
-=======
-	Username   string `json:"username" binding:"required,alphanum"`
-	Password   string `json:"password" binding:"required,min=6,max=25"`
->>>>>>> 290baeb (fixed vaccine routes)
-=======
->>>>>>> c3c833d (login api)
-=======
-	Username   string `json:"username" binding:"required,alphanum"`
-	Password   string `json:"password" binding:"required,min=6,max=25"`
->>>>>>> 290baeb (fixed vaccine routes)
 	Token      string `json:"token"`
 	DeviceType string `json:"device_type"`
 }
@@ -216,23 +75,7 @@ type loginUSerResponse struct {
 	RefreshToken          string       `json:"refresh_token"`
 	RefreshTokenExpiresAt time.Time    `json:"refresh_token_expires_at"`
 	User                  UserResponse `json:"user"`
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
 	DeviceToken           string       `json:"device_token"`
-=======
-	DeviceToken           []string     `json:"device_token"`
->>>>>>> 0fb3f30 (user images)
-=======
-	DeviceToken           string       `json:"device_token"`
->>>>>>> c3c833d (login api)
-=======
-	DeviceToken           []string     `json:"device_token"`
->>>>>>> 0fb3f30 (user images)
-=======
-	DeviceToken           string       `json:"device_token"`
->>>>>>> c3c833d (login api)
 	DataImage             string       `json:"data_image"`
 }
 
@@ -274,10 +117,6 @@ type DoctorScheduleResponse struct {
 }
 
 type VerrifyEmailTxParams struct {
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
 	SecretCode int64  `json:"secret_code"`
 	Username   string `json:"username"`
 }
@@ -285,26 +124,6 @@ type VerrifyEmailTxParams struct {
 type VerrifyInput struct {
 	SecretCode string `json:"secret_code"`
 	Username   string `json:"username"`
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-	EmailId    int64  `json:"email_id"`
-=======
->>>>>>> edfe5ad (OTP verifycation)
-	SecretCode int64  `json:"secret_code"`
-	Username   string `json:"username"`
->>>>>>> 6610455 (feat: redis queue)
-=======
->>>>>>> 290baeb (fixed vaccine routes)
-=======
-	EmailId    int64  `json:"email_id"`
-=======
->>>>>>> edfe5ad (OTP verifycation)
-	SecretCode int64  `json:"secret_code"`
-	Username   string `json:"username"`
->>>>>>> 6610455 (feat: redis queue)
-=======
->>>>>>> 290baeb (fixed vaccine routes)
 }
 
 type VerrifyEmailTxResult struct {
@@ -328,26 +147,8 @@ type ForgotPasswordRequest struct {
 type ForgotPasswordResponse struct {
 	Message string `json:"message"`
 }
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> a2c21c8 (update pass)
-=======
->>>>>>> a2c21c8 (update pass)
 
 type UpdatePasswordParams struct {
 	OldPassword string `json:"old_password"`
 	Password    string `json:"password"`
 }
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> 1a9e82a (reset password api)
-=======
->>>>>>> a2c21c8 (update pass)
-=======
->>>>>>> 1a9e82a (reset password api)
-=======
->>>>>>> a2c21c8 (update pass)

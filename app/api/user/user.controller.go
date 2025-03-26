@@ -23,9 +23,6 @@ type UserControllerInterface interface {
 	logoutUser(ctx *gin.Context)
 	verifyEmail(ctx *gin.Context)
 	getAccessToken(ctx *gin.Context)
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
 	resendOTP(ctx *gin.Context)
 	updatetUser(ctx *gin.Context)
 	updatetUserAvatar(ctx *gin.Context)
@@ -33,99 +30,11 @@ type UserControllerInterface interface {
 	UpdatePassword(ctx *gin.Context)
 	sessioninfo(ctx *gin.Context)
 	userinfo(ctx *gin.Context)
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
 	GetAllRole(ctx *gin.Context)
-=======
-	createDoctor(ctx *gin.Context)
-	addSchedule(ctx *gin.Context)
-	getDoctor(ctx *gin.Context)
-	insertTimeSlots(ctx *gin.Context)
-	getTimeSlots(ctx *gin.Context)
-	getAllTimeSlots(ctx *gin.Context)
-	updateDoctorAvailableTime(ctx *gin.Context)
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-	// insertTokenInfo(ctx *gin.Context)
->>>>>>> 79a3bcc (medicine api)
-=======
-=======
->>>>>>> ae87825 (updated)
-=======
->>>>>>> ae87825 (updated)
-	resendOTP(ctx *gin.Context)
-<<<<<<< HEAD
-<<<<<<< HEAD
->>>>>>> edfe5ad (OTP verifycation)
-=======
-	updatetUser(ctx *gin.Context)
-	updatetUserAvatar(ctx *gin.Context)
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
->>>>>>> 473cd1d (uplaod image method)
-=======
-	GetDoctors(ctx *gin.Context)
-<<<<<<< HEAD
-<<<<<<< HEAD
->>>>>>> e30b070 (Get list appoinment by user)
-=======
-=======
->>>>>>> ae87825 (updated)
-=======
->>>>>>> ae87825 (updated)
-	ForgotPassword(ctx *gin.Context)
-<<<<<<< HEAD
-<<<<<<< HEAD
->>>>>>> 1a9e82a (reset password api)
-=======
-	UpdatePassword(ctx *gin.Context)
->>>>>>> a2c21c8 (update pass)
-=======
->>>>>>> ada3717 (Docker file)
-=======
-	GetAllRole(ctx *gin.Context)
->>>>>>> 4ccd381 (Update appointment flow)
-=======
-	// insertTokenInfo(ctx *gin.Context)
->>>>>>> 79a3bcc (medicine api)
-=======
-	resendOTP(ctx *gin.Context)
->>>>>>> edfe5ad (OTP verifycation)
-=======
-	updatetUser(ctx *gin.Context)
-	updatetUserAvatar(ctx *gin.Context)
->>>>>>> 473cd1d (uplaod image method)
-=======
-	GetDoctors(ctx *gin.Context)
->>>>>>> e30b070 (Get list appoinment by user)
-=======
-	ForgotPassword(ctx *gin.Context)
->>>>>>> 1a9e82a (reset password api)
-=======
-	UpdatePassword(ctx *gin.Context)
->>>>>>> a2c21c8 (update pass)
-=======
->>>>>>> ada3717 (Docker file)
-=======
-	GetAllRole(ctx *gin.Context)
->>>>>>> 4ccd381 (Update appointment flow)
 }
 
 func (controller *UserController) createUser(ctx *gin.Context) {
 	var req createUserRequest
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> edfe5ad (OTP verifycation)
-=======
->>>>>>> edfe5ad (OTP verifycation)
 
 	// Parse the JSON data from the "data" form field
 	jsonData := ctx.PostForm("data")
@@ -133,52 +42,6 @@ func (controller *UserController) createUser(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid JSON data"})
 		return
 	}
-<<<<<<< HEAD
-<<<<<<< HEAD
-
-	// Use the helper function to handle the image upload
-	dataImage, originalImageName, err := util.HandleImageUpload(ctx, "image")
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
-		return
-	}
-
-	req.DataImage = dataImage
-	req.OriginalImage = originalImageName
-
-	res, err := controller.service.createUserService(ctx, req)
-=======
-=======
->>>>>>> 0fb3f30 (user images)
-	username := ctx.PostForm("username")
-	password := ctx.PostForm("password")
-	fullName := ctx.PostForm("full_name")
-	email := ctx.PostForm("email")
-	phoneNumber := ctx.PostForm("phone_number")
-	address := ctx.PostForm("address")
-	role := ctx.PostForm("role")
-<<<<<<< HEAD
-=======
->>>>>>> edfe5ad (OTP verifycation)
-
-<<<<<<< HEAD
-	err := ctx.Request.ParseMultipartForm(10 << 20) // 10 MB max
->>>>>>> 0fb3f30 (user images)
-=======
-	// Use the helper function to handle the image upload
-	dataImage, originalImageName, err := util.HandleImageUpload(ctx, "image")
->>>>>>> 473cd1d (uplaod image method)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
-		return
-	}
-
-	req.DataImage = dataImage
-	req.OriginalImage = originalImageName
-=======
->>>>>>> 0fb3f30 (user images)
-=======
->>>>>>> edfe5ad (OTP verifycation)
 
 	// Use the helper function to handle the image upload
 	dataImage, originalImageName, err := util.HandleImageUpload(ctx, "image")
@@ -196,34 +59,6 @@ func (controller *UserController) createUser(ctx *gin.Context) {
 		return
 	}
 	ctx.JSON(http.StatusCreated, util.SuccessResponse("Success", res))
-}
-
-func (controller *UserController) getUserDetails(ctx *gin.Context) {
-	authPayload, err := middleware.GetAuthorizationPayload(ctx)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
-		return
-	}
-	user, err := controller.service.getUserDetailsService(ctx, authPayload.Username)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
-		return
-	}
-	ctx.JSON(http.StatusOK, util.SuccessResponse("Success", user))
-}
-
-func (controller *UserController) getUserDetails(ctx *gin.Context) {
-	authPayload, err := middleware.GetAuthorizationPayload(ctx)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
-		return
-	}
-	user, err := controller.service.getUserDetailsService(ctx, authPayload.Username)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
-		return
-	}
-	ctx.JSON(http.StatusOK, util.SuccessResponse("Success", user))
 }
 
 func (controller *UserController) getUserDetails(ctx *gin.Context) {
@@ -283,23 +118,7 @@ func (controller *UserController) loginUser(ctx *gin.Context) {
 }
 
 func (controller *UserController) logoutUser(ctx *gin.Context) {
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
 	token := ctx.Query("token")
-=======
-	token := ctx.Param("token")
->>>>>>> 9d28896 (image pet)
-=======
-	token := ctx.Query("token")
->>>>>>> 8d5618d (feat: update logout)
-=======
-	token := ctx.Param("token")
->>>>>>> 9d28896 (image pet)
-=======
-	token := ctx.Query("token")
->>>>>>> 8d5618d (feat: update logout)
 
 	authPayload, err := middleware.GetAuthorizationPayload(ctx)
 	if err != nil {
@@ -318,21 +137,6 @@ func (controller *UserController) logoutUser(ctx *gin.Context) {
 func (controller *UserController) getAccessToken(ctx *gin.Context) {
 	util.SetCookieSameSite(ctx)
 	cookie, err := ctx.Cookie("refresh_token")
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-=======
->>>>>>> 8d5618d (feat: update logout)
-	if util.Configs.DefaultAuthenticationUsername != "" && err != nil {
-		cookie, _, err = token.TokenMaker.CreateToken(util.Configs.DefaultAuthenticationUsername, nil, util.Configs.AccessTokenDuration)
-	}
->>>>>>> 8d5618d (feat: update logout)
-=======
->>>>>>> ada3717 (Docker file)
-=======
->>>>>>> ada3717 (Docker file)
 	if err != nil {
 		ctx.JSON(http.StatusForbidden, util.ErrorResponse(err))
 		return
@@ -357,10 +161,6 @@ func (controller *UserController) getAccessToken(ctx *gin.Context) {
 }
 
 func (controller *UserController) verifyEmail(ctx *gin.Context) {
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
 	var req VerrifyInput
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, util.ErrorValidator(err))
@@ -379,92 +179,6 @@ func (controller *UserController) verifyEmail(ctx *gin.Context) {
 	}
 
 	err = controller.service.verifyEmailService(ctx, arg)
-=======
-	var req VerrifyEmailTxParams
-=======
-	var req VerrifyInput
->>>>>>> 290baeb (fixed vaccine routes)
-	if err := ctx.ShouldBindJSON(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, util.ErrorValidator(err))
-		return
-	}
-
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-	var req VerrifyEmailTxParams
-=======
-	var req VerrifyInput
->>>>>>> 290baeb (fixed vaccine routes)
-	if err := ctx.ShouldBindJSON(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, util.ErrorValidator(err))
-		return
-	}
-
-<<<<<<< HEAD
-<<<<<<< HEAD
->>>>>>> 9d28896 (image pet)
-	// convert strign to int 64
-	emailIDInt, err := strconv.ParseInt(emailID, 10, 64)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(fmt.Errorf("invalid email_id parameter")))
-		return
-	}
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> 6610455 (feat: redis queue)
-	secretCodeInt, err := strconv.ParseInt(secretCode, 10, 64)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(fmt.Errorf("invalid email_id parameter")))
-		return
-	}
-<<<<<<< HEAD
-
-	req = VerrifyEmailTxParams{
-		EmailId:    emailIDInt,
-		SecretCode: secretCodeInt,
-=======
-
-	req = VerrifyEmailTxParams{
-		EmailId:    emailIDInt,
-		SecretCode: secretCode,
->>>>>>> 9d28896 (image pet)
-=======
-
-	req = VerrifyEmailTxParams{
-		EmailId:    emailIDInt,
-		SecretCode: secretCodeInt,
->>>>>>> 6610455 (feat: redis queue)
-	}
-
-	res, err := controller.service.verifyEmailService(ctx, req)
->>>>>>> 9d28896 (image pet)
-=======
-	err := controller.service.verifyEmailService(ctx, req)
->>>>>>> edfe5ad (OTP verifycation)
-=======
-=======
->>>>>>> 290baeb (fixed vaccine routes)
-	otpInt, err := strconv.ParseInt(req.SecretCode, 10, 64)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, util.ErrorValidator(err))
-		return
-	}
-
-	arg := VerrifyEmailTxParams{
-		SecretCode: otpInt,
-		Username:   req.Username,
-	}
-
-	err = controller.service.verifyEmailService(ctx, arg)
-<<<<<<< HEAD
->>>>>>> 290baeb (fixed vaccine routes)
-=======
-	err := controller.service.verifyEmailService(ctx, req)
->>>>>>> edfe5ad (OTP verifycation)
-=======
->>>>>>> 290baeb (fixed vaccine routes)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
 		return
@@ -487,10 +201,6 @@ func (controller *UserController) resendOTP(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, util.SuccessResponse("Resend OTP successfull", res))
 }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
 func (controller *UserController) updatetUser(ctx *gin.Context) {
 
 	var arg UpdateUserParams
@@ -555,12 +265,6 @@ func (controller *UserController) ForgotPassword(ctx *gin.Context) {
 
 func (controller *UserController) UpdatePassword(ctx *gin.Context) {
 	var req UpdatePasswordParams
-=======
-=======
->>>>>>> edfe5ad (OTP verifycation)
-func (controller *UserController) createDoctor(ctx *gin.Context) {
-	var req InsertDoctorRequest
->>>>>>> edfe5ad (OTP verifycation)
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, util.ErrorValidator(err))
 		return
@@ -617,14 +321,6 @@ func (controller *UserController) userinfo(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, util.SuccessResponse("Success", userInfo))
 }
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> 4ccd381 (Update appointment flow)
-=======
->>>>>>> 4ccd381 (Update appointment flow)
 
 func (controller *UserController) GetAllRole(ctx *gin.Context) {
 	res, err := controller.service.GetAllRoleService(ctx)
@@ -634,285 +330,3 @@ func (controller *UserController) GetAllRole(ctx *gin.Context) {
 	}
 	ctx.JSON(http.StatusOK, util.SuccessResponse("Success", res))
 }
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-
-func (controller *UserController) insertTimeSlots(ctx *gin.Context) {
-	var req db.InsertTimeslotParams
-	if err := ctx.ShouldBindJSON(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, util.ErrorValidator(err))
-		return
-	}
-	authPayload, err := middleware.GetAuthorizationPayload(ctx)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
-		return
-	}
-
-	res, err := controller.service.insertTimeSlots(ctx, authPayload.Username, req)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
-		return
-	}
-	ctx.JSON(http.StatusCreated, util.SuccessResponse("Inserted timeslot successfull", res))
-
-}
-
-func (controller *UserController) getTimeSlots(ctx *gin.Context) {
-	doctorID := ctx.Param("doctor_id")
-	if doctorID == "" {
-		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(errors.New("doctor_id is required")))
-		return
-	}
-	// day
-	day := ctx.Query("day")
-	// convert sitrng to int
-	doctorIDInt, err := strconv.Atoi(doctorID)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
-		return
-	}
-	res, err := controller.service.GetTimeslotsAvailable(ctx, int64(doctorIDInt), day)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
-		return
-	}
-	ctx.JSON(http.StatusOK, util.SuccessResponse("All list of time slots are available", res))
-}
-
-func (controller *UserController) getAllTimeSlots(ctx *gin.Context) {
-	doctorID := ctx.Param("doctor_id")
-	if doctorID == "" {
-		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(errors.New("doctor_id is required")))
-		return
-	}
-	// day
-	day := ctx.Query("day")
-	// convert sitrng to int
-	doctorIDInt, err := strconv.Atoi(doctorID)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
-		return
-	}
-	res, err := controller.service.GetTimeslotsAvailable(ctx, int64(doctorIDInt), day)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
-		return
-	}
-	ctx.JSON(http.StatusOK, util.SuccessResponse("All list of time slots are available", res))
-}
-
-func (controller *UserController) updateDoctorAvailableTime(ctx *gin.Context) {
-	timeID := ctx.Param("id")
-	if timeID == "" {
-		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(errors.New("Time slot is required")))
-		return
-	}
-	// convert sitrng to int64
-	timeSlotId, err := strconv.ParseInt(timeID, 10, 64)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
-		return
-	}
-	err = controller.service.UpdateDoctorAvailable(ctx, timeSlotId)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
-		return
-	}
-	ctx.JSON(http.StatusOK, util.SuccessResponse("Updated timeslot successfull", nil))
-}
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-
-// func (controller *UserController) insertTokenInfo(ctx *gin.Context) {
-// 	var req InsertTokenInfoRequest
-// 	if err := ctx.ShouldBindJSON(&req); err != nil {
-// 		ctx.JSON(http.StatusBadRequest, util.ErrorValidator(err))
-// 		return
-// 	}
-// 	authPayload, err := middleware.GetAuthorizationPayload(ctx)
-// 	if err != nil {
-// 		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
-// 		return
-// 	}
-// 	res, err := controller.service.InsertTokenInfoService(ctx, req, authPayload.Username)
-// 	if err != nil {
-// 		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
-// 		return
-// 	}
-// 	ctx.JSON(http.StatusCreated, util.SuccessResponse("Inserted token info successfull", res))
-// }
-<<<<<<< HEAD
->>>>>>> 79a3bcc (medicine api)
-=======
->>>>>>> eb8d761 (updated pet schedule)
-=======
-
-=======
->>>>>>> ae87825 (updated)
-=======
-
->>>>>>> 473cd1d (uplaod image method)
-=======
->>>>>>> ae87825 (updated)
-func (controller *UserController) updatetUser(ctx *gin.Context) {
-
-	var arg UpdateUserParams
-	if err := ctx.ShouldBindJSON(&arg); err != nil {
-		ctx.JSON(http.StatusBadRequest, util.ErrorValidator(err))
-		return
-	}
-
-	authPayload, err := middleware.GetAuthorizationPayload(ctx)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
-		return
-	}
-	res, err := controller.service.updateUserService(ctx, authPayload.Username, arg)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
-		return
-	}
-<<<<<<< HEAD
-<<<<<<< HEAD
-	ctx.JSON(http.StatusOK, util.SuccessResponse("Update user succesfully", res))
-=======
-	ctx.JSON(http.StatusOK, util.SuccessResponse("Resend OTP successfull", res))
->>>>>>> 473cd1d (uplaod image method)
-=======
-	ctx.JSON(http.StatusOK, util.SuccessResponse("Update user succesfully", res))
->>>>>>> a415f25 (new data)
-}
-
-func (controller *UserController) updatetUserAvatar(ctx *gin.Context) {
-
-	// Use the helper function to handle the image upload
-	dataImage, originalImageName, err := util.HandleImageUpload(ctx, "image")
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
-		return
-	}
-
-	req := UpdateUserImageParams{
-		DataImage:     dataImage,
-		OriginalImage: originalImageName,
-	}
-
-	authPayload, err := middleware.GetAuthorizationPayload(ctx)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
-		return
-	}
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> e30b070 (Get list appoinment by user)
-	err = controller.service.updateUserImageService(ctx, authPayload.Username, req)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
-		return
-	}
-	ctx.JSON(http.StatusOK, util.SuccessResponse("Success", nil))
-}
-
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> e30b070 (Get list appoinment by user)
-func (controller *UserController) GetDoctors(ctx *gin.Context) {
-	// pagination, err := util.GetPageInQuery(ctx.Request.URL.Query())
-	// if err != nil {
-	// 	ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
-	// 	return
-	// }
-
-	res, err := controller.service.GetDoctorsService(ctx)
-<<<<<<< HEAD
-=======
-	res, err := controller.service.updateUserImageService(ctx, authPayload.Username, req)
->>>>>>> 473cd1d (uplaod image method)
-=======
->>>>>>> e30b070 (Get list appoinment by user)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
-		return
-	}
-	ctx.JSON(http.StatusOK, util.SuccessResponse("Success", res))
-}
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
->>>>>>> 473cd1d (uplaod image method)
-=======
-
-=======
->>>>>>> ae87825 (updated)
-=======
-
->>>>>>> 1a9e82a (reset password api)
-=======
->>>>>>> ae87825 (updated)
-func (controller *UserController) ForgotPassword(ctx *gin.Context) {
-	var req ForgotPasswordRequest
-	if err := ctx.ShouldBindJSON(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, util.ErrorValidator(err))
-		return
-	}
-	err := controller.service.ForgotPasswordService(ctx, req.Email)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
-		return
-	}
-	ctx.JSON(http.StatusOK, util.SuccessResponse("Success", nil))
-}
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
->>>>>>> 1a9e82a (reset password api)
-=======
-=======
->>>>>>> a2c21c8 (update pass)
-
-func (controller *UserController) UpdatePassword(ctx *gin.Context) {
-	var req UpdatePasswordParams
-	if err := ctx.ShouldBindJSON(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, util.ErrorValidator(err))
-		return
-	}
-	authPayload, err := middleware.GetAuthorizationPayload(ctx)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
-		return
-	}
-	err = controller.service.UpdatePasswordService(ctx, authPayload.Username, req)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
-		return
-	}
-	ctx.JSON(http.StatusOK, util.SuccessResponse("Success", nil))
-}
-<<<<<<< HEAD
->>>>>>> a2c21c8 (update pass)
-=======
->>>>>>> ada3717 (Docker file)
-=======
->>>>>>> 4ccd381 (Update appointment flow)
-=======
->>>>>>> 79a3bcc (medicine api)
-=======
->>>>>>> eb8d761 (updated pet schedule)
-=======
->>>>>>> 473cd1d (uplaod image method)
-=======
->>>>>>> 1a9e82a (reset password api)
-=======
->>>>>>> a2c21c8 (update pass)
-=======
->>>>>>> ada3717 (Docker file)
-=======
->>>>>>> 4ccd381 (Update appointment flow)

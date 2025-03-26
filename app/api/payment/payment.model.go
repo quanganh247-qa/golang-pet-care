@@ -1,9 +1,5 @@
 package payment
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
 import (
 	"net/http"
 
@@ -39,96 +35,6 @@ type PaymentApi struct {
 
 type PaymentController struct {
 	service PaymentServiceInterface
-=======
-import "net/http"
-=======
-import (
-	"net/http"
-
-	"github.com/payOSHQ/payos-lib-golang"
-	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
-)
->>>>>>> b0fe977 (place order and make payment)
-
-type PaymentConfig struct {
-	VietQRAPIKey    string
-	VietQRClientKey string
-	VietQRBaseURL   string
-
-	PayPalClientID     string
-	PayPalClientSecret string
-	PayPalBaseURL      string
-	PayPalEnvironment  string
-
-	PayOSAPIKey     string
-	PayOSClientKey  string
-	PayOSChecsumKey string
-}
-
-// GoongService handles interactions with VierQR Maps API
-type PaymentService struct {
-	config  *PaymentConfig
-	client  *http.Client
-	storeDB db.Store
-}
-
-type PaymentApi struct {
-	controller PaymentControllerInterface
-}
-
-<<<<<<< HEAD
-type VietQRController struct {
-	service VietQRServiceInterface
->>>>>>> c449ffc (feat: cart api)
-=======
-type PaymentController struct {
-	service PaymentServiceInterface
->>>>>>> e859654 (Elastic search)
-=======
-import "net/http"
-=======
-import (
-	"net/http"
-
-	"github.com/payOSHQ/payos-lib-golang"
-	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
-)
->>>>>>> b0fe977 (place order and make payment)
-
-type PaymentConfig struct {
-	VietQRAPIKey    string
-	VietQRClientKey string
-	VietQRBaseURL   string
-
-	PayPalClientID     string
-	PayPalClientSecret string
-	PayPalBaseURL      string
-	PayPalEnvironment  string
-
-	PayOSAPIKey     string
-	PayOSClientKey  string
-	PayOSChecsumKey string
-}
-
-// GoongService handles interactions with VierQR Maps API
-type PaymentService struct {
-	config  *PaymentConfig
-	client  *http.Client
-	storeDB db.Store
-}
-
-type PaymentApi struct {
-	controller PaymentControllerInterface
-}
-
-<<<<<<< HEAD
-type VietQRController struct {
-	service VietQRServiceInterface
->>>>>>> c449ffc (feat: cart api)
-=======
-type PaymentController struct {
-	service PaymentServiceInterface
->>>>>>> e859654 (Elastic search)
 }
 
 type TokenResponse struct {
@@ -163,21 +69,7 @@ type QRRequest struct {
 	Bank        string `json:"bank"`
 	AddInfo     string `json:"addInfo"`
 	Format      string `json:"format"`
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
 	OrderID     int64  `json:"order_id"`
-=======
->>>>>>> c449ffc (feat: cart api)
-=======
-	OrderID     int64  `json:"order_id"`
->>>>>>> b0fe977 (place order and make payment)
-=======
->>>>>>> c449ffc (feat: cart api)
-=======
-	OrderID     int64  `json:"order_id"`
->>>>>>> b0fe977 (place order and make payment)
 }
 
 type GenerateQRCodeResponse struct {
@@ -192,28 +84,12 @@ type GenerateQRData struct {
 	QRCode      string `json:"qrCode"`      // Dữ liệu QR code
 	QRDataURL   string `json:"qrDataURL"`   // Dữ liệu QR code dạng base64
 }
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> e859654 (Elastic search)
-=======
->>>>>>> e859654 (Elastic search)
 
 type OauthTokenResponse struct {
 	AccessToken string `json:"access_token"`
 	TokenType   string `json:"token_type"`
 	ExpiresIn   int    `json:"expires_in"`
 }
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> ada3717 (Docker file)
-=======
->>>>>>> ada3717 (Docker file)
 
 // Environment variables
 var (
@@ -326,14 +202,6 @@ type OrderUpdateRequest struct {
 	Path  string `json:"path"`
 	Value string `json:"value"`
 }
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> 6b24d88 (feat(payment): add PayOS payment integration and enhance treatment module)
-=======
->>>>>>> 6b24d88 (feat(payment): add PayOS payment integration and enhance treatment module)
 
 type CreatePaymentLinkRequest struct {
 	MobilePayment bool         // option 2: Use for order_id
@@ -341,21 +209,3 @@ type CreatePaymentLinkRequest struct {
 	Description   string
 	UserID        int64
 }
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> c449ffc (feat: cart api)
-=======
->>>>>>> e859654 (Elastic search)
-=======
->>>>>>> ada3717 (Docker file)
-=======
->>>>>>> 6b24d88 (feat(payment): add PayOS payment integration and enhance treatment module)
-=======
->>>>>>> c449ffc (feat: cart api)
-=======
->>>>>>> e859654 (Elastic search)
-=======
->>>>>>> ada3717 (Docker file)
-=======
->>>>>>> 6b24d88 (feat(payment): add PayOS payment integration and enhance treatment module)

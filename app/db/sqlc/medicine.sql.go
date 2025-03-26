@@ -11,12 +11,6 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
 const createMedicine = `-- name: CreateMedicine :one
 INSERT INTO medicines (name, description, usage, dosage, frequency, duration, side_effects, expiration_date, quantity)
 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
@@ -47,356 +41,6 @@ func (q *Queries) CreateMedicine(ctx context.Context, arg CreateMedicineParams) 
 		arg.ExpirationDate,
 		arg.Quantity,
 	)
-=======
-=======
->>>>>>> 3bf345d (happy new year)
-const createAllergy = `-- name: CreateAllergy :one
-INSERT INTO allergies (medical_record_id, allergen, severity, reaction, notes)
-VALUES ($1, $2, $3, $4, $5)
-RETURNING id, medical_record_id, allergen, severity, reaction, notes, created_at, updated_at
-`
-
-type CreateAllergyParams struct {
-	MedicalRecordID pgtype.Int8 `json:"medical_record_id"`
-	Allergen        []byte      `json:"allergen"`
-	Severity        pgtype.Text `json:"severity"`
-	Reaction        []byte      `json:"reaction"`
-	Notes           pgtype.Text `json:"notes"`
-}
-
-func (q *Queries) CreateAllergy(ctx context.Context, arg CreateAllergyParams) (Allergy, error) {
-	row := q.db.QueryRow(ctx, createAllergy,
-		arg.MedicalRecordID,
-		arg.Allergen,
-		arg.Severity,
-		arg.Reaction,
-		arg.Notes,
-	)
-	var i Allergy
-	err := row.Scan(
-		&i.ID,
-		&i.MedicalRecordID,
-		&i.Allergen,
-		&i.Severity,
-		&i.Reaction,
-		&i.Notes,
-		&i.CreatedAt,
-		&i.UpdatedAt,
-	)
-	return i, err
-}
-
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> 4ccd381 (Update appointment flow)
-=======
->>>>>>> 4ccd381 (Update appointment flow)
-const createMedicine = `-- name: CreateMedicine :one
-INSERT INTO medicines (name, description, usage, dosage, frequency, duration, side_effects, expiration_date, quantity)
-VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
-RETURNING id, name, description, usage, dosage, frequency, duration, side_effects, start_date, end_date, created_at, updated_at, expiration_date, quantity
-`
-
-type CreateMedicineParams struct {
-	Name           string      `json:"name"`
-	Description    pgtype.Text `json:"description"`
-	Usage          pgtype.Text `json:"usage"`
-	Dosage         pgtype.Text `json:"dosage"`
-	Frequency      pgtype.Text `json:"frequency"`
-	Duration       pgtype.Text `json:"duration"`
-	SideEffects    pgtype.Text `json:"side_effects"`
-	ExpirationDate pgtype.Date `json:"expiration_date"`
-	Quantity       pgtype.Int8 `json:"quantity"`
-}
-
-func (q *Queries) CreateMedicine(ctx context.Context, arg CreateMedicineParams) (Medicine, error) {
-<<<<<<< HEAD
-	row := q.db.QueryRow(ctx, createMedicine, arg.Name, arg.Description, arg.Usage)
->>>>>>> 3bf345d (happy new year)
-=======
-	row := q.db.QueryRow(ctx, createMedicine,
-		arg.Name,
-		arg.Description,
-		arg.Usage,
-		arg.Dosage,
-		arg.Frequency,
-		arg.Duration,
-		arg.SideEffects,
-		arg.ExpirationDate,
-		arg.Quantity,
-	)
->>>>>>> e859654 (Elastic search)
-	var i Medicine
-	err := row.Scan(
-		&i.ID,
-		&i.Name,
-		&i.Description,
-		&i.Usage,
-		&i.Dosage,
-		&i.Frequency,
-		&i.Duration,
-		&i.SideEffects,
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-		&i.MedicalRecordID,
-		&i.PrescribingVet,
->>>>>>> 3bf345d (happy new year)
-		&i.StartDate,
-		&i.EndDate,
-=======
-		&i.ExpirationDate,
-		&i.Quantity,
->>>>>>> e859654 (Elastic search)
-		&i.CreatedAt,
-		&i.UpdatedAt,
-<<<<<<< HEAD
-		&i.ExpirationDate,
-		&i.Quantity,
-=======
->>>>>>> 3bf345d (happy new year)
-=======
-		&i.StartDate,
-		&i.EndDate,
-		&i.CreatedAt,
-		&i.UpdatedAt,
-		&i.ExpirationDate,
-		&i.Quantity,
->>>>>>> ada3717 (Docker file)
-=======
-const createMedicalHistory = `-- name: CreateMedicalHistory :one
-INSERT INTO medical_history(medical_record_id, condition, diagnosis_date, treatment, notes, created_at,updated_at)
-VALUES ($1, $2, $3, $4, $5, now(), now())
-RETURNING id, medical_record_id, condition, diagnosis_date, notes, treatment, created_at, updated_at
-`
-
-type CreateMedicalHistoryParams struct {
-	MedicalRecordID pgtype.Int8      `json:"medical_record_id"`
-	Condition       pgtype.Text      `json:"condition"`
-	DiagnosisDate   pgtype.Timestamp `json:"diagnosis_date"`
-	Treatment       pgtype.Int8      `json:"treatment"`
-	Notes           pgtype.Text      `json:"notes"`
-}
-
-func (q *Queries) CreateMedicalHistory(ctx context.Context, arg CreateMedicalHistoryParams) (MedicalHistory, error) {
-	row := q.db.QueryRow(ctx, createMedicalHistory,
-		arg.MedicalRecordID,
-		arg.Condition,
-		arg.DiagnosisDate,
-		arg.Treatment,
-		arg.Notes,
-	)
-	var i MedicalHistory
-	err := row.Scan(
-		&i.ID,
-		&i.MedicalRecordID,
-		&i.Condition,
-		&i.DiagnosisDate,
-		&i.Notes,
-		&i.Treatment,
-		&i.CreatedAt,
-		&i.UpdatedAt,
->>>>>>> 3bf345d (happy new year)
-	)
-	return i, err
-}
-
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-const getMedicineByID = `-- name: GetMedicineByID :one
-SELECT id, name, description, usage, dosage, frequency, duration, side_effects, start_date, end_date, created_at, updated_at, expiration_date, quantity FROM medicines
-WHERE id = $1 LIMIT 1
-`
-
-func (q *Queries) GetMedicineByID(ctx context.Context, id int64) (Medicine, error) {
-	row := q.db.QueryRow(ctx, getMedicineByID, id)
-=======
-const createMedicalRecord = `-- name: CreateMedicalRecord :one
-INSERT INTO medical_records (pet_id,created_at,updated_at)
-VALUES ($1,now(),now())
-RETURNING id, pet_id, created_at, updated_at
-`
-
-func (q *Queries) CreateMedicalRecord(ctx context.Context, petID pgtype.Int8) (MedicalRecord, error) {
-	row := q.db.QueryRow(ctx, createMedicalRecord, petID)
-	var i MedicalRecord
-	err := row.Scan(
-		&i.ID,
-		&i.PetID,
-		&i.CreatedAt,
-		&i.UpdatedAt,
-	)
-	return i, err
-}
-
-=======
->>>>>>> e859654 (Elastic search)
-const createMedicine = `-- name: CreateMedicine :one
-INSERT INTO medicines (name, description, usage, dosage, frequency, duration, side_effects, expiration_date, quantity)
-VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
-RETURNING id, name, description, usage, dosage, frequency, duration, side_effects, start_date, end_date, created_at, updated_at, expiration_date, quantity
-`
-
-type CreateMedicineParams struct {
-	Name           string      `json:"name"`
-	Description    pgtype.Text `json:"description"`
-	Usage          pgtype.Text `json:"usage"`
-	Dosage         pgtype.Text `json:"dosage"`
-	Frequency      pgtype.Text `json:"frequency"`
-	Duration       pgtype.Text `json:"duration"`
-	SideEffects    pgtype.Text `json:"side_effects"`
-	ExpirationDate pgtype.Date `json:"expiration_date"`
-	Quantity       pgtype.Int8 `json:"quantity"`
-}
-
-func (q *Queries) CreateMedicine(ctx context.Context, arg CreateMedicineParams) (Medicine, error) {
-<<<<<<< HEAD
-	row := q.db.QueryRow(ctx, createMedicine, arg.Name, arg.Description, arg.Usage)
->>>>>>> 3bf345d (happy new year)
-=======
-	row := q.db.QueryRow(ctx, createMedicine,
-		arg.Name,
-		arg.Description,
-		arg.Usage,
-		arg.Dosage,
-		arg.Frequency,
-		arg.Duration,
-		arg.SideEffects,
-		arg.ExpirationDate,
-		arg.Quantity,
-	)
->>>>>>> e859654 (Elastic search)
-	var i Medicine
-	err := row.Scan(
-		&i.ID,
-		&i.Name,
-		&i.Description,
-		&i.Usage,
-		&i.Dosage,
-		&i.Frequency,
-		&i.Duration,
-		&i.SideEffects,
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-		&i.MedicalRecordID,
-		&i.PrescribingVet,
->>>>>>> 3bf345d (happy new year)
-		&i.StartDate,
-		&i.EndDate,
-=======
-		&i.ExpirationDate,
-		&i.Quantity,
->>>>>>> e859654 (Elastic search)
-		&i.CreatedAt,
-		&i.UpdatedAt,
-<<<<<<< HEAD
-		&i.ExpirationDate,
-		&i.Quantity,
-<<<<<<< HEAD
-=======
-=======
-=======
-		&i.StartDate,
-		&i.EndDate,
-		&i.CreatedAt,
-		&i.UpdatedAt,
-		&i.ExpirationDate,
-		&i.Quantity,
->>>>>>> ada3717 (Docker file)
-	)
-	return i, err
-}
-
->>>>>>> 3bf345d (happy new year)
-const deleteAllergy = `-- name: DeleteAllergy :exec
-DELETE FROM Allergies
-WHERE id = $1
-`
-
-func (q *Queries) DeleteAllergy(ctx context.Context, id int64) error {
-	_, err := q.db.Exec(ctx, deleteAllergy, id)
-	return err
-}
-
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-const deleteMedicalHistory = `-- name: DeleteMedicalHistory :exec
-DELETE FROM medical_history
-WHERE id = $1
-`
-
-func (q *Queries) DeleteMedicalHistory(ctx context.Context, id int64) error {
-	_, err := q.db.Exec(ctx, deleteMedicalHistory, id)
-	return err
-}
-
-const deleteMedicalRecord = `-- name: DeleteMedicalRecord :exec
-DELETE FROM medical_records
-WHERE id = $1
-`
-
-func (q *Queries) DeleteMedicalRecord(ctx context.Context, id int64) error {
-	_, err := q.db.Exec(ctx, deleteMedicalRecord, id)
-	return err
-}
-
->>>>>>> 3bf345d (happy new year)
-=======
->>>>>>> e859654 (Elastic search)
-const getAllergies = `-- name: GetAllergies :many
-SELECT id, medical_record_id, allergen, severity, reaction, notes, created_at, updated_at FROM allergies
-WHERE medical_record_id = $1
-`
-
-func (q *Queries) GetAllergies(ctx context.Context, medicalRecordID pgtype.Int8) ([]Allergy, error) {
-	rows, err := q.db.Query(ctx, getAllergies, medicalRecordID)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	items := []Allergy{}
-	for rows.Next() {
-		var i Allergy
-		if err := rows.Scan(
-			&i.ID,
-			&i.MedicalRecordID,
-			&i.Allergen,
-			&i.Severity,
-			&i.Reaction,
-			&i.Notes,
-			&i.CreatedAt,
-			&i.UpdatedAt,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
-<<<<<<< HEAD
-=======
-	)
-	return i, err
->>>>>>> 4ccd381 (Update appointment flow)
-}
-
-=======
->>>>>>> 4ccd381 (Update appointment flow)
-const getMedicineByID = `-- name: GetMedicineByID :one
-SELECT id, name, description, usage, dosage, frequency, duration, side_effects, start_date, end_date, created_at, updated_at, expiration_date, quantity FROM medicines
-WHERE id = $1 LIMIT 1
-`
-
-func (q *Queries) GetMedicineByID(ctx context.Context, id int64) (Medicine, error) {
-	row := q.db.QueryRow(ctx, getMedicineByID, id)
 	var i Medicine
 	err := row.Scan(
 		&i.ID,
@@ -411,13 +55,10 @@ func (q *Queries) GetMedicineByID(ctx context.Context, id int64) (Medicine, erro
 		&i.EndDate,
 		&i.CreatedAt,
 		&i.UpdatedAt,
-<<<<<<< HEAD
->>>>>>> 3bf345d (happy new year)
-=======
 		&i.ExpirationDate,
 		&i.Quantity,
->>>>>>> ada3717 (Docker file)
-=======
+	)
+	return i, err
 }
 
 const getMedicineByID = `-- name: GetMedicineByID :one
@@ -441,12 +82,8 @@ func (q *Queries) GetMedicineByID(ctx context.Context, id int64) (Medicine, erro
 		&i.EndDate,
 		&i.CreatedAt,
 		&i.UpdatedAt,
-<<<<<<< HEAD
->>>>>>> 3bf345d (happy new year)
-=======
 		&i.ExpirationDate,
 		&i.Quantity,
->>>>>>> ada3717 (Docker file)
 	)
 	return i, err
 }
@@ -454,20 +91,6 @@ func (q *Queries) GetMedicineByID(ctx context.Context, id int64) (Medicine, erro
 const listMedicinesByPet = `-- name: ListMedicinesByPet :many
 SELECT 
     m.usage AS medicine_usage,
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-const listMedicinesByPet = `-- name: ListMedicinesByPet :many
-SELECT 
->>>>>>> a415f25 (new data)
-=======
->>>>>>> 2a87fca (medicine id and usage in treatment)
-=======
-const listMedicinesByPet = `-- name: ListMedicinesByPet :many
-SELECT 
->>>>>>> a415f25 (new data)
-=======
->>>>>>> 2a87fca (medicine id and usage in treatment)
     m.name AS medicine_name,
     m.description AS medicine_description,
     pm.dosage,
@@ -488,23 +111,7 @@ JOIN
 WHERE 
     pt.pet_id = $1 and pt.status = $2 -- Replace with the specific pet_id
 ORDER BY 
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
     tp.start_date, pm.medicine_id LIMIT $3 OFFSET $4
-=======
-    tp.phase_number, pm.medicine_id LIMIT $3 OFFSET $4
->>>>>>> a415f25 (new data)
-=======
-    tp.start_date, pm.medicine_id LIMIT $3 OFFSET $4
->>>>>>> 3bf345d (happy new year)
-=======
-    tp.phase_number, pm.medicine_id LIMIT $3 OFFSET $4
->>>>>>> a415f25 (new data)
-=======
-    tp.start_date, pm.medicine_id LIMIT $3 OFFSET $4
->>>>>>> 3bf345d (happy new year)
 `
 
 type ListMedicinesByPetParams struct {
@@ -515,21 +122,7 @@ type ListMedicinesByPetParams struct {
 }
 
 type ListMedicinesByPetRow struct {
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
 	MedicineUsage       pgtype.Text `json:"medicine_usage"`
-=======
->>>>>>> a415f25 (new data)
-=======
-	MedicineUsage       pgtype.Text `json:"medicine_usage"`
->>>>>>> 2a87fca (medicine id and usage in treatment)
-=======
->>>>>>> a415f25 (new data)
-=======
-	MedicineUsage       pgtype.Text `json:"medicine_usage"`
->>>>>>> 2a87fca (medicine id and usage in treatment)
 	MedicineName        string      `json:"medicine_name"`
 	MedicineDescription pgtype.Text `json:"medicine_description"`
 	Dosage              pgtype.Text `json:"dosage"`
@@ -556,21 +149,7 @@ func (q *Queries) ListMedicinesByPet(ctx context.Context, arg ListMedicinesByPet
 	for rows.Next() {
 		var i ListMedicinesByPetRow
 		if err := rows.Scan(
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
 			&i.MedicineUsage,
-=======
->>>>>>> a415f25 (new data)
-=======
-			&i.MedicineUsage,
->>>>>>> 2a87fca (medicine id and usage in treatment)
-=======
->>>>>>> a415f25 (new data)
-=======
-			&i.MedicineUsage,
->>>>>>> 2a87fca (medicine id and usage in treatment)
 			&i.MedicineName,
 			&i.MedicineDescription,
 			&i.Dosage,

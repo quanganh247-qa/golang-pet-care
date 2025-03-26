@@ -4,49 +4,15 @@ import (
 	"fmt"
 
 	"github.com/gin-gonic/gin"
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
 	"github.com/jackc/pgx/v5/pgtype"
-=======
->>>>>>> bd5945b (get list products)
-=======
-	"github.com/jackc/pgx/v5/pgtype"
->>>>>>> 1ec1fee (create product api)
-=======
->>>>>>> bd5945b (get list products)
-=======
-	"github.com/jackc/pgx/v5/pgtype"
->>>>>>> 1ec1fee (create product api)
 	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
 	"github.com/quanganh247-qa/go-blog-be/app/util"
 )
 
 type ProductServiceInterface interface {
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> 1ec1fee (create product api)
-=======
->>>>>>> 1ec1fee (create product api)
 	CreateProductService(c *gin.Context, req CreateProductRequest) (*ProductResponse, error)
 	GetProducts(c *gin.Context, pagination *util.Pagination) ([]ProductResponse, error)
 	GetProductByID(c *gin.Context, productID int64) (*ProductResponse, error)
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-	GetProducts(c *gin.Context, pagination *util.Pagination) ([]ProductResponse, error)
->>>>>>> bd5945b (get list products)
-=======
->>>>>>> 63e2c90 (get product by id)
-=======
-	GetProducts(c *gin.Context, pagination *util.Pagination) ([]ProductResponse, error)
->>>>>>> bd5945b (get list products)
-=======
->>>>>>> 63e2c90 (get product by id)
 }
 
 // get all products
@@ -76,14 +42,6 @@ func (s *ProductService) GetProducts(c *gin.Context, pagination *util.Pagination
 
 	return productResponse, nil
 }
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> 63e2c90 (get product by id)
-=======
->>>>>>> 63e2c90 (get product by id)
 
 // get product by id
 func (s *ProductService) GetProductByID(c *gin.Context, productID int64) (*ProductResponse, error) {
@@ -104,14 +62,6 @@ func (s *ProductService) GetProductByID(c *gin.Context, productID int64) (*Produ
 
 	return &productResponse, nil
 }
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> 1ec1fee (create product api)
-=======
->>>>>>> 1ec1fee (create product api)
 
 // create product
 func (s *ProductService) CreateProductService(c *gin.Context, req CreateProductRequest) (*ProductResponse, error) {
@@ -143,17 +93,3 @@ func (s *ProductService) CreateProductService(c *gin.Context, req CreateProductR
 	return &productResponse, nil
 
 }
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> bd5945b (get list products)
-=======
->>>>>>> 63e2c90 (get product by id)
-=======
->>>>>>> 1ec1fee (create product api)
-=======
->>>>>>> bd5945b (get list products)
-=======
->>>>>>> 63e2c90 (get product by id)
-=======
->>>>>>> 1ec1fee (create product api)

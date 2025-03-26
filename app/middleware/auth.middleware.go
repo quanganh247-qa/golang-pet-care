@@ -59,37 +59,3 @@ func GetAuthorizationPayload(ctx *gin.Context) (*token.Payload, error) {
 	}
 	return payload.(*token.Payload), nil
 }
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-
-// AuthMiddleware kiểm tra phiên hợp lệ với SuperTokens
-func SuperTokensAuthMiddleware() gin.HandlerFunc {
-	return func(ctx *gin.Context) {
-		// Tạo biến bool và lấy địa chỉ của nó
-		sessionRequired := true
-		sessionContainer, err := session.GetSession(ctx.Request, ctx.Writer, &sessmodels.VerifySessionOptions{
-			SessionRequired: &sessionRequired, // Sửa lỗi ở đây, // Bắt buộc phải có session
-		})
-		if err != nil {
-			// Nếu không có session hoặc token không hợp lệ
-			ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
-				"error": "Unauthorized: " + err.Error(),
-			})
-			return
-		}
-
-		// Lưu thông tin session vào context để sử dụng trong handler
-		ctx.Set("session", sessionContainer)
-		ctx.Next()
-	}
-}
-<<<<<<< HEAD
->>>>>>> ada3717 (Docker file)
-=======
->>>>>>> 4ccd381 (Update appointment flow)
-=======
->>>>>>> ada3717 (Docker file)
-=======
->>>>>>> 4ccd381 (Update appointment flow)
