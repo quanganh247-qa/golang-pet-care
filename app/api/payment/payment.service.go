@@ -111,17 +111,19 @@ func (s *PaymentService) GenerateQRService(c *gin.Context, qrRequest QRRequest) 
 		return nil, fmt.Errorf("failed to decode response: %v", err)
 	}
 
-	err = s.storeDB.ExecWithTransaction(c, func(q *db.Queries) error {
-		// UpdateOrderPaymentStatus
-		_, err := q.UpdateOrderPaymentStatus(c, int64(qrRequest.OrderID))
-		if err != nil {
-			return err
-		}
-		return nil
+	if qrRequest.OrderID != 0 {
+		err = s.storeDB.ExecWithTransaction(c, func(q *db.Queries) error {
+			// UpdateOrderPaymentStatus
+			_, err := q.UpdateOrderPaymentStatus(c, int64(qrRequest.OrderID))
+			if err != nil {
+				return err
+			}
+			return nil
 
-	})
-	if err != nil {
-		return nil, err
+		})
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	return &result, nil

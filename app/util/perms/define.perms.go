@@ -47,6 +47,11 @@ const (
 	DeletePet  Permission = "DELETE_PET"
 
 	ViewReports Permission = "VIEW_REPORTS"
+
+	// Test
+	ManageTest Permission = "MANAGE_TEST"
+	ReadTest   Permission = "READ_TEST"
+	CreateTest Permission = "CREATE_TEST"
 )
 
 // RolePermissions maps roles to their respective permissions
@@ -57,9 +62,11 @@ var RolePermissions = map[string][]Permission{
 		ManageDoctor},
 	RoleDoctor: {CreateAppointment, ReadAppointment, UpdateAppointment,
 		ViewReports, ManageServices, ManageMedicalRecords,
-		ManageTreatment, ManageDisease, ManageDoctor},
+		ManageTreatment, ManageDisease, ManageDoctor,
+		ManageTest,
+	},
 	RoleUser: {CreateAppointment, ReadAppointment, ReadMedicalRecord,
-		ReadService, ReadPet},
+		ReadService, ReadPet, ReadTest},
 }
 
 // CheckPermission checks if the user's role has the required permissions

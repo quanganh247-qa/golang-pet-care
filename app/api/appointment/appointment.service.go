@@ -2,6 +2,7 @@ package appointment
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"sync"
@@ -164,7 +165,7 @@ func (s *AppointmentService) ConfirmPayment(ctx context.Context, appointmentID i
 		}
 
 		// Check appointment state early to avoid unnecessary queries
-		state, err := q.GetState(ctx, appointment.StateID.Int64)
+		state, err := q.GetState(ctx, int64(appointment.StateID.Int32))
 		if err != nil {
 			return fmt.Errorf("failed to get state: %w", err)
 		}
@@ -277,6 +278,7 @@ func (s *AppointmentService) GetAppointmentByID(ctx *gin.Context, id int64) (*Ap
 		Serivce: Serivce{
 			ServiceName:     appointment.ServiceName.String,
 			ServiceDuration: appointment.ServiceDuration.Int16,
+			ServiceAmount:   appointment.ServiceAmount.Float64,
 		},
 		TimeSlot: timeslot{
 			StartTime: startTimeFormatted,
@@ -516,6 +518,7 @@ func (s *AppointmentService) CreateSOAPService(ctx *gin.Context, soap CreateSOAP
 
 	var err error
 	var consultation db.Consultation
+	var soapResponse SOAPResponse
 
 	err = s.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
 		consultation, err = q.CreateSOAP(ctx, db.CreateSOAPParams{
@@ -530,54 +533,102 @@ func (s *AppointmentService) CreateSOAPService(ctx *gin.Context, soap CreateSOAP
 	if err != nil {
 		return nil, fmt.Errorf("Cannot create SOAP")
 	}
+
+	// Fix: Handle json.Unmarshal error
+	if err := json.Unmarshal(consultation.Objective, &soapResponse.Objective); err != nil {
+		return nil, fmt.Errorf("failed to unmarshal objective data: %w", err)
+	}
+
 	return &SOAPResponse{
 		ConsultationID: int64(consultation.ID),
 		AppointmentID:  consultation.AppointmentID.Int64,
 		Subjective:     consultation.Subjective.String,
-		Objective:      consultation.Objective.String,
+		Objective:      soapResponse.Objective,
 		Assessment:     consultation.Assessment.String,
-		// Plan:           consultation.Plan.Int64,
 	}, nil
 }
 
 func (s *AppointmentService) UpdateSOAPService(ctx *gin.Context, soap UpdateSOAPRequest, appointmentID int64) (*SOAPResponse, error) {
-
-	var err error
 	var consultation db.Consultation
-	err = s.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
-		consultation, err = q.UpdateSOAP(ctx, db.UpdateSOAPParams{
-			AppointmentID: pgtype.Int8{Int64: appointmentID, Valid: true},
-			Subjective:    pgtype.Text{String: soap.Subjective, Valid: true},
-			Objective:     pgtype.Text{String: soap.Objective, Valid: true},
-			Assessment:    pgtype.Text{String: soap.Assessment, Valid: true},
-			// Plan:          pgtype.Text{String: soap.Plan, Valid: true},
-		})
+	var soapResponse SOAPResponse
+	var soapRequest db.UpdateSOAPParams // Fixed typo in variable name
+
+	existingConsultation, err := s.storeDB.GetSOAPByAppointmentID(ctx, pgtype.Int8{Int64: appointmentID, Valid: true})
+	if err != nil {
+		return nil, fmt.Errorf("failed to get consultation: %w", err)
+	}
+
+	// Set AppointmentID in the request
+	soapRequest.AppointmentID = pgtype.Int8{Int64: appointmentID, Valid: true}
+
+	// Handle Subjective field
+	soapRequest.Subjective = pgtype.Text{
+		String: soap.Subjective,
+		Valid:  soap.Subjective != "",
+	}
+	if !soapRequest.Subjective.Valid {
+		soapRequest.Subjective = existingConsultation.Subjective
+	}
+
+	// Handle Assessment field
+	soapRequest.Assessment = pgtype.Text{
+		String: soap.Assessment,
+		Valid:  soap.Assessment != "",
+	}
+	if !soapRequest.Assessment.Valid {
+		soapRequest.Assessment = existingConsultation.Assessment
+	}
+
+	// Handle Objective field - check if it's empty using a type-specific check
+	if !isObjectiveEmpty(soap.Objective) {
+		objectiveJSON, err := json.Marshal(soap.Objective)
 		if err != nil {
-			return fmt.Errorf("Cannot update SOAP")
+			return nil, fmt.Errorf("failed to marshal objective data: %w", err)
+		}
+		soapRequest.Objective = objectiveJSON
+	} else {
+		soapRequest.Objective = existingConsultation.Objective
+	}
+
+	err = s.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
+		consultation, err = q.UpdateSOAP(ctx, soapRequest)
+		if err != nil {
+			return fmt.Errorf("failed to update SOAP: %w", err)
 		}
 		return nil
 	})
 	if err != nil {
-		return nil, fmt.Errorf("Cannot update SOAP")
+		return nil, err
 	}
+
+	if err := json.Unmarshal(consultation.Objective, &soapResponse.Objective); err != nil {
+		return nil, fmt.Errorf("failed to unmarshal objective data: %w", err)
+	}
+
 	return &SOAPResponse{
 		ConsultationID: int64(consultation.ID),
 		AppointmentID:  consultation.AppointmentID.Int64,
 		Subjective:     consultation.Subjective.String,
-		Objective:      consultation.Objective.String,
+		Objective:      soapResponse.Objective,
 		Assessment:     consultation.Assessment.String,
-		// Plan:           consultation.Plan.String,
 	}, nil
 }
 
 func (s *AppointmentService) UpdateAppointmentService(ctx *gin.Context, req updateAppointmentRequest, appointmentID int64) error {
 	return s.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
 		var err error
+
+		existingAppointment, err := q.GetAppointmentDetailByAppointmentID(ctx, appointmentID)
+		if err != nil {
+			return fmt.Errorf("failed to get appointment: %w", err)
+		}
 		updateReq := db.UpdateAppointmentByIDParams{
 			AppointmentID: appointmentID,
 		}
 		if req.StateID != nil {
 			updateReq.StateID = pgtype.Int4{Int32: int32(*req.StateID), Valid: true}
+		} else {
+			updateReq.StateID = pgtype.Int4{Int32: int32(existingAppointment.DoctorID.Int64), Valid: true}
 		}
 
 		if req.RoomID != nil {
@@ -589,14 +640,20 @@ func (s *AppointmentService) UpdateAppointmentService(ctx *gin.Context, req upda
 				return fmt.Errorf("room is not available")
 			}
 			updateReq.RoomID = pgtype.Int8{Int64: int64(*req.RoomID), Valid: true}
+		} else {
+			updateReq.RoomID = pgtype.Int8{Int64: int64(existingAppointment.RoomID.Int64), Valid: true}
 		}
 
 		if req.AppointmentReason != nil {
 			updateReq.AppointmentReason = pgtype.Text{String: *req.AppointmentReason, Valid: true}
+		} else {
+			updateReq.AppointmentReason = pgtype.Text{String: existingAppointment.AppointmentReason.String, Valid: true}
 		}
 
 		if req.ReminderSend != nil {
 			updateReq.ReminderSend = pgtype.Bool{Bool: *req.ReminderSend, Valid: true}
+		} else {
+			updateReq.ReminderSend = pgtype.Bool{Bool: existingAppointment.ReminderSend.Bool, Valid: true}
 		}
 
 		if req.ArrivalTime != nil {
@@ -605,11 +662,17 @@ func (s *AppointmentService) UpdateAppointmentService(ctx *gin.Context, req upda
 				return fmt.Errorf("invalid arrival time format: %w", err)
 			}
 			updateReq.ArrivalTime = pgtype.Timestamp{Time: arrivalTime, Valid: true}
+		} else {
+			updateReq.ArrivalTime = pgtype.Timestamp{Time: existingAppointment.ArrivalTime.Time, Valid: true}
 		}
 
 		if req.Priority != nil {
 			updateReq.Priority = pgtype.Text{String: *req.Priority, Valid: true}
+		} else {
+			updateReq.Priority = pgtype.Text{String: existingAppointment.Priority.String, Valid: true}
 		}
+
+		updateReq.ReminderSend = pgtype.Bool{Bool: existingAppointment.ReminderSend.Bool, Valid: true}
 
 		err = q.UpdateAppointmentByID(ctx, updateReq)
 		if err != nil {
@@ -625,7 +688,13 @@ func (s *AppointmentService) GetQueueService(ctx *gin.Context, username string) 
 		return nil, fmt.Errorf("failed to get doctor: %v", err)
 	}
 
-	appointments, err := s.storeDB.GetAppointmentsQueue(ctx, pgtype.Int8{Int64: doctor.ID, Valid: true}) // Assuming 1 is the state ID for waiting/arrived
+	now := time.Now().Format("2006-01-02 15:04:05")
+	// dateTime := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, time.UTC)
+
+	appointments, err := s.storeDB.GetAppointmentsQueue(ctx, db.GetAppointmentsQueueParams{
+		DoctorID: pgtype.Int8{Int64: doctor.ID, Valid: true},
+		Date:     now,
+	}) // Assuming 1 is the state ID for waiting/arrived
 	if err != nil {
 		return nil, fmt.Errorf("failed to get appointments: %v", err)
 	}
@@ -654,7 +723,7 @@ func (s *AppointmentService) GetQueueService(ctx *gin.Context, username string) 
 			AppointmentType: a.ServiceName.String,
 			Doctor:          doc.Name,
 			Priority:        a.Priority.String,
-			WaitingSince:    waitingSince.Format("3:04 PM"),
+			WaitingSince:    waitingSince.String(),
 			ActualWaitTime:  actualWaitTime,
 		}
 
@@ -699,13 +768,17 @@ func (s *AppointmentService) GetSOAPByAppointmentID(ctx *gin.Context, appointmen
 		return nil, fmt.Errorf("failed to get SOAP: %v", err)
 	}
 
+	var soapResponse SOAPResponse
+	if err := json.Unmarshal(soap.Objective, &soapResponse.Objective); err != nil {
+		return nil, fmt.Errorf("failed to unmarshal objective data: %w", err)
+	}
+
 	return &SOAPResponse{
 		ConsultationID: int64(soap.ID),
 		AppointmentID:  soap.AppointmentID.Int64,
 		Subjective:     soap.Subjective.String,
-		Objective:      soap.Objective.String,
+		Objective:      soapResponse.Objective,
 		Assessment:     soap.Assessment.String,
-		// Plan:           soap.Plan.String,
 	}, nil
 }
 
@@ -722,6 +795,10 @@ func (s *AppointmentService) GetHistoryAppointmentsByPetID(ctx *gin.Context, pet
 		if err != nil {
 			return nil, fmt.Errorf("failed to get doctor: %w", err)
 		}
+		status, err := s.storeDB.GetState(ctx, int64(appointment.StateID.Int32))
+		if err != nil {
+			return nil, fmt.Errorf("failed to get status: %w", err)
+		}
 		a = append(a, historyAppointmentResponse{
 			ID:          appointment.AppointmentID,
 			Reason:      appointment.AppointmentReason.String,
@@ -729,6 +806,7 @@ func (s *AppointmentService) GetHistoryAppointmentsByPetID(ctx *gin.Context, pet
 			ServiceName: appointment.ServiceName.String,
 			ArrivalTime: appointment.ArrivalTime.Time.Format("2006-01-02 15:04:05"),
 			DoctorName:  doctor.Name,
+			Status:      status.State,
 			Room:        appointment.RoomName.String,
 		})
 	}

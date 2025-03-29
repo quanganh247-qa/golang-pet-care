@@ -194,20 +194,14 @@ WHERE s.id = $1 AND p.petid = $2 AND st.id = $3;
 
 -- name: GetAppointmentDetailByAppointmentID :one
 SELECT 
-    a.appointment_id,
-    a.date ,
-    a.reminder_send,
-    a.created_at,
-    a.appointment_reason,
-    a.priority,
-    a.arrival_time,
-    a.notes,
+    a.*,
     p.petid as pet_id,
     p.name AS pet_name,
     p.breed AS pet_breed,
     d.id AS doctor_id,
     s.name AS service_name,
     s.duration AS service_duration,
+    s.cost AS service_amount,
     ts.start_time, ts.end_time, ts.id AS time_slot_id,
     st.state AS state_name,
     st.id AS state_id,
@@ -242,7 +236,8 @@ WHERE a.username = $1;
 
 -- name: GetAppointmentsQueue :many
 SELECT * FROM public.appointments 
-WHERE state_id <> (SELECT id FROM public.states WHERE state = 'Scheduled' LIMIT 1) and doctor_id = $1
+WHERE state_id = (SELECT id FROM public.states WHERE state = 'Checked In'  LIMIT 1) 
+and doctor_id = $1 and Date(arrival_time) = Date($2)
 ORDER BY arrival_time ASC;
 
 

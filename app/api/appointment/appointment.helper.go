@@ -19,3 +19,10 @@ func sortQueueItems(items []QueueItem) {
 		return items[i].WaitingSince < items[j].WaitingSince
 	})
 }
+
+// isObjectiveEmpty checks if the ObjectiveData struct is empty
+func isObjectiveEmpty(obj ObjectiveData) bool {
+	// Add appropriate checks based on your ObjectiveData struct fields
+	// This is an example - adjust according to your actual struct fields
+	return obj == ObjectiveData{} // Compare with empty struct
+}

@@ -19,15 +19,17 @@ import (
 	"github.com/quanganh247-qa/go-blog-be/app/api/rooms"
 	"github.com/quanganh247-qa/go-blog-be/app/api/search"
 	"github.com/quanganh247-qa/go-blog-be/app/api/service"
+	"github.com/quanganh247-qa/go-blog-be/app/api/test"
 	"github.com/quanganh247-qa/go-blog-be/app/api/user"
 	"github.com/quanganh247-qa/go-blog-be/app/api/vaccination"
 	"github.com/quanganh247-qa/go-blog-be/app/middleware"
 	"github.com/quanganh247-qa/go-blog-be/app/service/elasticsearch"
+	"github.com/quanganh247-qa/go-blog-be/app/service/websocket"
 	"github.com/quanganh247-qa/go-blog-be/app/service/worker"
 	"github.com/quanganh247-qa/go-blog-be/app/util"
 )
 
-func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor, config util.Config, es *elasticsearch.ESService) {
+func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor, config util.Config, es *elasticsearch.ESService, ws *websocket.WSClientManager) {
 	gin.SetMode(gin.ReleaseMode)
 	routerDefault := gin.New()
 	routerDefault.SetTrustedProxies(nil)
@@ -46,7 +48,11 @@ func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor, config
 	routerGroup := middleware.RouterGroup{
 		RouterDefault: router,
 	}
+	routerDefault.GET("/ws", server.ws.HandleWebSocket)
+
 	router.GET("/health", server.healthCheck)
+
+	// websocket
 
 	chatbot.Routes(routerGroup, chatHandler)
 	user.Routes(routerGroup, taskDistributor, config)
@@ -62,6 +68,7 @@ func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor, config
 	cart.Routes(routerGroup)
 	products.Routes(routerGroup)
 	medical_records.Routes(routerGroup)
+	test.Routes(routerGroup, es, ws)
 	search.Routes(routerGroup, es)
 	medications.Routes(routerGroup, es)
 	doctor.Routes(routerGroup)

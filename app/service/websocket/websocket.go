@@ -2,6 +2,7 @@ package websocket
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"sync"
@@ -21,11 +22,54 @@ type WSClient struct {
 
 // WSClientManager manages WebSocket connections
 type WSClientManager struct {
-	clients    map[*WSClient]bool
+	clientsMap map[string]*WSClient // Map with clientID as key
+	mutex      sync.Mutex
 	broadcast  chan []byte
 	register   chan *WSClient
 	unregister chan *WSClient
-	mutex      sync.Mutex
+}
+
+// Update NewWSClientManager
+func NewWSClientManager() *WSClientManager {
+	return &WSClientManager{
+		clientsMap: make(map[string]*WSClient),
+		broadcast:  make(chan []byte),
+		register:   make(chan *WSClient),
+		unregister: make(chan *WSClient),
+	}
+}
+
+func (manager *WSClientManager) Run() {
+	for {
+		select {
+		case client := <-manager.register:
+			manager.mutex.Lock()
+			manager.clientsMap[client.clientID] = client
+			manager.mutex.Unlock()
+			log.Printf("Client connected: %s. Total clients: %d", client.clientID, len(manager.clientsMap))
+
+		case client := <-manager.unregister:
+			manager.mutex.Lock()
+			if _, ok := manager.clientsMap[client.clientID]; ok {
+				delete(manager.clientsMap, client.clientID)
+				close(client.send)
+			}
+			manager.mutex.Unlock()
+			log.Printf("Client disconnected: %s. Total clients: %d", client.clientID, len(manager.clientsMap))
+
+		case message := <-manager.broadcast:
+			manager.mutex.Lock()
+			for _, client := range manager.clientsMap {
+				select {
+				case client.send <- message:
+				default:
+					close(client.send)
+					delete(manager.clientsMap, client.clientID)
+				}
+			}
+			manager.mutex.Unlock()
+		}
+	}
 }
 
 // WebSocketMessage represents a message to be sent over WebSocket
@@ -44,50 +88,6 @@ var upgrader = websocket.Upgrader{
 	CheckOrigin: func(r *http.Request) bool {
 		return true
 	},
-}
-
-// NewWSClientManager creates a new WebSocket client manager
-func NewWSClientManager() *WSClientManager {
-	return &WSClientManager{
-		clients:    make(map[*WSClient]bool),
-		broadcast:  make(chan []byte),
-		register:   make(chan *WSClient),
-		unregister: make(chan *WSClient),
-	}
-}
-
-// Run starts the WebSocket manager
-func (manager *WSClientManager) Run() {
-	for {
-		select {
-		case client := <-manager.register:
-			manager.mutex.Lock()
-			manager.clients[client] = true
-			manager.mutex.Unlock()
-			log.Printf("Client connected: %s. Total clients: %d", client.clientID, len(manager.clients))
-
-		case client := <-manager.unregister:
-			manager.mutex.Lock()
-			if _, ok := manager.clients[client]; ok {
-				delete(manager.clients, client)
-				close(client.send)
-			}
-			manager.mutex.Unlock()
-			log.Printf("Client disconnected: %s. Total clients: %d", client.clientID, len(manager.clients))
-
-		case message := <-manager.broadcast:
-			manager.mutex.Lock()
-			for client := range manager.clients {
-				select {
-				case client.send <- message:
-				default:
-					close(client.send)
-					delete(manager.clients, client)
-				}
-			}
-			manager.mutex.Unlock()
-		}
-	}
 }
 
 // BroadcastToAll sends a message to all connected clients
@@ -113,24 +113,30 @@ func (manager *WSClientManager) BroadcastNotification(notification db.Notificati
 
 // HandleWebSocket handles WebSocket connections
 func (manager *WSClientManager) HandleWebSocket(c *gin.Context) {
+	// Get client ID from query parameters
+	clientID := c.Request.URL.Query().Get("clientId")
+	if clientID == "" {
+		clientID = time.Now().String() // Use timestamp as fallback ID
+	}
+
+	// Create WebSocket connection
 	conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
 	if err != nil {
 		log.Printf("Error upgrading to WebSocket: %v", err)
 		return
 	}
 
-	clientID := c.Query("clientId")
-	if clientID == "" {
-		clientID = time.Now().String() // Use timestamp as fallback ID
-	}
-
+	// Create and register client
 	client := &WSClient{
 		conn:     conn,
 		send:     make(chan []byte, 256),
 		clientID: clientID,
 	}
 
-	manager.register <- client
+	// Register client before starting pumps
+	manager.mutex.Lock()
+	manager.clientsMap[clientID] = client
+	manager.mutex.Unlock()
 
 	// Start goroutines for reading and writing
 	go client.writePump(manager)
@@ -139,9 +145,34 @@ func (manager *WSClientManager) HandleWebSocket(c *gin.Context) {
 	// Send a welcome message
 	welcomeMsg := WebSocketMessage{
 		Type:    "connected",
-		Message: "Successfully connected to WebSocket server",
+		Message: fmt.Sprintf("Successfully connected to WebSocket server with ID: %s", clientID),
 	}
 	client.sendJSON(welcomeMsg)
+}
+
+// Update SendToClient method to use clientsMap
+func (manager *WSClientManager) SendToClient(clientID string, message interface{}) {
+	data, err := json.Marshal(message)
+	if err != nil {
+		log.Printf("Error marshaling message: %v", err)
+		return
+	}
+
+	manager.mutex.Lock()
+	defer manager.mutex.Unlock()
+
+	if client, ok := manager.clientsMap[clientID]; ok {
+		select {
+		case client.send <- data:
+			log.Printf("Sent message to client: %s", clientID)
+		default:
+			close(client.send)
+			delete(manager.clientsMap, clientID)
+			log.Printf("Failed to send message to client: %s", clientID)
+		}
+	} else {
+		log.Printf("Client not found: %s", clientID)
+	}
 }
 
 // readPump reads messages from the WebSocket connection
@@ -227,4 +258,12 @@ func (client *WSClient) sendJSON(message interface{}) {
 		return
 	}
 	client.send <- data
+}
+
+// Add this method to check if a client is connected
+func (manager *WSClientManager) IsClientConnected(clientID string) bool {
+	manager.mutex.Lock()
+	defer manager.mutex.Unlock()
+	_, exists := manager.clientsMap[clientID]
+	return exists
 }

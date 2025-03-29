@@ -32,8 +32,9 @@ type Owner struct {
 }
 
 type Serivce struct {
-	ServiceName     string `json:"service_name"`
-	ServiceDuration int16  `json:"service_duration"`
+	ServiceName     string  `json:"service_name"`
+	ServiceDuration int16   `json:"service_duration"`
+	ServiceAmount   float64 `json:"service_amount"`
 }
 
 type Doctor struct {
@@ -78,6 +79,8 @@ type historyAppointmentResponse struct {
 	Date        string `json:"date"`
 	ServiceName string `json:"service_name"`
 	ArrivalTime string `json:"arrival_time"`
+	Status      string `json:"status"`
+	Notes       string `json:"notes"`
 	DoctorName  string `json:"doctor_name"`
 	Room        string `json:"room"`
 }
@@ -122,20 +125,47 @@ type CreateSOAPRequest struct {
 }
 
 type UpdateSOAPRequest struct {
-	Subjective string `json:"subjective"`
-	Objective  string `json:"objective"`
-	Assessment string `json:"assessment"`
-	Plan       string `json:"plan"`
+	Subjective string        `json:"subjective"`
+	Objective  ObjectiveData `json:"objective"`
+	Assessment string        `json:"assessment"`
+	Plan       string        `json:"plan"`
 }
 
 type SOAPResponse struct {
-	ConsultationID int64  `json:"consultation_id"`
-	AppointmentID  int64  `json:"appointment_id"`
-	Subjective     string `json:"subjective"`
-	Objective      string `json:"objective"`
-	Assessment     string `json:"assessment"`
+	ConsultationID int64         `json:"consultation_id"`
+	AppointmentID  int64         `json:"appointment_id"`
+	Subjective     string        `json:"subjective"`
+	Objective      ObjectiveData `json:"objective"`
+	Assessment     string        `json:"assessment"`
 	// Plan           string `json:"plan"`
 	Notes string `json:"notes"`
+}
+
+// ObjectiveData đại diện cho dữ liệu trong phần Objective
+type ObjectiveData struct {
+	VitalSigns VitalSignsData `json:"vital_signs"` // Dấu hiệu sinh tồn
+	Systems    SystemsData    `json:"systems"`     // Hệ thống cơ thể
+}
+
+// VitalSignsData chứa các dấu hiệu sinh tồn
+type VitalSignsData struct {
+	Weight          string `json:"weight"`           // Cân nặng (kg)
+	Temperature     string `json:"temperature"`      // Nhiệt độ (°C)
+	HeartRate       string `json:"heart_rate"`       // Nhịp tim (bpm)
+	RespiratoryRate string `json:"respiratory_rate"` // Nhịp thở (rpm)
+	GeneralNotes    string `json:"general_notes"`    // Ghi chú chung
+}
+
+// SystemsData chứa dữ liệu khám theo hệ thống
+type SystemsData struct {
+	Cardiovascular   string `json:"cardiovascular"`   // Tim mạch
+	Respiratory      string `json:"respiratory"`      // Hô hấp
+	Gastrointestinal string `json:"gastrointestinal"` // Tiêu hóa
+	Musculoskeletal  string `json:"musculoskeletal"`  // Cơ xương
+	Neurological     string `json:"neurological"`     // Thần kinh
+	Skin             string `json:"skin"`             // Da/lông
+	Eyes             string `json:"eyes"`             // Mắt
+	Ears             string `json:"ears"`             // Tai
 }
 
 type QueueItem struct {
@@ -147,4 +177,14 @@ type QueueItem struct {
 	Doctor          string `json:"doctor"`
 	WaitingSince    string `json:"waitingSince"`
 	ActualWaitTime  string `json:"actualWaitTime"`
+}
+
+type CancelOrderRequest struct {
+	OrderID int    `json:"order_id" binding:"required"`
+	Reason  string `json:"reason"`
+}
+
+type UpdateTestStatusRequest struct {
+	TestID int    `json:"test_id" binding:"required"`
+	Status string `json:"status" binding:"required,oneof=pending processing completed cancelled"`
 }

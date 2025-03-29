@@ -13,10 +13,55 @@ import (
 type Querier interface {
 	ActiveReminder(ctx context.Context, arg ActiveReminderParams) error
 	AddItemToCart(ctx context.Context, arg AddItemToCartParams) (CartItem, error)
+	AddOrderedTest(ctx context.Context, arg AddOrderedTestParams) (OrderedTest, error)
+	// -- name: CreateTest :one
+	// INSERT INTO tests (
+	//     pet_id,
+	//     doctor_id,
+	//     test_type,
+	//     status,
+	//     created_at
+	// ) VALUES (
+	//     $1, $2, $3, $4, CURRENT_TIMESTAMP
+	// ) RETURNING *;
+	// -- name: UpdateTestStatus :exec
+	// UPDATE tests
+	// SET status = $2,
+	//     updated_at = CURRENT_TIMESTAMP
+	// WHERE id = $1;
+	// -- name: GetTestByID :one
+	// SELECT * FROM tests WHERE id = $1;
+	// -- name: GetTestsByPetID :many
+	// SELECT * FROM tests WHERE pet_id = $1;
+	// -- name: GetTestsByDoctorID :many
+	// SELECT * FROM tests WHERE doctor_id = $1;
+	// -- name: AddTestResult :one
+	// INSERT INTO test_results (
+	//     test_id,
+	//     parameters,
+	//     notes,
+	//     files,
+	//     created_at
+	// ) VALUES (
+	//     $1, $2, $3, $4, CURRENT_TIMESTAMP
+	// ) RETURNING *;
+	// -- name: GetTestResults :many
+	// SELECT * FROM test_results WHERE test_id = $1;
+	// -- name: GetStatusHistory :many
+	// SELECT
+	//     status,
+	//     updated_at as timestamp,
+	//     updated_by
+	// FROM test_statuses
+	// WHERE test_id = $1
+	// ORDER BY updated_at DESC;
+	AddTestCategory(ctx context.Context, arg AddTestCategoryParams) error
+	AddTestResult(ctx context.Context, arg AddTestResultParams) (TestResult, error)
 	// Assign Carprofen to the Initial Phase
 	AssignCarprofenToInitialPhase(ctx context.Context, arg AssignCarprofenToInitialPhaseParams) error
 	AssignMedicationToTreatmentPhase(ctx context.Context, arg AssignMedicationToTreatmentPhaseParams) (PhaseMedicine, error)
 	AssignRoomToAppointment(ctx context.Context, arg AssignRoomToAppointmentParams) error
+	CancelTestOrder(ctx context.Context, orderID int32) error
 	CheckinAppointment(ctx context.Context, appointmentID int64) error
 	CountAppointmentsByDateAndTimeSlot(ctx context.Context, arg CountAppointmentsByDateAndTimeSlotParams) (int64, error)
 	CountAppointmentsByDoctorAndDate(ctx context.Context, arg CountAppointmentsByDoctorAndDateParams) (int64, error)
@@ -38,6 +83,8 @@ type Querier interface {
 	CreateSOAP(ctx context.Context, arg CreateSOAPParams) (Consultation, error)
 	CreateService(ctx context.Context, arg CreateServiceParams) (Service, error)
 	CreateShift(ctx context.Context, arg CreateShiftParams) (CreateShiftRow, error)
+	CreateTest(ctx context.Context, arg CreateTestParams) (Test, error)
+	CreateTestOrder(ctx context.Context, arg CreateTestOrderParams) (TestOrder, error)
 	CreateTimeSlot(ctx context.Context, arg CreateTimeSlotParams) (TimeSlot, error)
 	CreateTreatment(ctx context.Context, arg CreateTreatmentParams) (PetTreatment, error)
 	CreateTreatmentPhase(ctx context.Context, arg CreateTreatmentPhaseParams) (TreatmentPhase, error)
@@ -79,7 +126,7 @@ type Querier interface {
 	GetAppointmentsByTimeSlot(ctx context.Context, timeSlotID pgtype.Int8) ([]GetAppointmentsByTimeSlotRow, error)
 	GetAppointmentsByUser(ctx context.Context, username pgtype.Text) ([]GetAppointmentsByUserRow, error)
 	GetAppointmentsOfDoctorWithDetails(ctx context.Context, id int64) ([]GetAppointmentsOfDoctorWithDetailsRow, error)
-	GetAppointmentsQueue(ctx context.Context, doctorID pgtype.Int8) ([]Appointment, error)
+	GetAppointmentsQueue(ctx context.Context, arg GetAppointmentsQueueParams) ([]Appointment, error)
 	GetAvailableDoctors(ctx context.Context, date pgtype.Date) ([]GetAvailableDoctorsRow, error)
 	GetAvailableRooms(ctx context.Context, arg GetAvailableRoomsParams) ([]Room, error)
 	GetAvailableRoomsForDuration(ctx context.Context, arg GetAvailableRoomsForDurationParams) ([]Room, error)
@@ -125,6 +172,8 @@ type Querier interface {
 	GetShiftByDoctorId(ctx context.Context, doctorID int64) ([]GetShiftByDoctorIdRow, error)
 	GetShifts(ctx context.Context) ([]GetShiftsRow, error)
 	GetState(ctx context.Context, id int64) (State, error)
+	GetTestByID(ctx context.Context, id int32) (Test, error)
+	GetTestsByCategory(ctx context.Context, categoryID pgtype.Text) ([]Test, error)
 	// -- name: GetTimeSlotsByDoctorAndDate :many
 	// SELECT * from time_slots WHERE doctor_id = $1 AND "date" = $2 ORDER BY start_time ASC;
 	GetTimeSlot(ctx context.Context, arg GetTimeSlotParams) (TimeSlot, error)
@@ -152,6 +201,7 @@ type Querier interface {
 	ListPetSchedulesByUsername(ctx context.Context, username string) ([]ListPetSchedulesByUsernameRow, error)
 	ListPets(ctx context.Context, arg ListPetsParams) ([]Pet, error)
 	ListPetsByUsername(ctx context.Context, arg ListPetsByUsernameParams) ([]Pet, error)
+	ListTests(ctx context.Context) ([]Test, error)
 	ListTreatmentsByPet(ctx context.Context, arg ListTreatmentsByPetParams) ([]PetTreatment, error)
 	ListVaccinationsByPetID(ctx context.Context, arg ListVaccinationsByPetIDParams) ([]Vaccination, error)
 	MarkNotificationAsRead(ctx context.Context, id int64) error
@@ -176,6 +226,7 @@ type Querier interface {
 	UpdateRoom(ctx context.Context, arg UpdateRoomParams) error
 	UpdateSOAP(ctx context.Context, arg UpdateSOAPParams) (Consultation, error)
 	UpdateService(ctx context.Context, arg UpdateServiceParams) (Service, error)
+	UpdateTestStatus(ctx context.Context, arg UpdateTestStatusParams) (OrderedTest, error)
 	UpdateTimeSlotBookedPatients(ctx context.Context, id int64) error
 	UpdateTreatment(ctx context.Context, arg UpdateTreatmentParams) error
 	UpdateTreatmentPhaseStatus(ctx context.Context, arg UpdateTreatmentPhaseStatusParams) error

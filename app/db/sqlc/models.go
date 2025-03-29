@@ -75,7 +75,7 @@ type Consultation struct {
 	ID            int32            `json:"id"`
 	AppointmentID pgtype.Int8      `json:"appointment_id"`
 	Subjective    pgtype.Text      `json:"subjective"`
-	Objective     pgtype.Text      `json:"objective"`
+	Objective     []byte           `json:"objective"`
 	Assessment    pgtype.Text      `json:"assessment"`
 	Plan          pgtype.Int8      `json:"plan"`
 	CreatedAt     pgtype.Timestamp `json:"created_at"`
@@ -176,6 +176,19 @@ type Order struct {
 	CartItems       []byte           `json:"cart_items"`
 	ShippingAddress pgtype.Text      `json:"shipping_address"`
 	Notes           pgtype.Text      `json:"notes"`
+}
+
+type OrderedTest struct {
+	ID              int32              `json:"id"`
+	OrderID         pgtype.Int4        `json:"order_id"`
+	TestID          pgtype.Int4        `json:"test_id"`
+	PriceAtOrder    float64            `json:"price_at_order"`
+	Status          pgtype.Text        `json:"status"`
+	Results         pgtype.Text        `json:"results"`
+	ResultsDate     pgtype.Timestamptz `json:"results_date"`
+	TechnicianNotes pgtype.Text        `json:"technician_notes"`
+	CreatedAt       pgtype.Timestamptz `json:"created_at"`
+	UpdatedAt       pgtype.Timestamptz `json:"updated_at"`
 }
 
 type Pet struct {
@@ -300,6 +313,51 @@ type State struct {
 	State     string           `json:"state"`
 	CreatedAt pgtype.Timestamp `json:"created_at"`
 	UpdatedAt pgtype.Timestamp `json:"updated_at"`
+}
+
+type Test struct {
+	ID             int32              `json:"id"`
+	TestID         string             `json:"test_id"`
+	CategoryID     pgtype.Text        `json:"category_id"`
+	Name           string             `json:"name"`
+	Description    pgtype.Text        `json:"description"`
+	Price          float64            `json:"price"`
+	TurnaroundTime string             `json:"turnaround_time"`
+	IsActive       pgtype.Bool        `json:"is_active"`
+	CreatedAt      pgtype.Timestamptz `json:"created_at"`
+	UpdatedAt      pgtype.Timestamptz `json:"updated_at"`
+}
+
+type TestCategory struct {
+	ID          int32              `json:"id"`
+	CategoryID  string             `json:"category_id"`
+	Name        string             `json:"name"`
+	Description pgtype.Text        `json:"description"`
+	IconName    pgtype.Text        `json:"icon_name"`
+	CreatedAt   pgtype.Timestamptz `json:"created_at"`
+	UpdatedAt   pgtype.Timestamptz `json:"updated_at"`
+}
+
+type TestOrder struct {
+	OrderID       int32              `json:"order_id"`
+	AppointmentID pgtype.Int4        `json:"appointment_id"`
+	OrderDate     pgtype.Timestamptz `json:"order_date"`
+	Status        pgtype.Text        `json:"status"`
+	TotalAmount   pgtype.Float8      `json:"total_amount"`
+	Notes         pgtype.Text        `json:"notes"`
+	CreatedAt     pgtype.Timestamptz `json:"created_at"`
+	UpdatedAt     pgtype.Timestamptz `json:"updated_at"`
+}
+
+type TestResult struct {
+	ResultID       int32              `json:"result_id"`
+	OrderedTestID  pgtype.Int4        `json:"ordered_test_id"`
+	ParameterName  string             `json:"parameter_name"`
+	ResultValue    pgtype.Text        `json:"result_value"`
+	NormalRange    pgtype.Text        `json:"normal_range"`
+	Units          pgtype.Text        `json:"units"`
+	Interpretation pgtype.Text        `json:"interpretation"`
+	CreatedAt      pgtype.Timestamptz `json:"created_at"`
 }
 
 type TimeSlot struct {

@@ -421,20 +421,14 @@ func (q *Queries) GetAppointmentDetail(ctx context.Context, arg GetAppointmentDe
 
 const getAppointmentDetailByAppointmentID = `-- name: GetAppointmentDetailByAppointmentID :one
 SELECT 
-    a.appointment_id,
-    a.date ,
-    a.reminder_send,
-    a.created_at,
-    a.appointment_reason,
-    a.priority,
-    a.arrival_time,
-    a.notes,
+    a.appointment_id, a.petid, a.username, a.doctor_id, a.service_id, a.date, a.reminder_send, a.time_slot_id, a.created_at, a.state_id, a.appointment_reason, a.priority, a.arrival_time, a.room_id, a.confirmation_sent, a.notes, a.updated_at,
     p.petid as pet_id,
     p.name AS pet_name,
     p.breed AS pet_breed,
     d.id AS doctor_id,
     s.name AS service_name,
     s.duration AS service_duration,
+    s.cost AS service_amount,
     ts.start_time, ts.end_time, ts.id AS time_slot_id,
     st.state AS state_name,
     st.id AS state_id,
@@ -454,24 +448,34 @@ WHERE a.appointment_id = $1
 
 type GetAppointmentDetailByAppointmentIDRow struct {
 	AppointmentID     int64            `json:"appointment_id"`
+	Petid             pgtype.Int8      `json:"petid"`
+	Username          pgtype.Text      `json:"username"`
+	DoctorID          pgtype.Int8      `json:"doctor_id"`
+	ServiceID         pgtype.Int8      `json:"service_id"`
 	Date              pgtype.Timestamp `json:"date"`
 	ReminderSend      pgtype.Bool      `json:"reminder_send"`
+	TimeSlotID        pgtype.Int8      `json:"time_slot_id"`
 	CreatedAt         pgtype.Timestamp `json:"created_at"`
+	StateID           pgtype.Int4      `json:"state_id"`
 	AppointmentReason pgtype.Text      `json:"appointment_reason"`
 	Priority          pgtype.Text      `json:"priority"`
 	ArrivalTime       pgtype.Timestamp `json:"arrival_time"`
+	RoomID            pgtype.Int8      `json:"room_id"`
+	ConfirmationSent  pgtype.Bool      `json:"confirmation_sent"`
 	Notes             pgtype.Text      `json:"notes"`
+	UpdatedAt         pgtype.Timestamp `json:"updated_at"`
 	PetID             pgtype.Int8      `json:"pet_id"`
 	PetName           pgtype.Text      `json:"pet_name"`
 	PetBreed          pgtype.Text      `json:"pet_breed"`
-	DoctorID          pgtype.Int8      `json:"doctor_id"`
+	DoctorID_2        pgtype.Int8      `json:"doctor_id_2"`
 	ServiceName       pgtype.Text      `json:"service_name"`
 	ServiceDuration   pgtype.Int2      `json:"service_duration"`
+	ServiceAmount     pgtype.Float8    `json:"service_amount"`
 	StartTime         pgtype.Time      `json:"start_time"`
 	EndTime           pgtype.Time      `json:"end_time"`
-	TimeSlotID        pgtype.Int8      `json:"time_slot_id"`
+	TimeSlotID_2      pgtype.Int8      `json:"time_slot_id_2"`
 	StateName         pgtype.Text      `json:"state_name"`
-	StateID           pgtype.Int8      `json:"state_id"`
+	StateID_2         pgtype.Int8      `json:"state_id_2"`
 	OwnerName         pgtype.Text      `json:"owner_name"`
 	OwnerPhone        pgtype.Text      `json:"owner_phone"`
 	OwnerEmail        pgtype.Text      `json:"owner_email"`
@@ -483,24 +487,34 @@ func (q *Queries) GetAppointmentDetailByAppointmentID(ctx context.Context, appoi
 	var i GetAppointmentDetailByAppointmentIDRow
 	err := row.Scan(
 		&i.AppointmentID,
+		&i.Petid,
+		&i.Username,
+		&i.DoctorID,
+		&i.ServiceID,
 		&i.Date,
 		&i.ReminderSend,
+		&i.TimeSlotID,
 		&i.CreatedAt,
+		&i.StateID,
 		&i.AppointmentReason,
 		&i.Priority,
 		&i.ArrivalTime,
+		&i.RoomID,
+		&i.ConfirmationSent,
 		&i.Notes,
+		&i.UpdatedAt,
 		&i.PetID,
 		&i.PetName,
 		&i.PetBreed,
-		&i.DoctorID,
+		&i.DoctorID_2,
 		&i.ServiceName,
 		&i.ServiceDuration,
+		&i.ServiceAmount,
 		&i.StartTime,
 		&i.EndTime,
-		&i.TimeSlotID,
+		&i.TimeSlotID_2,
 		&i.StateName,
-		&i.StateID,
+		&i.StateID_2,
 		&i.OwnerName,
 		&i.OwnerPhone,
 		&i.OwnerEmail,
@@ -700,12 +714,18 @@ func (q *Queries) GetAppointmentsOfDoctorWithDetails(ctx context.Context, id int
 
 const getAppointmentsQueue = `-- name: GetAppointmentsQueue :many
 SELECT appointment_id, petid, username, doctor_id, service_id, date, reminder_send, time_slot_id, created_at, state_id, appointment_reason, priority, arrival_time, room_id, confirmation_sent, notes, updated_at FROM public.appointments 
-WHERE state_id <> (SELECT id FROM public.states WHERE state = 'Scheduled' LIMIT 1) and doctor_id = $1
+WHERE state_id = (SELECT id FROM public.states WHERE state = 'Checked In'  LIMIT 1) 
+and doctor_id = $1 and Date(arrival_time) = Date($2)
 ORDER BY arrival_time ASC
 `
 
-func (q *Queries) GetAppointmentsQueue(ctx context.Context, doctorID pgtype.Int8) ([]Appointment, error) {
-	rows, err := q.db.Query(ctx, getAppointmentsQueue, doctorID)
+type GetAppointmentsQueueParams struct {
+	DoctorID pgtype.Int8 `json:"doctor_id"`
+	Date     interface{} `json:"date"`
+}
+
+func (q *Queries) GetAppointmentsQueue(ctx context.Context, arg GetAppointmentsQueueParams) ([]Appointment, error) {
+	rows, err := q.db.Query(ctx, getAppointmentsQueue, arg.DoctorID, arg.Date)
 	if err != nil {
 		return nil, err
 	}

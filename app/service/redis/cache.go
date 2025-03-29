@@ -91,6 +91,8 @@ type PetInfo struct {
 	Username        string  `json:"username"`
 	Name            string  `json:"name"`
 	Type            string  `json:"type"`
+	Gender          string  `json:"gender"`
+	Healthnotes     string  `json:"healthnotes"` // Health notes of pet, for example: "Vaccinated", "Neutered", "Dewormed", "Flea treatment", "Veterinary treatment", "Parasite treatment", "Disease treatment", "Other treatment", "No treatment"
 	Breed           string  `json:"breed"`
 	Age             int16   `json:"age"`
 	BOD             string  `json:"birth_date"`
@@ -114,16 +116,19 @@ func (c *ClientType) PetInfoLoadCache(petid int64) (*PetInfo, error) {
 			return nil, err
 		}
 		pet := PetInfo{
-			Petid:         res.Petid,
-			Username:      res.Username,
-			Name:          res.Name,
-			Type:          res.Type,
-			Breed:         res.Breed.String,
-			BOD:           res.BirthDate.Time.Format("2006-01-02"),
-			Age:           int16(res.Age.Int32),
-			Weight:        res.Weight.Float64,
-			DataImage:     res.DataImage,
-			OriginalImage: res.OriginalImage.String,
+			Petid:           res.Petid,
+			Username:        res.Username,
+			Name:            res.Name,
+			Type:            res.Type,
+			Breed:           res.Breed.String,
+			Gender:          res.Gender.String,
+			Healthnotes:     res.Healthnotes.String,
+			MicrochipNumber: res.MicrochipNumber.String,
+			BOD:             res.BirthDate.Time.Format("2006-01-02"),
+			Age:             int16(res.Age.Int32),
+			Weight:          res.Weight.Float64,
+			DataImage:       res.DataImage,
+			OriginalImage:   res.OriginalImage.String,
 		}
 		err = c.SetWithBackground(petKey, &pet, time.Hour*12)
 		if err != nil {

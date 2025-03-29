@@ -409,7 +409,7 @@ CREATE TABLE public.consultations (
 	id serial4 NOT NULL,
 	appointment_id int8 NULL,
 	subjective text NULL,
-	objective text NULL,
+	objective jsonb NULL,
 	assessment text NULL,
 	plan int8 NULL,
 	created_at timestamp DEFAULT now() NULL,
@@ -634,7 +634,120 @@ CREATE TABLE public.pet_allergies (
 	CONSTRAINT pet_alert_pk PRIMARY KEY (id)
 );
 
+-- public.test_categories definition
 
+-- Drop table
+
+-- DROP TABLE public.test_categories;
+
+CREATE TABLE public.test_categories (
+	id serial4 NOT NULL,
+	category_id varchar(50) NOT NULL,
+	"name" varchar(100) NOT NULL,
+	description text NULL,
+	icon_name varchar(50) NULL,
+	created_at timestamptz DEFAULT CURRENT_TIMESTAMP NULL,
+	updated_at timestamptz DEFAULT CURRENT_TIMESTAMP NULL,
+	CONSTRAINT test_categories_category_id_key UNIQUE (category_id),
+	CONSTRAINT test_categories_pkey PRIMARY KEY (id)
+);
+
+
+-- public.tests definition
+
+-- Drop table
+
+-- DROP TABLE public.tests;
+
+CREATE TABLE public.tests (
+	id serial4 NOT NULL,
+	test_id varchar(50) NOT NULL,
+	category_id varchar(50) NULL,
+	"name" varchar(100) NOT NULL,
+	description text NULL,
+	price float8 NOT NULL,
+	turnaround_time varchar(50) NOT NULL,
+	is_active bool DEFAULT true NULL,
+	created_at timestamptz DEFAULT CURRENT_TIMESTAMP NULL,
+	updated_at timestamptz DEFAULT CURRENT_TIMESTAMP NULL,
+	CONSTRAINT tests_pkey PRIMARY KEY (id),
+	CONSTRAINT tests_test_id_key UNIQUE (test_id),
+	CONSTRAINT tests_category_id_fkey FOREIGN KEY (category_id) REFERENCES public.test_categories(category_id) ON DELETE CASCADE
+);
+
+
+-- public.test_orders definition
+
+-- Drop table
+
+-- DROP TABLE public.test_orders;
+
+CREATE TABLE public.test_orders (
+	order_id serial4 NOT NULL,
+	appointment_id int4 NULL,
+	order_date timestamptz DEFAULT CURRENT_TIMESTAMP NULL,
+	status varchar(20) DEFAULT 'pending'::character varying NULL,
+	total_amount float8 NULL,
+	notes text NULL,
+	created_at timestamptz DEFAULT CURRENT_TIMESTAMP NULL,
+	updated_at timestamptz DEFAULT CURRENT_TIMESTAMP NULL,
+	CONSTRAINT test_orders_pkey PRIMARY KEY (order_id)
+);
+
+
+-- public.test_results definition
+
+-- Drop table
+
+-- DROP TABLE public.test_results;
+
+CREATE TABLE public.test_results (
+	result_id serial4 NOT NULL,
+	ordered_test_id int4 NULL,
+	parameter_name varchar(100) NOT NULL,
+	result_value varchar(100) NULL,
+	normal_range varchar(100) NULL,
+	units varchar(20) NULL,
+	interpretation text NULL,
+	created_at timestamptz DEFAULT CURRENT_TIMESTAMP NULL,
+	CONSTRAINT test_results_pkey PRIMARY KEY (result_id)
+);
+
+-- public.ordered_tests definition
+
+-- Drop table
+
+-- DROP TABLE public.ordered_tests;
+
+CREATE TABLE public.ordered_tests (
+	id serial4 NOT NULL,
+	order_id int4 NULL,
+	test_id int4 NULL,
+	price_at_order float8 NOT NULL,
+	status varchar(20) DEFAULT 'pending'::character varying NULL,
+	results text NULL,
+	results_date timestamptz NULL,
+	technician_notes text NULL,
+	created_at timestamptz DEFAULT CURRENT_TIMESTAMP NULL,
+	updated_at timestamptz DEFAULT CURRENT_TIMESTAMP NULL,
+	CONSTRAINT ordered_tests_pkey PRIMARY KEY (id)
+);
+
+
+-- public.ordered_tests foreign keys
+
+ALTER TABLE public.ordered_tests ADD CONSTRAINT ordered_tests_order_id_fkey FOREIGN KEY (order_id) REFERENCES public.test_orders(order_id) ON DELETE CASCADE;
+ALTER TABLE public.ordered_tests ADD CONSTRAINT ordered_tests_test_id_fkey FOREIGN KEY (test_id) REFERENCES public.tests(id) ON DELETE CASCADE;
+
+
+-- public.test_orders foreign keys
+
+ALTER TABLE public.test_orders ADD CONSTRAINT test_orders_appointment_id_fkey FOREIGN KEY (appointment_id) REFERENCES public.appointments(appointment_id) ON DELETE CASCADE;
+
+
+-- public.test_results foreign keys
+
+ALTER TABLE public.test_results ADD CONSTRAINT test_results_ordered_test_id_fkey FOREIGN KEY (ordered_test_id) REFERENCES public.ordered_tests(id) ON DELETE CASCADE;
 -- Indexing for public.checkouts
 CREATE INDEX idx_checkouts_petid ON public.checkouts (petid);
 CREATE INDEX idx_checkouts_doctor_id ON public.checkouts (doctor_id);

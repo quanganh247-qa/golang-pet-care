@@ -39,6 +39,9 @@ type CreatePetResponse struct {
 	Name            string  `json:"name"`
 	Type            string  `json:"type"`
 	Breed           string  `json:"breed"`
+	Gender          string  `json:"gender"`
+	Healthnotes     string  `json:"healthnotes"`
+	LastCheckedDate string  `json:"last_checked_date"`
 	Age             int16   `json:"age"`
 	BOD             string  `json:"birth_date"`
 	Weight          float64 `json:"weight"`

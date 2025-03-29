@@ -119,6 +119,8 @@ func (s *PetService) ListPets(ctx *gin.Context, req listPetsRequest, pagination 
 				Name:          r.Name,
 				Type:          r.Type,
 				Breed:         r.Breed.String,
+				Gender:        r.Gender.String,
+				Healthnotes:   r.Healthnotes.String,
 				Age:           int16(r.Age.Int32),
 				Weight:        r.Weight.Float64,
 				DataImage:     r.DataImage,

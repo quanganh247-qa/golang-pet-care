@@ -20,7 +20,7 @@ RETURNING id, appointment_id, subjective, objective, assessment, plan, created_a
 type CreateSOAPParams struct {
 	AppointmentID pgtype.Int8 `json:"appointment_id"`
 	Subjective    pgtype.Text `json:"subjective"`
-	Objective     pgtype.Text `json:"objective"`
+	Objective     []byte      `json:"objective"`
 	Assessment    pgtype.Text `json:"assessment"`
 	Plan          pgtype.Int8 `json:"plan"`
 }
@@ -73,7 +73,7 @@ WHERE appointment_id = $1 RETURNING id, appointment_id, subjective, objective, a
 type UpdateSOAPParams struct {
 	AppointmentID pgtype.Int8 `json:"appointment_id"`
 	Subjective    pgtype.Text `json:"subjective"`
-	Objective     pgtype.Text `json:"objective"`
+	Objective     []byte      `json:"objective"`
 	Assessment    pgtype.Text `json:"assessment"`
 }
 
