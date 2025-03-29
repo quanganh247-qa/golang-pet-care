@@ -173,6 +173,7 @@ type Querier interface {
 	GetShifts(ctx context.Context) ([]GetShiftsRow, error)
 	GetState(ctx context.Context, id int64) (State, error)
 	GetTestByID(ctx context.Context, id int32) (Test, error)
+	GetTestCategories(ctx context.Context) ([]TestCategory, error)
 	GetTestsByCategory(ctx context.Context, categoryID pgtype.Text) ([]Test, error)
 	// -- name: GetTimeSlotsByDoctorAndDate :many
 	// SELECT * from time_slots WHERE doctor_id = $1 AND "date" = $2 ORDER BY start_time ASC;
@@ -208,6 +209,7 @@ type Querier interface {
 	ReleaseRoom(ctx context.Context, arg ReleaseRoomParams) error
 	RemoveItemFromCart(ctx context.Context, arg RemoveItemFromCartParams) error
 	SetPetInactive(ctx context.Context, petid int64) error
+	SoftDeleteTest(ctx context.Context, testID string) error
 	UpdateAppointmentByID(ctx context.Context, arg UpdateAppointmentByIDParams) error
 	UpdateAppointmentStatus(ctx context.Context, arg UpdateAppointmentStatusParams) error
 	UpdateAvatarUser(ctx context.Context, arg UpdateAvatarUserParams) (User, error)
@@ -226,6 +228,7 @@ type Querier interface {
 	UpdateRoom(ctx context.Context, arg UpdateRoomParams) error
 	UpdateSOAP(ctx context.Context, arg UpdateSOAPParams) (Consultation, error)
 	UpdateService(ctx context.Context, arg UpdateServiceParams) (Service, error)
+	UpdateTest(ctx context.Context, arg UpdateTestParams) (Test, error)
 	UpdateTestStatus(ctx context.Context, arg UpdateTestStatusParams) (OrderedTest, error)
 	UpdateTimeSlotBookedPatients(ctx context.Context, id int64) error
 	UpdateTreatment(ctx context.Context, arg UpdateTreatmentParams) error

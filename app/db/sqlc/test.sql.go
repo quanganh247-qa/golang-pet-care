@@ -258,7 +258,7 @@ func (q *Queries) CreateTestOrder(ctx context.Context, arg CreateTestOrderParams
 }
 
 const getTestByID = `-- name: GetTestByID :one
-SELECT id, test_id, category_id, name, description, price, turnaround_time, is_active, created_at, updated_at FROM tests WHERE id = $1
+SELECT id, test_id, category_id, name, description, price, turnaround_time, is_active, created_at, updated_at FROM tests WHERE id = $1 AND is_active = true
 `
 
 func (q *Queries) GetTestByID(ctx context.Context, id int32) (Test, error) {
@@ -277,6 +277,38 @@ func (q *Queries) GetTestByID(ctx context.Context, id int32) (Test, error) {
 		&i.UpdatedAt,
 	)
 	return i, err
+}
+
+const getTestCategories = `-- name: GetTestCategories :many
+SELECT id, category_id, name, description, icon_name, created_at, updated_at FROM test_categories
+`
+
+func (q *Queries) GetTestCategories(ctx context.Context) ([]TestCategory, error) {
+	rows, err := q.db.Query(ctx, getTestCategories)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []TestCategory{}
+	for rows.Next() {
+		var i TestCategory
+		if err := rows.Scan(
+			&i.ID,
+			&i.CategoryID,
+			&i.Name,
+			&i.Description,
+			&i.IconName,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
 const getTestsByCategory = `-- name: GetTestsByCategory :many
@@ -348,6 +380,56 @@ func (q *Queries) ListTests(ctx context.Context) ([]Test, error) {
 		return nil, err
 	}
 	return items, nil
+}
+
+const softDeleteTest = `-- name: SoftDeleteTest :exec
+UPDATE tests
+SET is_active = false
+WHERE test_id = $1
+`
+
+func (q *Queries) SoftDeleteTest(ctx context.Context, testID string) error {
+	_, err := q.db.Exec(ctx, softDeleteTest, testID)
+	return err
+}
+
+const updateTest = `-- name: UpdateTest :one
+UPDATE tests
+SET name = $2, description = $3, price = $4, turnaround_time = $5
+WHERE test_id = $1
+RETURNING id, test_id, category_id, name, description, price, turnaround_time, is_active, created_at, updated_at
+`
+
+type UpdateTestParams struct {
+	TestID         string      `json:"test_id"`
+	Name           string      `json:"name"`
+	Description    pgtype.Text `json:"description"`
+	Price          float64     `json:"price"`
+	TurnaroundTime string      `json:"turnaround_time"`
+}
+
+func (q *Queries) UpdateTest(ctx context.Context, arg UpdateTestParams) (Test, error) {
+	row := q.db.QueryRow(ctx, updateTest,
+		arg.TestID,
+		arg.Name,
+		arg.Description,
+		arg.Price,
+		arg.TurnaroundTime,
+	)
+	var i Test
+	err := row.Scan(
+		&i.ID,
+		&i.TestID,
+		&i.CategoryID,
+		&i.Name,
+		&i.Description,
+		&i.Price,
+		&i.TurnaroundTime,
+		&i.IsActive,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
 }
 
 const updateTestStatus = `-- name: UpdateTestStatus :one

@@ -71,3 +71,11 @@ type OrderedTest struct {
 	Price    float64 `json:"price"`
 	Status   string  `json:"status"`
 }
+
+type UpdateTestRequest struct {
+	TestID         string  `json:"test_id" binding:"required"`
+	Name           string  `json:"name" binding:"required"`
+	Description    string  `json:"description"`
+	Price          float64 `json:"price" binding:"required"`
+	TurnaroundTime string  `json:"turnaround_time" binding:"required"`
+}

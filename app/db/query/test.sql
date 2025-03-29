@@ -57,11 +57,26 @@ VALUES (
     $1, $2, $3, $4, $5, $6
 ) RETURNING *;
 
+-- name: GetTestByID :one
+SELECT * FROM tests WHERE id = $1 AND is_active = true;
+
+-- name: UpdateTest :one
+UPDATE tests
+SET name = $2, description = $3, price = $4, turnaround_time = $5
+WHERE test_id = $1
+RETURNING *;
+
+-- name: SoftDeleteTest :exec
+UPDATE tests
+SET is_active = false
+WHERE test_id = $1;
+
+-- name: GetTestCategories :many
+SELECT * FROM test_categories;
+
 -- name: ListTests :many
 SELECT * FROM tests WHERE is_active is true;
 
--- name: GetTestByID :one
-SELECT * FROM tests WHERE id = $1;
 
 -- name: CreateTestOrder :one
 INSERT INTO test_orders (

@@ -17,6 +17,9 @@ type TestServiceInterface interface {
 	// GetTestsByPetID(ctx *gin.Context, petID int64) ([]TestResponse, error)
 	ListTests(ctx *gin.Context) (*[]Test, error)
 	CreateTestOrder(ctx *gin.Context, req TestOrderRequest) error
+	GetTestByID(ctx *gin.Context, id int32) (*Test, error)
+	UpdateTest(ctx *gin.Context, req UpdateTestRequest) (*Test, error)
+	SoftDeleteTest(ctx *gin.Context, testID string) error
 }
 
 func NewTestService(store db.Store, ws *websocket.WSClientManager) *TestService {
@@ -201,6 +204,65 @@ func (s *TestService) CreateTestOrder(ctx *gin.Context, req TestOrderRequest) er
 
 	if err != nil {
 		return err
+	}
+
+	return nil
+}
+
+func (s *TestService) GetTestByID(ctx *gin.Context, id int32) (*Test, error) {
+	test, err := s.storeDB.GetTestByID(ctx, id)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get test by ID: %w", err)
+	}
+
+	return &Test{
+		ID:             test.ID,
+		Name:           test.Name,
+		Price:          test.Price,
+		Description:    test.Description.String,
+		TurnaroundTime: test.TurnaroundTime,
+		CategoryID:     test.CategoryID.String,
+		TestID:         test.TestID,
+		IsActive:       test.IsActive.Bool,
+		CreatedAt:      test.CreatedAt.Time.String(),
+		UpdatedAt:      test.UpdatedAt.Time.String(),
+	}, nil
+}
+
+func (s *TestService) UpdateTest(ctx *gin.Context, req UpdateTestRequest) (*Test, error) {
+	// Create update params from request
+	updateParams := db.UpdateTestParams{
+		TestID:         req.TestID,
+		Name:           req.Name,
+		Description:    pgtype.Text{String: req.Description, Valid: req.Description != ""},
+		Price:          req.Price,
+		TurnaroundTime: req.TurnaroundTime,
+	}
+
+	// Update test in database
+	updatedTest, err := s.storeDB.UpdateTest(ctx, updateParams)
+	if err != nil {
+		return nil, fmt.Errorf("failed to update test: %w", err)
+	}
+
+	return &Test{
+		ID:             updatedTest.ID,
+		Name:           updatedTest.Name,
+		Price:          updatedTest.Price,
+		Description:    updatedTest.Description.String,
+		TurnaroundTime: updatedTest.TurnaroundTime,
+		CategoryID:     updatedTest.CategoryID.String,
+		TestID:         updatedTest.TestID,
+		IsActive:       updatedTest.IsActive.Bool,
+		CreatedAt:      updatedTest.CreatedAt.Time.String(),
+		UpdatedAt:      updatedTest.UpdatedAt.Time.String(),
+	}, nil
+}
+
+func (s *TestService) SoftDeleteTest(ctx *gin.Context, testID string) error {
+	err := s.storeDB.SoftDeleteTest(ctx, testID)
+	if err != nil {
+		return fmt.Errorf("failed to soft delete test: %w", err)
 	}
 
 	return nil

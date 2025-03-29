@@ -3,6 +3,7 @@ package test
 import (
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
@@ -146,5 +147,43 @@ func (c *TestController) CreateTestOrder(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusCreated, gin.H{"message": "Test order created successfully"})
+}
 
+func (c *TestController) GetTestByID(ctx *gin.Context) {
+	id, err := strconv.ParseInt(ctx.Param("id"), 10, 32)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid test ID"})
+		return
+	}
+
+	test, err := c.service.GetTestByID(ctx, int32(id))
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"message": "Get test details successfully",
+		"data":    test,
+	})
+}
+
+func (c *TestController) SoftDeleteTest(ctx *gin.Context) {
+	testID := ctx.Param("test_id")
+	if testID == "" {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Test ID is required"})
+		return
+	}
+
+	err := c.service.SoftDeleteTest(ctx, testID)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"message": "Test deleted successfully",
+	})
 }
