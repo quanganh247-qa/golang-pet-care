@@ -57,6 +57,9 @@ VALUES (
     $1, $2, $3, $4, $5, $6
 ) RETURNING *;
 
+-- name: GetTestCategoryByID :one
+SELECT * FROM test_categories WHERE category_id = $1;
+
 -- name: GetTestByID :one
 SELECT * FROM tests WHERE id = $1 AND is_active = true;
 

@@ -311,6 +311,25 @@ func (q *Queries) GetTestCategories(ctx context.Context) ([]TestCategory, error)
 	return items, nil
 }
 
+const getTestCategoryByID = `-- name: GetTestCategoryByID :one
+SELECT id, category_id, name, description, icon_name, created_at, updated_at FROM test_categories WHERE category_id = $1
+`
+
+func (q *Queries) GetTestCategoryByID(ctx context.Context, categoryID string) (TestCategory, error) {
+	row := q.db.QueryRow(ctx, getTestCategoryByID, categoryID)
+	var i TestCategory
+	err := row.Scan(
+		&i.ID,
+		&i.CategoryID,
+		&i.Name,
+		&i.Description,
+		&i.IconName,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
 const getTestsByCategory = `-- name: GetTestsByCategory :many
 SELECT id, test_id, category_id, name, description, price, turnaround_time, is_active, created_at, updated_at FROM tests 
 WHERE category_id = $1 AND is_active = TRUE

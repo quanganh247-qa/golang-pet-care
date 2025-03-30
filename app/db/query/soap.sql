@@ -1,6 +1,6 @@
 -- name: CreateSOAP :one
-INSERT INTO consultations (appointment_id, subjective, objective, assessment, plan)
-VALUES ($1, $2, $3, $4, $5)
+INSERT INTO consultations (appointment_id, subjective)
+VALUES ($1, $2)
 RETURNING *;
 
 -- name: GetSOAPByAppointmentID :one

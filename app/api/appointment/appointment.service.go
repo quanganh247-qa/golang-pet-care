@@ -534,11 +534,6 @@ func (s *AppointmentService) CreateSOAPService(ctx *gin.Context, soap CreateSOAP
 		return nil, fmt.Errorf("Cannot create SOAP")
 	}
 
-	// Fix: Handle json.Unmarshal error
-	if err := json.Unmarshal(consultation.Objective, &soapResponse.Objective); err != nil {
-		return nil, fmt.Errorf("failed to unmarshal objective data: %w", err)
-	}
-
 	return &SOAPResponse{
 		ConsultationID: int64(consultation.ID),
 		AppointmentID:  consultation.AppointmentID.Int64,

@@ -79,3 +79,13 @@ type UpdateTestRequest struct {
 	Price          float64 `json:"price" binding:"required"`
 	TurnaroundTime string  `json:"turnaround_time" binding:"required"`
 }
+
+
+// TestCategoryResponse represents a category of tests with its associated tests
+type TestCategoryResponse struct {
+    ID          string `json:"id"`
+    Name        string `json:"name"`
+    Icon        string `json:"icon,omitempty"` // Frontend will handle the actual icon component
+    Description string `json:"description"`
+    Tests       []Test `json:"tests"`
+}

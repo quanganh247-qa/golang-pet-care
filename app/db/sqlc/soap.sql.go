@@ -12,27 +12,18 @@ import (
 )
 
 const createSOAP = `-- name: CreateSOAP :one
-INSERT INTO consultations (appointment_id, subjective, objective, assessment, plan)
-VALUES ($1, $2, $3, $4, $5)
+INSERT INTO consultations (appointment_id, subjective)
+VALUES ($1, $2)
 RETURNING id, appointment_id, subjective, objective, assessment, plan, created_at
 `
 
 type CreateSOAPParams struct {
 	AppointmentID pgtype.Int8 `json:"appointment_id"`
 	Subjective    pgtype.Text `json:"subjective"`
-	Objective     []byte      `json:"objective"`
-	Assessment    pgtype.Text `json:"assessment"`
-	Plan          pgtype.Int8 `json:"plan"`
 }
 
 func (q *Queries) CreateSOAP(ctx context.Context, arg CreateSOAPParams) (Consultation, error) {
-	row := q.db.QueryRow(ctx, createSOAP,
-		arg.AppointmentID,
-		arg.Subjective,
-		arg.Objective,
-		arg.Assessment,
-		arg.Plan,
-	)
+	row := q.db.QueryRow(ctx, createSOAP, arg.AppointmentID, arg.Subjective)
 	var i Consultation
 	err := row.Scan(
 		&i.ID,

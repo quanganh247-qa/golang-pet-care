@@ -119,9 +119,6 @@ type updateAppointmentRequest struct {
 type CreateSOAPRequest struct {
 	DoctorID   int64  `json:"doctor_id"`
 	Subjective string `json:"subjective"`
-	Objective  string `json:"objective"`
-	Assessment string `json:"assessment"`
-	Plan       string `json:"plan"`
 }
 
 type UpdateSOAPRequest struct {

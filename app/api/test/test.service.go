@@ -15,7 +15,7 @@ type TestServiceInterface interface {
 	// AddTestResult(ctx *gin.Context, testID int64, result TestResult) error
 	// // GetStatusHistory(ctx *gin.Context, testID int64) ([]StatusHistory, error)
 	// GetTestsByPetID(ctx *gin.Context, petID int64) ([]TestResponse, error)
-	ListTests(ctx *gin.Context) (*[]Test, error)
+	ListTests(ctx *gin.Context) (*[]TestCategoryResponse, error)
 	CreateTestOrder(ctx *gin.Context, req TestOrderRequest) error
 	GetTestByID(ctx *gin.Context, id int32) (*Test, error)
 	UpdateTest(ctx *gin.Context, req UpdateTestRequest) (*Test, error)
@@ -132,27 +132,59 @@ func NewTestService(store db.Store, ws *websocket.WSClientManager) *TestService 
 // 	return testResults, nil
 // }
 
-func (s *TestService) ListTests(ctx *gin.Context) (*[]Test, error) {
+func (s *TestService) ListTests(ctx *gin.Context) (*[]TestCategoryResponse, error) {
 	res, err := s.storeDB.ListTests(ctx)
 	if err != nil {
-		return &[]Test{}, fmt.Errorf("failed to add test result: %w", err)
+		return nil, fmt.Errorf("failed to add test result: %w", err)
 	}
-	var tests []Test
+	// Group tests by category
+	categoriesMap := make(map[string]*TestCategoryResponse)
+
 	for _, r := range res {
-		tests = append(tests, Test{
+
+		categoryID := r.CategoryID.String
+
+		test := Test{
 			ID:             r.ID,
 			Name:           r.Name,
 			Price:          r.Price,
 			Description:    r.Description.String,
 			TurnaroundTime: r.TurnaroundTime,
-			CategoryID:     r.CategoryID.String,
+			CategoryID:     categoryID,
 			TestID:         r.TestID,
 			IsActive:       r.IsActive.Bool,
 			CreatedAt:      r.CreatedAt.Time.String(),
 			UpdatedAt:      r.UpdatedAt.Time.String(),
-		})
+		}
+
+		// If category doesn't exist in map yet, create it
+		if _, exists := categoriesMap[categoryID]; !exists {
+
+			category, err := s.storeDB.GetTestCategoryByID(ctx, categoryID)
+			if err != nil {
+				return nil, fmt.Errorf("failed to get test category by ID: %w", err)
+			}
+
+			categoriesMap[categoryID] = &TestCategoryResponse{
+				ID:          categoryID,
+				Name:        category.Name,               // Implement this helper function
+				Icon:        category.IconName.String,    // Implement this helper function
+				Description: category.Description.String, // Implement this helper function
+				Tests:       []Test{},
+			}
+		}
+
+		// Add test to its category
+		categoriesMap[categoryID].Tests = append(categoriesMap[categoryID].Tests, test)
 	}
-	return &tests, nil
+
+	// Convert map to slice
+	categories := make([]TestCategoryResponse, 0, len(categoriesMap))
+	for _, category := range categoriesMap {
+		categories = append(categories, *category)
+	}
+
+	return &categories, nil
 }
 
 func (s *TestService) CreateTestOrder(ctx *gin.Context, req TestOrderRequest) error {

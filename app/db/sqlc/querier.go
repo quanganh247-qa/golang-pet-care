@@ -174,6 +174,7 @@ type Querier interface {
 	GetState(ctx context.Context, id int64) (State, error)
 	GetTestByID(ctx context.Context, id int32) (Test, error)
 	GetTestCategories(ctx context.Context) ([]TestCategory, error)
+	GetTestCategoryByID(ctx context.Context, categoryID string) (TestCategory, error)
 	GetTestsByCategory(ctx context.Context, categoryID pgtype.Text) ([]Test, error)
 	// -- name: GetTimeSlotsByDoctorAndDate :many
 	// SELECT * from time_slots WHERE doctor_id = $1 AND "date" = $2 ORDER BY start_time ASC;
