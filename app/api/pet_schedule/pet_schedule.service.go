@@ -106,7 +106,7 @@ func (s *PetScheduleService) ListPetSchedulesByUsernameService(ctx *gin.Context,
 	for _, schedule := range schedules {
 		petKey := PetKey{
 			PetID:   schedule.PetID.Int64,
-			PetName: schedule.Name.String,
+			PetName: schedule.PetName.String,
 		}
 		groupedSchedules[petKey] = append(groupedSchedules[petKey], PetScheduleResponse{
 			ID:               schedule.ID,

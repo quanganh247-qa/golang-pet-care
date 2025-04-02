@@ -147,6 +147,10 @@ WHERE DATE(a.date) = DATE($1)
 AND ($4 = 'false' OR st.state IN ('Confirmed', 'Scheduled'))
 LIMIT $2 OFFSET $3;
 
+-- name: CountAllAppointmentsByDate :one
+SELECT COUNT(*)
+FROM appointments
+WHERE DATE(date) = DATE($1);
 
 -- name: GetAllAppointmentsByDate :many
 SELECT 
@@ -220,18 +224,28 @@ WHERE a.appointment_id = $1;
 
 -- name: GetAppointmentsByUser :many
 SELECT 
-    a.appointment_id, a.date, a.created_at,
+    a.*,
+    p.petid as pet_id,
     p.name AS pet_name,
+    p.breed AS pet_breed,
     d.id AS doctor_id,
     s.name AS service_name,
-    ts.start_time, ts.end_time,
-    st.state
+    s.duration AS service_duration,
+    s.cost AS service_amount,
+    ts.start_time, ts.end_time, ts.id AS time_slot_id,
+    st.state AS state_name,
+    st.id AS state_id,
+    u.full_name AS owner_name,
+    u.phone_number AS owner_phone,
+    u.email AS owner_email,
+    u.address AS owner_address
 FROM appointments a
-LEFT JOIN pets p ON p.petid = a.petid
-LEFT JOIN doctors d ON d.id = a.doctor_id
-LEFT JOIN services s ON s.id = a.service_id
-LEFT JOIN time_slots ts ON ts.id = a.time_slot_id
-LEFT JOIN states st ON st.id = a.state_id
+LEFT JOIN pets p ON a.petid = p.petid
+LEFT JOIN services s ON a.service_id = s.id
+LEFT JOIN time_slots ts ON a.time_slot_id = ts.id
+LEFT JOIN doctors d ON a.doctor_id = d.id
+LEFT JOIN users u ON a.username = u.username
+LEFT JOIN states st ON a.state_id = st.id
 WHERE a.username = $1;
 
 -- name: GetAppointmentsQueue :many
@@ -266,3 +280,25 @@ LEFT JOIN services s ON appointments.service_id = s.id
 LEFT JOIN rooms r ON appointments.room_id = r.id
 WHERE petid = $1 AND state_id = (SELECT id FROM states WHERE state = 'Completed' LIMIT 1)
 ORDER BY date DESC;
+
+
+-- name: GetAppointmentDistribution :many
+SELECT 
+    s.id as service_id,
+    s.name as service_name,
+    COUNT(a.appointment_id) as appointment_count,
+    ROUND((COUNT(a.appointment_id) * 100.0 / NULLIF((SELECT COUNT(*) FROM appointments WHERE date BETWEEN $1::date AND $2::date), 0)), 2) as percentage
+FROM 
+    public.services s
+LEFT JOIN 
+    public.appointments a ON s.id = a.service_id
+    AND a.date BETWEEN $1::date AND $2::date
+GROUP BY 
+    s.id, s.name
+ORDER BY 
+    COUNT(a.appointment_id) DESC;
+
+-- name: CountPatientsInMonth :one
+SELECT COUNT(DISTINCT pet_id) 
+FROM appointments
+WHERE date BETWEEN $1 AND $2;

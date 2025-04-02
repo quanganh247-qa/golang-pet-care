@@ -1,51 +1,3 @@
--- -- name: CreateTest :one
--- INSERT INTO tests (
---     pet_id,
---     doctor_id,
---     test_type,
---     status,
---     created_at
--- ) VALUES (
---     $1, $2, $3, $4, CURRENT_TIMESTAMP
--- ) RETURNING *;
-
--- -- name: UpdateTestStatus :exec
--- UPDATE tests 
--- SET status = $2,
---     updated_at = CURRENT_TIMESTAMP
--- WHERE id = $1;
-
--- -- name: GetTestByID :one
--- SELECT * FROM tests WHERE id = $1;
-
--- -- name: GetTestsByPetID :many
--- SELECT * FROM tests WHERE pet_id = $1;
-
--- -- name: GetTestsByDoctorID :many
--- SELECT * FROM tests WHERE doctor_id = $1;
-
--- -- name: AddTestResult :one
--- INSERT INTO test_results (
---     test_id,
---     parameters,
---     notes,
---     files,
---     created_at
--- ) VALUES (
---     $1, $2, $3, $4, CURRENT_TIMESTAMP
--- ) RETURNING *;
-
--- -- name: GetTestResults :many
--- SELECT * FROM test_results WHERE test_id = $1;
-
--- -- name: GetStatusHistory :many
--- SELECT 
---     status,
---     updated_at as timestamp,
---     updated_by
--- FROM test_statuses
--- WHERE test_id = $1
--- ORDER BY updated_at DESC;
 
 -- name: AddTestCategory :exec
 INSERT INTO test_categories (category_id, name, description, icon_name)
@@ -127,4 +79,72 @@ INSERT INTO test_results (
     $1, $2, $3, $4, $5, $6
 ) RETURNING *;
 
+-- name: GetOrderedTestsByAppointment :many
+SELECT 
+    ot.id AS ordered_test_id,
+    t.test_id,
+    t.name AS test_name,
+    t.category_id,
+    tc.name AS category_name,
+    ot.price_at_order,
+    ot.status,
+    ot.created_at AS ordered_date,
+    o.notes
+FROM test_orders o
+JOIN ordered_tests ot ON o.order_id = ot.order_id
+JOIN tests t ON ot.test_id = t.id
+JOIN test_categories tc ON t.category_id = tc.category_id
+WHERE o.appointment_id = $1
+ORDER BY ot.created_at DESC;
 
+-- name: GetAllAppointmentsWithOrders :many
+SELECT 
+    a.appointment_id,
+    a.date,
+    p.name AS pet_name,
+    COALESCE(
+        jsonb_agg(
+            jsonb_build_object(
+                'order_id', o.order_id,
+                'total_amount', o.total_amount,
+                'status', o.status,
+                'order_date', o.order_date,
+                'tests', (
+                    SELECT jsonb_agg(jsonb_build_object(
+                        'test_id', t.test_id,
+                        'test_name', t.name,
+                        'price', ot.price_at_order,
+                        'status', ot.status
+                    ))
+                    FROM ordered_tests ot
+                    JOIN tests t ON ot.test_id = t.id
+                    WHERE ot.order_id = o.order_id
+                )
+            ) 
+        ) FILTER (WHERE o.order_id IS NOT NULL),
+        '[]'::jsonb
+    ) AS orders
+FROM appointments a
+LEFT JOIN test_orders o ON a.appointment_id = o.appointment_id
+JOIN pets p ON a.petid = p.petid 
+GROUP BY a.appointment_id, p.name
+ORDER BY a.date DESC;
+
+-- name: GetTestOrderByID :one
+SELECT * FROM test_orders WHERE order_id = $1;
+
+
+-- name: GetOrderedTestsByOrderID :many
+SELECT  ordered_tests.*, 
+        tests.name AS test_name,
+        tests.description AS test_description,
+        tests.price AS test_price
+FROM ordered_tests 
+LEFT JOIN tests ON ordered_tests.test_id = tests.id
+LEFT JOIN test_categories ON tests.category_id = test_categories.category_id
+WHERE ordered_tests.order_id = $1;
+
+-- name: UpdateTestOrderStatus :exec
+UPDATE test_orders
+SET status = $2
+WHERE order_id = $1;

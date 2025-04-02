@@ -79,37 +79,39 @@ func (q *Queries) AssignMedicationToTreatmentPhase(ctx context.Context, arg Assi
 }
 
 const createTreatment = `-- name: CreateTreatment :one
-INSERT INTO pet_treatments (pet_id, disease_id,doctor_id, name, type, start_date, end_date ,status, description, created_at)
-VALUES ($1, $2, $3, $4, $5, $6 ,$7 , "In Progress", $8, now()) RETURNING id, pet_id, disease_id, start_date, end_date, status, name, type, description, created_at, doctor_id
+INSERT INTO pet_treatments (pet_id, diseases,doctor_id, name, type, start_date, end_date ,status, description, created_at)
+VALUES ($1, $2, $3, $4, $5, $6 ,$7 , $8, $9, now()) RETURNING id, pet_id, diseases, start_date, end_date, status, name, type, description, created_at, doctor_id
 `
 
 type CreateTreatmentParams struct {
 	PetID       pgtype.Int8 `json:"pet_id"`
-	DiseaseID   pgtype.Int8 `json:"disease_id"`
+	Diseases    pgtype.Text `json:"diseases"`
 	DoctorID    pgtype.Int4 `json:"doctor_id"`
 	Name        pgtype.Text `json:"name"`
 	Type        pgtype.Text `json:"type"`
 	StartDate   pgtype.Date `json:"start_date"`
 	EndDate     pgtype.Date `json:"end_date"`
+	Status      pgtype.Text `json:"status"`
 	Description pgtype.Text `json:"description"`
 }
 
 func (q *Queries) CreateTreatment(ctx context.Context, arg CreateTreatmentParams) (PetTreatment, error) {
 	row := q.db.QueryRow(ctx, createTreatment,
 		arg.PetID,
-		arg.DiseaseID,
+		arg.Diseases,
 		arg.DoctorID,
 		arg.Name,
 		arg.Type,
 		arg.StartDate,
 		arg.EndDate,
+		arg.Status,
 		arg.Description,
 	)
 	var i PetTreatment
 	err := row.Scan(
 		&i.ID,
 		&i.PetID,
-		&i.DiseaseID,
+		&i.Diseases,
 		&i.StartDate,
 		&i.EndDate,
 		&i.Status,
@@ -372,7 +374,7 @@ func (q *Queries) GetMedicineByTreatmentID(ctx context.Context, treatmentID pgty
 }
 
 const getTreatment = `-- name: GetTreatment :one
-SELECT id, pet_id, disease_id, start_date, end_date, status, name, type, description, created_at, doctor_id FROM pet_treatments
+SELECT id, pet_id, diseases, start_date, end_date, status, name, type, description, created_at, doctor_id FROM pet_treatments
 WHERE id = $1 LIMIT 1
 `
 
@@ -382,7 +384,7 @@ func (q *Queries) GetTreatment(ctx context.Context, id int64) (PetTreatment, err
 	err := row.Scan(
 		&i.ID,
 		&i.PetID,
-		&i.DiseaseID,
+		&i.Diseases,
 		&i.StartDate,
 		&i.EndDate,
 		&i.Status,
@@ -416,7 +418,7 @@ func (q *Queries) GetTreatmentPhase(ctx context.Context, id int64) (TreatmentPha
 }
 
 const getTreatmentPhasesByTreatment = `-- name: GetTreatmentPhasesByTreatment :many
-SELECT tp.id, treatment_id, phase_name, tp.description, tp.status, tp.start_date, tp.created_at, t.id, pet_id, disease_id, t.start_date, end_date, t.status, name, type, t.description, t.created_at, doctor_id  FROM treatment_phases as tp
+SELECT tp.id, treatment_id, phase_name, tp.description, tp.status, tp.start_date, tp.created_at, t.id, pet_id, diseases, t.start_date, end_date, t.status, name, type, t.description, t.created_at, doctor_id  FROM treatment_phases as tp
 JOIN pet_treatments t ON t.id = tp.treatment_id
 WHERE t.id = $1 LIMIT $2 OFFSET $3
 `
@@ -437,7 +439,7 @@ type GetTreatmentPhasesByTreatmentRow struct {
 	CreatedAt     pgtype.Timestamptz `json:"created_at"`
 	ID_2          int64              `json:"id_2"`
 	PetID         pgtype.Int8        `json:"pet_id"`
-	DiseaseID     pgtype.Int8        `json:"disease_id"`
+	Diseases      pgtype.Text        `json:"diseases"`
 	StartDate_2   pgtype.Date        `json:"start_date_2"`
 	EndDate       pgtype.Date        `json:"end_date"`
 	Status_2      pgtype.Text        `json:"status_2"`
@@ -467,7 +469,7 @@ func (q *Queries) GetTreatmentPhasesByTreatment(ctx context.Context, arg GetTrea
 			&i.CreatedAt,
 			&i.ID_2,
 			&i.PetID,
-			&i.DiseaseID,
+			&i.Diseases,
 			&i.StartDate_2,
 			&i.EndDate,
 			&i.Status_2,
@@ -528,7 +530,7 @@ func (q *Queries) GetTreatmentProgress(ctx context.Context, id int64) ([]GetTrea
 }
 
 const getTreatmentsByPet = `-- name: GetTreatmentsByPet :many
-SELECT t.id, t.pet_id, t.disease_id, t.start_date, t.end_date, t.status, t.name, t.type, t.description, t.created_at, t.doctor_id, d.name AS disease
+SELECT t.id, t.pet_id, t.diseases, t.start_date, t.end_date, t.status, t.name, t.type, t.description, t.created_at, t.doctor_id, d.name AS disease
 FROM pet_treatments t
 JOIN diseases d ON t.disease_id = d.id
 WHERE t.pet_id = $1 LIMIT $2 OFFSET $3
@@ -543,7 +545,7 @@ type GetTreatmentsByPetParams struct {
 type GetTreatmentsByPetRow struct {
 	ID          int64              `json:"id"`
 	PetID       pgtype.Int8        `json:"pet_id"`
-	DiseaseID   pgtype.Int8        `json:"disease_id"`
+	Diseases    pgtype.Text        `json:"diseases"`
 	StartDate   pgtype.Date        `json:"start_date"`
 	EndDate     pgtype.Date        `json:"end_date"`
 	Status      pgtype.Text        `json:"status"`
@@ -567,7 +569,7 @@ func (q *Queries) GetTreatmentsByPet(ctx context.Context, arg GetTreatmentsByPet
 		if err := rows.Scan(
 			&i.ID,
 			&i.PetID,
-			&i.DiseaseID,
+			&i.Diseases,
 			&i.StartDate,
 			&i.EndDate,
 			&i.Status,
@@ -589,7 +591,7 @@ func (q *Queries) GetTreatmentsByPet(ctx context.Context, arg GetTreatmentsByPet
 }
 
 const listTreatmentsByPet = `-- name: ListTreatmentsByPet :many
-SELECT id, pet_id, disease_id, start_date, end_date, status, name, type, description, created_at, doctor_id FROM pet_treatments
+SELECT id, pet_id, diseases, start_date, end_date, status, name, type, description, created_at, doctor_id FROM pet_treatments
 WHERE pet_id = $1
 ORDER BY start_date DESC
 LIMIT $2 OFFSET $3
@@ -613,7 +615,7 @@ func (q *Queries) ListTreatmentsByPet(ctx context.Context, arg ListTreatmentsByP
 		if err := rows.Scan(
 			&i.ID,
 			&i.PetID,
-			&i.DiseaseID,
+			&i.Diseases,
 			&i.StartDate,
 			&i.EndDate,
 			&i.Status,
@@ -635,13 +637,13 @@ func (q *Queries) ListTreatmentsByPet(ctx context.Context, arg ListTreatmentsByP
 
 const updateTreatment = `-- name: UpdateTreatment :exec
 UPDATE pet_treatments
-SET disease_id = $2, start_date = $3, end_date = $4, status = $5, description = $6
+SET diseases = $2, start_date = $3, end_date = $4, status = $5, description = $6
 WHERE id = $1
 `
 
 type UpdateTreatmentParams struct {
 	ID          int64       `json:"id"`
-	DiseaseID   pgtype.Int8 `json:"disease_id"`
+	Diseases    pgtype.Text `json:"diseases"`
 	StartDate   pgtype.Date `json:"start_date"`
 	EndDate     pgtype.Date `json:"end_date"`
 	Status      pgtype.Text `json:"status"`
@@ -651,7 +653,7 @@ type UpdateTreatmentParams struct {
 func (q *Queries) UpdateTreatment(ctx context.Context, arg UpdateTreatmentParams) error {
 	_, err := q.db.Exec(ctx, updateTreatment,
 		arg.ID,
-		arg.DiseaseID,
+		arg.Diseases,
 		arg.StartDate,
 		arg.EndDate,
 		arg.Status,

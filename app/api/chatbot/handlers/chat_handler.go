@@ -10,6 +10,20 @@ import (
 	"github.com/quanganh247-qa/go-blog-be/app/api/chatbot/services"
 )
 
+// ErrorResponse represents an error response
+// @Description Error response structure
+type ErrorResponse struct {
+	Error   string `json:"error" example:"Invalid request parameters"`
+	Details string `json:"details,omitempty" example:"Field validation failed"`
+}
+
+// SuccessResponse represents a success response
+// @Description Success response structure
+type SuccessResponse struct {
+	Message string      `json:"message" example:"Operation successful"`
+	Data    interface{} `json:"data,omitempty"`
+}
+
 // ChatHandler manages chat-related HTTP requests
 type ChatHandler struct {
 	geminiService     *services.GeminiService

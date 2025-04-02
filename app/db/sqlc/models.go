@@ -120,6 +120,26 @@ type File struct {
 	UserID     pgtype.Int8      `json:"user_id"`
 }
 
+type Invoice struct {
+	ID            int32            `json:"id"`
+	InvoiceNumber string           `json:"invoice_number"`
+	Amount        float64          `json:"amount"`
+	Date          pgtype.Date      `json:"date"`
+	DueDate       pgtype.Date      `json:"due_date"`
+	Status        string           `json:"status"`
+	Description   pgtype.Text      `json:"description"`
+	CustomerName  pgtype.Text      `json:"customer_name"`
+	CreatedAt     pgtype.Timestamp `json:"created_at"`
+}
+
+type InvoiceItem struct {
+	ID        int32   `json:"id"`
+	InvoiceID int32   `json:"invoice_id"`
+	Name      string  `json:"name"`
+	Price     float64 `json:"price"`
+	Quantity  int32   `json:"quantity"`
+}
+
 type MedicalHistory struct {
 	ID              int64            `json:"id"`
 	MedicalRecordID pgtype.Int8      `json:"medical_record_id"`
@@ -191,6 +211,19 @@ type OrderedTest struct {
 	UpdatedAt       pgtype.Timestamptz `json:"updated_at"`
 }
 
+type Payment struct {
+	ID             int32              `json:"id"`
+	Amount         float64            `json:"amount"`
+	PaymentMethod  string             `json:"payment_method"`
+	PaymentStatus  string             `json:"payment_status"`
+	OrderID        pgtype.Int4        `json:"order_id"`
+	TestOrderID    pgtype.Int4        `json:"test_order_id"`
+	TransactionID  pgtype.Text        `json:"transaction_id"`
+	PaymentDetails []byte             `json:"payment_details"`
+	CreatedAt      pgtype.Timestamptz `json:"created_at"`
+	UpdatedAt      pgtype.Timestamptz `json:"updated_at"`
+}
+
 type Pet struct {
 	Petid           int64         `json:"petid"`
 	Name            string        `json:"name"`
@@ -241,7 +274,7 @@ type PetSchedule struct {
 type PetTreatment struct {
 	ID          int64              `json:"id"`
 	PetID       pgtype.Int8        `json:"pet_id"`
-	DiseaseID   pgtype.Int8        `json:"disease_id"`
+	Diseases    pgtype.Text        `json:"diseases"`
 	StartDate   pgtype.Date        `json:"start_date"`
 	EndDate     pgtype.Date        `json:"end_date"`
 	Status      pgtype.Text        `json:"status"`

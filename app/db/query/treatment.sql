@@ -1,7 +1,7 @@
 
 -- name: CreateTreatment :one
-INSERT INTO pet_treatments (pet_id, disease_id,doctor_id, name, type, start_date, end_date ,status, description, created_at)
-VALUES ($1, $2, $3, $4, $5, $6 ,$7 , "In Progress", $8, now()) RETURNING *;
+INSERT INTO pet_treatments (pet_id, diseases,doctor_id, name, type, start_date, end_date ,status, description, created_at)
+VALUES ($1, $2, $3, $4, $5, $6 ,$7 , $8, $9, now()) RETURNING *;
 
 -- name: GetTreatment :one
 SELECT * FROM pet_treatments
@@ -9,7 +9,7 @@ WHERE id = $1 LIMIT 1;
 
 -- name: UpdateTreatment :exec
 UPDATE pet_treatments
-SET disease_id = $2, start_date = $3, end_date = $4, status = $5, description = $6
+SET diseases = $2, start_date = $3, end_date = $4, status = $5, description = $6
 WHERE id = $1;
 
 -- name: DeleteTreatment :exec

@@ -9,6 +9,7 @@ import (
 	"github.com/quanganh247-qa/go-blog-be/app/api/device_token"
 	"github.com/quanganh247-qa/go-blog-be/app/api/disease"
 	"github.com/quanganh247-qa/go-blog-be/app/api/doctor"
+	"github.com/quanganh247-qa/go-blog-be/app/api/invoice"
 	"github.com/quanganh247-qa/go-blog-be/app/api/location"
 	"github.com/quanganh247-qa/go-blog-be/app/api/medical_records"
 	"github.com/quanganh247-qa/go-blog-be/app/api/medications"
@@ -27,6 +28,8 @@ import (
 	"github.com/quanganh247-qa/go-blog-be/app/service/websocket"
 	"github.com/quanganh247-qa/go-blog-be/app/service/worker"
 	"github.com/quanganh247-qa/go-blog-be/app/util"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor, config util.Config, es *elasticsearch.ESService, ws *websocket.WSClientManager) {
@@ -50,10 +53,12 @@ func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor, config
 	}
 	routerDefault.GET("/ws", server.ws.HandleWebSocket)
 
+	// Health check endpoint
 	router.GET("/health", server.healthCheck)
 
-	// websocket
+	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
+	// Register all API routes
 	chatbot.Routes(routerGroup, chatHandler)
 	user.Routes(routerGroup, taskDistributor, config)
 	pet.Routes(routerGroup)
@@ -73,6 +78,6 @@ func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor, config
 	medications.Routes(routerGroup, es)
 	doctor.Routes(routerGroup)
 	rooms.Routes(routerGroup)
-
+	invoice.Routes(routerGroup)
 	server.Router = routerDefault
 }

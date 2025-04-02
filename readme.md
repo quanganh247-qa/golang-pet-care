@@ -22,6 +22,7 @@ This project is a comprehensive pet care service backend built with Go, featurin
 - **Elasticsearch**: Search functionality
 - **MinIO**: Object storage for files and images
 - **Docker**: Containerization and deployment
+- **Swagger**: API documentation
 
 ### Third-Party Services
 - **JWT**: Secure token-based authentication
@@ -138,7 +139,23 @@ This project is a comprehensive pet care service backend built with Go, featurin
   make new_migration name=migration_name  # Create new migration
   ```
 
+- Generate Swagger documentation:
+  ```
+  make swagger
+  ```
+
 ## API Documentation
+
+### Swagger Documentation
+The API is documented using Swagger. Once the server is running, you can access the Swagger UI at:
+```
+http://localhost:8080/swagger/index.html
+```
+
+To regenerate the Swagger documentation after making API changes:
+```
+make swagger
+```
 
 ### Authentication Endpoints
 - `POST /api/v1/user/create` - Register a new user

@@ -22,16 +22,17 @@ type AppointmentServiceInterface interface {
 	ConfirmPayment(ctx context.Context, appointmentID int64) error
 	CheckInAppoinment(ctx *gin.Context, id, roomID int64, priority string) error
 	GetAppointmentByID(ctx *gin.Context, id int64) (*Appointment, error)
-	GetAppointmentsByUser(ctx *gin.Context, username string) ([]createAppointmentResponse, error)
+	GetAppointmentsByUser(ctx *gin.Context, username string) ([]Appointment, error)
 	GetAppointmentsByDoctor(ctx *gin.Context, doctorID int64) ([]createAppointmentResponse, error)
 	GetAvailableTimeSlots(ctx *gin.Context, doctorID int64, date string) ([]timeSlotResponse, error)
-	GetAllAppointments(ctx *gin.Context, date string, option string, pagination *util.Pagination) ([]Appointment, error)
+	GetAllAppointments(ctx *gin.Context, date string, option string, pagination *util.Pagination) (*util.PaginationResponse[Appointment], error)
 	GetAllAppointmentsByDate(ctx *gin.Context, pagination *util.Pagination, date string) ([]Appointment, error)
 	UpdateAppointmentService(ctx *gin.Context, req updateAppointmentRequest, appointmentID int64) error
 	UpdateQueueItemStatusService(ctx *gin.Context, id int64, status string) error
 	GetQueueService(ctx *gin.Context, username string) ([]QueueItem, error)
 	GetHistoryAppointmentsByPetID(ctx *gin.Context, petID int64) ([]historyAppointmentResponse, error)
 	GetSOAPByAppointmentID(ctx *gin.Context, appointmentID int64) (*SOAPResponse, error)
+	GetAppointmentDistributionByService(ctx *gin.Context, startDate, endDate string) ([]AppointmentDistribution, error)
 }
 
 func (s *AppointmentService) CreateAppointment(ctx *gin.Context, req createAppointmentRequest, username string) (*createAppointmentResponse, error) {
@@ -291,9 +292,9 @@ func (s *AppointmentService) GetAppointmentByID(ctx *gin.Context, id int64) (*Ap
 	}, nil
 }
 
-func (s *AppointmentService) GetAppointmentsByUser(ctx *gin.Context, username string) ([]createAppointmentResponse, error) {
+func (s *AppointmentService) GetAppointmentsByUser(ctx *gin.Context, username string) ([]Appointment, error) {
 
-	var a []createAppointmentResponse
+	var a []Appointment
 	appointments, err := s.storeDB.GetAppointmentsByUser(ctx, pgtype.Text{String: username, Valid: true})
 	if err != nil {
 		return nil, fmt.Errorf("Cannot get appointment by user")
@@ -303,18 +304,36 @@ func (s *AppointmentService) GetAppointmentsByUser(ctx *gin.Context, username st
 		if err != nil {
 			return nil, fmt.Errorf("failed to get doctor: %w", err)
 		}
-		a = append(a, createAppointmentResponse{
-			ID:          appointment.AppointmentID,
-			DoctorName:  doc.Name,
-			PetName:     appointment.PetName.String,
-			Date:        appointment.Date.Time.Format("2006-01-02"),
-			ServiceName: appointment.ServiceName.String,
+		a = append(a, Appointment{
+			ID: appointment.AppointmentID,
+			Pet: Pet{
+				PetID:    appointment.PetID.Int64,
+				PetName:  appointment.PetName.String,
+				PetBreed: appointment.PetBreed.String,
+			},
+			Serivce: Serivce{
+				ServiceName:     appointment.ServiceName.String,
+				ServiceDuration: appointment.ServiceDuration.Int16,
+			},
+			Doctor: Doctor{
+				DoctorID:   appointment.DoctorID.Int64,
+				DoctorName: doc.Name,
+			},
+			Date:         appointment.Date.Time.Format("2006-01-02"),
+			State:        appointment.StateName.String,
+			ReminderSend: appointment.ReminderSend.Bool,
+			CreatedAt:    appointment.CreatedAt.Time.Format("2006-01-02 15:04:05"),
 			TimeSlot: timeslot{
 				StartTime: time.UnixMicro(appointment.StartTime.Microseconds).UTC().Format("15:04:05"),
 				EndTime:   time.UnixMicro(appointment.EndTime.Microseconds).UTC().Format("15:04:05"),
 			},
-			State:     appointment.State.String,
-			CreatedAt: appointment.CreatedAt.Time.Format(time.RFC3339),
+			Owner: Owner{
+				OwnerName:    appointment.OwnerName.String,
+				OwnerPhone:   appointment.OwnerPhone.String,
+				OwnerEmail:   appointment.OwnerEmail.String,
+				OwnerAddress: appointment.OwnerAddress.String,
+			},
+			Reason: appointment.AppointmentReason.String,
 		})
 	}
 	return a, nil
@@ -398,8 +417,13 @@ func (s *AppointmentService) GetAvailableTimeSlots(ctx *gin.Context, doctorID in
 	return availableTimeSlots, nil
 }
 
-func (s *AppointmentService) GetAllAppointments(ctx *gin.Context, date string, option string, pagination *util.Pagination) ([]Appointment, error) {
+func (s *AppointmentService) GetAllAppointments(ctx *gin.Context, date string, option string, pagination *util.Pagination) (*util.PaginationResponse[Appointment], error) {
 	offset := (pagination.Page - 1) * pagination.PageSize
+
+	count, err := s.storeDB.CountAllAppointmentsByDate(ctx, date)
+	if err != nil {
+		return nil, fmt.Errorf("Cannot count appointment")
+	}
 
 	appointments, err := s.storeDB.GetAllAppointments(ctx, db.GetAllAppointmentsParams{
 		Date:    date,
@@ -453,7 +477,12 @@ func (s *AppointmentService) GetAllAppointments(ctx *gin.Context, date string, o
 		})
 
 	}
-	return a, nil
+
+	response := &util.PaginationResponse[Appointment]{
+		Count: count,
+		Rows:  &a,
+	}
+	return response.Build(), nil
 }
 
 func (s *AppointmentService) GetAllAppointmentsByDate(ctx *gin.Context, pagination *util.Pagination, date string) ([]Appointment, error) {
@@ -806,4 +835,48 @@ func (s *AppointmentService) GetHistoryAppointmentsByPetID(ctx *gin.Context, pet
 		})
 	}
 	return a, nil
+}
+
+func (s *AppointmentService) GetAppointmentDistributionByService(ctx *gin.Context, startDate, endDate string) ([]AppointmentDistribution, error) {
+	// Parse the date strings
+	start, err := time.Parse("2006-01-02", startDate)
+	if err != nil {
+		return nil, fmt.Errorf("invalid start date format: %w", err)
+	}
+	end, err := time.Parse("2006-01-02", endDate)
+	if err != nil {
+		return nil, fmt.Errorf("invalid end date format: %w", err)
+	}
+
+	// Get distribution data from database
+	rows, err := s.storeDB.GetAppointmentDistribution(ctx, db.GetAppointmentDistributionParams{
+		Column1: pgtype.Date{Time: start, Valid: true},
+		Column2: pgtype.Date{Time: end, Valid: true},
+	})
+	if err != nil {
+		return nil, fmt.Errorf("failed to get appointment distribution: %w", err)
+	}
+
+	// Now you can iterate over the rows
+	var distributions []AppointmentDistribution
+	for _, row := range rows {
+		// Convert pgtype.Numeric to float64
+		var percentage float64
+		if row.Percentage.Valid {
+			// Get the numeric value and convert it properly
+			numValue, err := row.Percentage.Float64Value()
+			if err == nil {
+				percentage = float64(numValue.Float64)
+			}
+		}
+
+		distributions = append(distributions, AppointmentDistribution{
+			ServiceID:        row.ServiceID,
+			ServiceName:      row.ServiceName.String,
+			AppointmentCount: row.AppointmentCount,
+			Percentage:       percentage,
+		})
+	}
+
+	return distributions, nil
 }

@@ -1,7 +1,9 @@
 package test
 
 import (
+	"encoding/json"
 	"fmt"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5/pgtype"
@@ -20,6 +22,8 @@ type TestServiceInterface interface {
 	GetTestByID(ctx *gin.Context, id int32) (*Test, error)
 	UpdateTest(ctx *gin.Context, req UpdateTestRequest) (*Test, error)
 	SoftDeleteTest(ctx *gin.Context, testID string) error
+	GetOrderedTestsByAppointment(ctx *gin.Context, appointmentID int64) (*[]OrderedTestDetail, error)
+	GetAllAppointmentsWithOrders(ctx *gin.Context) (*[]AppointmentWithOrders, error)
 }
 
 func NewTestService(store db.Store, ws *websocket.WSClientManager) *TestService {
@@ -241,6 +245,25 @@ func (s *TestService) CreateTestOrder(ctx *gin.Context, req TestOrderRequest) er
 	return nil
 }
 
+func (s *TestService) GetOrderedTestsByAppointment(ctx *gin.Context, appointmentID int64) (*[]OrderedTestDetail, error) {
+	orderedTests, err := s.storeDB.GetOrderedTestsByAppointment(ctx, pgtype.Int4{Int32: int32(appointmentID), Valid: true})
+	if err != nil {
+		return nil, fmt.Errorf("failed to get ordered tests by appointment: %w", err)
+	}
+	var res []OrderedTestDetail
+	for _, ot := range orderedTests {
+		res = append(res, OrderedTestDetail{
+			OrderedTestID: int(ot.OrderedTestID),
+			TestID:        ot.TestID,
+			TestName:      ot.TestName,
+			Price:         ot.PriceAtOrder,
+			Status:        ot.Status.String,
+			Notes:         ot.Notes.String,
+		})
+	}
+	return &res, nil
+}
+
 func (s *TestService) GetTestByID(ctx *gin.Context, id int32) (*Test, error) {
 	test, err := s.storeDB.GetTestByID(ctx, id)
 	if err != nil {
@@ -298,4 +321,109 @@ func (s *TestService) SoftDeleteTest(ctx *gin.Context, testID string) error {
 	}
 
 	return nil
+}
+
+func (s *TestService) GetAllAppointmentsWithOrders(ctx *gin.Context) (*[]AppointmentWithOrders, error) {
+	appointments, err := s.storeDB.GetAllAppointmentsWithOrders(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get all appointments with orders: %w", err)
+	}
+
+	var response []AppointmentWithOrders
+	for _, a := range appointments {
+		var orders []TestOrderDetail
+
+		// Handle different types of Orders data
+		switch v := a.Orders.(type) {
+		case []byte:
+			if err := json.Unmarshal(v, &orders); err != nil {
+				continue
+			}
+		case string:
+			if err := json.Unmarshal([]byte(v), &orders); err != nil {
+				continue
+			}
+		case []interface{}:
+			// Handle case where Orders is a slice of interface{}
+			for _, item := range v {
+				if orderMap, ok := item.(map[string]interface{}); ok {
+					order := TestOrderDetail{}
+
+					// Extract order_id
+					if orderID, ok := orderMap["order_id"].(float64); ok {
+						order.OrderID = int(orderID)
+					}
+
+					// Extract status
+					if status, ok := orderMap["status"].(string); ok {
+						order.Status = status
+					}
+
+					// Extract total_amount
+					if amount, ok := orderMap["total_amount"].(float64); ok {
+						order.TotalAmount = amount
+					}
+
+					// Extract order_date
+					if date, ok := orderMap["order_date"].(string); ok {
+						order.OrderDate = date
+					}
+
+					// Extract tests array
+					if testsData, ok := orderMap["tests"].([]interface{}); ok {
+						var tests []OrderedTest
+						for _, testItem := range testsData {
+							if testMap, ok := testItem.(map[string]interface{}); ok {
+								test := OrderedTest{}
+
+								// Extract test_id
+								if testID, ok := testMap["test_id"].(string); ok {
+									test.TestID, _ = strconv.Atoi(testID)
+								} else if testID, ok := testMap["test_id"].(float64); ok {
+									test.TestID = int(testID)
+								}
+
+								// Extract test_name
+								if testName, ok := testMap["test_name"].(string); ok {
+									test.TestName = testName
+								}
+
+								// Extract price
+								if price, ok := testMap["price"].(float64); ok {
+									test.Price = price
+								}
+
+								// Extract status
+								if status, ok := testMap["status"].(string); ok {
+									test.Status = status
+								}
+
+								tests = append(tests, test)
+							}
+						}
+						order.Tests = tests
+					}
+
+					orders = append(orders, order)
+				}
+			}
+		default:
+			// Try to marshal and unmarshal for other types
+			data, err := json.Marshal(a.Orders)
+			if err == nil {
+				_ = json.Unmarshal(data, &orders)
+			}
+		}
+
+		// Only add to response if there are orders
+		if len(orders) > 0 {
+			response = append(response, AppointmentWithOrders{
+				AppointmentID:   int(a.AppointmentID),
+				AppointmentDate: a.Date.Time.Format("2006-01-02"),
+				PetName:         a.PetName,
+				Orders:          orders,
+			})
+		}
+	}
+	return &response, nil
 }

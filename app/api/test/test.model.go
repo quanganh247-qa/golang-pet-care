@@ -72,6 +72,22 @@ type OrderedTest struct {
 	Status   string  `json:"status"`
 }
 
+type AppointmentWithOrders struct {
+	AppointmentID   int               `json:"appointment_id"`
+	AppointmentDate string            `json:"appointment_date"`
+	PetName         string            `json:"pet_name"`
+	Species         string            `json:"species"`
+	Orders          []TestOrderDetail `json:"orders"`
+}
+
+type TestOrderDetail struct {
+	OrderID     int           `json:"order_id"`
+	TotalAmount float64       `json:"total_amount"`
+	Status      string        `json:"status"`
+	OrderDate   string        `json:"order_date"`
+	Tests       []OrderedTest `json:"tests"`
+}
+
 type UpdateTestRequest struct {
 	TestID         string  `json:"test_id" binding:"required"`
 	Name           string  `json:"name" binding:"required"`
@@ -80,12 +96,23 @@ type UpdateTestRequest struct {
 	TurnaroundTime string  `json:"turnaround_time" binding:"required"`
 }
 
-
 // TestCategoryResponse represents a category of tests with its associated tests
 type TestCategoryResponse struct {
-    ID          string `json:"id"`
-    Name        string `json:"name"`
-    Icon        string `json:"icon,omitempty"` // Frontend will handle the actual icon component
-    Description string `json:"description"`
-    Tests       []Test `json:"tests"`
+	ID          string `json:"id"`
+	Name        string `json:"name"`
+	Icon        string `json:"icon,omitempty"` // Frontend will handle the actual icon component
+	Description string `json:"description"`
+	Tests       []Test `json:"tests"`
+}
+
+type OrderedTestDetail struct {
+	OrderedTestID int     `json:"ordered_test_id"`
+	TestID        string  `json:"test_id"`
+	TestName      string  `json:"test_name"`
+	CategoryID    string  `json:"category_id"`
+	CategoryName  string  `json:"category_name"`
+	Price         float64 `json:"price"`
+	Status        string  `json:"status"`
+	OrderedDate   string  `json:"ordered_date"`
+	Notes         string  `json:"notes"`
 }

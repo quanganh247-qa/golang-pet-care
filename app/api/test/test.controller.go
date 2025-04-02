@@ -187,3 +187,44 @@ func (c *TestController) SoftDeleteTest(ctx *gin.Context) {
 		"message": "Test deleted successfully",
 	})
 }
+
+func (c *TestController) GetOrderedTestsByAppointment(ctx *gin.Context) {
+	appointmentID := ctx.Query("appointment_id")
+	if appointmentID == "" {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "appointment_id is required"})
+		return
+	}
+
+	// Convert appointmentID to int64
+	appointmentIDInt, err := strconv.ParseInt(appointmentID, 10, 64)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid appointment ID"})
+		return
+	}
+
+	tests, err := c.service.GetOrderedTestsByAppointment(ctx, appointmentIDInt)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	ctx.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"message": "Get tests successfully",
+		"data":    tests,
+	})
+
+}
+
+func (c *TestController) GetAllAppointmentsWithOrders(ctx *gin.Context) {
+
+	appointments, err := c.service.GetAllAppointmentsWithOrders(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	ctx.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"message": "Get appointments successfully",
+		"data":    appointments,
+	})
+}

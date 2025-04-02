@@ -27,6 +27,10 @@ SELECT * FROM pets
 WHERE is_active = true 
 ORDER BY name LIMIT $1 OFFSET $2;
 
+-- name: CountPets :one
+SELECT COUNT(*) FROM pets
+WHERE is_active = true;
+
 -- name: ListPetsByUsername :many
 SELECT * FROM pets
 WHERE username = $1 AND is_active = true
@@ -79,3 +83,34 @@ SELECT p.*, u.full_name
 FROM pets AS p
 LEFT JOIN users AS u ON p.username = u.username
 WHERE p.is_active = TRUE AND p.username = $1 AND p.name = $2;
+
+
+-- name: GetAllPetLogsByUsername :many
+SELECT 
+    pl.log_id,
+    pl.petid,
+    p.name AS pet_name,
+    p.type AS pet_type,
+    p.breed AS pet_breed,
+    pl.datetime,
+    pl.title,
+    pl.notes
+FROM 
+    pet_logs pl
+JOIN 
+    pets p ON pl.petid = p.petid
+WHERE 
+    p.username = $1
+ORDER BY 
+    pl.datetime DESC
+LIMIT $2 OFFSET $3;
+
+-- name: CountAllPetLogsByUsername :one
+SELECT 
+    COUNT(*)
+FROM 
+    pet_logs pl
+JOIN 
+    pets p ON pl.petid = p.petid
+WHERE 
+    p.username = $1;

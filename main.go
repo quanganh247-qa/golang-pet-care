@@ -11,9 +11,29 @@ import (
 	"github.com/quanganh247-qa/go-blog-be/app/service/websocket"
 	"github.com/quanganh247-qa/go-blog-be/app/service/worker"
 	"github.com/quanganh247-qa/go-blog-be/app/util"
+	_ "github.com/quanganh247-qa/go-blog-be/docs" // Import swagger docs
 	"go.uber.org/zap"
 )
 
+// @title           Pet Care API
+// @version         1.0
+// @description     API Server for Pet Care Application
+// @termsOfService  http://swagger.io/terms/
+
+// @contact.name   API Support
+// @contact.url    http://www.petcare.io/support
+// @contact.email  support@petcare.io
+
+// @license.name  Apache 2.0
+// @license.url   http://www.apache.org/licenses/LICENSE-2.0.html
+
+// @host      localhost:8080
+// @BasePath  /api/v1
+
+// @securityDefinitions.apikey BearerAuth
+// @in header
+// @name Authorization
+// @description Type "Bearer" followed by a space and JWT token.
 func main() {
 	config, err := util.LoadConfig(".")
 	if err != nil {

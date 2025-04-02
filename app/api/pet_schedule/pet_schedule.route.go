@@ -7,7 +7,7 @@ import (
 )
 
 func Routes(routerGroup middleware.RouterGroup, config *util.Config) {
-	petSchedule := routerGroup.RouterDefault.Group("/pet-schedule")
+	petSchedule := routerGroup.RouterDefault.Group("/")
 	authRoute := routerGroup.RouterAuth(petSchedule)
 	// PetSchedule.Use(middleware.IPbasedRateLimitingMiddleware())
 
@@ -22,13 +22,18 @@ func Routes(routerGroup middleware.RouterGroup, config *util.Config) {
 	}
 
 	{
-		authRoute.POST("/pet/:pet_id", petScheduleApi.controller.createPetSchedule)
-		authRoute.GET("/pet/:pet_id", petScheduleApi.controller.getAllSchedulesByPet)
-		authRoute.PUT("/active/:schedule_id", petScheduleApi.controller.activePetSchedule)
-		authRoute.GET("/", petScheduleApi.controller.listPetSchedulesByUsername)
-		authRoute.DELETE("/:schedule_id", petScheduleApi.controller.deletePetSchedule)
-		authRoute.PUT("/:schedule_id", petScheduleApi.controller.updatePetScheduleService)
-		petSchedule.POST("/suggestion", petScheduleApi.controller.generateScheduleSuggestion)
+		// Pet schedule management
+		authRoute.POST("/schedules", petScheduleApi.controller.createPetSchedule)
+		authRoute.GET("/schedules/pet/:pet_id", petScheduleApi.controller.getAllSchedulesByPet)
+		authRoute.GET("/schedules", petScheduleApi.controller.listPetSchedulesByUsername)
+		authRoute.PUT("/schedules/:schedule_id", petScheduleApi.controller.updatePetScheduleService)
+		authRoute.DELETE("/schedules/:schedule_id", petScheduleApi.controller.deletePetSchedule)
+
+		// Schedule status management
+		authRoute.PUT("/schedules/:schedule_id/activate", petScheduleApi.controller.activePetSchedule)
+
+		// Schedule suggestions
+		petSchedule.POST("/schedules/suggestion", petScheduleApi.controller.generateScheduleSuggestion)
 	}
 
 }

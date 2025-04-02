@@ -7,7 +7,7 @@ import (
 )
 
 func Routes(routerGroup middleware.RouterGroup) {
-	Pet := routerGroup.RouterDefault.Group("/pet")
+	Pet := routerGroup.RouterDefault.Group("/")
 	authRoute := routerGroup.RouterAuth(Pet)
 	// Pet.Use(middleware.IPbasedRateLimitingMiddleware())
 
@@ -22,20 +22,20 @@ func Routes(routerGroup middleware.RouterGroup) {
 	}
 
 	{
-		authRoute.POST("/create", petApi.controller.CreatePet)
-		authRoute.GET("/:pet_id", petApi.controller.GetPetByID)
-		authRoute.GET("/list", petApi.controller.ListPets)
-		authRoute.GET("/", petApi.controller.ListPetsByUsername)
-		authRoute.PUT("/:pet_id", petApi.controller.UpdatePet)
-		authRoute.DELETE("/delete/:pet_id", petApi.controller.DeletePet)
-		authRoute.PUT("/avatar/:pet_id", petApi.controller.UpdatePetAvatar)
+		authRoute.POST("/pet/create", petApi.controller.CreatePet)
+		authRoute.GET("/pet/:pet_id", petApi.controller.GetPetByID)
+		authRoute.GET("/pets", petApi.controller.ListPets)
+		authRoute.GET("/pet", petApi.controller.ListPetsByUsername)
+		authRoute.PUT("/pet/:pet_id", petApi.controller.UpdatePet)
+		authRoute.DELETE("/pet/:pet_id", petApi.controller.DeletePet)
+		authRoute.PUT("/pet/avatar/:pet_id", petApi.controller.UpdatePetAvatar)
 
 		// Pet logs
-		authRoute.GET("/logs/:pet_id", petApi.controller.GetPetLogsByPetID)
-		authRoute.POST("/logs", petApi.controller.InsertPetLog)
-		authRoute.DELETE("/logs/:log_id", petApi.controller.DeletePetLog)
-		authRoute.PUT("/logs/:log_id", petApi.controller.UpdatePetLog)
+		authRoute.GET("/pet/logs/:pet_id", petApi.controller.GetPetLogsByPetID)
+		authRoute.POST("/pet/logs", petApi.controller.InsertPetLog)
+		authRoute.DELETE("/pet/logs/:log_id", petApi.controller.DeletePetLog)
+		authRoute.PUT("/pet/logs/:log_id", petApi.controller.UpdatePetLog)
+		authRoute.GET("/pet/logs", petApi.controller.GetAllPetLogsByUsername) // New route
 
 	}
-
 }

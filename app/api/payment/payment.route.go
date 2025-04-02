@@ -9,7 +9,7 @@ import (
 )
 
 func Routes(routerGroup middleware.RouterGroup, config *util.Config) {
-	payment := routerGroup.RouterDefault.Group("/payment")
+	payment := routerGroup.RouterDefault.Group("/")
 	authRoute := routerGroup.RouterAuth(payment)
 	// Goong.Use(middleware.IPbasedRateLimitingMiddleware())
 
@@ -32,9 +32,15 @@ func Routes(routerGroup middleware.RouterGroup, config *util.Config) {
 	}
 
 	{
-		authRoute.GET("/token", paymentApi.controller.GetToken)
-		authRoute.GET("/banks", paymentApi.controller.GetBanks)
-		authRoute.POST("/generate-qr", paymentApi.controller.GenerateQRCode)
+		authRoute.GET("/payment/token", paymentApi.controller.GetToken)
+		authRoute.GET("/payment/banks", paymentApi.controller.GetBanks)
+		authRoute.POST("/payment/generate-qr", paymentApi.controller.GenerateQRCode)
+		authRoute.POST("/payment/quick-link", paymentApi.controller.GenerateQuickLink)
 	}
-
+	{
+		// Add this route to your existing routes
+		authRoute.GET("/payment/revenue/last-seven-days", paymentApi.controller.GetRevenueLastSevenDays)
+		// Add the new patient trends endpoint
+		authRoute.GET("/patients/trends", paymentApi.controller.GetPatientTrends)
+	}
 }

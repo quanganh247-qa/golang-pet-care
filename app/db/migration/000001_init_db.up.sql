@@ -467,7 +467,7 @@ CREATE TABLE public.pet_schedule (
 CREATE TABLE public.pet_treatments (
 	id bigserial NOT NULL,
 	pet_id int8 NULL,
-	disease_id int8 NULL,
+	diseases varchar NULL,
 	start_date date NULL,
 	end_date date NULL,
 	status varchar(50) NULL,
@@ -748,6 +748,76 @@ ALTER TABLE public.test_orders ADD CONSTRAINT test_orders_appointment_id_fkey FO
 -- public.test_results foreign keys
 
 ALTER TABLE public.test_results ADD CONSTRAINT test_results_ordered_test_id_fkey FOREIGN KEY (ordered_test_id) REFERENCES public.ordered_tests(id) ON DELETE CASCADE;
+
+
+-- public.invoices definition
+
+-- Drop table
+
+-- DROP TABLE public.invoices;
+
+CREATE TABLE public.invoices (
+	id serial4 NOT NULL,
+	invoice_number varchar(50) NOT NULL,
+	amount float8 NOT NULL,
+	"date" date DEFAULT CURRENT_DATE NOT NULL,
+	due_date date NOT NULL,
+	status varchar(20) DEFAULT 'unpaid'::character varying NOT NULL,
+	description text NULL,
+	customer_name varchar(100) NULL,
+	created_at timestamp DEFAULT now() NOT NULL,
+	CONSTRAINT invoices_invoice_number_key UNIQUE (invoice_number),
+	CONSTRAINT invoices_pkey PRIMARY KEY (id)
+);
+
+
+-- public.invoice_items definition
+
+-- Drop table
+
+-- DROP TABLE public.invoice_items;
+
+CREATE TABLE public.invoice_items (
+	id serial4 NOT NULL,
+	invoice_id int4 NOT NULL,
+	"name" varchar(255) NOT NULL,
+	price float8 NOT NULL,
+	quantity int4 DEFAULT 1 NOT NULL,
+	CONSTRAINT invoice_items_pkey PRIMARY KEY (id),
+	CONSTRAINT invoice_items_invoice_id_fkey FOREIGN KEY (invoice_id) REFERENCES public.invoices(id) ON DELETE CASCADE
+);
+
+
+-- public.payments definition
+
+-- Drop table
+
+-- DROP TABLE public.payments;
+
+CREATE TABLE public.payments (
+	id serial4 NOT NULL,
+	amount float8 NOT NULL,
+	payment_method varchar(50) NOT NULL,
+	payment_status varchar(50) DEFAULT 'pending'::character varying NOT NULL,
+	order_id int4 NULL,
+	test_order_id int4 NULL,
+	transaction_id varchar(255) NULL,
+	payment_details jsonb NULL,
+	created_at timestamptz DEFAULT CURRENT_TIMESTAMP NULL,
+	updated_at timestamptz DEFAULT CURRENT_TIMESTAMP NULL,
+	CONSTRAINT payments_pkey PRIMARY KEY (id)
+);
+CREATE INDEX idx_payments_created_at ON public.payments USING btree (created_at);
+CREATE INDEX idx_payments_order_id ON public.payments USING btree (order_id);
+CREATE INDEX idx_payments_status ON public.payments USING btree (payment_status);
+CREATE INDEX idx_payments_test_order_id ON public.payments USING btree (test_order_id);
+
+
+-- public.payments foreign keys
+
+ALTER TABLE public.payments ADD CONSTRAINT payments_order_id_fkey FOREIGN KEY (order_id) REFERENCES public.orders(id) ON DELETE SET NULL;
+ALTER TABLE public.payments ADD CONSTRAINT payments_test_order_id_fkey FOREIGN KEY (test_order_id) REFERENCES public.test_orders(order_id) ON DELETE SET NULL;
+
 -- Indexing for public.checkouts
 CREATE INDEX idx_checkouts_petid ON public.checkouts (petid);
 CREATE INDEX idx_checkouts_doctor_id ON public.checkouts (doctor_id);
@@ -856,7 +926,6 @@ CREATE INDEX idx_pet_schedule_reminder_datetime ON public.pet_schedule (reminder
 
 -- Indexing for public.pet_treatments
 CREATE INDEX idx_pet_treatments_pet_id ON public.pet_treatments (pet_id);
-CREATE INDEX idx_pet_treatments_disease_id ON public.pet_treatments (disease_id);
 CREATE INDEX idx_pet_treatments_doctor_id ON public.pet_treatments (doctor_id);
 
 -- Indexing for public.treatment_phases
@@ -873,3 +942,85 @@ CREATE INDEX idx_clinics_name ON public.clinics (name);
 CREATE INDEX idx_shifts_doctor_id ON public.shifts (doctor_id);
 CREATE INDEX idx_shifts_start_time ON public.shifts (start_time);
 CREATE INDEX idx_shifts_end_time ON public.shifts (end_time);
+
+-- Add this near the end of your migration file
+CREATE OR REPLACE FUNCTION public.get_appointment_distribution_by_service(
+    p_start_date date,
+    p_end_date date
+)
+RETURNS TABLE (
+    service_id bigint,
+    service_name varchar,
+    appointment_count bigint,
+    percentage numeric(5,2)
+) 
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    RETURN QUERY
+    WITH service_stats AS (
+        SELECT 
+            s.id as service_id,
+            s.name as service_name,
+            COUNT(a.appointment_id) as appointment_count
+        FROM 
+            public.services s
+        LEFT JOIN 
+            public.appointments a ON s.id = a.service_id
+            AND a.date BETWEEN p_start_date AND p_end_date
+        GROUP BY 
+            s.id, s.name
+    ),
+    total_appointments AS (
+        SELECT COUNT(*) as total
+        FROM public.appointments
+        WHERE date BETWEEN p_start_date AND p_end_date
+    )
+    SELECT 
+        ss.service_id,
+        ss.service_name,
+        ss.appointment_count,
+        CASE 
+            WHEN tt.total = 0 THEN 0.00
+            ELSE ROUND((ss.appointment_count * 100.0 / tt.total), 2)
+        END as percentage
+    FROM 
+        service_stats ss
+    CROSS JOIN 
+        total_appointments tt
+    ORDER BY 
+        ss.appointment_count DESC;
+END;
+$$;
+
+-- Create API endpoint function
+CREATE OR REPLACE FUNCTION public.api_get_appointment_distribution(
+    p_start_date text,
+    p_end_date text
+)
+RETURNS json
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    result json;
+BEGIN
+    SELECT json_agg(
+        json_build_object(
+            'service_id', service_id,
+            'service_name', service_name,
+            'appointment_count', appointment_count,
+            'percentage', percentage
+        )
+    ) INTO result
+    FROM public.get_appointment_distribution_by_service(
+        p_start_date::date, 
+        p_end_date::date
+    );
+    
+    RETURN json_build_object(
+        'success', true,
+        'data', COALESCE(result, '[]'::json),
+        'message', CASE WHEN result IS NULL THEN 'No data found' ELSE 'Success' END
+    );
+END;
+$$;

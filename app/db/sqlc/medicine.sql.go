@@ -11,6 +11,17 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+const countAllMedicines = `-- name: CountAllMedicines :one
+SELECT COUNT(*) FROM medicines
+`
+
+func (q *Queries) CountAllMedicines(ctx context.Context) (int64, error) {
+	row := q.db.QueryRow(ctx, countAllMedicines)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
+}
+
 const createMedicine = `-- name: CreateMedicine :one
 INSERT INTO medicines (name, description, usage, dosage, frequency, duration, side_effects, expiration_date, quantity)
 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
@@ -59,6 +70,67 @@ func (q *Queries) CreateMedicine(ctx context.Context, arg CreateMedicineParams) 
 		&i.Quantity,
 	)
 	return i, err
+}
+
+const getAllMedicines = `-- name: GetAllMedicines :many
+SELECT 
+    id, 
+    name, 
+    description, 
+    usage, 
+    dosage, 
+    frequency, 
+    duration, 
+    side_effects, 
+    start_date, 
+    end_date, 
+    created_at, 
+    updated_at, 
+    expiration_date, 
+    quantity
+FROM medicines
+ORDER BY name
+LIMIT $1 OFFSET $2
+`
+
+type GetAllMedicinesParams struct {
+	Limit  int32 `json:"limit"`
+	Offset int32 `json:"offset"`
+}
+
+func (q *Queries) GetAllMedicines(ctx context.Context, arg GetAllMedicinesParams) ([]Medicine, error) {
+	rows, err := q.db.Query(ctx, getAllMedicines, arg.Limit, arg.Offset)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []Medicine{}
+	for rows.Next() {
+		var i Medicine
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.Description,
+			&i.Usage,
+			&i.Dosage,
+			&i.Frequency,
+			&i.Duration,
+			&i.SideEffects,
+			&i.StartDate,
+			&i.EndDate,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.ExpirationDate,
+			&i.Quantity,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
 const getMedicineByID = `-- name: GetMedicineByID :one

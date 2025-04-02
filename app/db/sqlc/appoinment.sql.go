@@ -22,6 +22,19 @@ func (q *Queries) CheckinAppointment(ctx context.Context, appointmentID int64) e
 	return err
 }
 
+const countAllAppointmentsByDate = `-- name: CountAllAppointmentsByDate :one
+SELECT COUNT(*)
+FROM appointments
+WHERE DATE(date) = DATE($1)
+`
+
+func (q *Queries) CountAllAppointmentsByDate(ctx context.Context, date interface{}) (int64, error) {
+	row := q.db.QueryRow(ctx, countAllAppointmentsByDate, date)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
+}
+
 const countAppointmentsByDateAndTimeSlot = `-- name: CountAppointmentsByDateAndTimeSlot :one
 SELECT COUNT(*) 
 FROM appointments 
@@ -35,6 +48,24 @@ type CountAppointmentsByDateAndTimeSlotParams struct {
 
 func (q *Queries) CountAppointmentsByDateAndTimeSlot(ctx context.Context, arg CountAppointmentsByDateAndTimeSlotParams) (int64, error) {
 	row := q.db.QueryRow(ctx, countAppointmentsByDateAndTimeSlot, arg.Date, arg.DoctorID)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
+}
+
+const countPatientsInMonth = `-- name: CountPatientsInMonth :one
+SELECT COUNT(DISTINCT pet_id) 
+FROM appointments
+WHERE date BETWEEN $1 AND $2
+`
+
+type CountPatientsInMonthParams struct {
+	Date   pgtype.Timestamp `json:"date"`
+	Date_2 pgtype.Timestamp `json:"date_2"`
+}
+
+func (q *Queries) CountPatientsInMonth(ctx context.Context, arg CountPatientsInMonthParams) (int64, error) {
+	row := q.db.QueryRow(ctx, countPatientsInMonth, arg.Date, arg.Date_2)
 	var count int64
 	err := row.Scan(&count)
 	return count, err
@@ -523,6 +554,60 @@ func (q *Queries) GetAppointmentDetailByAppointmentID(ctx context.Context, appoi
 	return i, err
 }
 
+const getAppointmentDistribution = `-- name: GetAppointmentDistribution :many
+SELECT 
+    s.id as service_id,
+    s.name as service_name,
+    COUNT(a.appointment_id) as appointment_count,
+    ROUND((COUNT(a.appointment_id) * 100.0 / NULLIF((SELECT COUNT(*) FROM appointments WHERE date BETWEEN $1::date AND $2::date), 0)), 2) as percentage
+FROM 
+    public.services s
+LEFT JOIN 
+    public.appointments a ON s.id = a.service_id
+    AND a.date BETWEEN $1::date AND $2::date
+GROUP BY 
+    s.id, s.name
+ORDER BY 
+    COUNT(a.appointment_id) DESC
+`
+
+type GetAppointmentDistributionParams struct {
+	Column1 pgtype.Date `json:"column_1"`
+	Column2 pgtype.Date `json:"column_2"`
+}
+
+type GetAppointmentDistributionRow struct {
+	ServiceID        int64          `json:"service_id"`
+	ServiceName      pgtype.Text    `json:"service_name"`
+	AppointmentCount int64          `json:"appointment_count"`
+	Percentage       pgtype.Numeric `json:"percentage"`
+}
+
+func (q *Queries) GetAppointmentDistribution(ctx context.Context, arg GetAppointmentDistributionParams) ([]GetAppointmentDistributionRow, error) {
+	rows, err := q.db.Query(ctx, getAppointmentDistribution, arg.Column1, arg.Column2)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetAppointmentDistributionRow{}
+	for rows.Next() {
+		var i GetAppointmentDistributionRow
+		if err := rows.Scan(
+			&i.ServiceID,
+			&i.ServiceName,
+			&i.AppointmentCount,
+			&i.Percentage,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getAppointmentsByDoctor = `-- name: GetAppointmentsByDoctor :many
 SELECT 
     a.appointment_id,
@@ -604,31 +689,65 @@ func (q *Queries) GetAppointmentsByDoctor(ctx context.Context, doctorID pgtype.I
 
 const getAppointmentsByUser = `-- name: GetAppointmentsByUser :many
 SELECT 
-    a.appointment_id, a.date, a.created_at,
+    a.appointment_id, a.petid, a.username, a.doctor_id, a.service_id, a.date, a.reminder_send, a.time_slot_id, a.created_at, a.state_id, a.appointment_reason, a.priority, a.arrival_time, a.room_id, a.confirmation_sent, a.notes, a.updated_at,
+    p.petid as pet_id,
     p.name AS pet_name,
+    p.breed AS pet_breed,
     d.id AS doctor_id,
     s.name AS service_name,
-    ts.start_time, ts.end_time,
-    st.state
+    s.duration AS service_duration,
+    s.cost AS service_amount,
+    ts.start_time, ts.end_time, ts.id AS time_slot_id,
+    st.state AS state_name,
+    st.id AS state_id,
+    u.full_name AS owner_name,
+    u.phone_number AS owner_phone,
+    u.email AS owner_email,
+    u.address AS owner_address
 FROM appointments a
-LEFT JOIN pets p ON p.petid = a.petid
-LEFT JOIN doctors d ON d.id = a.doctor_id
-LEFT JOIN services s ON s.id = a.service_id
-LEFT JOIN time_slots ts ON ts.id = a.time_slot_id
-LEFT JOIN states st ON st.id = a.state_id
+LEFT JOIN pets p ON a.petid = p.petid
+LEFT JOIN services s ON a.service_id = s.id
+LEFT JOIN time_slots ts ON a.time_slot_id = ts.id
+LEFT JOIN doctors d ON a.doctor_id = d.id
+LEFT JOIN users u ON a.username = u.username
+LEFT JOIN states st ON a.state_id = st.id
 WHERE a.username = $1
 `
 
 type GetAppointmentsByUserRow struct {
-	AppointmentID int64            `json:"appointment_id"`
-	Date          pgtype.Timestamp `json:"date"`
-	CreatedAt     pgtype.Timestamp `json:"created_at"`
-	PetName       pgtype.Text      `json:"pet_name"`
-	DoctorID      pgtype.Int8      `json:"doctor_id"`
-	ServiceName   pgtype.Text      `json:"service_name"`
-	StartTime     pgtype.Time      `json:"start_time"`
-	EndTime       pgtype.Time      `json:"end_time"`
-	State         pgtype.Text      `json:"state"`
+	AppointmentID     int64            `json:"appointment_id"`
+	Petid             pgtype.Int8      `json:"petid"`
+	Username          pgtype.Text      `json:"username"`
+	DoctorID          pgtype.Int8      `json:"doctor_id"`
+	ServiceID         pgtype.Int8      `json:"service_id"`
+	Date              pgtype.Timestamp `json:"date"`
+	ReminderSend      pgtype.Bool      `json:"reminder_send"`
+	TimeSlotID        pgtype.Int8      `json:"time_slot_id"`
+	CreatedAt         pgtype.Timestamp `json:"created_at"`
+	StateID           pgtype.Int4      `json:"state_id"`
+	AppointmentReason pgtype.Text      `json:"appointment_reason"`
+	Priority          pgtype.Text      `json:"priority"`
+	ArrivalTime       pgtype.Timestamp `json:"arrival_time"`
+	RoomID            pgtype.Int8      `json:"room_id"`
+	ConfirmationSent  pgtype.Bool      `json:"confirmation_sent"`
+	Notes             pgtype.Text      `json:"notes"`
+	UpdatedAt         pgtype.Timestamp `json:"updated_at"`
+	PetID             pgtype.Int8      `json:"pet_id"`
+	PetName           pgtype.Text      `json:"pet_name"`
+	PetBreed          pgtype.Text      `json:"pet_breed"`
+	DoctorID_2        pgtype.Int8      `json:"doctor_id_2"`
+	ServiceName       pgtype.Text      `json:"service_name"`
+	ServiceDuration   pgtype.Int2      `json:"service_duration"`
+	ServiceAmount     pgtype.Float8    `json:"service_amount"`
+	StartTime         pgtype.Time      `json:"start_time"`
+	EndTime           pgtype.Time      `json:"end_time"`
+	TimeSlotID_2      pgtype.Int8      `json:"time_slot_id_2"`
+	StateName         pgtype.Text      `json:"state_name"`
+	StateID_2         pgtype.Int8      `json:"state_id_2"`
+	OwnerName         pgtype.Text      `json:"owner_name"`
+	OwnerPhone        pgtype.Text      `json:"owner_phone"`
+	OwnerEmail        pgtype.Text      `json:"owner_email"`
+	OwnerAddress      pgtype.Text      `json:"owner_address"`
 }
 
 func (q *Queries) GetAppointmentsByUser(ctx context.Context, username pgtype.Text) ([]GetAppointmentsByUserRow, error) {
@@ -642,14 +761,38 @@ func (q *Queries) GetAppointmentsByUser(ctx context.Context, username pgtype.Tex
 		var i GetAppointmentsByUserRow
 		if err := rows.Scan(
 			&i.AppointmentID,
-			&i.Date,
-			&i.CreatedAt,
-			&i.PetName,
+			&i.Petid,
+			&i.Username,
 			&i.DoctorID,
+			&i.ServiceID,
+			&i.Date,
+			&i.ReminderSend,
+			&i.TimeSlotID,
+			&i.CreatedAt,
+			&i.StateID,
+			&i.AppointmentReason,
+			&i.Priority,
+			&i.ArrivalTime,
+			&i.RoomID,
+			&i.ConfirmationSent,
+			&i.Notes,
+			&i.UpdatedAt,
+			&i.PetID,
+			&i.PetName,
+			&i.PetBreed,
+			&i.DoctorID_2,
 			&i.ServiceName,
+			&i.ServiceDuration,
+			&i.ServiceAmount,
 			&i.StartTime,
 			&i.EndTime,
-			&i.State,
+			&i.TimeSlotID_2,
+			&i.StateName,
+			&i.StateID_2,
+			&i.OwnerName,
+			&i.OwnerPhone,
+			&i.OwnerEmail,
+			&i.OwnerAddress,
 		); err != nil {
 			return nil, err
 		}

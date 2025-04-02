@@ -471,3 +471,31 @@ func (c *DiseaseController) GetAllergiesByPetID(ctx *gin.Context) {
 		"data":    allergies,
 	})
 }
+
+// // Add this method to your DiseaseController implementation
+// func (c *DiseaseController) GetAllMedicines(ctx *gin.Context) {
+// 	pagination, err := util.GetPageInQuery(ctx.Request.URL.Query())
+// 	if err != nil {
+// 		ctx.JSON(http.StatusBadRequest, gin.H{
+// 			"success": false,
+// 			"message": "Invalid pagination parameters",
+// 			"error":   err.Error(),
+// 		})
+// 		return
+// 	}
+
+// 	medicines, err := c.service.GetAllMedicinesService(ctx, pagination)
+// 	if err != nil {
+// 		ctx.JSON(http.StatusInternalServerError, gin.H{
+// 			"success": false,
+// 			"message": "Failed to fetch medicines",
+// 			"error":   err.Error(),
+// 		})
+// 		return
+// 	}
+// 	ctx.JSON(http.StatusOK, gin.H{
+// 		"success": true,
+// 		"message": "Medicines retrieved successfully",
+// 		"data":    medicines,
+// 	})
+// }

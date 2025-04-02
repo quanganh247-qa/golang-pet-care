@@ -24,6 +24,9 @@ test:
 server:
 	gin -p 8089 -i run /Users/dhquanganh/Documents/TLCN/golang-pet-care/main.go
 
+swagger:
+	swag init -g main.go
+
 postgres:
 	docker run -d  --name postgres  -p 5433:5432 -e POSTGRES_PASSWORD=12345678  -e PGDATA=/var/lib/postgresql/data/pgdata  -v postgres_volume:/var/lib/postgresql/data  postgres:15-alpine
 
@@ -58,4 +61,4 @@ migrate-down:
 migrate-create:
 	migrate create -ext sql -dir app/db/migration -seq $(name)
 
-.PHONY: mup mdown mforce sqlc server postgres redis supertokens elasticsearch minio docker-build docker-up docker-down docker-logs migrate-up migrate-down migrate-create
+.PHONY: mup mdown mforce sqlc server postgres redis supertokens elasticsearch minio docker-build docker-up docker-down docker-logs migrate-up migrate-down migrate-create swagger

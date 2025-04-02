@@ -144,12 +144,24 @@ func (q *Queries) GetPetScheduleById(ctx context.Context, id int64) (PetSchedule
 }
 
 const listPetSchedulesByUsername = `-- name: ListPetSchedulesByUsername :many
-SELECT pet_schedule.id, pet_schedule.pet_id, pet_schedule.title, pet_schedule.reminder_datetime, pet_schedule.event_repeat, pet_schedule.end_type, pet_schedule.end_date, pet_schedule.notes, pet_schedule.is_active, pet_schedule.created_at, pet_schedule.removedat, pets.name
-FROM pet_schedule
-LEFT JOIN pets ON pet_schedule.pet_id = pets.petid
-LEFT JOIN users ON pets.username = users.username
-WHERE users.username = $1 and pet_schedule.removedat is null
-ORDER BY pets.petid, pet_schedule.reminder_datetime
+SELECT 
+    ps.id,
+    ps.pet_id,
+    ps.title,
+    ps.reminder_datetime,
+    ps.event_repeat,
+    ps.end_type,
+    ps.end_date,
+    ps.notes,
+    ps.is_active,
+    p.name as pet_name
+FROM pet_schedule ps
+LEFT JOIN pets p ON ps.pet_id = p.petid
+LEFT JOIN users u ON p.username = u.username
+WHERE u.username = $1 
+    AND ps.removedat is null
+    AND p.is_active = true
+ORDER BY p.petid, ps.reminder_datetime
 `
 
 type ListPetSchedulesByUsernameRow struct {
@@ -162,9 +174,7 @@ type ListPetSchedulesByUsernameRow struct {
 	EndDate          pgtype.Date      `json:"end_date"`
 	Notes            pgtype.Text      `json:"notes"`
 	IsActive         pgtype.Bool      `json:"is_active"`
-	CreatedAt        pgtype.Timestamp `json:"created_at"`
-	Removedat        pgtype.Timestamp `json:"removedat"`
-	Name             pgtype.Text      `json:"name"`
+	PetName          pgtype.Text      `json:"pet_name"`
 }
 
 func (q *Queries) ListPetSchedulesByUsername(ctx context.Context, username string) ([]ListPetSchedulesByUsernameRow, error) {
@@ -186,9 +196,7 @@ func (q *Queries) ListPetSchedulesByUsername(ctx context.Context, username strin
 			&i.EndDate,
 			&i.Notes,
 			&i.IsActive,
-			&i.CreatedAt,
-			&i.Removedat,
-			&i.Name,
+			&i.PetName,
 		); err != nil {
 			return nil, err
 		}

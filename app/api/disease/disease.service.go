@@ -79,7 +79,7 @@ func (s *DiseaseService) CreateTreatmentService(ctx *gin.Context, treatmentPhase
 	err = s.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
 		PetTreatment, err = q.CreateTreatment(ctx, db.CreateTreatmentParams{
 			PetID:       pgtype.Int8{Int64: treatmentPhase.PetID, Valid: true},
-			DiseaseID:   pgtype.Int8{Int64: treatmentPhase.DiseaseID, Valid: true},
+			Diseases:    pgtype.Text{String: treatmentPhase.Diseases, Valid: true},
 			StartDate:   pgtype.Date{Time: startDate, Valid: true},
 			Description: pgtype.Text{String: treatmentPhase.Notes, Valid: true},
 		})
@@ -459,7 +459,7 @@ func (s *DiseaseService) GenerateMedicineOnlyPrescriptionPDF(ctx context.Context
 			PatientName:     pet.Name,
 			PatientGender:   pet.Gender.String,
 			PatientAge:      int(pet.Age.Int32),
-			Diagnosis:       fmt.Sprintf("Disease ID: %d", treatment.DiseaseID.Int64),
+			Diagnosis:       fmt.Sprintf("Disease ID: %d", treatment.Diseases),
 			Notes:           treatment.Description.String,
 			PrescribedDate:  treatment.StartDate.Time,
 			DoctorName:      doctor.Name,

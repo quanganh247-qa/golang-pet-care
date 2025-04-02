@@ -30,6 +30,9 @@ type AppointmentControllerInterface interface {
 	createSOAP(ctx *gin.Context)
 	updateSOAP(ctx *gin.Context)
 	getSOAPByAppointmentID(ctx *gin.Context)
+
+	// statistic
+	GetAppointmentDistribution(ctx *gin.Context)
 }
 
 func (c *AppointmentController) createAppointment(ctx *gin.Context) {
@@ -218,7 +221,9 @@ func (c *AppointmentController) getAllAppointmentsByDate(ctx *gin.Context) {
 		return
 	}
 	ctx.JSON(http.StatusOK, util.SuccessResponse("get all appointments by date successful", res))
+
 }
+
 func (c *AppointmentController) updateAppointment(ctx *gin.Context) {
 	appointmentID := ctx.Param("id")
 	if appointmentID == "" {
@@ -370,4 +375,20 @@ func (c *AppointmentController) getSOAPByAppointmentID(ctx *gin.Context) {
 		return
 	}
 	ctx.JSON(http.StatusOK, soap)
+}
+
+func (c *AppointmentController) GetAppointmentDistribution(ctx *gin.Context) {
+	startDateStr := ctx.Query("start_date")
+	endDateStr := ctx.Query("end_date")
+
+	distributions, err := c.service.GetAppointmentDistributionByService(ctx, startDateStr, endDateStr)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"data":    distributions,
+	})
 }

@@ -22,6 +22,7 @@ type PetControllerInterface interface {
 	DeletePetLog(ctx *gin.Context)
 	UpdatePetLog(ctx *gin.Context)
 	UpdatePetAvatar(ctx *gin.Context)
+	GetAllPetLogsByUsername(ctx *gin.Context)
 }
 
 func (c *PetController) CreatePet(ctx *gin.Context) {
@@ -95,6 +96,7 @@ func (c *PetController) ListPets(ctx *gin.Context) {
 		return
 	}
 
+	// Return the pets with proper pagination response structure
 	ctx.JSON(http.StatusOK, pets)
 }
 
@@ -179,7 +181,7 @@ func (c *PetController) GetPetLogsByPetID(ctx *gin.Context) {
 }
 
 func (c *PetController) InsertPetLog(ctx *gin.Context) {
-	var req PetLog
+	var req PetLogWithPetInfo
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(400, gin.H{"error": err.Error()})
 		return
@@ -212,7 +214,7 @@ func (c *PetController) DeletePetLog(ctx *gin.Context) {
 }
 
 func (c *PetController) UpdatePetLog(ctx *gin.Context) {
-	var req PetLog
+	var req PetLogWithPetInfo
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(400, gin.H{"error": err.Error()})
 		return
@@ -258,4 +260,27 @@ func (c *PetController) UpdatePetAvatar(ctx *gin.Context) {
 	}
 
 	ctx.JSON(200, gin.H{"message": "Update pet avatar successfully"})
+}
+
+// Add this method to your PetController implementation
+func (c *PetController) GetAllPetLogsByUsername(ctx *gin.Context) {
+	pagination, err := util.GetPageInQuery(ctx.Request.URL.Query())
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
+		return
+	}
+
+	authPayload, err := middleware.GetAuthorizationPayload(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	logs, err := c.service.GetAllPetLogsByUsername(ctx, authPayload.Username, pagination)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, logs)
 }

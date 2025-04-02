@@ -2,6 +2,7 @@ package payment
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/payOSHQ/payos-lib-golang"
 	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
@@ -70,6 +71,7 @@ type QRRequest struct {
 	AddInfo     string `json:"addInfo"`
 	Format      string `json:"format"`
 	OrderID     int64  `json:"order_id"`
+	TestOrderID int64  `json:"test_order_id"`
 }
 
 type GenerateQRCodeResponse struct {
@@ -208,4 +210,45 @@ type CreatePaymentLinkRequest struct {
 	Items         []payos.Item // option 1: using without order_id
 	Description   string
 	UserID        int64
+}
+
+// PatientTrend represents monthly patient statistics
+type PatientTrend struct {
+	Month    string `json:"month"`    // Month in MMM format (e.g., "Jan", "Feb")
+	Patients int    `json:"patients"` // Number of patients in that month
+}
+
+// PatientTrendResponse represents the response for patient trend data
+type PatientTrendResponse struct {
+	Trends []PatientTrend `json:"trends"` // Array of patient trends for multiple months
+}
+
+// RevenueData represents daily revenue information
+type RevenueData struct {
+	Date         time.Time `json:"date"`
+	TotalRevenue float64   `json:"total_revenue"`
+}
+
+// RevenueResponse represents the response for revenue data
+type RevenueResponse struct {
+	Data []RevenueData `json:"data"`
+}
+
+// QuickLinkRequest represents the request to generate a VietQR Quick Link
+type QuickLinkRequest struct {
+	BankID      string `json:"bank_id" binding:"required"`    // Mã BIN hoặc tên viết tắt của ngân hàng
+	AccountNo   string `json:"account_no" binding:"required"` // Số tài khoản người nhận
+	Template    string `json:"template" binding:"required"`   // Template hiển thị (compact2, compact, qr_only, print)
+	Description string `json:"description,omitempty"`         // Nội dung chuyển khoản (tối đa 50 ký tự)
+	AccountName string `json:"account_name,omitempty"`        // Tên người thụ hưởng
+
+	// Internal fields for application use
+	OrderID     int64 `json:"order_id,omitempty"`      // ID đơn hàng trong hệ thống
+	TestOrderID int64 `json:"test_order_id,omitempty"` // ID đơn hàng xét nghiệm trong hệ thống
+}
+
+// QuickLinkResponse represents the response from generating a VietQR Quick Link
+type QuickLinkResponse struct {
+	QuickLink string `json:"quick_link"` // URL của Quick Link
+	ImageURL  string `json:"image_url"`  // URL của ảnh QR code
 }

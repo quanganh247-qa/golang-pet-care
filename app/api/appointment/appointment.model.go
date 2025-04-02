@@ -1,6 +1,8 @@
 package appointment
 
 import (
+	"time"
+
 	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
 	"github.com/quanganh247-qa/go-blog-be/app/service/worker"
 )
@@ -184,4 +186,53 @@ type CancelOrderRequest struct {
 type UpdateTestStatusRequest struct {
 	TestID int    `json:"test_id" binding:"required"`
 	Status string `json:"status" binding:"required,oneof=pending processing completed cancelled"`
+}
+
+type AppointmentDistribution struct {
+	ServiceID        int64   `json:"service_id"`
+	ServiceName      string  `json:"service_name"`
+	AppointmentCount int64   `json:"appointment_count"`
+	Percentage       float64 `json:"percentage"`
+}
+
+type AppointmentDistributionRequest struct {
+	StartDate string `json:"start_date" binding:"required"`
+	EndDate   string `json:"end_date" binding:"required"`
+}
+
+// ErrorResponse represents an error response
+// @Description Error response structure
+type ErrorResponse struct {
+	Error string `json:"error" example:"Invalid request parameters"`
+}
+
+// SuccessResponse represents a success response
+// @Description Success response structure
+type SuccessResponse struct {
+	Message string `json:"message" example:"Operation successful"`
+}
+
+// CreateAppointmentRequest represents the request payload for creating an appointment
+// @Description Appointment creation request
+type CreateAppointmentRequest struct {
+	PetID     string    `json:"pet_id" example:"pet-123"`
+	DoctorID  string    `json:"doctor_id" example:"doctor-456"`
+	StartTime time.Time `json:"start_time" example:"2023-04-01T10:00:00Z"`
+	EndTime   time.Time `json:"end_time" example:"2023-04-01T11:00:00Z"`
+	Notes     string    `json:"notes" example:"Regular check-up"`
+	Status    string    `json:"status" example:"scheduled"`
+}
+
+// AppointmentResponse represents the response payload for appointment data
+// @Description Appointment response data
+type AppointmentResponse struct {
+	ID        string    `json:"id" example:"appt-789"`
+	PetID     string    `json:"pet_id" example:"pet-123"`
+	DoctorID  string    `json:"doctor_id" example:"doctor-456"`
+	StartTime time.Time `json:"start_time" example:"2023-04-01T10:00:00Z"`
+	EndTime   time.Time `json:"end_time" example:"2023-04-01T11:00:00Z"`
+	Notes     string    `json:"notes" example:"Regular check-up"`
+	Status    string    `json:"status" example:"scheduled"`
+	CreatedAt time.Time `json:"created_at" example:"2023-03-30T09:00:00Z"`
+	UpdatedAt time.Time `json:"updated_at" example:"2023-03-30T09:00:00Z"`
 }

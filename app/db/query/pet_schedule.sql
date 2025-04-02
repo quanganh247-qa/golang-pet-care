@@ -17,12 +17,24 @@ INSERT INTO pet_schedule (
 ) VALUES ($1, $2, $3, $4, $5, $6, $7, true);
 
 -- name: ListPetSchedulesByUsername :many
-SELECT pet_schedule.*, pets.name
-FROM pet_schedule
-LEFT JOIN pets ON pet_schedule.pet_id = pets.petid
-LEFT JOIN users ON pets.username = users.username
-WHERE users.username = $1 and pet_schedule.removedat is null
-ORDER BY pets.petid, pet_schedule.reminder_datetime;
+SELECT 
+    ps.id,
+    ps.pet_id,
+    ps.title,
+    ps.reminder_datetime,
+    ps.event_repeat,
+    ps.end_type,
+    ps.end_date,
+    ps.notes,
+    ps.is_active,
+    p.name as pet_name
+FROM pet_schedule ps
+LEFT JOIN pets p ON ps.pet_id = p.petid
+LEFT JOIN users u ON p.username = u.username
+WHERE u.username = $1 
+    AND ps.removedat is null
+    AND p.is_active = true
+ORDER BY p.petid, ps.reminder_datetime;
 
 -- name: ActiveReminder :exec
 UPDATE pet_schedule

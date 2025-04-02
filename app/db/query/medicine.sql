@@ -34,3 +34,27 @@ ORDER BY
 -- name: GetMedicineByID :one
 SELECT * FROM medicines
 WHERE id = $1 LIMIT 1;
+
+
+-- name: GetAllMedicines :many
+SELECT 
+    id, 
+    name, 
+    description, 
+    usage, 
+    dosage, 
+    frequency, 
+    duration, 
+    side_effects, 
+    start_date, 
+    end_date, 
+    created_at, 
+    updated_at, 
+    expiration_date, 
+    quantity
+FROM medicines
+ORDER BY name
+LIMIT $1 OFFSET $2;
+
+-- name: CountAllMedicines :one
+SELECT COUNT(*) FROM medicines;

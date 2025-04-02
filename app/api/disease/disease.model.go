@@ -68,7 +68,10 @@ type MedicineInfo struct {
 
 type CreateTreatmentRequest struct {
 	PetID     int64  `json:"pet_id"`
-	DiseaseID int64  `json:"disease_id"`
+	Name      string `json:"name" validate:"required"`
+	DoctorID  int64  `json:"doctor_id"`
+	Type      string `json:"type" validate:"required"`
+	Diseases  string `json:"diseases"`
 	StartDate string `json:"start_date" validate:"required, datetime=2006-01-02"` // have lay out for date
 	Status    string `json:"status" validate:"required"`
 	Notes     string `json:"notes"`
@@ -76,6 +79,7 @@ type CreateTreatmentRequest struct {
 
 type Treatment struct {
 	ID          int64            `json:"id"`
+	Name        string           `json:"name"`
 	Type        string           `json:"type"`
 	Disease     string           `json:"disease"`
 	StartDate   string           `json:"start_date"`
@@ -164,4 +168,20 @@ type PetAllergy struct {
 type CreateAllergyRequest struct {
 	Type   string `json:"type"`
 	Detail string `json:"detail"`
+}
+
+// Add this if it doesn't exist
+type MedicineResponse struct {
+	ID             int64  `json:"id"`
+	Name           string `json:"name"`
+	Description    string `json:"description,omitempty"`
+	Usage          string `json:"usage,omitempty"`
+	Dosage         string `json:"dosage,omitempty"`
+	Frequency      string `json:"frequency,omitempty"`
+	Duration       string `json:"duration,omitempty"`
+	SideEffects    string `json:"side_effects,omitempty"`
+	StartDate      string `json:"start_date,omitempty"`
+	EndDate        string `json:"end_date,omitempty"`
+	ExpirationDate string `json:"expiration_date,omitempty"`
+	Quantity       int64  `json:"quantity,omitempty"`
 }

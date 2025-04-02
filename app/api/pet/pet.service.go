@@ -15,16 +15,17 @@ import (
 type PetServiceInterface interface {
 	CreatePet(ctx *gin.Context, username string, req createPetRequest) (*CreatePetResponse, error)
 	GetPetByID(ctx *gin.Context, petid int64) (*CreatePetResponse, error)
-	ListPets(ctx *gin.Context, req listPetsRequest, pagination *util.Pagination) ([]CreatePetResponse, error)
+	ListPets(ctx *gin.Context, req listPetsRequest, pagination *util.Pagination) (*util.PaginationResponse[CreatePetResponse], error)
 	UpdatePet(ctx *gin.Context, petid int64, req updatePetRequest) error
 	DeletePet(ctx context.Context, petid int64) error
 	ListPetsByUsername(ctx *gin.Context, username string, pagination *util.Pagination) ([]CreatePetResponse, error)
 	SetPetInactive(ctx context.Context, petid int64) error
-	GetPetLogsByPetIDService(ctx *gin.Context, pet_id int64, pagination *util.Pagination) ([]PetLog, error)
-	InsertPetLogService(ctx context.Context, req PetLog) error
+	GetPetLogsByPetIDService(ctx *gin.Context, pet_id int64, pagination *util.Pagination) ([]PetLogWithPetInfo, error)
+	InsertPetLogService(ctx context.Context, req PetLogWithPetInfo) error
 	DeletePetLogService(ctx context.Context, logID int64) error
-	UpdatePetLogService(ctx context.Context, req PetLog, log_id int64) error
+	UpdatePetLogService(ctx context.Context, req PetLogWithPetInfo, log_id int64) error
 	UpdatePetAvatar(ctx *gin.Context, petid int64, req updatePetAvatarRequest) error
+	GetAllPetLogsByUsername(ctx *gin.Context, username string, pagination *util.Pagination) (*util.PaginationResponse[PetLogWithPetInfo], error) // New method
 }
 
 func (s *PetService) CreatePet(ctx *gin.Context, username string, req createPetRequest) (*CreatePetResponse, error) {
@@ -97,11 +98,19 @@ func (s *PetService) GetPetByID(ctx *gin.Context, petid int64) (*CreatePetRespon
 	}, nil
 }
 
-func (s *PetService) ListPets(ctx *gin.Context, req listPetsRequest, pagination *util.Pagination) ([]CreatePetResponse, error) {
+func (s *PetService) ListPets(ctx *gin.Context, req listPetsRequest, pagination *util.Pagination) (*util.PaginationResponse[CreatePetResponse], error) {
 	var pets []CreatePetResponse
 	offset := (pagination.Page - 1) * pagination.PageSize
+	var totalCount int64
 
 	err := s.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
+		// Get total count first
+		count, err := q.CountPets(ctx)
+		if err != nil {
+			return fmt.Errorf("failed to count pets: %w", err)
+		}
+		totalCount = count
+
 		listParams := db.ListPetsParams{
 			Limit:  int32(pagination.PageSize),
 			Offset: int32(offset),
@@ -134,7 +143,11 @@ func (s *PetService) ListPets(ctx *gin.Context, req listPetsRequest, pagination 
 		return nil, fmt.Errorf("transaction failed: %w", err)
 	}
 
-	return pets, nil
+	response := &util.PaginationResponse[CreatePetResponse]{
+		Count: totalCount,
+		Rows:  &pets,
+	}
+	return response.Build(), nil
 }
 
 func (s *PetService) UpdatePet(ctx *gin.Context, petid int64, req updatePetRequest) error {
@@ -279,8 +292,8 @@ func (s *PetService) SetPetInactive(ctx context.Context, petid int64) error {
 	return s.storeDB.SetPetInactive(ctx, petid)
 }
 
-func (s *PetService) GetPetLogsByPetIDService(ctx *gin.Context, pet_id int64, pagination *util.Pagination) ([]PetLog, error) {
-	var pets []PetLog
+func (s *PetService) GetPetLogsByPetIDService(ctx *gin.Context, pet_id int64, pagination *util.Pagination) ([]PetLogWithPetInfo, error) {
+	var pets []PetLogWithPetInfo
 	offset := (pagination.Page - 1) * pagination.PageSize
 
 	listParams := db.GetPetLogsByPetIDParams{
@@ -295,7 +308,7 @@ func (s *PetService) GetPetLogsByPetIDService(ctx *gin.Context, pet_id int64, pa
 	}
 
 	for _, r := range res {
-		pets = append(pets, PetLog{
+		pets = append(pets, PetLogWithPetInfo{
 			PetID:    r.Petid,
 			LogID:    r.LogID,
 			DateTime: r.Datetime.Time.Format(time.RFC3339),
@@ -308,7 +321,7 @@ func (s *PetService) GetPetLogsByPetIDService(ctx *gin.Context, pet_id int64, pa
 }
 
 // Add log for pet
-func (s *PetService) InsertPetLogService(ctx context.Context, req PetLog) error {
+func (s *PetService) InsertPetLogService(ctx context.Context, req PetLogWithPetInfo) error {
 
 	log := db.CreatePetLogParams{
 		Petid: req.PetID,
@@ -354,7 +367,7 @@ func (s *PetService) DeletePetLogService(ctx context.Context, logID int64) error
 }
 
 // UpdatePetLogService update log for pet
-func (s *PetService) UpdatePetLogService(ctx context.Context, req PetLog, log_id int64) error {
+func (s *PetService) UpdatePetLogService(ctx context.Context, req PetLogWithPetInfo, log_id int64) error {
 
 	pet_log, err := s.storeDB.GetPetLogByID(ctx, db.GetPetLogByIDParams{
 		Petid: req.PetID,
@@ -414,4 +427,45 @@ func formatVaccinations(vaccinations []db.Vaccination) string {
 			v.Vaccineprovider.String))
 	}
 	return result.String()
+}
+
+// Add this method to your PetService implementation
+func (s *PetService) GetAllPetLogsByUsername(ctx *gin.Context, username string, pagination *util.Pagination) (*util.PaginationResponse[PetLogWithPetInfo], error) {
+	offset := (pagination.Page - 1) * pagination.PageSize
+
+	// Get total count
+	count, err := s.storeDB.CountAllPetLogsByUsername(ctx, username)
+	if err != nil {
+		return nil, fmt.Errorf("failed to count pet logs: %w", err)
+	}
+
+	// Get logs with pagination
+	logs, err := s.storeDB.GetAllPetLogsByUsername(ctx, db.GetAllPetLogsByUsernameParams{
+		Username: username,
+		Limit:    int32(pagination.PageSize),
+		Offset:   int32(offset),
+	})
+	if err != nil {
+		return nil, fmt.Errorf("failed to get pet logs: %w", err)
+	}
+
+	// Transform to response model
+	var petLogs []PetLogWithPetInfo
+	for _, log := range logs {
+		petLogs = append(petLogs, PetLogWithPetInfo{
+			PetID:    log.Petid,
+			PetName:  log.PetName,
+			PetType:  log.PetType,
+			PetBreed: log.PetBreed.String,
+			LogID:    log.LogID,
+			DateTime: log.Datetime.Time.Format(time.RFC3339),
+			Title:    log.Title.String,
+			Notes:    log.Notes.String,
+		})
+	}
+
+	return &util.PaginationResponse[PetLogWithPetInfo]{
+		Count: count,
+		Rows:  &petLogs,
+	}, nil
 }

@@ -46,14 +46,6 @@ func (q *Queries) AddOrderedTest(ctx context.Context, arg AddOrderedTestParams) 
 }
 
 const addTestCategory = `-- name: AddTestCategory :exec
-
-
-
-
-
-
-
-
 INSERT INTO test_categories (category_id, name, description, icon_name)
 VALUES ($1, $2, $3, $4)
 `
@@ -65,59 +57,6 @@ type AddTestCategoryParams struct {
 	IconName    pgtype.Text `json:"icon_name"`
 }
 
-// -- name: CreateTest :one
-// INSERT INTO tests (
-//
-//	pet_id,
-//	doctor_id,
-//	test_type,
-//	status,
-//	created_at
-//
-// ) VALUES (
-//
-//	$1, $2, $3, $4, CURRENT_TIMESTAMP
-//
-// ) RETURNING *;
-// -- name: UpdateTestStatus :exec
-// UPDATE tests
-// SET status = $2,
-//
-//	updated_at = CURRENT_TIMESTAMP
-//
-// WHERE id = $1;
-// -- name: GetTestByID :one
-// SELECT * FROM tests WHERE id = $1;
-// -- name: GetTestsByPetID :many
-// SELECT * FROM tests WHERE pet_id = $1;
-// -- name: GetTestsByDoctorID :many
-// SELECT * FROM tests WHERE doctor_id = $1;
-// -- name: AddTestResult :one
-// INSERT INTO test_results (
-//
-//	test_id,
-//	parameters,
-//	notes,
-//	files,
-//	created_at
-//
-// ) VALUES (
-//
-//	$1, $2, $3, $4, CURRENT_TIMESTAMP
-//
-// ) RETURNING *;
-// -- name: GetTestResults :many
-// SELECT * FROM test_results WHERE test_id = $1;
-// -- name: GetStatusHistory :many
-// SELECT
-//
-//	status,
-//	updated_at as timestamp,
-//	updated_by
-//
-// FROM test_statuses
-// WHERE test_id = $1
-// ORDER BY updated_at DESC;
 func (q *Queries) AddTestCategory(ctx context.Context, arg AddTestCategoryParams) error {
 	_, err := q.db.Exec(ctx, addTestCategory,
 		arg.CategoryID,
@@ -257,6 +196,194 @@ func (q *Queries) CreateTestOrder(ctx context.Context, arg CreateTestOrderParams
 	return i, err
 }
 
+const getAllAppointmentsWithOrders = `-- name: GetAllAppointmentsWithOrders :many
+SELECT 
+    a.appointment_id,
+    a.date,
+    p.name AS pet_name,
+    COALESCE(
+        jsonb_agg(
+            jsonb_build_object(
+                'order_id', o.order_id,
+                'total_amount', o.total_amount,
+                'status', o.status,
+                'order_date', o.order_date,
+                'tests', (
+                    SELECT jsonb_agg(jsonb_build_object(
+                        'test_id', t.test_id,
+                        'test_name', t.name,
+                        'price', ot.price_at_order,
+                        'status', ot.status
+                    ))
+                    FROM ordered_tests ot
+                    JOIN tests t ON ot.test_id = t.id
+                    WHERE ot.order_id = o.order_id
+                )
+            ) 
+        ) FILTER (WHERE o.order_id IS NOT NULL),
+        '[]'::jsonb
+    ) AS orders
+FROM appointments a
+LEFT JOIN test_orders o ON a.appointment_id = o.appointment_id
+JOIN pets p ON a.petid = p.petid 
+GROUP BY a.appointment_id, p.name
+ORDER BY a.date DESC
+`
+
+type GetAllAppointmentsWithOrdersRow struct {
+	AppointmentID int64            `json:"appointment_id"`
+	Date          pgtype.Timestamp `json:"date"`
+	PetName       string           `json:"pet_name"`
+	Orders        interface{}      `json:"orders"`
+}
+
+func (q *Queries) GetAllAppointmentsWithOrders(ctx context.Context) ([]GetAllAppointmentsWithOrdersRow, error) {
+	rows, err := q.db.Query(ctx, getAllAppointmentsWithOrders)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetAllAppointmentsWithOrdersRow{}
+	for rows.Next() {
+		var i GetAllAppointmentsWithOrdersRow
+		if err := rows.Scan(
+			&i.AppointmentID,
+			&i.Date,
+			&i.PetName,
+			&i.Orders,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getOrderedTestsByAppointment = `-- name: GetOrderedTestsByAppointment :many
+SELECT 
+    ot.id AS ordered_test_id,
+    t.test_id,
+    t.name AS test_name,
+    t.category_id,
+    tc.name AS category_name,
+    ot.price_at_order,
+    ot.status,
+    ot.created_at AS ordered_date,
+    o.notes
+FROM test_orders o
+JOIN ordered_tests ot ON o.order_id = ot.order_id
+JOIN tests t ON ot.test_id = t.id
+JOIN test_categories tc ON t.category_id = tc.category_id
+WHERE o.appointment_id = $1
+ORDER BY ot.created_at DESC
+`
+
+type GetOrderedTestsByAppointmentRow struct {
+	OrderedTestID int32              `json:"ordered_test_id"`
+	TestID        string             `json:"test_id"`
+	TestName      string             `json:"test_name"`
+	CategoryID    pgtype.Text        `json:"category_id"`
+	CategoryName  string             `json:"category_name"`
+	PriceAtOrder  float64            `json:"price_at_order"`
+	Status        pgtype.Text        `json:"status"`
+	OrderedDate   pgtype.Timestamptz `json:"ordered_date"`
+	Notes         pgtype.Text        `json:"notes"`
+}
+
+func (q *Queries) GetOrderedTestsByAppointment(ctx context.Context, appointmentID pgtype.Int4) ([]GetOrderedTestsByAppointmentRow, error) {
+	rows, err := q.db.Query(ctx, getOrderedTestsByAppointment, appointmentID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetOrderedTestsByAppointmentRow{}
+	for rows.Next() {
+		var i GetOrderedTestsByAppointmentRow
+		if err := rows.Scan(
+			&i.OrderedTestID,
+			&i.TestID,
+			&i.TestName,
+			&i.CategoryID,
+			&i.CategoryName,
+			&i.PriceAtOrder,
+			&i.Status,
+			&i.OrderedDate,
+			&i.Notes,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getOrderedTestsByOrderID = `-- name: GetOrderedTestsByOrderID :many
+SELECT  ordered_tests.id, ordered_tests.order_id, ordered_tests.test_id, ordered_tests.price_at_order, ordered_tests.status, ordered_tests.results, ordered_tests.results_date, ordered_tests.technician_notes, ordered_tests.created_at, ordered_tests.updated_at, 
+        tests.name AS test_name,
+        tests.description AS test_description,
+        tests.price AS test_price
+FROM ordered_tests 
+LEFT JOIN tests ON ordered_tests.test_id = tests.id
+LEFT JOIN test_categories ON tests.category_id = test_categories.category_id
+WHERE ordered_tests.order_id = $1
+`
+
+type GetOrderedTestsByOrderIDRow struct {
+	ID              int32              `json:"id"`
+	OrderID         pgtype.Int4        `json:"order_id"`
+	TestID          pgtype.Int4        `json:"test_id"`
+	PriceAtOrder    float64            `json:"price_at_order"`
+	Status          pgtype.Text        `json:"status"`
+	Results         pgtype.Text        `json:"results"`
+	ResultsDate     pgtype.Timestamptz `json:"results_date"`
+	TechnicianNotes pgtype.Text        `json:"technician_notes"`
+	CreatedAt       pgtype.Timestamptz `json:"created_at"`
+	UpdatedAt       pgtype.Timestamptz `json:"updated_at"`
+	TestName        pgtype.Text        `json:"test_name"`
+	TestDescription pgtype.Text        `json:"test_description"`
+	TestPrice       pgtype.Float8      `json:"test_price"`
+}
+
+func (q *Queries) GetOrderedTestsByOrderID(ctx context.Context, orderID pgtype.Int4) ([]GetOrderedTestsByOrderIDRow, error) {
+	rows, err := q.db.Query(ctx, getOrderedTestsByOrderID, orderID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetOrderedTestsByOrderIDRow{}
+	for rows.Next() {
+		var i GetOrderedTestsByOrderIDRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.OrderID,
+			&i.TestID,
+			&i.PriceAtOrder,
+			&i.Status,
+			&i.Results,
+			&i.ResultsDate,
+			&i.TechnicianNotes,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.TestName,
+			&i.TestDescription,
+			&i.TestPrice,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getTestByID = `-- name: GetTestByID :one
 SELECT id, test_id, category_id, name, description, price, turnaround_time, is_active, created_at, updated_at FROM tests WHERE id = $1 AND is_active = true
 `
@@ -324,6 +451,26 @@ func (q *Queries) GetTestCategoryByID(ctx context.Context, categoryID string) (T
 		&i.Name,
 		&i.Description,
 		&i.IconName,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const getTestOrderByID = `-- name: GetTestOrderByID :one
+SELECT order_id, appointment_id, order_date, status, total_amount, notes, created_at, updated_at FROM test_orders WHERE order_id = $1
+`
+
+func (q *Queries) GetTestOrderByID(ctx context.Context, orderID int32) (TestOrder, error) {
+	row := q.db.QueryRow(ctx, getTestOrderByID, orderID)
+	var i TestOrder
+	err := row.Scan(
+		&i.OrderID,
+		&i.AppointmentID,
+		&i.OrderDate,
+		&i.Status,
+		&i.TotalAmount,
+		&i.Notes,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
@@ -449,6 +596,22 @@ func (q *Queries) UpdateTest(ctx context.Context, arg UpdateTestParams) (Test, e
 		&i.UpdatedAt,
 	)
 	return i, err
+}
+
+const updateTestOrderStatus = `-- name: UpdateTestOrderStatus :exec
+UPDATE test_orders
+SET status = $2
+WHERE order_id = $1
+`
+
+type UpdateTestOrderStatusParams struct {
+	OrderID int32       `json:"order_id"`
+	Status  pgtype.Text `json:"status"`
+}
+
+func (q *Queries) UpdateTestOrderStatus(ctx context.Context, arg UpdateTestOrderStatusParams) error {
+	_, err := q.db.Exec(ctx, updateTestOrderStatus, arg.OrderID, arg.Status)
+	return err
 }
 
 const updateTestStatus = `-- name: UpdateTestStatus :one

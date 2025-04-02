@@ -57,12 +57,16 @@ type listPetsRequest struct {
 	Weight float64 `json:"weight"`
 }
 
-type PetLog struct {
-	PetID    int64  `json:"pet_id"`
-	LogID    int64  `json:"log_id"`
-	DateTime string `json:"date_time"`
-	Title    string `json:"title"`
-	Notes    string `json:"notes"`
+// Add this new struct to your pet.model.go file
+type PetLogWithPetInfo struct {
+	PetID         int64  `json:"pet_id"`
+	PetName       string `json:"pet_name"`
+	PetType       string `json:"pet_type"`
+	PetBreed      string `json:"pet_breed"`
+	LogID         int64  `json:"log_id"`
+	DateTime      string `json:"date_time"`
+	Title         string `json:"title"`
+	Notes         string `json:"notes"`
 }
 
 type updatePetRequest struct {
