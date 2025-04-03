@@ -12,16 +12,15 @@ import (
 )
 
 const createMedicalHistory = `-- name: CreateMedicalHistory :one
-INSERT INTO medical_history(medical_record_id, condition, diagnosis_date, treatment, notes, created_at,updated_at)
-VALUES ($1, $2, $3, $4, $5, now(), now())
-RETURNING id, medical_record_id, condition, diagnosis_date, notes, treatment, created_at, updated_at
+INSERT INTO medical_history(medical_record_id, condition, diagnosis_date, notes, created_at,updated_at)
+VALUES ($1, $2, $3, $4, now(), now())
+RETURNING id, medical_record_id, condition, diagnosis_date, notes, created_at, updated_at
 `
 
 type CreateMedicalHistoryParams struct {
 	MedicalRecordID pgtype.Int8      `json:"medical_record_id"`
 	Condition       pgtype.Text      `json:"condition"`
 	DiagnosisDate   pgtype.Timestamp `json:"diagnosis_date"`
-	Treatment       pgtype.Int8      `json:"treatment"`
 	Notes           pgtype.Text      `json:"notes"`
 }
 
@@ -30,7 +29,6 @@ func (q *Queries) CreateMedicalHistory(ctx context.Context, arg CreateMedicalHis
 		arg.MedicalRecordID,
 		arg.Condition,
 		arg.DiagnosisDate,
-		arg.Treatment,
 		arg.Notes,
 	)
 	var i MedicalHistory
@@ -40,7 +38,6 @@ func (q *Queries) CreateMedicalHistory(ctx context.Context, arg CreateMedicalHis
 		&i.Condition,
 		&i.DiagnosisDate,
 		&i.Notes,
-		&i.Treatment,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
@@ -86,7 +83,7 @@ func (q *Queries) DeleteMedicalRecord(ctx context.Context, id int64) error {
 }
 
 const getMedicalHistory = `-- name: GetMedicalHistory :many
-SELECT id, medical_record_id, condition, diagnosis_date, notes, treatment, created_at, updated_at FROM medical_history
+SELECT id, medical_record_id, condition, diagnosis_date, notes, created_at, updated_at FROM medical_history
 WHERE medical_record_id = $1 LIMIT $2 OFFSET $3
 `
 
@@ -111,7 +108,6 @@ func (q *Queries) GetMedicalHistory(ctx context.Context, arg GetMedicalHistoryPa
 			&i.Condition,
 			&i.DiagnosisDate,
 			&i.Notes,
-			&i.Treatment,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 		); err != nil {
@@ -126,7 +122,7 @@ func (q *Queries) GetMedicalHistory(ctx context.Context, arg GetMedicalHistoryPa
 }
 
 const getMedicalHistoryByID = `-- name: GetMedicalHistoryByID :one
-SELECT id, medical_record_id, condition, diagnosis_date, notes, treatment, created_at, updated_at FROM medical_history
+SELECT id, medical_record_id, condition, diagnosis_date, notes, created_at, updated_at FROM medical_history
 WHERE id = $1 LIMIT 1
 `
 
@@ -139,7 +135,6 @@ func (q *Queries) GetMedicalHistoryByID(ctx context.Context, id int64) (MedicalH
 		&i.Condition,
 		&i.DiagnosisDate,
 		&i.Notes,
-		&i.Treatment,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
@@ -182,7 +177,7 @@ func (q *Queries) GetMedicalRecordByPetID(ctx context.Context, petID pgtype.Int8
 
 const updateMedicalHistory = `-- name: UpdateMedicalHistory :exec
 UPDATE medical_history
-SET condition = $2, diagnosis_date = $3, treatment = $4, notes = $5, updated_at = NOW()
+SET condition = $2, diagnosis_date = $3, notes = $4, updated_at = NOW()
 WHERE id = $1
 `
 
@@ -190,7 +185,6 @@ type UpdateMedicalHistoryParams struct {
 	ID            int64            `json:"id"`
 	Condition     pgtype.Text      `json:"condition"`
 	DiagnosisDate pgtype.Timestamp `json:"diagnosis_date"`
-	Treatment     pgtype.Int8      `json:"treatment"`
 	Notes         pgtype.Text      `json:"notes"`
 }
 
@@ -199,7 +193,6 @@ func (q *Queries) UpdateMedicalHistory(ctx context.Context, arg UpdateMedicalHis
 		arg.ID,
 		arg.Condition,
 		arg.DiagnosisDate,
-		arg.Treatment,
 		arg.Notes,
 	)
 	return err

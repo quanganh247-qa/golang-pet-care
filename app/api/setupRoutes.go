@@ -18,13 +18,11 @@ import (
 	petschedule "github.com/quanganh247-qa/go-blog-be/app/api/pet_schedule"
 	"github.com/quanganh247-qa/go-blog-be/app/api/products"
 	"github.com/quanganh247-qa/go-blog-be/app/api/rooms"
-	"github.com/quanganh247-qa/go-blog-be/app/api/search"
 	"github.com/quanganh247-qa/go-blog-be/app/api/service"
 	"github.com/quanganh247-qa/go-blog-be/app/api/test"
 	"github.com/quanganh247-qa/go-blog-be/app/api/user"
 	"github.com/quanganh247-qa/go-blog-be/app/api/vaccination"
 	"github.com/quanganh247-qa/go-blog-be/app/middleware"
-	"github.com/quanganh247-qa/go-blog-be/app/service/elasticsearch"
 	"github.com/quanganh247-qa/go-blog-be/app/service/websocket"
 	"github.com/quanganh247-qa/go-blog-be/app/service/worker"
 	"github.com/quanganh247-qa/go-blog-be/app/util"
@@ -32,7 +30,7 @@ import (
 	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
-func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor, config util.Config, es *elasticsearch.ESService, ws *websocket.WSClientManager) {
+func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor, config util.Config, ws *websocket.WSClientManager) {
 	gin.SetMode(gin.ReleaseMode)
 	routerDefault := gin.New()
 	routerDefault.SetTrustedProxies(nil)
@@ -65,7 +63,7 @@ func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor, config
 	service.Routes(routerGroup)
 	appointment.Routes(routerGroup, taskDistributor)
 	device_token.Routes(routerGroup)
-	disease.Routes(routerGroup, es)
+	disease.Routes(routerGroup)
 	petschedule.Routes(routerGroup, &config)
 	vaccination.Routes(routerGroup)
 	location.Routes(routerGroup, &config)
@@ -73,9 +71,8 @@ func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor, config
 	cart.Routes(routerGroup)
 	products.Routes(routerGroup)
 	medical_records.Routes(routerGroup)
-	test.Routes(routerGroup, es, ws)
-	search.Routes(routerGroup, es)
-	medications.Routes(routerGroup, es)
+	test.Routes(routerGroup, ws)
+	medications.Routes(routerGroup, taskDistributor, ws)
 	doctor.Routes(routerGroup)
 	rooms.Routes(routerGroup)
 	invoice.Routes(routerGroup)

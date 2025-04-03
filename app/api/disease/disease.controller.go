@@ -23,8 +23,20 @@ type DiseaseControllerInterface interface {
 
 	CreateAllergy(ctx *gin.Context)
 	GetAllergiesByPetID(ctx *gin.Context)
+	// GetAllMedicines(ctx *gin.Context) // Add this new method
+
 }
 
+// @Summary Create a new disease
+// @Description Create a new disease with the given details
+// @Tags disease
+// @Accept json
+// @Produce json
+// @Param disease body CreateDiseaseRequest true "Disease details"
+// @Success 200 {object} SuccessResponse "Disease created successfully"
+// @Failure 400 {object} ErrorResponse "Invalid request data"
+// @Failure 500 {object} ErrorResponse "Failed to create disease"
+// @Router /disease [post]
 func (c *DiseaseController) CreateDisease(ctx *gin.Context) {
 	var disease CreateDiseaseRequest
 	if err := ctx.ShouldBindJSON(&disease); err != nil {

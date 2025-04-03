@@ -58,7 +58,6 @@ func (s *MedicalRecordService) CreateMedicalHistory(ctx *gin.Context, req *Medic
 			MedicalRecordID: pgtype.Int8{Int64: recordID, Valid: true},
 			Condition:       pgtype.Text{String: req.Condition, Valid: true},
 			DiagnosisDate:   pgtype.Timestamp{Time: t, Valid: true},
-			Treatment:       pgtype.Int8{Int64: req.Treatment, Valid: true},
 			Notes:           pgtype.Text{String: req.Notes, Valid: true},
 		})
 		if err != nil {
@@ -77,7 +76,6 @@ func (s *MedicalRecordService) CreateMedicalHistory(ctx *gin.Context, req *Medic
 		MedicalRecordID: rec.MedicalRecordID.Int64,
 		Condition:       rec.Condition.String,
 		DiagnosisDate:   rec.DiagnosisDate.Time.Format("2006-01-02 15:04:05"),
-		Treatment:       rec.Treatment.Int64,
 		Notes:           rec.Notes.String,
 		CreatedAt:       rec.CreatedAt.Time.Format("2006-01-02 15:04:05"),
 		UpdatedAt:       rec.UpdatedAt.Time.Format("2006-01-02 15:04:05"),

@@ -146,7 +146,6 @@ type MedicalHistory struct {
 	Condition       pgtype.Text      `json:"condition"`
 	DiagnosisDate   pgtype.Timestamp `json:"diagnosis_date"`
 	Notes           pgtype.Text      `json:"notes"`
-	Treatment       pgtype.Int8      `json:"treatment"`
 	CreatedAt       pgtype.Timestamp `json:"created_at"`
 	UpdatedAt       pgtype.Timestamp `json:"updated_at"`
 }
@@ -167,12 +166,41 @@ type Medicine struct {
 	Frequency      pgtype.Text        `json:"frequency"`
 	Duration       pgtype.Text        `json:"duration"`
 	SideEffects    pgtype.Text        `json:"side_effects"`
-	StartDate      pgtype.Date        `json:"start_date"`
-	EndDate        pgtype.Date        `json:"end_date"`
-	CreatedAt      pgtype.Timestamptz `json:"created_at"`
-	UpdatedAt      pgtype.Timestamptz `json:"updated_at"`
 	ExpirationDate pgtype.Date        `json:"expiration_date"`
 	Quantity       pgtype.Int8        `json:"quantity"`
+	UnitPrice      pgtype.Float8      `json:"unit_price"`
+	ReorderLevel   pgtype.Int8        `json:"reorder_level"`
+	CreatedAt      pgtype.Timestamptz `json:"created_at"`
+	UpdatedAt      pgtype.Timestamptz `json:"updated_at"`
+}
+
+type MedicineSupplier struct {
+	ID          int64              `json:"id"`
+	Name        string             `json:"name"`
+	Email       pgtype.Text        `json:"email"`
+	Phone       pgtype.Text        `json:"phone"`
+	Address     pgtype.Text        `json:"address"`
+	ContactName pgtype.Text        `json:"contact_name"`
+	Notes       pgtype.Text        `json:"notes"`
+	CreatedAt   pgtype.Timestamptz `json:"created_at"`
+	UpdatedAt   pgtype.Timestamptz `json:"updated_at"`
+}
+
+type MedicineTransaction struct {
+	ID              int64              `json:"id"`
+	MedicineID      int64              `json:"medicine_id"`
+	Quantity        int64              `json:"quantity"`
+	TransactionType string             `json:"transaction_type"`
+	UnitPrice       pgtype.Float8      `json:"unit_price"`
+	TotalAmount     pgtype.Float8      `json:"total_amount"`
+	TransactionDate pgtype.Timestamptz `json:"transaction_date"`
+	SupplierID      pgtype.Int8        `json:"supplier_id"`
+	ExpirationDate  pgtype.Date        `json:"expiration_date"`
+	Notes           pgtype.Text        `json:"notes"`
+	PrescriptionID  pgtype.Int8        `json:"prescription_id"`
+	AppointmentID   pgtype.Int8        `json:"appointment_id"`
+	CreatedBy       pgtype.Text        `json:"created_by"`
+	CreatedAt       pgtype.Timestamptz `json:"created_at"`
 }
 
 type Notification struct {

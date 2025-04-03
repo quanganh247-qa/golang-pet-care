@@ -530,9 +530,8 @@ func (q *Queries) GetTreatmentProgress(ctx context.Context, id int64) ([]GetTrea
 }
 
 const getTreatmentsByPet = `-- name: GetTreatmentsByPet :many
-SELECT t.id, t.pet_id, t.diseases, t.start_date, t.end_date, t.status, t.name, t.type, t.description, t.created_at, t.doctor_id, d.name AS disease
+SELECT t.id, t.pet_id, t.diseases, t.start_date, t.end_date, t.status, t.name, t.type, t.description, t.created_at, t.doctor_id
 FROM pet_treatments t
-JOIN diseases d ON t.disease_id = d.id
 WHERE t.pet_id = $1 LIMIT $2 OFFSET $3
 `
 
@@ -542,30 +541,15 @@ type GetTreatmentsByPetParams struct {
 	Offset int32       `json:"offset"`
 }
 
-type GetTreatmentsByPetRow struct {
-	ID          int64              `json:"id"`
-	PetID       pgtype.Int8        `json:"pet_id"`
-	Diseases    pgtype.Text        `json:"diseases"`
-	StartDate   pgtype.Date        `json:"start_date"`
-	EndDate     pgtype.Date        `json:"end_date"`
-	Status      pgtype.Text        `json:"status"`
-	Name        pgtype.Text        `json:"name"`
-	Type        pgtype.Text        `json:"type"`
-	Description pgtype.Text        `json:"description"`
-	CreatedAt   pgtype.Timestamptz `json:"created_at"`
-	DoctorID    pgtype.Int4        `json:"doctor_id"`
-	Disease     string             `json:"disease"`
-}
-
-func (q *Queries) GetTreatmentsByPet(ctx context.Context, arg GetTreatmentsByPetParams) ([]GetTreatmentsByPetRow, error) {
+func (q *Queries) GetTreatmentsByPet(ctx context.Context, arg GetTreatmentsByPetParams) ([]PetTreatment, error) {
 	rows, err := q.db.Query(ctx, getTreatmentsByPet, arg.PetID, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	items := []GetTreatmentsByPetRow{}
+	items := []PetTreatment{}
 	for rows.Next() {
-		var i GetTreatmentsByPetRow
+		var i PetTreatment
 		if err := rows.Scan(
 			&i.ID,
 			&i.PetID,
@@ -578,7 +562,6 @@ func (q *Queries) GetTreatmentsByPet(ctx context.Context, arg GetTreatmentsByPet
 			&i.Description,
 			&i.CreatedAt,
 			&i.DoctorID,
-			&i.Disease,
 		); err != nil {
 			return nil, err
 		}

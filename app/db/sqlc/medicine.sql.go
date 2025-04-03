@@ -23,21 +23,35 @@ func (q *Queries) CountAllMedicines(ctx context.Context) (int64, error) {
 }
 
 const createMedicine = `-- name: CreateMedicine :one
-INSERT INTO medicines (name, description, usage, dosage, frequency, duration, side_effects, expiration_date, quantity)
-VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
-RETURNING id, name, description, usage, dosage, frequency, duration, side_effects, start_date, end_date, created_at, updated_at, expiration_date, quantity
+INSERT INTO medicines (
+  name, 
+  description, 
+  usage, 
+  dosage, 
+  frequency, 
+  duration, 
+  side_effects, 
+  expiration_date, 
+  quantity,
+  unit_price,
+  reorder_level
+)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+RETURNING id, name, description, usage, dosage, frequency, duration, side_effects, expiration_date, quantity, unit_price, reorder_level, created_at, updated_at
 `
 
 type CreateMedicineParams struct {
-	Name           string      `json:"name"`
-	Description    pgtype.Text `json:"description"`
-	Usage          pgtype.Text `json:"usage"`
-	Dosage         pgtype.Text `json:"dosage"`
-	Frequency      pgtype.Text `json:"frequency"`
-	Duration       pgtype.Text `json:"duration"`
-	SideEffects    pgtype.Text `json:"side_effects"`
-	ExpirationDate pgtype.Date `json:"expiration_date"`
-	Quantity       pgtype.Int8 `json:"quantity"`
+	Name           string        `json:"name"`
+	Description    pgtype.Text   `json:"description"`
+	Usage          pgtype.Text   `json:"usage"`
+	Dosage         pgtype.Text   `json:"dosage"`
+	Frequency      pgtype.Text   `json:"frequency"`
+	Duration       pgtype.Text   `json:"duration"`
+	SideEffects    pgtype.Text   `json:"side_effects"`
+	ExpirationDate pgtype.Date   `json:"expiration_date"`
+	Quantity       pgtype.Int8   `json:"quantity"`
+	UnitPrice      pgtype.Float8 `json:"unit_price"`
+	ReorderLevel   pgtype.Int8   `json:"reorder_level"`
 }
 
 func (q *Queries) CreateMedicine(ctx context.Context, arg CreateMedicineParams) (Medicine, error) {
@@ -51,6 +65,8 @@ func (q *Queries) CreateMedicine(ctx context.Context, arg CreateMedicineParams) 
 		arg.SideEffects,
 		arg.ExpirationDate,
 		arg.Quantity,
+		arg.UnitPrice,
+		arg.ReorderLevel,
 	)
 	var i Medicine
 	err := row.Scan(
@@ -62,14 +78,148 @@ func (q *Queries) CreateMedicine(ctx context.Context, arg CreateMedicineParams) 
 		&i.Frequency,
 		&i.Duration,
 		&i.SideEffects,
-		&i.StartDate,
-		&i.EndDate,
-		&i.CreatedAt,
-		&i.UpdatedAt,
 		&i.ExpirationDate,
 		&i.Quantity,
+		&i.UnitPrice,
+		&i.ReorderLevel,
+		&i.CreatedAt,
+		&i.UpdatedAt,
 	)
 	return i, err
+}
+
+const createMedicineTransaction = `-- name: CreateMedicineTransaction :one
+
+INSERT INTO medicine_transactions (
+  medicine_id,
+  quantity,
+  transaction_type,
+  unit_price,
+  total_amount,
+  supplier_id,
+  expiration_date,
+  notes,
+  prescription_id,
+  appointment_id,
+  created_by
+)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+RETURNING id, medicine_id, quantity, transaction_type, unit_price, total_amount, transaction_date, supplier_id, expiration_date, notes, prescription_id, appointment_id, created_by, created_at
+`
+
+type CreateMedicineTransactionParams struct {
+	MedicineID      int64         `json:"medicine_id"`
+	Quantity        int64         `json:"quantity"`
+	TransactionType string        `json:"transaction_type"`
+	UnitPrice       pgtype.Float8 `json:"unit_price"`
+	TotalAmount     pgtype.Float8 `json:"total_amount"`
+	SupplierID      pgtype.Int8   `json:"supplier_id"`
+	ExpirationDate  pgtype.Date   `json:"expiration_date"`
+	Notes           pgtype.Text   `json:"notes"`
+	PrescriptionID  pgtype.Int8   `json:"prescription_id"`
+	AppointmentID   pgtype.Int8   `json:"appointment_id"`
+	CreatedBy       pgtype.Text   `json:"created_by"`
+}
+
+// Transaction management
+func (q *Queries) CreateMedicineTransaction(ctx context.Context, arg CreateMedicineTransactionParams) (MedicineTransaction, error) {
+	row := q.db.QueryRow(ctx, createMedicineTransaction,
+		arg.MedicineID,
+		arg.Quantity,
+		arg.TransactionType,
+		arg.UnitPrice,
+		arg.TotalAmount,
+		arg.SupplierID,
+		arg.ExpirationDate,
+		arg.Notes,
+		arg.PrescriptionID,
+		arg.AppointmentID,
+		arg.CreatedBy,
+	)
+	var i MedicineTransaction
+	err := row.Scan(
+		&i.ID,
+		&i.MedicineID,
+		&i.Quantity,
+		&i.TransactionType,
+		&i.UnitPrice,
+		&i.TotalAmount,
+		&i.TransactionDate,
+		&i.SupplierID,
+		&i.ExpirationDate,
+		&i.Notes,
+		&i.PrescriptionID,
+		&i.AppointmentID,
+		&i.CreatedBy,
+		&i.CreatedAt,
+	)
+	return i, err
+}
+
+const createSupplier = `-- name: CreateSupplier :one
+
+INSERT INTO medicine_suppliers (
+  name,
+  email,
+  phone,
+  address,
+  contact_name,
+  notes
+)
+VALUES ($1, $2, $3, $4, $5, $6)
+RETURNING id, name, email, phone, address, contact_name, notes, created_at, updated_at
+`
+
+type CreateSupplierParams struct {
+	Name        string      `json:"name"`
+	Email       pgtype.Text `json:"email"`
+	Phone       pgtype.Text `json:"phone"`
+	Address     pgtype.Text `json:"address"`
+	ContactName pgtype.Text `json:"contact_name"`
+	Notes       pgtype.Text `json:"notes"`
+}
+
+// Supplier management
+func (q *Queries) CreateSupplier(ctx context.Context, arg CreateSupplierParams) (MedicineSupplier, error) {
+	row := q.db.QueryRow(ctx, createSupplier,
+		arg.Name,
+		arg.Email,
+		arg.Phone,
+		arg.Address,
+		arg.ContactName,
+		arg.Notes,
+	)
+	var i MedicineSupplier
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.Email,
+		&i.Phone,
+		&i.Address,
+		&i.ContactName,
+		&i.Notes,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const deleteMedicine = `-- name: DeleteMedicine :exec
+DELETE FROM medicines WHERE id = $1
+`
+
+func (q *Queries) DeleteMedicine(ctx context.Context, id int64) error {
+	_, err := q.db.Exec(ctx, deleteMedicine, id)
+	return err
+}
+
+const deleteSupplier = `-- name: DeleteSupplier :exec
+DELETE FROM medicine_suppliers WHERE id = $1
+`
+
+func (q *Queries) DeleteSupplier(ctx context.Context, id int64) error {
+	_, err := q.db.Exec(ctx, deleteSupplier, id)
+	return err
 }
 
 const getAllMedicines = `-- name: GetAllMedicines :many
@@ -82,31 +232,42 @@ SELECT
     frequency, 
     duration, 
     side_effects, 
-    start_date, 
-    end_date, 
     created_at, 
     updated_at, 
     expiration_date, 
-    quantity
+    quantity,
+    unit_price,
+    reorder_level
 FROM medicines
-ORDER BY name
-LIMIT $1 OFFSET $2
+ORDER BY name ASC
 `
 
-type GetAllMedicinesParams struct {
-	Limit  int32 `json:"limit"`
-	Offset int32 `json:"offset"`
+type GetAllMedicinesRow struct {
+	ID             int64              `json:"id"`
+	Name           string             `json:"name"`
+	Description    pgtype.Text        `json:"description"`
+	Usage          pgtype.Text        `json:"usage"`
+	Dosage         pgtype.Text        `json:"dosage"`
+	Frequency      pgtype.Text        `json:"frequency"`
+	Duration       pgtype.Text        `json:"duration"`
+	SideEffects    pgtype.Text        `json:"side_effects"`
+	CreatedAt      pgtype.Timestamptz `json:"created_at"`
+	UpdatedAt      pgtype.Timestamptz `json:"updated_at"`
+	ExpirationDate pgtype.Date        `json:"expiration_date"`
+	Quantity       pgtype.Int8        `json:"quantity"`
+	UnitPrice      pgtype.Float8      `json:"unit_price"`
+	ReorderLevel   pgtype.Int8        `json:"reorder_level"`
 }
 
-func (q *Queries) GetAllMedicines(ctx context.Context, arg GetAllMedicinesParams) ([]Medicine, error) {
-	rows, err := q.db.Query(ctx, getAllMedicines, arg.Limit, arg.Offset)
+func (q *Queries) GetAllMedicines(ctx context.Context) ([]GetAllMedicinesRow, error) {
+	rows, err := q.db.Query(ctx, getAllMedicines)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	items := []Medicine{}
+	items := []GetAllMedicinesRow{}
 	for rows.Next() {
-		var i Medicine
+		var i GetAllMedicinesRow
 		if err := rows.Scan(
 			&i.ID,
 			&i.Name,
@@ -116,11 +277,104 @@ func (q *Queries) GetAllMedicines(ctx context.Context, arg GetAllMedicinesParams
 			&i.Frequency,
 			&i.Duration,
 			&i.SideEffects,
-			&i.StartDate,
-			&i.EndDate,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 			&i.ExpirationDate,
+			&i.Quantity,
+			&i.UnitPrice,
+			&i.ReorderLevel,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getAllSuppliers = `-- name: GetAllSuppliers :many
+SELECT id, name, email, phone, address, contact_name, notes, created_at, updated_at FROM medicine_suppliers
+ORDER BY name ASC
+LIMIT $1 OFFSET $2
+`
+
+type GetAllSuppliersParams struct {
+	Limit  int32 `json:"limit"`
+	Offset int32 `json:"offset"`
+}
+
+func (q *Queries) GetAllSuppliers(ctx context.Context, arg GetAllSuppliersParams) ([]MedicineSupplier, error) {
+	rows, err := q.db.Query(ctx, getAllSuppliers, arg.Limit, arg.Offset)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []MedicineSupplier{}
+	for rows.Next() {
+		var i MedicineSupplier
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.Email,
+			&i.Phone,
+			&i.Address,
+			&i.ContactName,
+			&i.Notes,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getExpiringMedicines = `-- name: GetExpiringMedicines :many
+SELECT 
+    m.id,
+    m.name,
+    m.expiration_date,
+    (m.expiration_date - CURRENT_DATE) as days_until_expiry,
+    m.quantity
+FROM 
+    medicines m
+WHERE 
+    m.expiration_date IS NOT NULL
+    AND m.expiration_date - CURRENT_DATE <= $1
+    AND m.expiration_date >= CURRENT_DATE
+    AND m.quantity > 0
+ORDER BY 
+    m.expiration_date ASC
+`
+
+type GetExpiringMedicinesRow struct {
+	ID              int64       `json:"id"`
+	Name            string      `json:"name"`
+	ExpirationDate  pgtype.Date `json:"expiration_date"`
+	DaysUntilExpiry int32       `json:"days_until_expiry"`
+	Quantity        pgtype.Int8 `json:"quantity"`
+}
+
+func (q *Queries) GetExpiringMedicines(ctx context.Context, expirationDate pgtype.Date) ([]GetExpiringMedicinesRow, error) {
+	rows, err := q.db.Query(ctx, getExpiringMedicines, expirationDate)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetExpiringMedicinesRow{}
+	for rows.Next() {
+		var i GetExpiringMedicinesRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.ExpirationDate,
+			&i.DaysUntilExpiry,
 			&i.Quantity,
 		); err != nil {
 			return nil, err
@@ -133,8 +387,54 @@ func (q *Queries) GetAllMedicines(ctx context.Context, arg GetAllMedicinesParams
 	return items, nil
 }
 
+const getLowStockMedicines = `-- name: GetLowStockMedicines :many
+SELECT 
+    m.id,
+    m.name,
+    m.quantity as current_stock,
+    m.reorder_level
+FROM 
+    medicines m
+WHERE 
+    m.quantity < m.reorder_level
+ORDER BY 
+    (m.reorder_level - m.quantity) DESC
+`
+
+type GetLowStockMedicinesRow struct {
+	ID           int64       `json:"id"`
+	Name         string      `json:"name"`
+	CurrentStock pgtype.Int8 `json:"current_stock"`
+	ReorderLevel pgtype.Int8 `json:"reorder_level"`
+}
+
+func (q *Queries) GetLowStockMedicines(ctx context.Context) ([]GetLowStockMedicinesRow, error) {
+	rows, err := q.db.Query(ctx, getLowStockMedicines)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetLowStockMedicinesRow{}
+	for rows.Next() {
+		var i GetLowStockMedicinesRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.CurrentStock,
+			&i.ReorderLevel,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getMedicineByID = `-- name: GetMedicineByID :one
-SELECT id, name, description, usage, dosage, frequency, duration, side_effects, start_date, end_date, created_at, updated_at, expiration_date, quantity FROM medicines
+SELECT id, name, description, usage, dosage, frequency, duration, side_effects, expiration_date, quantity, unit_price, reorder_level, created_at, updated_at FROM medicines
 WHERE id = $1 LIMIT 1
 `
 
@@ -150,21 +450,262 @@ func (q *Queries) GetMedicineByID(ctx context.Context, id int64) (Medicine, erro
 		&i.Frequency,
 		&i.Duration,
 		&i.SideEffects,
-		&i.StartDate,
-		&i.EndDate,
-		&i.CreatedAt,
-		&i.UpdatedAt,
 		&i.ExpirationDate,
 		&i.Quantity,
+		&i.UnitPrice,
+		&i.ReorderLevel,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const getMedicineTransactions = `-- name: GetMedicineTransactions :many
+SELECT 
+  mt.id, mt.medicine_id, mt.quantity, mt.transaction_type, mt.unit_price, mt.total_amount, mt.transaction_date, mt.supplier_id, mt.expiration_date, mt.notes, mt.prescription_id, mt.appointment_id, mt.created_by, mt.created_at,
+  m.name as medicine_name,
+  COALESCE(ms.name, '') as supplier_name
+FROM medicine_transactions mt
+JOIN medicines m ON mt.medicine_id = m.id
+LEFT JOIN medicine_suppliers ms ON mt.supplier_id = ms.id
+ORDER BY mt.transaction_date DESC
+LIMIT $1 OFFSET $2
+`
+
+type GetMedicineTransactionsParams struct {
+	Limit  int32 `json:"limit"`
+	Offset int32 `json:"offset"`
+}
+
+type GetMedicineTransactionsRow struct {
+	ID              int64              `json:"id"`
+	MedicineID      int64              `json:"medicine_id"`
+	Quantity        int64              `json:"quantity"`
+	TransactionType string             `json:"transaction_type"`
+	UnitPrice       pgtype.Float8      `json:"unit_price"`
+	TotalAmount     pgtype.Float8      `json:"total_amount"`
+	TransactionDate pgtype.Timestamptz `json:"transaction_date"`
+	SupplierID      pgtype.Int8        `json:"supplier_id"`
+	ExpirationDate  pgtype.Date        `json:"expiration_date"`
+	Notes           pgtype.Text        `json:"notes"`
+	PrescriptionID  pgtype.Int8        `json:"prescription_id"`
+	AppointmentID   pgtype.Int8        `json:"appointment_id"`
+	CreatedBy       pgtype.Text        `json:"created_by"`
+	CreatedAt       pgtype.Timestamptz `json:"created_at"`
+	MedicineName    string             `json:"medicine_name"`
+	SupplierName    string             `json:"supplier_name"`
+}
+
+func (q *Queries) GetMedicineTransactions(ctx context.Context, arg GetMedicineTransactionsParams) ([]GetMedicineTransactionsRow, error) {
+	rows, err := q.db.Query(ctx, getMedicineTransactions, arg.Limit, arg.Offset)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetMedicineTransactionsRow{}
+	for rows.Next() {
+		var i GetMedicineTransactionsRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.MedicineID,
+			&i.Quantity,
+			&i.TransactionType,
+			&i.UnitPrice,
+			&i.TotalAmount,
+			&i.TransactionDate,
+			&i.SupplierID,
+			&i.ExpirationDate,
+			&i.Notes,
+			&i.PrescriptionID,
+			&i.AppointmentID,
+			&i.CreatedBy,
+			&i.CreatedAt,
+			&i.MedicineName,
+			&i.SupplierName,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getMedicineTransactionsByDate = `-- name: GetMedicineTransactionsByDate :many
+SELECT 
+  mt.id, mt.medicine_id, mt.quantity, mt.transaction_type, mt.unit_price, mt.total_amount, mt.transaction_date, mt.supplier_id, mt.expiration_date, mt.notes, mt.prescription_id, mt.appointment_id, mt.created_by, mt.created_at,
+  m.name as medicine_name,
+  COALESCE(ms.name, '') as supplier_name
+FROM medicine_transactions mt
+JOIN medicines m ON mt.medicine_id = m.id
+LEFT JOIN medicine_suppliers ms ON mt.supplier_id = ms.id
+WHERE mt.transaction_date BETWEEN $1 AND $2
+ORDER BY mt.transaction_date DESC
+`
+
+type GetMedicineTransactionsByDateParams struct {
+	TransactionDate   pgtype.Timestamptz `json:"transaction_date"`
+	TransactionDate_2 pgtype.Timestamptz `json:"transaction_date_2"`
+}
+
+type GetMedicineTransactionsByDateRow struct {
+	ID              int64              `json:"id"`
+	MedicineID      int64              `json:"medicine_id"`
+	Quantity        int64              `json:"quantity"`
+	TransactionType string             `json:"transaction_type"`
+	UnitPrice       pgtype.Float8      `json:"unit_price"`
+	TotalAmount     pgtype.Float8      `json:"total_amount"`
+	TransactionDate pgtype.Timestamptz `json:"transaction_date"`
+	SupplierID      pgtype.Int8        `json:"supplier_id"`
+	ExpirationDate  pgtype.Date        `json:"expiration_date"`
+	Notes           pgtype.Text        `json:"notes"`
+	PrescriptionID  pgtype.Int8        `json:"prescription_id"`
+	AppointmentID   pgtype.Int8        `json:"appointment_id"`
+	CreatedBy       pgtype.Text        `json:"created_by"`
+	CreatedAt       pgtype.Timestamptz `json:"created_at"`
+	MedicineName    string             `json:"medicine_name"`
+	SupplierName    string             `json:"supplier_name"`
+}
+
+func (q *Queries) GetMedicineTransactionsByDate(ctx context.Context, arg GetMedicineTransactionsByDateParams) ([]GetMedicineTransactionsByDateRow, error) {
+	rows, err := q.db.Query(ctx, getMedicineTransactionsByDate, arg.TransactionDate, arg.TransactionDate_2)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetMedicineTransactionsByDateRow{}
+	for rows.Next() {
+		var i GetMedicineTransactionsByDateRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.MedicineID,
+			&i.Quantity,
+			&i.TransactionType,
+			&i.UnitPrice,
+			&i.TotalAmount,
+			&i.TransactionDate,
+			&i.SupplierID,
+			&i.ExpirationDate,
+			&i.Notes,
+			&i.PrescriptionID,
+			&i.AppointmentID,
+			&i.CreatedBy,
+			&i.CreatedAt,
+			&i.MedicineName,
+			&i.SupplierName,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getMedicineTransactionsByMedicineID = `-- name: GetMedicineTransactionsByMedicineID :many
+SELECT 
+  mt.id, mt.medicine_id, mt.quantity, mt.transaction_type, mt.unit_price, mt.total_amount, mt.transaction_date, mt.supplier_id, mt.expiration_date, mt.notes, mt.prescription_id, mt.appointment_id, mt.created_by, mt.created_at,
+  m.name as medicine_name,
+  COALESCE(ms.name, '') as supplier_name
+FROM medicine_transactions mt
+JOIN medicines m ON mt.medicine_id = m.id
+LEFT JOIN medicine_suppliers ms ON mt.supplier_id = ms.id
+WHERE mt.medicine_id = $1
+ORDER BY mt.transaction_date DESC
+LIMIT $2 OFFSET $3
+`
+
+type GetMedicineTransactionsByMedicineIDParams struct {
+	MedicineID int64 `json:"medicine_id"`
+	Limit      int32 `json:"limit"`
+	Offset     int32 `json:"offset"`
+}
+
+type GetMedicineTransactionsByMedicineIDRow struct {
+	ID              int64              `json:"id"`
+	MedicineID      int64              `json:"medicine_id"`
+	Quantity        int64              `json:"quantity"`
+	TransactionType string             `json:"transaction_type"`
+	UnitPrice       pgtype.Float8      `json:"unit_price"`
+	TotalAmount     pgtype.Float8      `json:"total_amount"`
+	TransactionDate pgtype.Timestamptz `json:"transaction_date"`
+	SupplierID      pgtype.Int8        `json:"supplier_id"`
+	ExpirationDate  pgtype.Date        `json:"expiration_date"`
+	Notes           pgtype.Text        `json:"notes"`
+	PrescriptionID  pgtype.Int8        `json:"prescription_id"`
+	AppointmentID   pgtype.Int8        `json:"appointment_id"`
+	CreatedBy       pgtype.Text        `json:"created_by"`
+	CreatedAt       pgtype.Timestamptz `json:"created_at"`
+	MedicineName    string             `json:"medicine_name"`
+	SupplierName    string             `json:"supplier_name"`
+}
+
+func (q *Queries) GetMedicineTransactionsByMedicineID(ctx context.Context, arg GetMedicineTransactionsByMedicineIDParams) ([]GetMedicineTransactionsByMedicineIDRow, error) {
+	rows, err := q.db.Query(ctx, getMedicineTransactionsByMedicineID, arg.MedicineID, arg.Limit, arg.Offset)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetMedicineTransactionsByMedicineIDRow{}
+	for rows.Next() {
+		var i GetMedicineTransactionsByMedicineIDRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.MedicineID,
+			&i.Quantity,
+			&i.TransactionType,
+			&i.UnitPrice,
+			&i.TotalAmount,
+			&i.TransactionDate,
+			&i.SupplierID,
+			&i.ExpirationDate,
+			&i.Notes,
+			&i.PrescriptionID,
+			&i.AppointmentID,
+			&i.CreatedBy,
+			&i.CreatedAt,
+			&i.MedicineName,
+			&i.SupplierName,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getSupplierByID = `-- name: GetSupplierByID :one
+SELECT id, name, email, phone, address, contact_name, notes, created_at, updated_at FROM medicine_suppliers
+WHERE id = $1 LIMIT 1
+`
+
+func (q *Queries) GetSupplierByID(ctx context.Context, id int64) (MedicineSupplier, error) {
+	row := q.db.QueryRow(ctx, getSupplierByID, id)
+	var i MedicineSupplier
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.Email,
+		&i.Phone,
+		&i.Address,
+		&i.ContactName,
+		&i.Notes,
+		&i.CreatedAt,
+		&i.UpdatedAt,
 	)
 	return i, err
 }
 
 const listMedicinesByPet = `-- name: ListMedicinesByPet :many
 SELECT 
-    m.usage AS medicine_usage,
-    m.name AS medicine_name,
-    m.description AS medicine_description,
+    m.id, m.name, m.description, m.usage, m.dosage, m.frequency, m.duration, m.side_effects, m.expiration_date, m.quantity, m.unit_price, m.reorder_level, m.created_at, m.updated_at,
     pm.dosage,
     pm.frequency,
     pm.duration,
@@ -194,16 +735,27 @@ type ListMedicinesByPetParams struct {
 }
 
 type ListMedicinesByPetRow struct {
-	MedicineUsage       pgtype.Text `json:"medicine_usage"`
-	MedicineName        string      `json:"medicine_name"`
-	MedicineDescription pgtype.Text `json:"medicine_description"`
-	Dosage              pgtype.Text `json:"dosage"`
-	Frequency           pgtype.Text `json:"frequency"`
-	Duration            pgtype.Text `json:"duration"`
-	MedicineNotes       pgtype.Text `json:"medicine_notes"`
-	TreatmentStartDate  pgtype.Date `json:"treatment_start_date"`
-	TreatmentEndDate    pgtype.Date `json:"treatment_end_date"`
-	TreatmentStatus     pgtype.Text `json:"treatment_status"`
+	ID                 int64              `json:"id"`
+	Name               string             `json:"name"`
+	Description        pgtype.Text        `json:"description"`
+	Usage              pgtype.Text        `json:"usage"`
+	Dosage             pgtype.Text        `json:"dosage"`
+	Frequency          pgtype.Text        `json:"frequency"`
+	Duration           pgtype.Text        `json:"duration"`
+	SideEffects        pgtype.Text        `json:"side_effects"`
+	ExpirationDate     pgtype.Date        `json:"expiration_date"`
+	Quantity           pgtype.Int8        `json:"quantity"`
+	UnitPrice          pgtype.Float8      `json:"unit_price"`
+	ReorderLevel       pgtype.Int8        `json:"reorder_level"`
+	CreatedAt          pgtype.Timestamptz `json:"created_at"`
+	UpdatedAt          pgtype.Timestamptz `json:"updated_at"`
+	Dosage_2           pgtype.Text        `json:"dosage_2"`
+	Frequency_2        pgtype.Text        `json:"frequency_2"`
+	Duration_2         pgtype.Text        `json:"duration_2"`
+	MedicineNotes      pgtype.Text        `json:"medicine_notes"`
+	TreatmentStartDate pgtype.Date        `json:"treatment_start_date"`
+	TreatmentEndDate   pgtype.Date        `json:"treatment_end_date"`
+	TreatmentStatus    pgtype.Text        `json:"treatment_status"`
 }
 
 func (q *Queries) ListMedicinesByPet(ctx context.Context, arg ListMedicinesByPetParams) ([]ListMedicinesByPetRow, error) {
@@ -221,12 +773,23 @@ func (q *Queries) ListMedicinesByPet(ctx context.Context, arg ListMedicinesByPet
 	for rows.Next() {
 		var i ListMedicinesByPetRow
 		if err := rows.Scan(
-			&i.MedicineUsage,
-			&i.MedicineName,
-			&i.MedicineDescription,
+			&i.ID,
+			&i.Name,
+			&i.Description,
+			&i.Usage,
 			&i.Dosage,
 			&i.Frequency,
 			&i.Duration,
+			&i.SideEffects,
+			&i.ExpirationDate,
+			&i.Quantity,
+			&i.UnitPrice,
+			&i.ReorderLevel,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.Dosage_2,
+			&i.Frequency_2,
+			&i.Duration_2,
 			&i.MedicineNotes,
 			&i.TreatmentStartDate,
 			&i.TreatmentEndDate,
@@ -240,4 +803,157 @@ func (q *Queries) ListMedicinesByPet(ctx context.Context, arg ListMedicinesByPet
 		return nil, err
 	}
 	return items, nil
+}
+
+const searchMedicinesByName = `-- name: SearchMedicinesByName :many
+SELECT id, name, description, usage, dosage, frequency, duration, side_effects, expiration_date, quantity, unit_price, reorder_level, created_at, updated_at FROM medicines
+WHERE name ILIKE $1
+ORDER BY name ASC
+LIMIT $2 OFFSET $3
+`
+
+type SearchMedicinesByNameParams struct {
+	Name   string `json:"name"`
+	Limit  int32  `json:"limit"`
+	Offset int32  `json:"offset"`
+}
+
+func (q *Queries) SearchMedicinesByName(ctx context.Context, arg SearchMedicinesByNameParams) ([]Medicine, error) {
+	rows, err := q.db.Query(ctx, searchMedicinesByName, arg.Name, arg.Limit, arg.Offset)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []Medicine{}
+	for rows.Next() {
+		var i Medicine
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.Description,
+			&i.Usage,
+			&i.Dosage,
+			&i.Frequency,
+			&i.Duration,
+			&i.SideEffects,
+			&i.ExpirationDate,
+			&i.Quantity,
+			&i.UnitPrice,
+			&i.ReorderLevel,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const updateMedicine = `-- name: UpdateMedicine :exec
+UPDATE medicines 
+SET 
+  name = $2,
+  description = $3,
+  usage = $4,
+  dosage = $5,
+  frequency = $6,
+  duration = $7,
+  side_effects = $8,
+  expiration_date = $9,
+  quantity = $10,
+  unit_price = $11,
+  reorder_level = $12,
+  updated_at = CURRENT_TIMESTAMP
+WHERE id = $1
+`
+
+type UpdateMedicineParams struct {
+	ID             int64         `json:"id"`
+	Name           string        `json:"name"`
+	Description    pgtype.Text   `json:"description"`
+	Usage          pgtype.Text   `json:"usage"`
+	Dosage         pgtype.Text   `json:"dosage"`
+	Frequency      pgtype.Text   `json:"frequency"`
+	Duration       pgtype.Text   `json:"duration"`
+	SideEffects    pgtype.Text   `json:"side_effects"`
+	ExpirationDate pgtype.Date   `json:"expiration_date"`
+	Quantity       pgtype.Int8   `json:"quantity"`
+	UnitPrice      pgtype.Float8 `json:"unit_price"`
+	ReorderLevel   pgtype.Int8   `json:"reorder_level"`
+}
+
+func (q *Queries) UpdateMedicine(ctx context.Context, arg UpdateMedicineParams) error {
+	_, err := q.db.Exec(ctx, updateMedicine,
+		arg.ID,
+		arg.Name,
+		arg.Description,
+		arg.Usage,
+		arg.Dosage,
+		arg.Frequency,
+		arg.Duration,
+		arg.SideEffects,
+		arg.ExpirationDate,
+		arg.Quantity,
+		arg.UnitPrice,
+		arg.ReorderLevel,
+	)
+	return err
+}
+
+const updateMedicineQuantity = `-- name: UpdateMedicineQuantity :exec
+UPDATE medicines
+SET 
+  quantity = quantity + $2,
+  updated_at = CURRENT_TIMESTAMP
+WHERE id = $1
+`
+
+type UpdateMedicineQuantityParams struct {
+	ID       int64       `json:"id"`
+	Quantity pgtype.Int8 `json:"quantity"`
+}
+
+func (q *Queries) UpdateMedicineQuantity(ctx context.Context, arg UpdateMedicineQuantityParams) error {
+	_, err := q.db.Exec(ctx, updateMedicineQuantity, arg.ID, arg.Quantity)
+	return err
+}
+
+const updateSupplier = `-- name: UpdateSupplier :exec
+UPDATE medicine_suppliers
+SET
+  name = $2,
+  email = $3,
+  phone = $4,
+  address = $5,
+  contact_name = $6,
+  notes = $7,
+  updated_at = CURRENT_TIMESTAMP
+WHERE id = $1
+`
+
+type UpdateSupplierParams struct {
+	ID          int64       `json:"id"`
+	Name        string      `json:"name"`
+	Email       pgtype.Text `json:"email"`
+	Phone       pgtype.Text `json:"phone"`
+	Address     pgtype.Text `json:"address"`
+	ContactName pgtype.Text `json:"contact_name"`
+	Notes       pgtype.Text `json:"notes"`
+}
+
+func (q *Queries) UpdateSupplier(ctx context.Context, arg UpdateSupplierParams) error {
+	_, err := q.db.Exec(ctx, updateSupplier,
+		arg.ID,
+		arg.Name,
+		arg.Email,
+		arg.Phone,
+		arg.Address,
+		arg.ContactName,
+		arg.Notes,
+	)
+	return err
 }

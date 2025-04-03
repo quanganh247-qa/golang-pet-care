@@ -40,9 +40,8 @@ VALUES ($1, $2, $3, $4, $5, $6, $7, now()) RETURNING *;
 
 
 -- name: GetTreatmentsByPet :many
-SELECT t.*, d.name AS disease
+SELECT t.*
 FROM pet_treatments t
-JOIN diseases d ON t.disease_id = d.id
 WHERE t.pet_id = $1 LIMIT $2 OFFSET $3;
 
 -- name: GetTreatmentPhasesByTreatment :many

@@ -49,7 +49,6 @@ CREATE TABLE public.medical_history (
 	"condition" varchar NULL,
 	diagnosis_date timestamp NULL,
 	notes text NULL,
-	treatment int8 NULL,
 	created_at timestamp NULL,
 	updated_at timestamp NULL,
 	CONSTRAINT medical_history_pk PRIMARY KEY (id)
@@ -86,12 +85,12 @@ CREATE TABLE public.medicines (
 	frequency text NULL,
 	duration text NULL,
 	side_effects text NULL,
-	start_date date NULL,
-	end_date date NULL,
-	created_at timestamptz DEFAULT CURRENT_TIMESTAMP NULL,
-	updated_at timestamptz DEFAULT CURRENT_TIMESTAMP NULL,
 	expiration_date date NULL,
 	quantity int8 NULL,
+	unit_price float8 NULL,
+	reorder_level int8 DEFAULT 10 NULL,
+	created_at timestamptz DEFAULT CURRENT_TIMESTAMP NULL,
+	updated_at timestamptz DEFAULT CURRENT_TIMESTAMP NULL,
 	CONSTRAINT medicines_pkey PRIMARY KEY (id)
 );
 
@@ -836,6 +835,7 @@ CREATE INDEX idx_medical_records_pet_id ON public.medical_records (pet_id);
 -- Indexing for public.medicines
 CREATE INDEX idx_medicines_name ON public.medicines (name);
 CREATE INDEX idx_medicines_expiration_date ON public.medicines (expiration_date);
+CREATE INDEX idx_medicines_reorder_level ON public.medicines (reorder_level);
 
 -- Indexing for public.products
 CREATE INDEX idx_products_name ON public.products (name);
@@ -1022,5 +1022,109 @@ BEGIN
         'data', COALESCE(result, '[]'::json),
         'message', CASE WHEN result IS NULL THEN 'No data found' ELSE 'Success' END
     );
+END;
+$$;
+
+-- public.medicine_suppliers definition
+CREATE TABLE public.medicine_suppliers (
+	id bigserial NOT NULL,
+	"name" varchar(255) NOT NULL,
+	email varchar(255) NULL,
+	phone varchar(50) NULL,
+	address text NULL,
+	contact_name varchar(255) NULL,
+	notes text NULL,
+	created_at timestamptz DEFAULT CURRENT_TIMESTAMP NULL,
+	updated_at timestamptz DEFAULT CURRENT_TIMESTAMP NULL,
+	CONSTRAINT medicine_suppliers_pkey PRIMARY KEY (id)
+);
+
+-- public.medicine_transactions definition
+CREATE TABLE public.medicine_transactions (
+	id bigserial NOT NULL,
+	medicine_id int8 NOT NULL,
+	quantity int8 NOT NULL,
+	transaction_type varchar(20) NOT NULL, -- 'import' or 'export'
+	unit_price float8 NULL,
+	total_amount float8 NULL,
+	transaction_date timestamptz DEFAULT CURRENT_TIMESTAMP NULL,
+	supplier_id int8 NULL,
+	expiration_date date NULL,
+	notes text NULL,
+	prescription_id int8 NULL,
+	appointment_id int8 NULL,
+	created_by varchar(255) NULL,
+	created_at timestamptz DEFAULT CURRENT_TIMESTAMP NULL,
+	CONSTRAINT medicine_transactions_pkey PRIMARY KEY (id),
+	CONSTRAINT medicine_transactions_medicine_id_fkey FOREIGN KEY (medicine_id) REFERENCES public.medicines(id),
+	CONSTRAINT medicine_transactions_supplier_id_fkey FOREIGN KEY (supplier_id) REFERENCES public.medicine_suppliers(id),
+	CONSTRAINT medicine_transactions_appointment_id_fkey FOREIGN KEY (appointment_id) REFERENCES public.appointments(appointment_id),
+	CONSTRAINT medicine_transactions_transaction_type_check CHECK (transaction_type IN ('import', 'export'))
+);
+
+-- Indexing for medicine tables
+CREATE INDEX idx_medicine_suppliers_name ON public.medicine_suppliers (name);
+
+CREATE INDEX idx_medicine_transactions_medicine_id ON public.medicine_transactions (medicine_id);
+CREATE INDEX idx_medicine_transactions_transaction_date ON public.medicine_transactions (transaction_date);
+CREATE INDEX idx_medicine_transactions_transaction_type ON public.medicine_transactions (transaction_type);
+CREATE INDEX idx_medicine_transactions_supplier_id ON public.medicine_transactions (supplier_id);
+
+-- Functions for medicine inventory management
+
+-- Get medicines that will expire within a given number of days
+CREATE OR REPLACE FUNCTION public.get_expiring_medicines(days_threshold integer)
+RETURNS TABLE (
+    id bigint,
+    name varchar,
+    expiration_date date,
+    days_until_expiry integer,
+    quantity bigint
+) 
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    RETURN QUERY
+    SELECT 
+        m.id,
+        m.name,
+        m.expiration_date,
+        (m.expiration_date - CURRENT_DATE) as days_until_expiry,
+        m.quantity
+    FROM 
+        public.medicines m
+    WHERE 
+        m.expiration_date IS NOT NULL
+        AND m.expiration_date - CURRENT_DATE <= days_threshold
+        AND m.expiration_date >= CURRENT_DATE
+        AND m.quantity > 0
+    ORDER BY 
+        m.expiration_date ASC;
+END;
+$$;
+
+-- Get medicines that are below their reorder level
+CREATE OR REPLACE FUNCTION public.get_low_stock_medicines()
+RETURNS TABLE (
+    id bigint,
+    name varchar,
+    current_stock bigint,
+    reorder_level bigint
+) 
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    RETURN QUERY
+    SELECT 
+        m.id,
+        m.name,
+        m.quantity as current_stock,
+        m.reorder_level
+    FROM 
+        public.medicines m
+    WHERE 
+        m.quantity < m.reorder_level
+    ORDER BY 
+        (m.reorder_level - m.quantity) DESC;
 END;
 $$;

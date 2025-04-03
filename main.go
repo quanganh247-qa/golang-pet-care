@@ -7,7 +7,6 @@ import (
 	"github.com/fatih/color"
 	"github.com/hibiken/asynq"
 	"github.com/quanganh247-qa/go-blog-be/app/api"
-	"github.com/quanganh247-qa/go-blog-be/app/service/elasticsearch"
 	"github.com/quanganh247-qa/go-blog-be/app/service/websocket"
 	"github.com/quanganh247-qa/go-blog-be/app/service/worker"
 	"github.com/quanganh247-qa/go-blog-be/app/util"
@@ -48,18 +47,18 @@ func main() {
 	}
 	taskDistributor := worker.NewRedisTaskDistributor(redisOpt)
 
-	// Initialize Elasticsearch
-	es, err := elasticsearch.NewESService(*config)
-	if err != nil {
-		fmt.Printf(color.RedString("❌ ERROR: Failed to create elasticsearch client: %v\n", err))
-	}
+	// // Initialize Elasticsearch
+	// es, err := elasticsearch.NewESService(*config)
+	// if err != nil {
+	// 	fmt.Printf(color.RedString("❌ ERROR: Failed to create elasticsearch client: %v\n", err))
+	// }
 
-	es.CreateIndices()
+	// es.CreateIndices()
 	// Initialize WebSocket
 	ws := websocket.NewWSClientManager()
 	go ws.Run()
 
-	server := runGinServer(*config, taskDistributor, es, ws)
+	server := runGinServer(*config, taskDistributor, ws)
 
 	defer func() {
 		server.Connection.Close()
@@ -67,8 +66,8 @@ func main() {
 
 }
 
-func runGinServer(config util.Config, taskDistributor worker.TaskDistributor, es *elasticsearch.ESService, ws *websocket.WSClientManager) *api.Server {
-	server, err := api.NewServer(config, taskDistributor, es, ws)
+func runGinServer(config util.Config, taskDistributor worker.TaskDistributor, ws *websocket.WSClientManager) *api.Server {
+	server, err := api.NewServer(config, taskDistributor, ws)
 	if err != nil {
 		fmt.Printf(color.RedString("❌ ERROR: Failed to create server: %v\n", err))
 	}

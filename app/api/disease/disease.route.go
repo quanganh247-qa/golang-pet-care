@@ -3,11 +3,10 @@ package disease
 import (
 	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
 	"github.com/quanganh247-qa/go-blog-be/app/middleware"
-	"github.com/quanganh247-qa/go-blog-be/app/service/elasticsearch"
 	"github.com/quanganh247-qa/go-blog-be/app/util/perms"
 )
 
-func Routes(routerGroup middleware.RouterGroup, es *elasticsearch.ESService) {
+func Routes(routerGroup middleware.RouterGroup) {
 	dicease := routerGroup.RouterDefault.Group("/")
 	authRoute := routerGroup.RouterAuth(dicease)
 	perRoute := routerGroup.RouterPermission(dicease)
@@ -17,7 +16,7 @@ func Routes(routerGroup middleware.RouterGroup, es *elasticsearch.ESService) {
 		&DiseaseController{
 			service: &DiseaseService{
 				storeDB: db.StoreDB, // This should refer to the actual instance
-				es:      es,
+				// es:      es,
 			},
 		},
 	}
@@ -36,8 +35,8 @@ func Routes(routerGroup middleware.RouterGroup, es *elasticsearch.ESService) {
 	}
 	{
 		perRoute([]perms.Permission{perms.ManageDisease, perms.ManageTreatment}).POST("/treatment", diseaseApi.controller.CreateTreatment)
-		perRoute([]perms.Permission{perms.ManageDisease, perms.ManageTreatment}).POST("/treatment/:treatment_id/phase", diseaseApi.controller.CreateTreatmentPhase)
-		perRoute([]perms.Permission{perms.ManageDisease, perms.ManageTreatment}).POST("/treatment/:treatment_id/phase/:phase_id/medicine", diseaseApi.controller.AssignMedicineToTreatmentPhase)
+		perRoute([]perms.Permission{perms.ManageDisease, perms.ManageTreatment}).POST("/treatment/:treatment_id/phases", diseaseApi.controller.CreateTreatmentPhase)
+		perRoute([]perms.Permission{perms.ManageDisease, perms.ManageTreatment}).POST("/treatment/:treatment_id/phase/:phase_id/medicines", diseaseApi.controller.AssignMedicineToTreatmentPhase)
 		perRoute([]perms.Permission{perms.ManageTreatment}).PUT("/treatment/:treatment_id/phase/:phase_id", diseaseApi.controller.UpdateTreatmentPhaseStatus)
 		perRoute([]perms.Permission{perms.ManageTreatment}).GET("/treatment/:treatment_id/prescription", diseaseApi.controller.GenerateMedicineOnlyPrescription)
 	}

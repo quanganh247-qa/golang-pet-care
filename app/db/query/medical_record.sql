@@ -17,8 +17,8 @@ DELETE FROM medical_records
 WHERE id = $1;
 
 -- name: CreateMedicalHistory :one
-INSERT INTO medical_history(medical_record_id, condition, diagnosis_date, treatment, notes, created_at,updated_at)
-VALUES ($1, $2, $3, $4, $5, now(), now())
+INSERT INTO medical_history(medical_record_id, condition, diagnosis_date, notes, created_at,updated_at)
+VALUES ($1, $2, $3, $4, now(), now())
 RETURNING *;
 
 -- name: GetMedicalHistory :many
@@ -31,7 +31,7 @@ WHERE id = $1 LIMIT 1;
 
 -- name: UpdateMedicalHistory :exec
 UPDATE medical_history
-SET condition = $2, diagnosis_date = $3, treatment = $4, notes = $5, updated_at = NOW()
+SET condition = $2, diagnosis_date = $3, notes = $4, updated_at = NOW()
 WHERE id = $1;
 
 -- name: DeleteMedicalHistory :exec

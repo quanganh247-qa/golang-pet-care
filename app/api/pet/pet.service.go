@@ -3,7 +3,6 @@ package pet
 import (
 	"context"
 	"fmt"
-	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -404,30 +403,30 @@ func (s *PetService) UpdatePetLogService(ctx context.Context, req PetLogWithPetI
 	return nil
 }
 
-func formatTreatments(treatments []db.GetTreatmentsByPetRow) string {
-	var result strings.Builder
-	for _, t := range treatments {
-		result.WriteString(fmt.Sprintf("- Condition: %s\n  Status: %s\n  Period: %s to %s\n",
-			t.Disease,
-			t.Status.String,
-			t.StartDate.Time.Format("2006-01-02"),
-			t.EndDate.Time.Format("2006-01-02"),
-		))
-	}
-	return result.String()
-}
+// func formatTreatments(treatments []db.GetTreatmentsByPetParams) string {
+// 	var result strings.Builder
+// 	for _, t := range treatments {
+// 		result.WriteString(fmt.Sprintf("- Condition: %s\n  Status: %s\n  Period: %s to %s\n",
+// 			t.Disease,
+// 			t.Status.String,
+// 			t.StartDate.Time.Format("2006-01-02"),
+// 			t.EndDate.Time.Format("2006-01-02"),
+// 		))
+// 	}
+// 	return result.String()
+// }
 
-func formatVaccinations(vaccinations []db.Vaccination) string {
-	var result strings.Builder
-	for _, v := range vaccinations {
-		result.WriteString(fmt.Sprintf("- Vaccine: %s\n  Administered: %s\n  Next Due: %s\n  Provider: %s\n",
-			v.Vaccinename,
-			v.Dateadministered.Time.Format("2006-01-02"),
-			v.Nextduedate.Time.Format("2006-01-02"),
-			v.Vaccineprovider.String))
-	}
-	return result.String()
-}
+// func formatVaccinations(vaccinations []db.Vaccination) string {
+// 	var result strings.Builder
+// 	for _, v := range vaccinations {
+// 		result.WriteString(fmt.Sprintf("- Vaccine: %s\n  Administered: %s\n  Next Due: %s\n  Provider: %s\n",
+// 			v.Vaccinename,
+// 			v.Dateadministered.Time.Format("2006-01-02"),
+// 			v.Nextduedate.Time.Format("2006-01-02"),
+// 			v.Vaccineprovider.String))
+// 	}
+// 	return result.String()
+// }
 
 // Add this method to your PetService implementation
 func (s *PetService) GetAllPetLogsByUsername(ctx *gin.Context, username string, pagination *util.Pagination) (*util.PaginationResponse[PetLogWithPetInfo], error) {

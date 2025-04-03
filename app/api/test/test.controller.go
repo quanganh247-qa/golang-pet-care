@@ -7,11 +7,10 @@ import (
 
 	"github.com/gin-gonic/gin"
 	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
-	"github.com/quanganh247-qa/go-blog-be/app/service/elasticsearch"
 	"github.com/quanganh247-qa/go-blog-be/app/service/websocket"
 )
 
-func NewTestController(es *elasticsearch.ESService, ws *websocket.WSClientManager) *TestController {
+func NewTestController(ws *websocket.WSClientManager) *TestController {
 	service := NewTestService(db.StoreDB, ws)
 	return &TestController{
 		service: service,

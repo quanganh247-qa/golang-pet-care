@@ -1,115 +1,107 @@
 package search
 
-import (
-	"net/http"
-	"strconv"
+// type SearchController struct {
+// 	es *elasticsearch.ESService
+// }
 
-	"github.com/gin-gonic/gin"
-	"github.com/quanganh247-qa/go-blog-be/app/service/elasticsearch"
-)
+// func NewSearchController(es *elasticsearch.ESService) *SearchController {
+// 	return &SearchController{es: es}
+// }
 
-type SearchController struct {
-	es *elasticsearch.ESService
-}
+// func (c *SearchController) SearchPets(ctx *gin.Context) {
+// 	query := ctx.Query("q")
+// 	if query == "" {
+// 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "query parameter is required"})
+// 		return
+// 	}
 
-func NewSearchController(es *elasticsearch.ESService) *SearchController {
-	return &SearchController{es: es}
-}
+// 	// results, err := c.es.SearchPets(query)
+// 	// if err != nil {
+// 	// 	ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+// 	// 	return
+// 	// }
 
-func (c *SearchController) SearchPets(ctx *gin.Context) {
-	query := ctx.Query("q")
-	if query == "" {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "query parameter is required"})
-		return
-	}
+// 	// ctx.JSON(http.StatusOK, results)
 
-	// results, err := c.es.SearchPets(query)
-	// if err != nil {
-	// 	ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-	// 	return
-	// }
+// 	ctx.JSON(http.StatusOK, "ok")
+// }
 
-	// ctx.JSON(http.StatusOK, results)
+// func (c *SearchController) SearchDiseases(ctx *gin.Context) {
+// 	query := ctx.Query("q")
+// 	if query == "" {
+// 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "query parameter is required"})
+// 		return
+// 	}
 
-	ctx.JSON(http.StatusOK, "ok")
-}
+// 	filters := make(map[string]interface{})
+// 	if symptom := ctx.Query("symptom"); symptom != "" {
+// 		filters["symptoms"] = symptom
+// 	}
 
-func (c *SearchController) SearchDiseases(ctx *gin.Context) {
-	query := ctx.Query("q")
-	if query == "" {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "query parameter is required"})
-		return
-	}
+// 	// results, err := c.es.SearchDiseases(query, filters)
+// 	// if err != nil {
+// 	// 	ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+// 	// 	return
+// 	// }
 
-	filters := make(map[string]interface{})
-	if symptom := ctx.Query("symptom"); symptom != "" {
-		filters["symptoms"] = symptom
-	}
+// 	// ctx.JSON(http.StatusOK, results)
 
-	// results, err := c.es.SearchDiseases(query, filters)
-	// if err != nil {
-	// 	ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-	// 	return
-	// }
+// 	ctx.JSON(http.StatusOK, "ok")
 
-	// ctx.JSON(http.StatusOK, results)
+// }
 
-	ctx.JSON(http.StatusOK, "ok")
+// func (c *SearchController) SearchDiseasesSuggestions(ctx *gin.Context) {
+// 	query := ctx.Query("q")
+// 	if query == "" {
+// 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "query parameter is required"})
+// 		return
+// 	}
 
-}
+// 	size := ctx.Query("size")
+// 	if size == "" {
+// 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "size parameter is required"})
+// 		return
+// 	}
 
-func (c *SearchController) SearchDiseasesSuggestions(ctx *gin.Context) {
-	query := ctx.Query("q")
-	if query == "" {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "query parameter is required"})
-		return
-	}
+// 	sizeInt, err := strconv.Atoi(size)
+// 	if err != nil {
+// 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "invalid size parameter"})
+// 		return
+// 	}
 
-	size := ctx.Query("size")
-	if size == "" {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "size parameter is required"})
-		return
-	}
+// 	results, err := c.es.GetDiseaseSuggestions(query, sizeInt)
+// 	if err != nil {
+// 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+// 		return
+// 	}
 
-	sizeInt, err := strconv.Atoi(size)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "invalid size parameter"})
-		return
-	}
+// 	ctx.JSON(http.StatusOK, results)
+// }
 
-	results, err := c.es.GetDiseaseSuggestions(query, sizeInt)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
+// func (c *SearchController) SearchMedicinesSuggestions(ctx *gin.Context) {
+// 	query := ctx.Query("q")
+// 	if query == "" {
+// 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "query parameter is required"})
+// 		return
+// 	}
 
-	ctx.JSON(http.StatusOK, results)
-}
+// 	size := ctx.Query("size")
+// 	if size == "" {
+// 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "size parameter is required"})
+// 		return
+// 	}
 
-func (c *SearchController) SearchMedicinesSuggestions(ctx *gin.Context) {
-	query := ctx.Query("q")
-	if query == "" {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "query parameter is required"})
-		return
-	}
+// 	sizeInt, err := strconv.Atoi(size)
+// 	if err != nil {
+// 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "invalid size parameter"})
+// 		return
+// 	}
 
-	size := ctx.Query("size")
-	if size == "" {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "size parameter is required"})
-		return
-	}
+// 	results, err := c.es.GetMedicineSuggestions(query, sizeInt)
+// 	if err != nil {
+// 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+// 		return
+// 	}
 
-	sizeInt, err := strconv.Atoi(size)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "invalid size parameter"})
-		return
-	}
-
-	results, err := c.es.GetMedicineSuggestions(query, sizeInt)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	ctx.JSON(http.StatusOK, results)
-}
+// 	ctx.JSON(http.StatusOK, results)
+// }

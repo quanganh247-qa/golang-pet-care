@@ -58,10 +58,10 @@ func (s *DiseaseService) CreateDisease(ctx context.Context, arg CreateDiseaseReq
 		return nil, err
 	}
 
-	// Tự động index vào Elasticsearch
-	if err := s.es.IndexDisease(&disease); err != nil {
-		log.Printf("Warning: Failed to index disease: %v", err)
-	}
+	// // Tự động index vào Elasticsearch
+	// if err := s.es.IndexDisease(&disease); err != nil {
+	// 	log.Printf("Warning: Failed to index disease: %v", err)
+	// }
 
 	return &disease, nil
 }
@@ -79,7 +79,11 @@ func (s *DiseaseService) CreateTreatmentService(ctx *gin.Context, treatmentPhase
 	err = s.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
 		PetTreatment, err = q.CreateTreatment(ctx, db.CreateTreatmentParams{
 			PetID:       pgtype.Int8{Int64: treatmentPhase.PetID, Valid: true},
+			Name:        pgtype.Text{String: treatmentPhase.Name, Valid: true},
 			Diseases:    pgtype.Text{String: treatmentPhase.Diseases, Valid: true},
+			DoctorID:    pgtype.Int4{Int32: int32(treatmentPhase.DoctorID), Valid: true},
+			Type:        pgtype.Text{String: treatmentPhase.Type, Valid: true},
+			Status:      pgtype.Text{String: treatmentPhase.Status, Valid: true},
 			StartDate:   pgtype.Date{Time: startDate, Valid: true},
 			Description: pgtype.Text{String: treatmentPhase.Notes, Valid: true},
 		})
@@ -243,11 +247,12 @@ func (s *DiseaseService) GetTreatmentsByPetID(ctx *gin.Context, petID int64, pag
 		result = append(result, Treatment{
 			ID:          treatment.ID,
 			Type:        treatment.Type.String,
-			Disease:     treatment.Disease,
+			Disease:     treatment.Diseases.String,
 			StartDate:   treatment.StartDate.Time.Format("2006-01-02"),
 			EndDate:     treatment.EndDate.Time.Format("2006-01-02"),
 			Status:      treatment.Status.String,
 			DoctorName:  doctor.Name,
+			Name:        treatment.Name.String,
 			Phases:      phaseResult,
 			Description: treatment.Description.String,
 		})
