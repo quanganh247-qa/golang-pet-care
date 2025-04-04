@@ -12,6 +12,7 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/quanganh247-qa/go-blog-be/app/api/user"
 	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
+	"github.com/quanganh247-qa/go-blog-be/app/service/redis"
 	"github.com/quanganh247-qa/go-blog-be/app/util"
 )
 
@@ -36,12 +37,23 @@ type AppointmentServiceInterface interface {
 }
 
 func (s *AppointmentService) CreateAppointment(ctx *gin.Context, req createAppointmentRequest, username string) (*createAppointmentResponse, error) {
-
 	var err error
 	var timeSlot db.TimeSlot
 	var doctor user.DoctorResponse
 	var service db.Service
 	var wg sync.WaitGroup
+
+	// Generate a lock key for this time slot to prevent concurrent booking
+	lockKey := fmt.Sprintf("timeslot:%d", req.TimeSlotID)
+
+	// Try to acquire a distributed lock with 10-second timeout
+	lockAcquired := AcquireLock(lockKey, 10*time.Second)
+	if !lockAcquired {
+		return nil, fmt.Errorf("another appointment is being processed for this time slot, please try again shortly")
+	}
+
+	// Make sure the lock is released when we're done
+	defer ReleaseLock(lockKey)
 
 	errChan := make(chan error, 3)
 	wg.Add(3)
@@ -140,7 +152,7 @@ func (s *AppointmentService) CreateAppointment(ctx *gin.Context, req createAppoi
 	}
 
 	// Prepare the response
-	return &createAppointmentResponse{
+	response := &createAppointmentResponse{
 		ID:          appointment.AppointmentID,
 		DoctorName:  doctor.Name,
 		PetName:     detail.PetName.String,
@@ -155,10 +167,32 @@ func (s *AppointmentService) CreateAppointment(ctx *gin.Context, req createAppoi
 		ReminderSend: appointment.ReminderSend.Bool,
 		CreatedAt:    appointment.CreatedAt.Time.Format("2006-01-02 15:04:05"),
 		RoomType:     service.Category.String,
-	}, nil
+	}
+
+	// Clear any cached appointment lists for this user
+	if redis.Client != nil {
+		redis.Client.RemoveCacheByKey(GetAppointmentListByUserCacheKey(username))
+		redis.Client.RemoveCacheByKey(GetAppointmentListByDoctorCacheKey(doctor.ID))
+		redis.Client.RemoveCacheByKey(GetTimeSlotsKey(doctor.ID, req.Date))
+	}
+
+	return response, nil
 }
+
 func (s *AppointmentService) ConfirmPayment(ctx context.Context, appointmentID int64) error {
-	return s.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
+	// Generate a lock key for this appointment to prevent concurrent confirmation
+	lockKey := fmt.Sprintf("appointment:%d", appointmentID)
+
+	// Try to acquire a distributed lock with 5-second timeout
+	lockAcquired := AcquireLock(lockKey, 5*time.Second)
+	if !lockAcquired {
+		return fmt.Errorf("payment confirmation is already in progress, please wait")
+	}
+
+	// Make sure the lock is released when we're done
+	defer ReleaseLock(lockKey)
+
+	err := s.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
 		// Fetch appointment details
 		appointment, err := q.GetAppointmentDetailByAppointmentID(ctx, appointmentID)
 		if err != nil {
@@ -197,6 +231,28 @@ func (s *AppointmentService) ConfirmPayment(ctx context.Context, appointmentID i
 
 		return nil
 	})
+
+	// If the payment was successfully confirmed, clear related caches
+	if err == nil && redis.Client != nil {
+		// Clear the specific appointment cache
+		redis.Client.RemoveCacheByKey(GetAppointmentCacheKey(appointmentID))
+
+		// Get the appointment details to clear user and doctor caches
+		appDetail, detailErr := s.storeDB.GetAppointmentDetailByAppointmentID(ctx, appointmentID)
+		if detailErr == nil {
+			// Clear user cache if username exists
+			if appDetail.Username.Valid {
+				redis.Client.RemoveCacheByKey(GetAppointmentListByUserCacheKey(appDetail.Username.String))
+			}
+
+			// Clear doctor cache if doctor ID exists
+			if appDetail.DoctorID.Valid {
+				redis.Client.RemoveCacheByKey(GetAppointmentListByDoctorCacheKey(appDetail.DoctorID.Int64))
+			}
+		}
+	}
+
+	return err
 }
 
 func (s *AppointmentService) CheckInAppoinment(ctx *gin.Context, id, roomID int64, priority string) error {
@@ -238,108 +294,185 @@ func (s *AppointmentService) CheckInAppoinment(ctx *gin.Context, id, roomID int6
 }
 
 func (s *AppointmentService) GetAppointmentByID(ctx *gin.Context, id int64) (*Appointment, error) {
-	var err error
+	// Check if Redis client is available
+	if redis.Client != nil {
+		// Generate cache key for this appointment
+		cacheKey := GetAppointmentCacheKey(id)
 
-	appointment, err := s.storeDB.GetAppointmentDetailByAppointmentID(ctx, id)
-	if err != nil {
-		return nil, fmt.Errorf("Cannot get appointment detail")
+		// Try to get from cache first
+		var cachedAppointment Appointment
+		err := redis.Client.GetWithBackground(cacheKey, &cachedAppointment)
+		if err == nil {
+			// Cache hit
+			return &cachedAppointment, nil
+		}
 	}
 
-	doctor, err := s.storeDB.GetDoctor(ctx, appointment.DoctorID.Int64)
+	// Cache miss or Redis not available - get from database
+	detail, err := s.storeDB.GetAppointmentDetailByAppointmentID(ctx, id)
 	if err != nil {
-		return nil, fmt.Errorf("Cannot get doctor detail")
+		return nil, fmt.Errorf("failed to get appointment detail: %w", err)
 	}
 
-	// Format start and end times
-	startTime := time.UnixMicro(appointment.StartTime.Microseconds).UTC()
+	// Get doctor info
+	doctor, err := s.storeDB.GetDoctor(ctx, detail.DoctorID.Int64)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get doctor: %w", err)
+	}
+
+	// Format times
+	startTime := time.UnixMicro(detail.StartTime.Microseconds).UTC()
 	startTimeFormatted := startTime.Format("15:04:05")
 
-	endTime := time.UnixMicro(appointment.EndTime.Microseconds).UTC()
+	endTime := time.UnixMicro(detail.EndTime.Microseconds).UTC()
 	endTimeFormatted := endTime.Format("15:04:05")
 
 	// Prepare the response
-	return &Appointment{
-		ID: appointment.AppointmentID,
+	appointment := &Appointment{
+		ID: detail.AppointmentID,
+		Pet: Pet{
+			PetID:    detail.Petid.Int64,
+			PetName:  detail.PetName.String,
+			PetBreed: detail.PetBreed.String,
+		},
+		Owner: Owner{
+			OwnerName:    detail.OwnerName.String,
+			OwnerPhone:   detail.OwnerPhone.String,
+			OwnerEmail:   detail.OwnerEmail.String,
+			OwnerAddress: detail.OwnerAddress.String,
+		},
+		Serivce: Serivce{
+			ServiceName:     detail.ServiceName.String,
+			ServiceDuration: detail.ServiceDuration.Int16,
+			ServiceAmount:   detail.ServiceAmount.Float64,
+		},
 		Doctor: Doctor{
 			DoctorID:   doctor.ID,
 			DoctorName: doctor.Name,
 		},
-		Owner: Owner{
-			OwnerName:    appointment.OwnerName.String,
-			OwnerPhone:   appointment.OwnerPhone.String,
-			OwnerEmail:   appointment.OwnerEmail.String,
-			OwnerAddress: appointment.OwnerAddress.String,
-		},
-		Pet: Pet{
-			PetID:    appointment.PetID.Int64,
-			PetName:  appointment.PetName.String,
-			PetBreed: appointment.PetBreed.String,
-		},
-		Date: appointment.Date.Time.Format("2006-01-02"),
-		Serivce: Serivce{
-			ServiceName:     appointment.ServiceName.String,
-			ServiceDuration: appointment.ServiceDuration.Int16,
-			ServiceAmount:   appointment.ServiceAmount.Float64,
-		},
+		Date: detail.Date.Time.Format("2006-01-02"),
 		TimeSlot: timeslot{
 			StartTime: startTimeFormatted,
 			EndTime:   endTimeFormatted,
 		},
-		Reason:       appointment.AppointmentReason.String,
-		ReminderSend: appointment.ReminderSend.Bool,
-		State:        appointment.StateName.String,
-		CreatedAt:    appointment.CreatedAt.Time.Format("2006-01-02 15:04:05"),
-	}, nil
+		Room:         "Examination Room", // Default value for room
+		State:        detail.StateName.String,
+		Reason:       detail.AppointmentReason.String,
+		ReminderSend: detail.ReminderSend.Bool,
+		CreatedAt:    detail.CreatedAt.Time.Format("2006-01-02 15:04:05"),
+	}
+
+	// Store in cache for future requests if Redis is available
+	if redis.Client != nil {
+		// Cache the appointment for 15 minutes
+		err = redis.Client.SetWithBackground(GetAppointmentCacheKey(id), appointment, 15*time.Minute)
+		if err != nil {
+			// Just log the error, don't return it
+			fmt.Printf("Error caching appointment: %v\n", err)
+		}
+	}
+
+	return appointment, nil
 }
 
 func (s *AppointmentService) GetAppointmentsByUser(ctx *gin.Context, username string) ([]Appointment, error) {
+	// Check if Redis client is available
+	if redis.Client != nil {
+		// Generate cache key for this user's appointments
+		cacheKey := GetAppointmentListByUserCacheKey(username)
 
-	var a []Appointment
-	appointments, err := s.storeDB.GetAppointmentsByUser(ctx, pgtype.Text{String: username, Valid: true})
-	if err != nil {
-		return nil, fmt.Errorf("Cannot get appointment by user")
+		// Try to get from cache first
+		var cachedAppointments []Appointment
+		err := redis.Client.GetWithBackground(cacheKey, &cachedAppointments)
+		if err == nil {
+			// Cache hit
+			return cachedAppointments, nil
+		}
 	}
-	for _, appointment := range appointments {
-		doc, err := s.storeDB.GetDoctor(ctx, appointment.DoctorID.Int64)
+
+	// Cache miss or Redis not available - get from database
+	results, err := s.storeDB.GetAppointmentsByUser(ctx, pgtype.Text{String: username, Valid: true})
+	if err != nil {
+		return nil, fmt.Errorf("failed to get appointments: %w", err)
+	}
+
+	var appointments []Appointment
+	for _, result := range results {
+		// Get doctor info
+		doctor, err := s.storeDB.GetDoctor(ctx, result.DoctorID.Int64)
 		if err != nil {
 			return nil, fmt.Errorf("failed to get doctor: %w", err)
 		}
-		a = append(a, Appointment{
-			ID: appointment.AppointmentID,
+
+		// Format times
+		startTime := time.UnixMicro(result.StartTime.Microseconds).UTC()
+		startTimeFormatted := startTime.Format("15:04:05")
+
+		endTime := time.UnixMicro(result.EndTime.Microseconds).UTC()
+		endTimeFormatted := endTime.Format("15:04:05")
+
+		appointments = append(appointments, Appointment{
+			ID: result.AppointmentID,
 			Pet: Pet{
-				PetID:    appointment.PetID.Int64,
-				PetName:  appointment.PetName.String,
-				PetBreed: appointment.PetBreed.String,
-			},
-			Serivce: Serivce{
-				ServiceName:     appointment.ServiceName.String,
-				ServiceDuration: appointment.ServiceDuration.Int16,
-			},
-			Doctor: Doctor{
-				DoctorID:   appointment.DoctorID.Int64,
-				DoctorName: doc.Name,
-			},
-			Date:         appointment.Date.Time.Format("2006-01-02"),
-			State:        appointment.StateName.String,
-			ReminderSend: appointment.ReminderSend.Bool,
-			CreatedAt:    appointment.CreatedAt.Time.Format("2006-01-02 15:04:05"),
-			TimeSlot: timeslot{
-				StartTime: time.UnixMicro(appointment.StartTime.Microseconds).UTC().Format("15:04:05"),
-				EndTime:   time.UnixMicro(appointment.EndTime.Microseconds).UTC().Format("15:04:05"),
+				PetID:    result.Petid.Int64,
+				PetName:  result.PetName.String,
+				PetBreed: result.PetBreed.String,
 			},
 			Owner: Owner{
-				OwnerName:    appointment.OwnerName.String,
-				OwnerPhone:   appointment.OwnerPhone.String,
-				OwnerEmail:   appointment.OwnerEmail.String,
-				OwnerAddress: appointment.OwnerAddress.String,
+				OwnerName:    result.OwnerName.String,
+				OwnerPhone:   result.OwnerPhone.String,
+				OwnerEmail:   result.OwnerEmail.String,
+				OwnerAddress: result.OwnerAddress.String,
 			},
-			Reason: appointment.AppointmentReason.String,
+			Serivce: Serivce{
+				ServiceName:     result.ServiceName.String,
+				ServiceDuration: result.ServiceDuration.Int16,
+				ServiceAmount:   result.ServiceAmount.Float64,
+			},
+			Doctor: Doctor{
+				DoctorID:   doctor.ID,
+				DoctorName: doctor.Name,
+			},
+			Date: result.Date.Time.Format("2006-01-02"),
+			TimeSlot: timeslot{
+				StartTime: startTimeFormatted,
+				EndTime:   endTimeFormatted,
+			},
+			Room:         "Examination Room", // Default value
+			State:        result.StateName.String,
+			Reason:       result.AppointmentReason.String,
+			ReminderSend: result.ReminderSend.Bool,
+			CreatedAt:    result.CreatedAt.Time.Format("2006-01-02 15:04:05"),
 		})
 	}
-	return a, nil
+
+	// Store in cache for future requests if Redis is available
+	if redis.Client != nil && len(appointments) > 0 {
+		// Cache the appointment list for 5 minutes
+		err = redis.Client.SetWithBackground(GetAppointmentListByUserCacheKey(username), appointments, 5*time.Minute)
+		if err != nil {
+			// Just log the error, don't return it
+			fmt.Printf("Error caching appointment list: %v\n", err)
+		}
+	}
+
+	return appointments, nil
 }
 
 func (s *AppointmentService) GetAppointmentsByDoctor(ctx *gin.Context, doctorID int64) ([]createAppointmentResponse, error) {
+	// Check if Redis client is available
+	if redis.Client != nil {
+		// Generate cache key for this doctor's appointments
+		cacheKey := GetAppointmentListByDoctorCacheKey(doctorID)
+
+		// Try to get from cache first
+		var cachedAppointments []createAppointmentResponse
+		err := redis.Client.GetWithBackground(cacheKey, &cachedAppointments)
+		if err == nil {
+			// Cache hit
+			return cachedAppointments, nil
+		}
+	}
 
 	var response []createAppointmentResponse
 
@@ -349,7 +482,6 @@ func (s *AppointmentService) GetAppointmentsByDoctor(ctx *gin.Context, doctorID 
 	}
 
 	for _, appointment := range appointments {
-
 		doc, err := s.storeDB.GetDoctor(ctx, appointment.DoctorID.Int64)
 		if err != nil {
 			return nil, fmt.Errorf("Cannot get doctor")
@@ -371,11 +503,35 @@ func (s *AppointmentService) GetAppointmentsByDoctor(ctx *gin.Context, doctorID 
 		})
 	}
 
+	// Store in cache for future requests if Redis is available
+	if redis.Client != nil && len(response) > 0 {
+		// Cache the appointment list for 5 minutes
+		err = redis.Client.SetWithBackground(GetAppointmentListByDoctorCacheKey(doctorID), response, 5*time.Minute)
+		if err != nil {
+			// Just log the error, don't return it
+			fmt.Printf("Error caching doctor's appointment list: %v\n", err)
+		}
+	}
+
 	return response, nil
 }
 
 func (s *AppointmentService) GetAvailableTimeSlots(ctx *gin.Context, doctorID int64, date string) ([]timeSlotResponse, error) {
-	// Parse ngày
+	// Check if Redis client is available
+	if redis.Client != nil {
+		// Generate cache key for these time slots
+		cacheKey := GetTimeSlotsKey(doctorID, date)
+
+		// Try to get from cache first
+		var cachedTimeSlots []timeSlotResponse
+		err := redis.Client.GetWithBackground(cacheKey, &cachedTimeSlots)
+		if err == nil {
+			// Cache hit
+			return cachedTimeSlots, nil
+		}
+	}
+
+	// Parse date
 	dateTime, err := time.Parse("2006-01-02", date)
 	if err != nil {
 		return nil, fmt.Errorf("invalid date format")
@@ -412,6 +568,16 @@ func (s *AppointmentService) GetAvailableTimeSlots(ctx *gin.Context, doctorID in
 		}
 
 		availableTimeSlots = append(availableTimeSlots, slotRes)
+	}
+
+	// Store in cache for future requests if Redis is available
+	if redis.Client != nil && len(availableTimeSlots) > 0 {
+		// Cache the time slots for 5 minutes
+		err = redis.Client.SetWithBackground(GetTimeSlotsKey(doctorID, date), availableTimeSlots, 5*time.Minute)
+		if err != nil {
+			// Just log the error, don't return it
+			fmt.Printf("Error caching time slots: %v\n", err)
+		}
 	}
 
 	return availableTimeSlots, nil
