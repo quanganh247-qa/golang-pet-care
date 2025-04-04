@@ -89,6 +89,7 @@ CREATE TABLE public.medicines (
 	quantity int8 NULL,
 	unit_price float8 NULL,
 	reorder_level int8 DEFAULT 10 NULL,
+	supplier_id int8 NULL,
 	created_at timestamptz DEFAULT CURRENT_TIMESTAMP NULL,
 	updated_at timestamptz DEFAULT CURRENT_TIMESTAMP NULL,
 	CONSTRAINT medicines_pkey PRIMARY KEY (id)

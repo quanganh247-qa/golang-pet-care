@@ -11,24 +11,6 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
-const countAllPetLogsByUsername = `-- name: CountAllPetLogsByUsername :one
-SELECT 
-    COUNT(*)
-FROM 
-    pet_logs pl
-JOIN 
-    pets p ON pl.petid = p.petid
-WHERE 
-    p.username = $1
-`
-
-func (q *Queries) CountAllPetLogsByUsername(ctx context.Context, username string) (int64, error) {
-	row := q.db.QueryRow(ctx, countAllPetLogsByUsername, username)
-	var count int64
-	err := row.Scan(&count)
-	return count, err
-}
-
 const countPets = `-- name: CountPets :one
 SELECT COUNT(*) FROM pets
 WHERE is_active = true
@@ -122,73 +104,6 @@ DELETE FROM pets WHERE petid = $1
 func (q *Queries) DeletePet(ctx context.Context, petid int64) error {
 	_, err := q.db.Exec(ctx, deletePet, petid)
 	return err
-}
-
-const getAllPetLogsByUsername = `-- name: GetAllPetLogsByUsername :many
-SELECT 
-    pl.log_id,
-    pl.petid,
-    p.name AS pet_name,
-    p.type AS pet_type,
-    p.breed AS pet_breed,
-    pl.datetime,
-    pl.title,
-    pl.notes
-FROM 
-    pet_logs pl
-JOIN 
-    pets p ON pl.petid = p.petid
-WHERE 
-    p.username = $1
-ORDER BY 
-    pl.datetime DESC
-LIMIT $2 OFFSET $3
-`
-
-type GetAllPetLogsByUsernameParams struct {
-	Username string `json:"username"`
-	Limit    int32  `json:"limit"`
-	Offset   int32  `json:"offset"`
-}
-
-type GetAllPetLogsByUsernameRow struct {
-	LogID    int64            `json:"log_id"`
-	Petid    int64            `json:"petid"`
-	PetName  string           `json:"pet_name"`
-	PetType  string           `json:"pet_type"`
-	PetBreed pgtype.Text      `json:"pet_breed"`
-	Datetime pgtype.Timestamp `json:"datetime"`
-	Title    pgtype.Text      `json:"title"`
-	Notes    pgtype.Text      `json:"notes"`
-}
-
-func (q *Queries) GetAllPetLogsByUsername(ctx context.Context, arg GetAllPetLogsByUsernameParams) ([]GetAllPetLogsByUsernameRow, error) {
-	rows, err := q.db.Query(ctx, getAllPetLogsByUsername, arg.Username, arg.Limit, arg.Offset)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	items := []GetAllPetLogsByUsernameRow{}
-	for rows.Next() {
-		var i GetAllPetLogsByUsernameRow
-		if err := rows.Scan(
-			&i.LogID,
-			&i.Petid,
-			&i.PetName,
-			&i.PetType,
-			&i.PetBreed,
-			&i.Datetime,
-			&i.Title,
-			&i.Notes,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
 }
 
 const getAllPets = `-- name: GetAllPets :many

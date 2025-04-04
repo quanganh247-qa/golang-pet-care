@@ -35,6 +35,7 @@ func (c *PetScheduleController) createPetSchedule(ctx *gin.Context) {
 	var req PetScheduleRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, util.ErrorValidator(err))
+
 		return
 	}
 
@@ -43,6 +44,9 @@ func (c *PetScheduleController) createPetSchedule(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, util.ErrorValidator(err))
 		return
 	}
+
+	// Invalidate cache after creating a new schedule
+	middleware.InvalidateCache("pet_schedules")
 
 	// Return success response
 	ctx.JSON(http.StatusOK, gin.H{"message": "Pet schedule created successfully"})
@@ -108,6 +112,9 @@ func (s *PetScheduleController) activePetSchedule(ctx *gin.Context) {
 		return
 	}
 
+	// Invalidate cache after changing schedule active status
+	middleware.InvalidateCache("pet_schedules")
+
 	ctx.JSON(http.StatusOK, util.SuccessResponse("Active reminder", "Success"))
 }
 
@@ -124,6 +131,9 @@ func (s *PetScheduleController) deletePetSchedule(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, util.ErrorValidator(err))
 		return
 	}
+
+	// Invalidate cache after deleting a schedule
+	middleware.InvalidateCache("pet_schedules")
 
 	ctx.JSON(http.StatusOK, util.SuccessResponse("Delete reminder", "Success"))
 }
@@ -148,8 +158,10 @@ func (s *PetScheduleController) updatePetScheduleService(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, util.SuccessResponse("Update reminder", "Success"))
+	// Invalidate cache after updating a schedule
+	middleware.InvalidateCache("pet_schedules")
 
+	ctx.JSON(http.StatusOK, util.SuccessResponse("Update reminder", "Success"))
 }
 
 func (s *PetScheduleController) generateScheduleSuggestion(ctx *gin.Context) {

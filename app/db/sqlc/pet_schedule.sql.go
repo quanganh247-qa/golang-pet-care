@@ -143,6 +143,51 @@ func (q *Queries) GetPetScheduleById(ctx context.Context, id int64) (PetSchedule
 	return i, err
 }
 
+const listPetSchedulesByPetID = `-- name: ListPetSchedulesByPetID :many
+SELECT id, pet_id, title, reminder_datetime, event_repeat, end_type, end_date, notes, is_active, created_at, removedat FROM pet_schedule
+WHERE pet_id = $1 and removedat is null
+ORDER BY reminder_datetime 
+LIMIT $2 OFFSET $3
+`
+
+type ListPetSchedulesByPetIDParams struct {
+	PetID  pgtype.Int8 `json:"pet_id"`
+	Limit  int32       `json:"limit"`
+	Offset int32       `json:"offset"`
+}
+
+func (q *Queries) ListPetSchedulesByPetID(ctx context.Context, arg ListPetSchedulesByPetIDParams) ([]PetSchedule, error) {
+	rows, err := q.db.Query(ctx, listPetSchedulesByPetID, arg.PetID, arg.Limit, arg.Offset)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []PetSchedule{}
+	for rows.Next() {
+		var i PetSchedule
+		if err := rows.Scan(
+			&i.ID,
+			&i.PetID,
+			&i.Title,
+			&i.ReminderDatetime,
+			&i.EventRepeat,
+			&i.EndType,
+			&i.EndDate,
+			&i.Notes,
+			&i.IsActive,
+			&i.CreatedAt,
+			&i.Removedat,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const listPetSchedulesByUsername = `-- name: ListPetSchedulesByUsername :many
 SELECT 
     ps.id,

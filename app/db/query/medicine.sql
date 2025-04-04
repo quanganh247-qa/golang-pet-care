@@ -61,22 +61,23 @@ WHERE id = $1 LIMIT 1;
 
 -- name: GetAllMedicines :many
 SELECT 
-    id, 
-    name, 
-    description, 
-    usage, 
-    dosage, 
-    frequency, 
-    duration, 
-    side_effects, 
-    created_at, 
-    updated_at, 
-    expiration_date, 
-    quantity,
-    unit_price,
-    reorder_level
+    medicines.id, 
+    medicines.name, 
+    medicines.description, 
+    medicines.usage, 
+    medicines.dosage, 
+    medicines.frequency, 
+    medicines.duration, 
+    medicines.side_effects, 
+    medicines.created_at, 
+    medicines.updated_at, 
+    medicines.expiration_date, 
+    medicines.quantity,
+    medicines.unit_price,
+    medicines.reorder_level,
+    ms.name as supplier_name
 FROM medicines
-ORDER BY name ASC;
+JOIN medicine_suppliers ms ON medicines.supplier_id = ms.id;
 
 -- name: CountAllMedicines :one
 SELECT COUNT(*) FROM medicines;
@@ -195,15 +196,13 @@ SELECT
     m.expiration_date,
     (m.expiration_date - CURRENT_DATE) as days_until_expiry,
     m.quantity
-FROM 
-    medicines m
+FROM medicines m
 WHERE 
     m.expiration_date IS NOT NULL
-    AND m.expiration_date - CURRENT_DATE <= $1
+    AND m.expiration_date <= $1::date  -- Pass a date parameter
     AND m.expiration_date >= CURRENT_DATE
     AND m.quantity > 0
-ORDER BY 
-    m.expiration_date ASC;
+ORDER BY m.expiration_date ASC;
 
 -- name: GetLowStockMedicines :many
 SELECT 

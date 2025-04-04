@@ -1,6 +1,8 @@
 package products
 
 import (
+	"time"
+
 	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
 	"github.com/quanganh247-qa/go-blog-be/app/middleware"
 )
@@ -9,6 +11,9 @@ func Routes(routerGroup middleware.RouterGroup) {
 	product := routerGroup.RouterDefault.Group("/products")
 	authRoute := routerGroup.RouterAuth(product)
 	// product.Use(middleware.IPbasedRateLimitingMiddleware())
+
+	// Apply cache middleware to GET endpoints
+	product.Use(middleware.CacheMiddleware(time.Minute*5, "products", []string{"GET"}))
 
 	// Khoi tao api
 	petApi := &ProductApi{

@@ -193,6 +193,9 @@ func (c *PetController) InsertPetLog(ctx *gin.Context) {
 		return
 	}
 
+	// Invalidate any log-related cache after insertion
+	middleware.InvalidateCache("pet_logs")
+
 	ctx.JSON(200, gin.H{"message": "Insert pet log successfully"})
 }
 
@@ -209,6 +212,9 @@ func (c *PetController) DeletePetLog(ctx *gin.Context) {
 		ctx.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
+
+	// Invalidate any log-related cache after deletion
+	middleware.InvalidateCache("pet_logs")
 
 	ctx.JSON(200, gin.H{"message": "Delete pet log successfully"})
 }
@@ -232,6 +238,9 @@ func (c *PetController) UpdatePetLog(ctx *gin.Context) {
 		ctx.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
+
+	// Invalidate any log-related cache after update
+	middleware.InvalidateCache("pet_logs")
 
 	ctx.JSON(200, gin.H{"message": "Update pet log successfully"})
 }

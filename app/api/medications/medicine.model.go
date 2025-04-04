@@ -63,7 +63,7 @@ type Medication struct {
 	Usage          string  `json:"usage"`
 	ExpirationDate string  `json:"expiration_date"`
 	Quantity       int64   `json:"quantity"`
-	SupplierID     int64   `json:"supplier_id"`
+	SupplierName   string  `json:"supplier_name"`
 	UnitPrice      float64 `json:"unit_price"`
 	ReorderLevel   int64   `json:"reorder_level"`
 }

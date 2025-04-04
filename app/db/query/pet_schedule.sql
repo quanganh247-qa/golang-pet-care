@@ -60,3 +60,9 @@ WHERE id = $1;
 -- name: GetPetScheduleById :one
 SELECT * FROM pet_schedule
 WHERE id = $1;
+
+-- name: ListPetSchedulesByPetID :many
+SELECT * FROM pet_schedule
+WHERE pet_id = $1 and removedat is null
+ORDER BY reminder_datetime 
+LIMIT $2 OFFSET $3;

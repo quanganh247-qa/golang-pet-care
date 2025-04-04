@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5/pgtype"
 	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
+	redisCache "github.com/quanganh247-qa/go-blog-be/app/service/redis"
 	"github.com/quanganh247-qa/go-blog-be/app/util"
 )
 
@@ -17,6 +18,26 @@ type ProductServiceInterface interface {
 
 // get all products
 func (s *ProductService) GetProducts(c *gin.Context, pagination *util.Pagination) ([]ProductResponse, error) {
+	// Try to get from cache first
+	cachedProducts, err := redisCache.Client.ProductsListLoadCache(int32(pagination.Page), int32(pagination.PageSize))
+	if err == nil && len(cachedProducts) > 0 {
+		// Cache hit, convert and return
+		var productResponse []ProductResponse
+		for _, product := range cachedProducts {
+			productResponse = append(productResponse, ProductResponse{
+				ProductID:     product.ProductID,
+				Name:          product.Name,
+				Price:         product.Price,
+				Stock:         product.Stock,
+				Category:      product.Category,
+				DataImage:     product.DataImage,
+				OriginalImage: product.OriginalImage,
+			})
+		}
+		return productResponse, nil
+	}
+
+	// If cache miss or error, fallback to database
 	offset := (pagination.Page - 1) * pagination.PageSize
 
 	products, err := s.storeDB.GetAllProducts(c, db.GetAllProductsParams{
@@ -45,6 +66,22 @@ func (s *ProductService) GetProducts(c *gin.Context, pagination *util.Pagination
 
 // get product by id
 func (s *ProductService) GetProductByID(c *gin.Context, productID int64) (*ProductResponse, error) {
+	// Try to get from cache first
+	cachedProduct, err := redisCache.Client.ProductInfoLoadCache(productID)
+	if err == nil {
+		// Cache hit, convert and return
+		return &ProductResponse{
+			ProductID:     cachedProduct.ProductID,
+			Name:          cachedProduct.Name,
+			Price:         cachedProduct.Price,
+			Stock:         cachedProduct.Stock,
+			Category:      cachedProduct.Category,
+			DataImage:     cachedProduct.DataImage,
+			OriginalImage: cachedProduct.OriginalImage,
+		}, nil
+	}
+
+	// If cache miss or error, fallback to database
 	product, err := s.storeDB.GetProductByID(c, productID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get product: %w", err)
@@ -80,6 +117,9 @@ func (s *ProductService) CreateProductService(c *gin.Context, req CreateProductR
 		return nil, fmt.Errorf("failed to create product: %w", err)
 	}
 
+	// Clear caches when a new product is created
+	redisCache.Client.ClearProductInfoCache()
+
 	productResponse := ProductResponse{
 		ProductID:     product.ProductID,
 		Name:          product.Name,
@@ -91,5 +131,4 @@ func (s *ProductService) CreateProductService(c *gin.Context, req CreateProductR
 	}
 
 	return &productResponse, nil
-
 }

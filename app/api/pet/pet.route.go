@@ -1,6 +1,8 @@
 package pet
 
 import (
+	"time"
+
 	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
 	"github.com/quanganh247-qa/go-blog-be/app/middleware"
 	"github.com/quanganh247-qa/go-blog-be/app/service/redis"
@@ -10,6 +12,11 @@ func Routes(routerGroup middleware.RouterGroup) {
 	Pet := routerGroup.RouterDefault.Group("/")
 	authRoute := routerGroup.RouterAuth(Pet)
 	// Pet.Use(middleware.IPbasedRateLimitingMiddleware())
+
+	// Apply cache middleware to GET endpoints - 5 minute cache duration for main endpoints
+	Pet.Use(middleware.CacheMiddleware(time.Minute*5, "pets", []string{"GET"}))
+
+	Pet.Use(middleware.CacheMiddleware(time.Minute*15, "pet_logs", []string{"GET"}))
 
 	// Khoi tao api
 	petApi := &PetApi{

@@ -193,6 +193,7 @@ func (s *MedicineService) GetAllMedicines(ctx *gin.Context) ([]Medication, error
 			Usage:          med.Usage.String,
 			ExpirationDate: formatDate(med.ExpirationDate.Time),
 			Quantity:       med.Quantity.Int64,
+			SupplierName:   med.SupplierName,
 			UnitPrice:      med.UnitPrice.Float64,
 			ReorderLevel:   med.ReorderLevel.Int64,
 		})
@@ -464,11 +465,16 @@ func (s *MedicineService) UpdateSupplier(ctx *gin.Context, supplierID int64, req
 }
 
 // Expiration and Stock Alerts Implementation
-
 func (s *MedicineService) GetExpiringMedicines(ctx *gin.Context, days int) ([]ExpiredMedicineNotification, error) {
-	// Convert days to a date that's days away from now for the query parameter
+
+	expiryDate := time.Now().AddDate(0, 0, days)
+	expiryDate, err := time.Parse("2006-01-02", expiryDate.Format("2006-01-02"))
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse date: %w", err)
+	}
+	// Create pgtype.Date properly
 	daysDate := pgtype.Date{
-		Time:  time.Now().AddDate(0, 0, days),
+		Time:  expiryDate,
 		Valid: true,
 	}
 

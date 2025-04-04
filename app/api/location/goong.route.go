@@ -2,6 +2,7 @@ package location
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/quanganh247-qa/go-blog-be/app/middleware"
 	"github.com/quanganh247-qa/go-blog-be/app/util"
@@ -11,6 +12,9 @@ func Routes(routerGroup middleware.RouterGroup, config *util.Config) {
 	Goong := routerGroup.RouterDefault.Group("/location")
 	authRoute := routerGroup.RouterAuth(Goong)
 	// Goong.Use(middleware.IPbasedRateLimitingMiddleware())
+
+	// Apply cache middleware with longer duration for location data
+	Goong.Use(middleware.CacheMiddleware(time.Hour*24, "location", []string{"GET"}))
 
 	// Khoi tao api
 	goongApi := &GoongApi{

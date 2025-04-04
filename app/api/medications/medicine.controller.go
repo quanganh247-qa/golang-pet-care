@@ -292,7 +292,7 @@ func (c *MedicineController) UpdateSupplier(ctx *gin.Context) {
 // Expiration and Stock Alerts
 
 func (c *MedicineController) GetExpiringMedicines(ctx *gin.Context) {
-	daysParam := ctx.DefaultQuery("days", "30")
+	daysParam := ctx.Query("days")
 	days, err := strconv.Atoi(daysParam)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid days parameter"})

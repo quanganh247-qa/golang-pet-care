@@ -1,8 +1,11 @@
 package petschedule
 
 import (
+	"time"
+
 	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
 	"github.com/quanganh247-qa/go-blog-be/app/middleware"
+	"github.com/quanganh247-qa/go-blog-be/app/service/redis"
 	"github.com/quanganh247-qa/go-blog-be/app/util"
 )
 
@@ -11,12 +14,16 @@ func Routes(routerGroup middleware.RouterGroup, config *util.Config) {
 	authRoute := routerGroup.RouterAuth(petSchedule)
 	// PetSchedule.Use(middleware.IPbasedRateLimitingMiddleware())
 
+	// Apply cache middleware to GET endpoints - 5 minute cache duration
+	petSchedule.Use(middleware.CacheMiddleware(time.Minute*5, "pet_schedules", []string{"GET"}))
+
 	// Khoi tao api
 	petScheduleApi := &PetScheduleApi{
 		&PetScheduleController{
 			service: &PetScheduleService{
 				storeDB: db.StoreDB, // This should refer to the actual instance
 				config:  config,
+				redis:   redis.Client,
 			},
 		},
 	}

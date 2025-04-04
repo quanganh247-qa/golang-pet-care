@@ -11,6 +11,24 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+const countAllPetLogsByUsername = `-- name: CountAllPetLogsByUsername :one
+SELECT 
+    COUNT(*)
+FROM 
+    pet_logs pl
+JOIN 
+    pets p ON pl.petid = p.petid
+WHERE 
+    p.username = $1
+`
+
+func (q *Queries) CountAllPetLogsByUsername(ctx context.Context, username string) (int64, error) {
+	row := q.db.QueryRow(ctx, countAllPetLogsByUsername, username)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
+}
+
 const createPetLog = `-- name: CreatePetLog :one
 INSERT INTO pet_logs (
     petid,
@@ -57,8 +75,75 @@ func (q *Queries) DeletePetLog(ctx context.Context, logID int64) error {
 	return err
 }
 
+const getAllPetLogsByUsername = `-- name: GetAllPetLogsByUsername :many
+SELECT 
+    pl.log_id,
+    pl.petid,
+    p.name AS pet_name,
+    p.type AS pet_type,
+    p.breed AS pet_breed,
+    pl.datetime,
+    pl.title,
+    pl.notes
+FROM 
+    pet_logs pl
+JOIN 
+    pets p ON pl.petid = p.petid
+WHERE 
+    p.username = $1
+ORDER BY 
+    pl.datetime DESC
+LIMIT $2 OFFSET $3
+`
+
+type GetAllPetLogsByUsernameParams struct {
+	Username string `json:"username"`
+	Limit    int32  `json:"limit"`
+	Offset   int32  `json:"offset"`
+}
+
+type GetAllPetLogsByUsernameRow struct {
+	LogID    int64            `json:"log_id"`
+	Petid    int64            `json:"petid"`
+	PetName  string           `json:"pet_name"`
+	PetType  string           `json:"pet_type"`
+	PetBreed pgtype.Text      `json:"pet_breed"`
+	Datetime pgtype.Timestamp `json:"datetime"`
+	Title    pgtype.Text      `json:"title"`
+	Notes    pgtype.Text      `json:"notes"`
+}
+
+func (q *Queries) GetAllPetLogsByUsername(ctx context.Context, arg GetAllPetLogsByUsernameParams) ([]GetAllPetLogsByUsernameRow, error) {
+	rows, err := q.db.Query(ctx, getAllPetLogsByUsername, arg.Username, arg.Limit, arg.Offset)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetAllPetLogsByUsernameRow{}
+	for rows.Next() {
+		var i GetAllPetLogsByUsernameRow
+		if err := rows.Scan(
+			&i.LogID,
+			&i.Petid,
+			&i.PetName,
+			&i.PetType,
+			&i.PetBreed,
+			&i.Datetime,
+			&i.Title,
+			&i.Notes,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getPetLogByID = `-- name: GetPetLogByID :one
-SELECT pet_logs.petid, pet_logs.datetime, pet_logs.title, pet_logs.notes
+SELECT pet_logs.log_id, pet_logs.petid, pet_logs.datetime, pet_logs.title, pet_logs.notes, pets.name, pets.type, pets.breed
 FROM pet_logs
 LEFT JOIN pets ON pet_logs.petid = pets.petid
 WHERE pet_logs.petid = $1 AND pet_logs.log_id = $2 AND pets.is_active = true 
@@ -71,28 +156,38 @@ type GetPetLogByIDParams struct {
 }
 
 type GetPetLogByIDRow struct {
+	LogID    int64            `json:"log_id"`
 	Petid    int64            `json:"petid"`
 	Datetime pgtype.Timestamp `json:"datetime"`
 	Title    pgtype.Text      `json:"title"`
 	Notes    pgtype.Text      `json:"notes"`
+	Name     pgtype.Text      `json:"name"`
+	Type     pgtype.Text      `json:"type"`
+	Breed    pgtype.Text      `json:"breed"`
 }
 
 func (q *Queries) GetPetLogByID(ctx context.Context, arg GetPetLogByIDParams) (GetPetLogByIDRow, error) {
 	row := q.db.QueryRow(ctx, getPetLogByID, arg.Petid, arg.LogID)
 	var i GetPetLogByIDRow
 	err := row.Scan(
+		&i.LogID,
 		&i.Petid,
 		&i.Datetime,
 		&i.Title,
 		&i.Notes,
+		&i.Name,
+		&i.Type,
+		&i.Breed,
 	)
 	return i, err
 }
 
 const getPetLogsByPetID = `-- name: GetPetLogsByPetID :many
-SELECT log_id, petid, datetime, title, notes FROM pet_logs
-WHERE petid = $1
-ORDER BY datetime DESC LIMIT $2 OFFSET $3
+SELECT pet_logs.log_id, pet_logs.petid, pet_logs.datetime, pet_logs.title, pet_logs.notes, pets.name, pets.type, pets.breed
+FROM pet_logs
+LEFT JOIN pets ON pet_logs.petid = pets.petid
+WHERE pet_logs.petid = $1 AND pets.is_active = true
+ORDER BY pet_logs.datetime DESC LIMIT $2 OFFSET $3
 `
 
 type GetPetLogsByPetIDParams struct {
@@ -101,21 +196,35 @@ type GetPetLogsByPetIDParams struct {
 	Offset int32 `json:"offset"`
 }
 
-func (q *Queries) GetPetLogsByPetID(ctx context.Context, arg GetPetLogsByPetIDParams) ([]PetLog, error) {
+type GetPetLogsByPetIDRow struct {
+	LogID    int64            `json:"log_id"`
+	Petid    int64            `json:"petid"`
+	Datetime pgtype.Timestamp `json:"datetime"`
+	Title    pgtype.Text      `json:"title"`
+	Notes    pgtype.Text      `json:"notes"`
+	Name     pgtype.Text      `json:"name"`
+	Type     pgtype.Text      `json:"type"`
+	Breed    pgtype.Text      `json:"breed"`
+}
+
+func (q *Queries) GetPetLogsByPetID(ctx context.Context, arg GetPetLogsByPetIDParams) ([]GetPetLogsByPetIDRow, error) {
 	rows, err := q.db.Query(ctx, getPetLogsByPetID, arg.Petid, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	items := []PetLog{}
+	items := []GetPetLogsByPetIDRow{}
 	for rows.Next() {
-		var i PetLog
+		var i GetPetLogsByPetIDRow
 		if err := rows.Scan(
 			&i.LogID,
 			&i.Petid,
 			&i.Datetime,
 			&i.Title,
 			&i.Notes,
+			&i.Name,
+			&i.Type,
+			&i.Breed,
 		); err != nil {
 			return nil, err
 		}

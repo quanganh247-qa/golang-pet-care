@@ -170,6 +170,7 @@ type Medicine struct {
 	Quantity       pgtype.Int8        `json:"quantity"`
 	UnitPrice      pgtype.Float8      `json:"unit_price"`
 	ReorderLevel   pgtype.Int8        `json:"reorder_level"`
+	SupplierID     pgtype.Int8        `json:"supplier_id"`
 	CreatedAt      pgtype.Timestamptz `json:"created_at"`
 	UpdatedAt      pgtype.Timestamptz `json:"updated_at"`
 }

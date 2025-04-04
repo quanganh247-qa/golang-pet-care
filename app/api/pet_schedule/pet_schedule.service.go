@@ -9,6 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5/pgtype"
 	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
+	"github.com/quanganh247-qa/go-blog-be/app/middleware"
 	"github.com/quanganh247-qa/go-blog-be/app/service/llm"
 	"github.com/quanganh247-qa/go-blog-be/app/util"
 )
@@ -60,6 +61,19 @@ func (s *PetScheduleService) CreatePetScheduleService(ctx *gin.Context, req PetS
 	if err != nil {
 		return fmt.Errorf("error creating pet schdule: ", err)
 	}
+
+	// Invalidate cache after creating a new schedule
+	middleware.InvalidateCache("pet_schedules")
+
+	// Also clear the user's schedule cache if Redis is available
+	if s.redis != nil {
+		// Get the pet to find the username
+		pet, err := s.storeDB.GetPetByID(ctx, petID)
+		if err == nil {
+			s.redis.ClearUserSchedulesCache(pet.Username)
+		}
+	}
+
 	return nil
 }
 
@@ -95,6 +109,53 @@ func (s *PetScheduleService) GetAllSchedulesByPetService(ctx *gin.Context, petID
 }
 
 func (s *PetScheduleService) ListPetSchedulesByUsernameService(ctx *gin.Context, username string) ([]PetSchedules, error) {
+	// Try to get from cache first if Redis client is available
+	if s.redis != nil {
+		cachedSchedules, err := s.redis.PetSchedulesByUsernameLoadCache(username)
+		if err == nil {
+			// Cache hit, convert to response format
+			var response []PetSchedules
+			for petID, schedules := range cachedSchedules {
+				// Get pet name (we could enhance by storing the pet name in the cache)
+				pet, err := s.storeDB.GetPetByID(ctx, petID)
+				if err != nil {
+					// Skip this pet if we can't get its info
+					continue
+				}
+
+				petSchedules := make([]PetScheduleResponse, 0, len(schedules))
+				for _, schedule := range schedules {
+					petSchedules = append(petSchedules, PetScheduleResponse{
+						ID:               schedule.ID,
+						PetID:            schedule.PetID,
+						Title:            schedule.Title,
+						ReminderDateTime: schedule.ReminderDateTime.Format(time.RFC3339),
+						EventRepeat:      schedule.EventRepeat,
+						EndType:          schedule.EndType,
+						EndDate:          schedule.EndDate.Format(time.RFC3339),
+						Notes:            schedule.Notes,
+						IsActive:         schedule.IsActive,
+					})
+				}
+
+				response = append(response, PetSchedules{
+					PetID:     petID,
+					PetName:   pet.Name,
+					Schedules: petSchedules,
+				})
+			}
+			// Log cache hit
+			ctx.Set("cache_status", "HIT")
+			ctx.Set("cache_source", "redis:schedules")
+			return response, nil
+		}
+	}
+
+	// Cache miss or no Redis client, get from database
+	// Log cache miss
+	ctx.Set("cache_status", "MISS")
+	ctx.Set("cache_source", "db")
+
 	schedules, err := s.storeDB.ListPetSchedulesByUsername(ctx, username)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to list pet schedules"})

@@ -2,6 +2,7 @@ package petschedule
 
 import (
 	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
+	"github.com/quanganh247-qa/go-blog-be/app/service/redis"
 	"github.com/quanganh247-qa/go-blog-be/app/util"
 )
 
@@ -16,6 +17,7 @@ type PetScheduleController struct {
 type PetScheduleService struct {
 	storeDB db.Store
 	config  *util.Config
+	redis   *redis.ClientType
 }
 
 type PetScheduleRequest struct {

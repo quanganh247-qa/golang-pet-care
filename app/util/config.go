@@ -15,6 +15,7 @@ type Config struct {
 	DBSource          string `mapstructure:"DB_SOURCE"`
 	RedisAddress      string `mapstructure:"REDIS_ADDRESS"`
 	HTTPServerAddress string `mapstructure:"HTTP_SERVER_ADDRESS"`
+	DebugMode         bool   `mapstructure:"DEBUG_MODE"`
 
 	SymmetricKey  string `mapstructure:"SYMMETRIC_KEY"`
 	AdminUsername string `mapstructure:"ADMIN_USERNAME"`

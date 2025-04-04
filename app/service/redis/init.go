@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log"
 	"time"
 
 	"github.com/redis/go-redis/v9"
@@ -11,6 +12,7 @@ import (
 
 type ClientType struct {
 	RedisClient *redis.Client
+	Debug       bool // Debug flag to control verbose logging
 }
 
 var (
@@ -18,15 +20,23 @@ var (
 	ctxRedis = context.Background()
 )
 
-func InitRedis(address string) {
+func InitRedis(address string, debug bool) {
 	Client = &ClientType{
 		RedisClient: redis.NewClient(&redis.Options{
-			Addr:     address,
-			Password: "", // no password set
-			DB:       0,  // use default DB
+			Addr:         address,
+			Password:     "", // no password set
+			DB:           0,  // use default DB
+			PoolSize:     10, // Số kết nối tối đa trong pool
+			MinIdleConns: 1,  // Số kết nối nhàn rỗi tối thiểu
 		}),
+		Debug: debug,
+	}
+
+	if debug {
+		log.Println("Redis client initialized with debug logging enabled")
 	}
 }
+
 func (client *ClientType) Set(ctx context.Context, key string, value interface{}, duration time.Duration) error {
 	dataValue, err := json.Marshal(value)
 	if err != nil {
@@ -54,11 +64,20 @@ func (client *ClientType) Get(ctx context.Context, key string, result interface{
 func (client *ClientType) SetWithBackground(key string, value interface{}, duration time.Duration) error {
 	dataValue, err := json.Marshal(value) // Serialize value to JSON
 	if err != nil {
+		if client.Debug {
+			log.Printf("REDIS MARSHAL ERROR: %s - %v", key, err)
+		}
 		return err // Return error if serialization fails
 	}
 	cmdRes := client.RedisClient.Set(ctxRedis, key, dataValue, duration) // Store in Redis
 	if cmdRes.Err() != nil {
+		if client.Debug {
+			log.Printf("REDIS SET ERROR: %s - %v", key, cmdRes.Err())
+		}
 		return cmdRes.Err() // Return error if Redis command fails
+	}
+	if client.Debug {
+		log.Printf("REDIS SET: %s (TTL: %v)", key, duration)
 	}
 	return nil // No error, return nil
 }
@@ -66,11 +85,20 @@ func (client *ClientType) SetWithBackground(key string, value interface{}, durat
 func (client *ClientType) GetWithBackground(key string, result interface{}) error {
 	cmdRes := client.RedisClient.Get(ctxRedis, key) // Retrieve value from Redis
 	if cmdRes.Err() != nil {
+		if client.Debug {
+			log.Printf("REDIS MISS: %s - %v", key, cmdRes.Err())
+		}
 		return cmdRes.Err() // Return error if Redis command fails
 	}
 	err := json.Unmarshal([]byte(cmdRes.Val()), result) // Deserialize JSON to result
 	if err != nil {
+		if client.Debug {
+			log.Printf("REDIS UNMARSHAL ERROR: %s - %v", key, err)
+		}
 		return err // Return error if deserialization fails
+	}
+	if client.Debug {
+		log.Printf("REDIS HIT: %s", key)
 	}
 	return nil // No error, return nil
 }
@@ -83,8 +111,8 @@ func (client *ClientType) RemoveCacheByKey(key string) error {
 	return nil
 }
 
-func (client *ClientType) RemoveCacheBySubString(stringPattern string) error {
-	cmdRes := client.RedisClient.Keys(ctxRedis, stringPattern)
+func (client *ClientType) RemoveCacheBySubString(pattern string) error {
+	cmdRes := client.RedisClient.Keys(ctxRedis, pattern)
 	if cmdRes.Err() != nil {
 		return cmdRes.Err()
 	}

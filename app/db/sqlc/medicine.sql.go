@@ -37,7 +37,7 @@ INSERT INTO medicines (
   reorder_level
 )
 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
-RETURNING id, name, description, usage, dosage, frequency, duration, side_effects, expiration_date, quantity, unit_price, reorder_level, created_at, updated_at
+RETURNING id, name, description, usage, dosage, frequency, duration, side_effects, expiration_date, quantity, unit_price, reorder_level, supplier_id, created_at, updated_at
 `
 
 type CreateMedicineParams struct {
@@ -82,6 +82,7 @@ func (q *Queries) CreateMedicine(ctx context.Context, arg CreateMedicineParams) 
 		&i.Quantity,
 		&i.UnitPrice,
 		&i.ReorderLevel,
+		&i.SupplierID,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
@@ -224,22 +225,23 @@ func (q *Queries) DeleteSupplier(ctx context.Context, id int64) error {
 
 const getAllMedicines = `-- name: GetAllMedicines :many
 SELECT 
-    id, 
-    name, 
-    description, 
-    usage, 
-    dosage, 
-    frequency, 
-    duration, 
-    side_effects, 
-    created_at, 
-    updated_at, 
-    expiration_date, 
-    quantity,
-    unit_price,
-    reorder_level
+    medicines.id, 
+    medicines.name, 
+    medicines.description, 
+    medicines.usage, 
+    medicines.dosage, 
+    medicines.frequency, 
+    medicines.duration, 
+    medicines.side_effects, 
+    medicines.created_at, 
+    medicines.updated_at, 
+    medicines.expiration_date, 
+    medicines.quantity,
+    medicines.unit_price,
+    medicines.reorder_level,
+    ms.name as supplier_name
 FROM medicines
-ORDER BY name ASC
+JOIN medicine_suppliers ms ON medicines.supplier_id = ms.id
 `
 
 type GetAllMedicinesRow struct {
@@ -257,6 +259,7 @@ type GetAllMedicinesRow struct {
 	Quantity       pgtype.Int8        `json:"quantity"`
 	UnitPrice      pgtype.Float8      `json:"unit_price"`
 	ReorderLevel   pgtype.Int8        `json:"reorder_level"`
+	SupplierName   string             `json:"supplier_name"`
 }
 
 func (q *Queries) GetAllMedicines(ctx context.Context) ([]GetAllMedicinesRow, error) {
@@ -283,6 +286,7 @@ func (q *Queries) GetAllMedicines(ctx context.Context) ([]GetAllMedicinesRow, er
 			&i.Quantity,
 			&i.UnitPrice,
 			&i.ReorderLevel,
+			&i.SupplierName,
 		); err != nil {
 			return nil, err
 		}
@@ -342,15 +346,13 @@ SELECT
     m.expiration_date,
     (m.expiration_date - CURRENT_DATE) as days_until_expiry,
     m.quantity
-FROM 
-    medicines m
+FROM medicines m
 WHERE 
     m.expiration_date IS NOT NULL
-    AND m.expiration_date - CURRENT_DATE <= $1
+    AND m.expiration_date <= $1::date  -- Pass a date parameter
     AND m.expiration_date >= CURRENT_DATE
     AND m.quantity > 0
-ORDER BY 
-    m.expiration_date ASC
+ORDER BY m.expiration_date ASC
 `
 
 type GetExpiringMedicinesRow struct {
@@ -361,8 +363,8 @@ type GetExpiringMedicinesRow struct {
 	Quantity        pgtype.Int8 `json:"quantity"`
 }
 
-func (q *Queries) GetExpiringMedicines(ctx context.Context, expirationDate pgtype.Date) ([]GetExpiringMedicinesRow, error) {
-	rows, err := q.db.Query(ctx, getExpiringMedicines, expirationDate)
+func (q *Queries) GetExpiringMedicines(ctx context.Context, dollar_1 pgtype.Date) ([]GetExpiringMedicinesRow, error) {
+	rows, err := q.db.Query(ctx, getExpiringMedicines, dollar_1)
 	if err != nil {
 		return nil, err
 	}
@@ -434,7 +436,7 @@ func (q *Queries) GetLowStockMedicines(ctx context.Context) ([]GetLowStockMedici
 }
 
 const getMedicineByID = `-- name: GetMedicineByID :one
-SELECT id, name, description, usage, dosage, frequency, duration, side_effects, expiration_date, quantity, unit_price, reorder_level, created_at, updated_at FROM medicines
+SELECT id, name, description, usage, dosage, frequency, duration, side_effects, expiration_date, quantity, unit_price, reorder_level, supplier_id, created_at, updated_at FROM medicines
 WHERE id = $1 LIMIT 1
 `
 
@@ -454,6 +456,7 @@ func (q *Queries) GetMedicineByID(ctx context.Context, id int64) (Medicine, erro
 		&i.Quantity,
 		&i.UnitPrice,
 		&i.ReorderLevel,
+		&i.SupplierID,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
@@ -705,7 +708,7 @@ func (q *Queries) GetSupplierByID(ctx context.Context, id int64) (MedicineSuppli
 
 const listMedicinesByPet = `-- name: ListMedicinesByPet :many
 SELECT 
-    m.id, m.name, m.description, m.usage, m.dosage, m.frequency, m.duration, m.side_effects, m.expiration_date, m.quantity, m.unit_price, m.reorder_level, m.created_at, m.updated_at,
+    m.id, m.name, m.description, m.usage, m.dosage, m.frequency, m.duration, m.side_effects, m.expiration_date, m.quantity, m.unit_price, m.reorder_level, m.supplier_id, m.created_at, m.updated_at,
     pm.dosage,
     pm.frequency,
     pm.duration,
@@ -747,6 +750,7 @@ type ListMedicinesByPetRow struct {
 	Quantity           pgtype.Int8        `json:"quantity"`
 	UnitPrice          pgtype.Float8      `json:"unit_price"`
 	ReorderLevel       pgtype.Int8        `json:"reorder_level"`
+	SupplierID         pgtype.Int8        `json:"supplier_id"`
 	CreatedAt          pgtype.Timestamptz `json:"created_at"`
 	UpdatedAt          pgtype.Timestamptz `json:"updated_at"`
 	Dosage_2           pgtype.Text        `json:"dosage_2"`
@@ -785,6 +789,7 @@ func (q *Queries) ListMedicinesByPet(ctx context.Context, arg ListMedicinesByPet
 			&i.Quantity,
 			&i.UnitPrice,
 			&i.ReorderLevel,
+			&i.SupplierID,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 			&i.Dosage_2,
@@ -806,7 +811,7 @@ func (q *Queries) ListMedicinesByPet(ctx context.Context, arg ListMedicinesByPet
 }
 
 const searchMedicinesByName = `-- name: SearchMedicinesByName :many
-SELECT id, name, description, usage, dosage, frequency, duration, side_effects, expiration_date, quantity, unit_price, reorder_level, created_at, updated_at FROM medicines
+SELECT id, name, description, usage, dosage, frequency, duration, side_effects, expiration_date, quantity, unit_price, reorder_level, supplier_id, created_at, updated_at FROM medicines
 WHERE name ILIKE $1
 ORDER BY name ASC
 LIMIT $2 OFFSET $3
@@ -840,6 +845,7 @@ func (q *Queries) SearchMedicinesByName(ctx context.Context, arg SearchMedicines
 			&i.Quantity,
 			&i.UnitPrice,
 			&i.ReorderLevel,
+			&i.SupplierID,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 		); err != nil {

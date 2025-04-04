@@ -8,9 +8,18 @@ import (
 func Routes(routerGroup middleware.RouterGroup, chatHandler *handlers.ChatHandler) {
 	chatbot := routerGroup.RouterDefault.Group("/")
 
-	// authRoute := routerGroup.RouterAuth(chatbot)
+	// Public routes
 	{
 		chatbot.POST("chat", chatHandler.HandleChatRequest)
+		chatbot.OPTIONS("chat", chatHandler.HandleOptionsRequest)
 	}
 
+	// Authentication required routes
+	authRoute := routerGroup.RouterAuth(chatbot)
+	{
+		authRoute.GET("conversations", chatHandler.ListConversations)
+		authRoute.GET("conversations/:conversation_id", chatHandler.GetConversation)
+		authRoute.DELETE("conversations/:conversation_id", chatHandler.DeleteConversation)
+		authRoute.GET("follow-up/:drug_name", chatHandler.GetDrugFollowUpQuestions)
+	}
 }

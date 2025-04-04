@@ -49,8 +49,8 @@ func Init(config util.Config) (*Connection, error) {
 		return nil, fmt.Errorf("cannot ping database: %w", err)
 	}
 
-	// Khởi tạo Redis
-	go redis.InitRedis(config.RedisAddress)
+	// Initialize Redis with debug mode
+	go redis.InitRedis(config.RedisAddress, config.DebugMode)
 	go runTaskProcessor(&config, asynq.RedisClientOpt{Addr: config.RedisAddress}, db.InitStore(connPool))
 	go initMinio(&config)
 

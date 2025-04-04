@@ -6,8 +6,10 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/jackc/pgx"
 	"github.com/jackc/pgx/v5/pgtype"
 	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
+	"github.com/quanganh247-qa/go-blog-be/app/middleware"
 	"github.com/quanganh247-qa/go-blog-be/app/util"
 )
 
@@ -77,11 +79,19 @@ func (s *PetService) CreatePet(ctx *gin.Context, username string, req createPetR
 }
 
 func (s *PetService) GetPetByID(ctx *gin.Context, petid int64) (*CreatePetResponse, error) {
-
+	// Try to get from cache
 	pet, err := s.redis.PetInfoLoadCache(petid)
 	if err != nil {
+		// Log cache miss to the context for logging middleware
+		ctx.Set("cache_status", "MISS")
+		ctx.Set("cache_source", "db")
 		return nil, fmt.Errorf("failed to get pet: %w", err)
 	}
+
+	// Log cache hit to the context for logging middleware
+	ctx.Set("cache_status", "HIT")
+	ctx.Set("cache_source", "redis")
+
 	return &CreatePetResponse{
 		Petid:           pet.Petid,
 		Username:        pet.Username,
@@ -222,7 +232,14 @@ func (s *PetService) UpdatePet(ctx *gin.Context, petid int64, req updatePetReque
 	if err != nil {
 		return fmt.Errorf("transaction failed: %w", err)
 	}
-	go s.redis.RemovePetInfoCache(petid)
+
+	// Clear the pet info cache
+	if s.redis != nil {
+		s.redis.RemovePetInfoCache(petid)
+		// Also clear the user's pet list cache
+		s.redis.ClearUserPetsCache(pet.Username)
+	}
+
 	return nil
 }
 
@@ -250,38 +267,69 @@ func (s *PetService) DeletePet(ctx context.Context, petid int64) error {
 
 func (s *PetService) ListPetsByUsername(ctx *gin.Context, username string, pagination *util.Pagination) ([]CreatePetResponse, error) {
 	var pets []CreatePetResponse
+
+	// If we're requesting the first page with a reasonable page size, try cache first
+	if pagination.Page == 1 && pagination.PageSize <= 100 {
+		cachedPets, err := s.redis.GetPetsByUsernameCache(username)
+		if err == nil {
+			// We have the pets cached, convert them to our response format
+			for _, pet := range cachedPets {
+				pets = append(pets, CreatePetResponse{
+					Petid:           pet.Petid,
+					Username:        pet.Username,
+					Name:            pet.Name,
+					Type:            pet.Type,
+					Breed:           pet.Breed,
+					Gender:          pet.Gender,
+					Healthnotes:     pet.Healthnotes,
+					Age:             pet.Age,
+					BOD:             pet.BOD,
+					Weight:          pet.Weight,
+					DataImage:       pet.DataImage,
+					OriginalImage:   pet.OriginalImage,
+					MicrochipNumber: pet.MicrochipNumber,
+				})
+			}
+			// Log cache hit
+			ctx.Set("cache_status", "HIT")
+			ctx.Set("cache_source", "redis:user_pets")
+			return pets, nil
+		}
+	}
+
+	// Cache miss or pagination beyond what's cached, query DB
+	// Log cache miss
+	ctx.Set("cache_status", "MISS")
+	ctx.Set("cache_source", "db")
+
 	offset := (pagination.Page - 1) * pagination.PageSize
 
-	err := s.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
-		listParams := db.ListPetsByUsernameParams{
-			Username: username,
-			Limit:    int32(pagination.PageSize),
-			Offset:   int32(offset),
-		}
+	listParams := db.ListPetsByUsernameParams{
+		Username: username,
+		Limit:    int32(pagination.PageSize),
+		Offset:   int32(offset),
+	}
 
-		res, err := q.ListPetsByUsername(ctx, listParams)
-		if err != nil {
-			return fmt.Errorf("failed to list pets for user %s: %w", username, err)
-		}
-
-		for _, r := range res {
-			pets = append(pets, CreatePetResponse{
-				Petid:         r.Petid,
-				Username:      r.Username,
-				Name:          r.Name,
-				Type:          r.Type,
-				Breed:         r.Breed.String,
-				Age:           int16(r.Age.Int32),
-				Weight:        r.Weight.Float64,
-				DataImage:     r.DataImage,
-				OriginalImage: r.OriginalImage.String,
-			})
-		}
-		return nil
-	})
-
+	res, err := s.storeDB.ListPetsByUsername(ctx, listParams)
 	if err != nil {
-		return nil, fmt.Errorf("transaction failed: %w", err)
+		return nil, fmt.Errorf("failed to list pets for username %s: %w", username, err)
+	}
+
+	for _, r := range res {
+		pets = append(pets, CreatePetResponse{
+			Petid:           r.Petid,
+			Username:        r.Username,
+			Name:            r.Name,
+			Type:            r.Type,
+			Breed:           r.Breed.String,
+			Gender:          r.Gender.String,
+			Healthnotes:     r.Healthnotes.String,
+			Age:             int16(r.Age.Int32),
+			Weight:          r.Weight.Float64,
+			DataImage:       r.DataImage,
+			OriginalImage:   r.OriginalImage.String,
+			MicrochipNumber: r.MicrochipNumber.String,
+		})
 	}
 
 	return pets, nil
@@ -293,6 +341,29 @@ func (s *PetService) SetPetInactive(ctx context.Context, petid int64) error {
 
 func (s *PetService) GetPetLogsByPetIDService(ctx *gin.Context, pet_id int64, pagination *util.Pagination) ([]PetLogWithPetInfo, error) {
 	var pets []PetLogWithPetInfo
+
+	// If first page and reasonable page size, try to use cache
+	if pagination.Page == 1 && pagination.PageSize <= 20 && s.redis != nil {
+		cachedLogs, err := s.redis.PetLogSummaryByPetIDLoadCache(pet_id, int32(pagination.PageSize))
+		if err == nil {
+			// Cache hit, convert to response format
+			for _, log := range cachedLogs {
+				pets = append(pets, PetLogWithPetInfo{
+					PetID:    log.PetID,
+					LogID:    log.LogID,
+					DateTime: log.Datetime.Format(time.RFC3339),
+					Title:    log.Title,
+					Notes:    log.Notes,
+					PetName:  log.PetName,
+					PetType:  log.PetType,
+					PetBreed: log.PetBreed,
+				})
+			}
+			return pets, nil
+		}
+	}
+
+	// Cache miss or pagination beyond what's cached
 	offset := (pagination.Page - 1) * pagination.PageSize
 
 	listParams := db.GetPetLogsByPetIDParams{
@@ -313,6 +384,9 @@ func (s *PetService) GetPetLogsByPetIDService(ctx *gin.Context, pet_id int64, pa
 			DateTime: r.Datetime.Time.Format(time.RFC3339),
 			Title:    r.Title.String,
 			Notes:    r.Notes.String,
+			PetName:  r.Name.String,
+			PetType:  r.Type.String,
+			PetBreed: r.Breed.String,
 		})
 	}
 
@@ -321,112 +395,141 @@ func (s *PetService) GetPetLogsByPetIDService(ctx *gin.Context, pet_id int64, pa
 
 // Add log for pet
 func (s *PetService) InsertPetLogService(ctx context.Context, req PetLogWithPetInfo) error {
-
-	log := db.CreatePetLogParams{
-		Petid: req.PetID,
-		Title: pgtype.Text{String: req.Title, Valid: true},
-		Notes: pgtype.Text{String: req.Notes, Valid: true},
-	}
-	if req.DateTime == "" {
-		log.Datetime = pgtype.Timestamp{Time: time.Now(), Valid: true}
-	} else {
-		datetime, err := time.Parse(time.RFC3339, req.DateTime)
-		if err != nil {
-			return fmt.Errorf("failed to parse DateTime: %w", err)
-		}
-		log.Datetime = pgtype.Timestamp{Time: datetime, Valid: true}
-	}
-
 	err := s.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
-		_, err := q.CreatePetLog(ctx, log)
+		pet, err := q.GetPetByID(ctx, req.PetID)
+		if err != nil {
+			return fmt.Errorf("failed to get pet: %w", err)
+		}
+
+		dateTime, err := time.Parse(time.RFC3339, req.DateTime)
+		if err != nil {
+			return fmt.Errorf("invalid date format: %w", err)
+		}
+
+		var insertParams = db.CreatePetLogParams{
+			Petid:    pet.Petid,
+			Title:    pgtype.Text{String: req.Title, Valid: true},
+			Notes:    pgtype.Text{String: req.Notes, Valid: true},
+			Datetime: pgtype.Timestamp{Time: dateTime, Valid: true},
+		}
+		_, err = q.CreatePetLog(ctx, insertParams)
 		if err != nil {
 			return fmt.Errorf("failed to insert pet log: %w", err)
 		}
+
 		return nil
 	})
 	if err != nil {
-		return fmt.Errorf("transaction failed: %w", err)
+		return fmt.Errorf("failed to execute transaction: %w", err)
 	}
+
+	// Invalidate cache for the pet logs
+	s.redis.ClearPetLogsByPetCache(req.PetID)
+	middleware.InvalidateCache("pet_logs")
+
 	return nil
 }
 
 // DeletePetLogService delete log for pet
 func (s *PetService) DeletePetLogService(ctx context.Context, logID int64) error {
-	err := s.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
-		err := q.DeletePetLog(ctx, logID)
-		if err != nil {
-			return fmt.Errorf("failed to delete pet log: %w", err)
+	// Get the log first to know which pet it belongs to
+	var petID int64
+	if s.redis != nil {
+		// Try to get the log info from the database to determine the pet ID
+		logParams := db.GetPetLogByIDParams{
+			LogID: logID,
 		}
-		return nil
-	})
-	if err != nil {
-		return fmt.Errorf("transaction delete log failed: %w", err)
+		if log, err := s.storeDB.GetPetLogByID(ctx, logParams); err == nil {
+			petID = log.Petid
+		}
 	}
+
+	// Delete the pet log
+	err := s.storeDB.DeletePetLog(ctx, logID)
+	if err != nil {
+		return fmt.Errorf("failed to delete pet log: %w", err)
+	}
+
+	// Invalidate cache
+	middleware.InvalidateCache("pet_logs")
+
+	// Also clear the specific caches if Redis is available
+	if s.redis != nil && petID != 0 {
+		s.redis.ClearPetLogsByPetCache(petID)
+		s.redis.ClearPetLogSummaryCache(petID)
+	}
+
 	return nil
 }
 
 // UpdatePetLogService update log for pet
 func (s *PetService) UpdatePetLogService(ctx context.Context, req PetLogWithPetInfo, log_id int64) error {
 
-	pet_log, err := s.storeDB.GetPetLogByID(ctx, db.GetPetLogByIDParams{
-		Petid: req.PetID,
-		LogID: log_id,
-	})
-	if err != nil {
-		return fmt.Errorf("failed to get pet log: %w", err)
-	}
-	// check input
-	if req.DateTime == "" {
-		req.DateTime = pet_log.Datetime.Time.Format(time.RFC3339)
-	}
-	if req.Title == "" {
-		req.Title = pet_log.Title.String
-	}
-	if req.Notes == "" {
-		req.Notes = pet_log.Notes.String
-	}
+	err := s.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
+		getLogParams := db.GetPetLogByIDParams{
+			LogID: log_id,
+		}
+		_, err := q.GetPetLogByID(ctx, getLogParams)
+		if err != nil {
+			if err == pgx.ErrNoRows {
+				return fmt.Errorf("pet log not found: %d", log_id)
+			}
+			return fmt.Errorf("failed to get pet log: %w", err)
+		}
 
-	err = s.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
-		err := q.UpdatePetLog(ctx, db.UpdatePetLogParams{
+		// Check if the pet exists
+		existingPet, err := q.GetPetByID(ctx, req.PetID)
+		if err != nil {
+			if err == pgx.ErrNoRows {
+				return fmt.Errorf("pet not found: %d", req.PetID)
+			}
+			return fmt.Errorf("failed to get pet: %w", err)
+		}
+
+		// Check if user has permission to update the log
+		getPetLogsPetIDParams := db.GetPetLogsByPetIDParams{
+			Petid: existingPet.Petid,
+		}
+		logs, err := q.GetPetLogsByPetID(ctx, getPetLogsPetIDParams)
+
+		if err != nil {
+			return fmt.Errorf("failed to get pet logs: %w", err)
+		}
+		petHasLog := false
+		for _, log := range logs {
+			if log.LogID == log_id {
+				petHasLog = true
+				break
+			}
+		}
+
+		if !petHasLog {
+			return fmt.Errorf("you don't have permission to update this log")
+		}
+
+		// Finally, update the log
+		updateParams := db.UpdatePetLogParams{
 			LogID: log_id,
 			Title: pgtype.Text{String: req.Title, Valid: true},
 			Notes: pgtype.Text{String: req.Notes, Valid: true},
-		})
+		}
+		err = q.UpdatePetLog(ctx, updateParams)
 		if err != nil {
 			return fmt.Errorf("failed to update pet log: %w", err)
 		}
+
 		return nil
 	})
 	if err != nil {
-		return fmt.Errorf("transaction update log failed: %w", err)
+		return fmt.Errorf("transaction failed: %w", err)
 	}
+
+	// Invalidate cache for the pet logs
+	s.redis.ClearPetLogsByPetCache(req.PetID)
+	middleware.InvalidateCache("pet_logs")
+
 	return nil
 }
-
-// func formatTreatments(treatments []db.GetTreatmentsByPetParams) string {
-// 	var result strings.Builder
-// 	for _, t := range treatments {
-// 		result.WriteString(fmt.Sprintf("- Condition: %s\n  Status: %s\n  Period: %s to %s\n",
-// 			t.Disease,
-// 			t.Status.String,
-// 			t.StartDate.Time.Format("2006-01-02"),
-// 			t.EndDate.Time.Format("2006-01-02"),
-// 		))
-// 	}
-// 	return result.String()
-// }
-
-// func formatVaccinations(vaccinations []db.Vaccination) string {
-// 	var result strings.Builder
-// 	for _, v := range vaccinations {
-// 		result.WriteString(fmt.Sprintf("- Vaccine: %s\n  Administered: %s\n  Next Due: %s\n  Provider: %s\n",
-// 			v.Vaccinename,
-// 			v.Dateadministered.Time.Format("2006-01-02"),
-// 			v.Nextduedate.Time.Format("2006-01-02"),
-// 			v.Vaccineprovider.String))
-// 	}
-// 	return result.String()
-// }
 
 // Add this method to your PetService implementation
 func (s *PetService) GetAllPetLogsByUsername(ctx *gin.Context, username string, pagination *util.Pagination) (*util.PaginationResponse[PetLogWithPetInfo], error) {
