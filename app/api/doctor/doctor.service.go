@@ -19,7 +19,7 @@ type DoctorServiceInterface interface {
 	GetAllDoctorService(ctx *gin.Context) ([]DoctorDetail, error)
 	GetShifts(ctx *gin.Context) ([]Shift, error)
 	CreateShift(ctx *gin.Context, req CreateShiftRequest) (*Shift, error)
-	GetShiftByDoctorId(ctx *gin.Context, doctorId int64) ([]Shift, error)
+	GetShiftByDoctorId(ctx *gin.Context, doctorId int64) ([]ShiftResponse, error)
 	GetDoctorById(ctx *gin.Context, doctorId int64) (DoctorDetail, error)
 }
 
@@ -203,15 +203,19 @@ func (service *DoctorService) CreateShift(ctx *gin.Context, req CreateShiftReque
 }
 
 // Get shift by doctor id
-func (service *DoctorService) GetShiftByDoctorId(ctx *gin.Context, doctorId int64) ([]Shift, error) {
+func (service *DoctorService) GetShiftByDoctorId(ctx *gin.Context, doctorId int64) ([]ShiftResponse, error) {
 	shifts, err := service.storeDB.GetShiftByDoctorId(ctx, doctorId)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get shifts: %w", err)
 	}
-	shiftList := make([]Shift, 0)
+	shiftList := make([]ShiftResponse, 0)
 	for _, s := range shifts {
-		shiftList = append(shiftList, Shift{
-			ID: s.ID,
+		shiftList = append(shiftList, ShiftResponse{
+			ID:               s.ID,
+			StartTime:        s.StartTime.Time.Format("2006-01-02 15:04:05"),
+			EndTime:          s.EndTime.Time.Format("2006-01-02 15:04:05"),
+			AssignedPatients: s.AssignedPatients.Int32,
+			DoctorID:         s.DoctorID,
 		})
 	}
 	return shiftList, nil

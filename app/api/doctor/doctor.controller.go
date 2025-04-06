@@ -85,7 +85,7 @@ func (c *DoctorController) createShift(ctx *gin.Context) {
 }
 
 func (c *DoctorController) getShiftByDoctorId(ctx *gin.Context) {
-	id := ctx.Query("id")
+	id := ctx.Param("doctor_id")
 	if id == "" {
 		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(errors.New("id is required")))
 		return

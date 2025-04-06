@@ -3,12 +3,13 @@ package doctor
 import (
 	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
 	"github.com/quanganh247-qa/go-blog-be/app/middleware"
+	"github.com/quanganh247-qa/go-blog-be/app/util/perms"
 )
 
 func Routes(routerGroup middleware.RouterGroup) {
-	doctor := routerGroup.RouterDefault.Group("/doctor")
+	doctor := routerGroup.RouterDefault.Group("/")
 	authRoute := routerGroup.RouterAuth(doctor)
-	// perRoute := routerGroup.RouterPermission(doctor)
+	perRoute := routerGroup.RouterPermission(doctor)
 
 	// Initialize API
 	doctorApi := &DoctorApi{
@@ -21,17 +22,14 @@ func Routes(routerGroup middleware.RouterGroup) {
 
 	{
 		// Public routes
-		doctor.POST("/login", doctorApi.controller.loginDoctor)
-		authRoute.GET("/", doctorApi.controller.getAllDoctor)
-		authRoute.GET("/:doctor_id", doctorApi.controller.getDoctorById)
-		authRoute.GET("/profile", doctorApi.controller.getDoctorProfile)
+		doctor.POST("/doctor/login", doctorApi.controller.loginDoctor)
+		authRoute.GET("/doctor", doctorApi.controller.getAllDoctor)
+		authRoute.GET("/doctor/:doctor_id", doctorApi.controller.getDoctorById)
+		authRoute.GET("/doctor/profile", doctorApi.controller.getDoctorProfile)
 		// Private routes
-		authRoute.GET("/shifts", doctorApi.controller.getShifts)
-		authRoute.POST("/shifts", doctorApi.controller.createShift)
+		perRoute([]perms.Permission{perms.ManageDoctor}).GET("/doctor/shifts", doctorApi.controller.getShifts)
+		perRoute([]perms.Permission{perms.ManageDoctor}).POST("/doctor/shifts", doctorApi.controller.createShift)
+		perRoute([]perms.Permission{perms.ManageDoctor}).GET("/doctor/:doctor_id/shifts", doctorApi.controller.getShiftByDoctorId)
 
 	}
-	// {
-	// 	perRoute([]perms.Permission{perms.ManageDoctor}).GET("/shifts", doctorApi.controller.getShifts)
-	// 	perRoute([]perms.Permission{perms.ManageDoctor}).POST("/shifts", doctorApi.controller.createShift)
-	// }
 }

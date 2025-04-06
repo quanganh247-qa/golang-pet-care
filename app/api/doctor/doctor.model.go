@@ -56,6 +56,14 @@ type Shift struct {
 	DoctorID         int64     `json:"doctor_id"`
 }
 
+type ShiftResponse struct {
+	ID               int64  `json:"id"`
+	StartTime        string `json:"start_time"`
+	EndTime          string `json:"end_time"`
+	AssignedPatients int32  `json:"assigned_patients"`
+	DoctorID         int64  `json:"doctor_id"`
+}
+
 type CreateShiftRequest struct {
 	StartTime time.Time `json:"start_time"`
 	EndTime   time.Time `json:"end_time"`
