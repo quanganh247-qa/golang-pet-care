@@ -151,6 +151,7 @@ func (service *DoctorService) GetAllDoctorService(ctx *gin.Context) ([]DoctorDet
 			Education:      d.Education.String,
 			Certificate:    d.CertificateNumber.String,
 			Bio:            d.Bio.String,
+			DataImage:      []byte(d.DataImage),
 		})
 	}
 	return doctorList, nil

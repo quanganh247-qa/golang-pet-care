@@ -217,6 +217,8 @@ github.com/nbio/st v0.0.0-20140626010706-e9e8d9816f32 h1:W6apQkHrMkS0Muv8G/TipAy
 github.com/nbio/st v0.0.0-20140626010706-e9e8d9816f32/go.mod h1:9wM+0iRr9ahx58uYLpLIr5fm8diHn0JbqRycJi6w0Ms=
 github.com/nyaruka/phonenumbers v1.0.73 h1:bP2WN8/NUP8tQebR+WCIejFaibwYMHOaB7MQVayclUo=
 github.com/nyaruka/phonenumbers v1.0.73/go.mod h1:3aiS+PS3DuYwkbK3xdcmRwMiPNECZ0oENH8qUT1lY7Q=
+github.com/patrickmn/go-cache v2.1.0+incompatible h1:HRMgzkcYKYpi3C8ajMPV8OFXaaRUnok+kx1WdO15EQc=
+github.com/patrickmn/go-cache v2.1.0+incompatible/go.mod h1:3Qf8kWWT7OJRJbdiICTKqZju1ZixQ/KpMGzzAfe6+WQ=
 github.com/payOSHQ/payos-lib-golang v1.0.7 h1:6xuq9XblYQCvz/7xx/X8fFVAJ34DnCGF1eZsIIQg2hY=
 github.com/payOSHQ/payos-lib-golang v1.0.7/go.mod h1:xmmiB5s8Awl15vDU0wuqguOgS9zsb682qshcvGsxjvU=
 github.com/pelletier/go-toml/v2 v2.2.3 h1:YmeHyLY8mFWbdkNWwpr+qIL2bEqT0o95WSdkNHvL12M=

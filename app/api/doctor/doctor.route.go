@@ -23,7 +23,7 @@ func Routes(routerGroup middleware.RouterGroup) {
 	{
 		// Public routes
 		doctor.POST("/doctor/login", doctorApi.controller.loginDoctor)
-		authRoute.GET("/doctor", doctorApi.controller.getAllDoctor)
+		authRoute.GET("/doctors", doctorApi.controller.getAllDoctor)
 		authRoute.GET("/doctor/:doctor_id", doctorApi.controller.getDoctorById)
 		authRoute.GET("/doctor/profile", doctorApi.controller.getDoctorProfile)
 		// Private routes

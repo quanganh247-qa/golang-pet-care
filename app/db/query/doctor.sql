@@ -41,6 +41,7 @@ SELECT
     u.full_name,
     u.email,
     u.role,
+    u.data_image,
     d.specialization,
     d.years_of_experience,
     d.education,
