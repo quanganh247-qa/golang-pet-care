@@ -5,10 +5,11 @@ INSERT INTO payments (
     payment_status,
     order_id,
     test_order_id,
+    appointment_id,
     transaction_id,
     payment_details
 ) VALUES (
-    $1, $2, $3, $4, $5, $6, $7
+    $1, $2, $3, $4, $5, $6, $7, $8
 ) RETURNING *;
 
 -- name: GetPaymentByOrderID :one

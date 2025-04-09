@@ -243,8 +243,9 @@ type QuickLinkRequest struct {
 	AccountName string `json:"account_name,omitempty"`        // Tên người thụ hưởng
 
 	// Internal fields for application use
-	OrderID     int64 `json:"order_id,omitempty"`      // ID đơn hàng trong hệ thống
-	TestOrderID int64 `json:"test_order_id,omitempty"` // ID đơn hàng xét nghiệm trong hệ thống
+	OrderID       int64 `json:"order_id,omitempty"`       // ID đơn hàng trong hệ thống
+	TestOrderID   int64 `json:"test_order_id,omitempty"`  // ID đơn hàng xét nghiệm trong hệ thống
+	AppointmentID int64 `json:"appointment_id,omitempty"` // ID lịch hẹn trong hệ thống
 }
 
 // QuickLinkResponse represents the response from generating a VietQR Quick Link

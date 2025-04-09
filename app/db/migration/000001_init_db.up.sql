@@ -1,23 +1,23 @@
 
 
 
--- public.checkouts definition
+-- -- public.checkouts definition
 
--- Drop table
+-- -- Drop table
 
--- DROP TABLE public.checkouts;
+-- -- DROP TABLE public.checkouts;
 
-CREATE TABLE public.checkouts (
-	checkout_id bigserial NOT NULL,
-	petid int8 NULL,
-	doctor_id int8 NULL,
-	"date" timestamp DEFAULT now() NULL,
-	total_tmount float8 NOT NULL,
-	payment_status varchar(20) NULL,
-	payment_method varchar(50) NULL,
-	notes text NULL,
-	CONSTRAINT checkouts_pkey PRIMARY KEY (checkout_id)
-);
+-- CREATE TABLE public.checkouts (
+-- 	checkout_id bigserial NOT NULL,
+-- 	petid int8 NULL,
+-- 	doctor_id int8 NULL,
+-- 	"date" timestamp DEFAULT now() NULL,
+-- 	total_tmount float8 NOT NULL,
+-- 	payment_status varchar(20) NULL,
+-- 	payment_method varchar(50) NULL,
+-- 	notes text NULL,
+-- 	CONSTRAINT checkouts_pkey PRIMARY KEY (checkout_id)
+-- );
 
 
 -- public.diseases definition
@@ -213,23 +213,23 @@ CREATE TABLE public.carts (
 );
 
 
--- public.checkout_services definition
+-- -- public.checkout_services definition
 
--- Drop table
+-- -- Drop table
 
--- DROP TABLE public.checkout_services;
+-- -- DROP TABLE public.checkout_services;
 
-CREATE TABLE public.checkout_services (
-	checkoutservice_id bigserial NOT NULL,
-	checkoutid int8 NULL,
-	serviceid int8 NULL,
-	quantity int4 DEFAULT 1 NULL,
-	unitprice float8 NULL,
-	subtotal float8 NULL,
-	CONSTRAINT checkout_services_pkey PRIMARY KEY (checkoutservice_id),
-	CONSTRAINT cs_checkout_fk FOREIGN KEY (checkoutid) REFERENCES public.checkouts(checkout_id),
-	CONSTRAINT cs_service_fk FOREIGN KEY (serviceid) REFERENCES public.services(id)
-);
+-- CREATE TABLE public.checkout_services (
+-- 	checkoutservice_id bigserial NOT NULL,
+-- 	checkoutid int8 NULL,
+-- 	serviceid int8 NULL,
+-- 	quantity int4 DEFAULT 1 NULL,
+-- 	unitprice float8 NULL,
+-- 	subtotal float8 NULL,
+-- 	CONSTRAINT checkout_services_pkey PRIMARY KEY (checkoutservice_id),
+-- 	CONSTRAINT cs_checkout_fk FOREIGN KEY (checkoutid) REFERENCES public.checkouts(checkout_id),
+-- 	CONSTRAINT cs_service_fk FOREIGN KEY (serviceid) REFERENCES public.services(id)
+-- );
 
 
 -- public.device_tokens definition
@@ -801,6 +801,7 @@ CREATE TABLE public.payments (
 	payment_status varchar(50) DEFAULT 'pending'::character varying NOT NULL,
 	order_id int4 NULL,
 	test_order_id int4 NULL,
+	appointment_id int8 NULL,
 	transaction_id varchar(255) NULL,
 	payment_details jsonb NULL,
 	created_at timestamptz DEFAULT CURRENT_TIMESTAMP NULL,

@@ -714,6 +714,16 @@ func (s *PaymentService) UpdatePaymentAfterSuccess(ctx context.Context, paymentI
 			}
 		}
 
+		// if payment.AppointmentID.Valid {
+		// 	err := q.UpdateAppointmentStatus(ctx, db.UpdateAppointmentStatusParams{
+		// 		AppointmentID: payment.AppointmentID.Int64,
+		// 		StateID:       pgtype.Int4{Int32: 2, Valid: true},
+		// 	})
+		// 	if err != nil {
+		// 		return fmt.Errorf("failed to update appointment status: %w", err)
+		// 	}
+		// }
+
 		return nil
 	})
 }
@@ -736,11 +746,6 @@ func (s *PaymentService) GenerateQuickLink(c *gin.Context, request QuickLinkRequ
 	if len(request.AccountNo) > 19 {
 		return nil, fmt.Errorf("account number must be at most 19 characters")
 	}
-
-	// // Validate amount
-	// if request.Amount < 0 || request.Amount > 9999999999999 {
-	// 	return nil, fmt.Errorf("amount must be a positive number with at most 13 digits")
-	// }
 
 	// Validate description
 	if len(request.Description) > 50 {
@@ -800,7 +805,7 @@ func (s *PaymentService) GenerateQuickLink(c *gin.Context, request QuickLinkRequ
 	}
 
 	// Create payment record in database if order ID is provided
-	if request.OrderID != 0 || request.TestOrderID != 0 {
+	if request.OrderID != 0 || request.TestOrderID != 0 || request.AppointmentID != 0 {
 
 		// Create payment params
 		paymentParams := db.CreatePaymentParams{
@@ -814,6 +819,8 @@ func (s *PaymentService) GenerateQuickLink(c *gin.Context, request QuickLinkRequ
 			paymentParams.OrderID = pgtype.Int4{Int32: int32(request.OrderID), Valid: true}
 		} else if request.TestOrderID != 0 {
 			paymentParams.TestOrderID = pgtype.Int4{Int32: int32(request.TestOrderID), Valid: true}
+		} else if request.AppointmentID != 0 {
+			paymentParams.AppointmentID = pgtype.Int8{Int64: request.AppointmentID, Valid: true}
 		}
 
 		// Add payment details

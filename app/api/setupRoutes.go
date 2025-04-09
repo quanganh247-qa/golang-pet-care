@@ -17,6 +17,7 @@ import (
 	"github.com/quanganh247-qa/go-blog-be/app/api/pet"
 	petschedule "github.com/quanganh247-qa/go-blog-be/app/api/pet_schedule"
 	"github.com/quanganh247-qa/go-blog-be/app/api/products"
+	"github.com/quanganh247-qa/go-blog-be/app/api/reports"
 	"github.com/quanganh247-qa/go-blog-be/app/api/rooms"
 	"github.com/quanganh247-qa/go-blog-be/app/api/service"
 	"github.com/quanganh247-qa/go-blog-be/app/api/test"
@@ -76,5 +77,6 @@ func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor, config
 	doctor.Routes(routerGroup)
 	rooms.Routes(routerGroup)
 	invoice.Routes(routerGroup)
+	reports.Routes(routerGroup)
 	server.Router = routerDefault
 }

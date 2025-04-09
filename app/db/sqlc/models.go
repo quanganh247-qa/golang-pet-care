@@ -44,26 +44,6 @@ type CartItem struct {
 	TotalPrice pgtype.Float8 `json:"total_price"`
 }
 
-type Checkout struct {
-	CheckoutID    int64            `json:"checkout_id"`
-	Petid         pgtype.Int8      `json:"petid"`
-	DoctorID      pgtype.Int8      `json:"doctor_id"`
-	Date          pgtype.Timestamp `json:"date"`
-	TotalTmount   float64          `json:"total_tmount"`
-	PaymentStatus pgtype.Text      `json:"payment_status"`
-	PaymentMethod pgtype.Text      `json:"payment_method"`
-	Notes         pgtype.Text      `json:"notes"`
-}
-
-type CheckoutService struct {
-	CheckoutserviceID int64         `json:"checkoutservice_id"`
-	Checkoutid        pgtype.Int8   `json:"checkoutid"`
-	Serviceid         pgtype.Int8   `json:"serviceid"`
-	Quantity          pgtype.Int4   `json:"quantity"`
-	Unitprice         pgtype.Float8 `json:"unitprice"`
-	Subtotal          pgtype.Float8 `json:"subtotal"`
-}
-
 type Clinic struct {
 	ID      int64       `json:"id"`
 	Name    pgtype.Text `json:"name"`
@@ -247,6 +227,7 @@ type Payment struct {
 	PaymentStatus  string             `json:"payment_status"`
 	OrderID        pgtype.Int4        `json:"order_id"`
 	TestOrderID    pgtype.Int4        `json:"test_order_id"`
+	AppointmentID  pgtype.Int8        `json:"appointment_id"`
 	TransactionID  pgtype.Text        `json:"transaction_id"`
 	PaymentDetails []byte             `json:"payment_details"`
 	CreatedAt      pgtype.Timestamptz `json:"created_at"`

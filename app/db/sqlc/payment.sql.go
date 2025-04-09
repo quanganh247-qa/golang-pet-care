@@ -18,11 +18,12 @@ INSERT INTO payments (
     payment_status,
     order_id,
     test_order_id,
+    appointment_id,
     transaction_id,
     payment_details
 ) VALUES (
-    $1, $2, $3, $4, $5, $6, $7
-) RETURNING id, amount, payment_method, payment_status, order_id, test_order_id, transaction_id, payment_details, created_at, updated_at
+    $1, $2, $3, $4, $5, $6, $7, $8
+) RETURNING id, amount, payment_method, payment_status, order_id, test_order_id, appointment_id, transaction_id, payment_details, created_at, updated_at
 `
 
 type CreatePaymentParams struct {
@@ -31,6 +32,7 @@ type CreatePaymentParams struct {
 	PaymentStatus  string      `json:"payment_status"`
 	OrderID        pgtype.Int4 `json:"order_id"`
 	TestOrderID    pgtype.Int4 `json:"test_order_id"`
+	AppointmentID  pgtype.Int8 `json:"appointment_id"`
 	TransactionID  pgtype.Text `json:"transaction_id"`
 	PaymentDetails []byte      `json:"payment_details"`
 }
@@ -42,6 +44,7 @@ func (q *Queries) CreatePayment(ctx context.Context, arg CreatePaymentParams) (P
 		arg.PaymentStatus,
 		arg.OrderID,
 		arg.TestOrderID,
+		arg.AppointmentID,
 		arg.TransactionID,
 		arg.PaymentDetails,
 	)
@@ -53,6 +56,7 @@ func (q *Queries) CreatePayment(ctx context.Context, arg CreatePaymentParams) (P
 		&i.PaymentStatus,
 		&i.OrderID,
 		&i.TestOrderID,
+		&i.AppointmentID,
 		&i.TransactionID,
 		&i.PaymentDetails,
 		&i.CreatedAt,
@@ -62,7 +66,7 @@ func (q *Queries) CreatePayment(ctx context.Context, arg CreatePaymentParams) (P
 }
 
 const getPaymentByOrderID = `-- name: GetPaymentByOrderID :one
-SELECT id, amount, payment_method, payment_status, order_id, test_order_id, transaction_id, payment_details, created_at, updated_at FROM payments
+SELECT id, amount, payment_method, payment_status, order_id, test_order_id, appointment_id, transaction_id, payment_details, created_at, updated_at FROM payments
 WHERE order_id = $1
 ORDER BY created_at DESC
 LIMIT 1
@@ -78,6 +82,7 @@ func (q *Queries) GetPaymentByOrderID(ctx context.Context, orderID pgtype.Int4) 
 		&i.PaymentStatus,
 		&i.OrderID,
 		&i.TestOrderID,
+		&i.AppointmentID,
 		&i.TransactionID,
 		&i.PaymentDetails,
 		&i.CreatedAt,
@@ -87,7 +92,7 @@ func (q *Queries) GetPaymentByOrderID(ctx context.Context, orderID pgtype.Int4) 
 }
 
 const getPaymentByTestOrderID = `-- name: GetPaymentByTestOrderID :one
-SELECT id, amount, payment_method, payment_status, order_id, test_order_id, transaction_id, payment_details, created_at, updated_at FROM payments
+SELECT id, amount, payment_method, payment_status, order_id, test_order_id, appointment_id, transaction_id, payment_details, created_at, updated_at FROM payments
 WHERE test_order_id = $1
 ORDER BY created_at DESC
 LIMIT 1
@@ -103,6 +108,7 @@ func (q *Queries) GetPaymentByTestOrderID(ctx context.Context, testOrderID pgtyp
 		&i.PaymentStatus,
 		&i.OrderID,
 		&i.TestOrderID,
+		&i.AppointmentID,
 		&i.TransactionID,
 		&i.PaymentDetails,
 		&i.CreatedAt,
@@ -199,7 +205,7 @@ SET
     payment_status = $2,
     updated_at = CURRENT_TIMESTAMP
 WHERE id = $1
-RETURNING id, amount, payment_method, payment_status, order_id, test_order_id, transaction_id, payment_details, created_at, updated_at
+RETURNING id, amount, payment_method, payment_status, order_id, test_order_id, appointment_id, transaction_id, payment_details, created_at, updated_at
 `
 
 type UpdatePaymentStatusParams struct {
@@ -217,6 +223,7 @@ func (q *Queries) UpdatePaymentStatus(ctx context.Context, arg UpdatePaymentStat
 		&i.PaymentStatus,
 		&i.OrderID,
 		&i.TestOrderID,
+		&i.AppointmentID,
 		&i.TransactionID,
 		&i.PaymentDetails,
 		&i.CreatedAt,
