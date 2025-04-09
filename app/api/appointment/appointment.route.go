@@ -25,7 +25,6 @@ func Routes(routerGroup middleware.RouterGroup, taskDistributor worker.TaskDistr
 	}
 
 	{
-
 		authRoute.POST("appointment/", appointmentApi.controller.createAppointment)
 
 		authRoute.POST("appointment/confirm/:id", appointmentApi.controller.confirmAppointment)
@@ -57,5 +56,8 @@ func Routes(routerGroup middleware.RouterGroup, taskDistributor worker.TaskDistr
 		authRoute.GET("appointment/:id/soap", appointmentApi.controller.getSOAPByAppointmentID)
 
 		authRoute.GET("appointments/statistic", appointmentApi.controller.GetAppointmentDistribution)
+
+		// Walk-in appointments
+		authRoute.POST("/appointments/walk-in", appointmentApi.controller.CreateWalkInAppointment)
 	}
 }

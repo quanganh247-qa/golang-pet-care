@@ -8,6 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx"
 	"github.com/jackc/pgx/v5/pgtype"
+	"github.com/quanganh247-qa/go-blog-be/app/api/user"
 	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
 	"github.com/quanganh247-qa/go-blog-be/app/middleware"
 	"github.com/quanganh247-qa/go-blog-be/app/util"
@@ -26,7 +27,8 @@ type PetServiceInterface interface {
 	DeletePetLogService(ctx context.Context, logID int64) error
 	UpdatePetLogService(ctx context.Context, req PetLogWithPetInfo, log_id int64) error
 	UpdatePetAvatar(ctx *gin.Context, petid int64, req updatePetAvatarRequest) error
-	GetAllPetLogsByUsername(ctx *gin.Context, username string, pagination *util.Pagination) (*util.PaginationResponse[PetLogWithPetInfo], error) // New method
+	GetAllPetLogsByUsername(ctx *gin.Context, username string, pagination *util.Pagination) (*util.PaginationResponse[PetLogWithPetInfo], error)
+	GetPetOwnerByPetID(ctx *gin.Context, petID int64) (*user.UserResponse, error)
 }
 
 func (s *PetService) CreatePet(ctx *gin.Context, username string, req createPetRequest) (*CreatePetResponse, error) {
@@ -569,5 +571,29 @@ func (s *PetService) GetAllPetLogsByUsername(ctx *gin.Context, username string, 
 	return &util.PaginationResponse[PetLogWithPetInfo]{
 		Count: count,
 		Rows:  &petLogs,
+	}, nil
+}
+
+// Add this new method to your PetService
+func (s *PetService) GetPetOwnerByPetID(ctx *gin.Context, petID int64) (*user.UserResponse, error) {
+	// First get the pet to retrieve owner username
+	pet, err := s.storeDB.GetPetByID(ctx, petID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get pet: %w", err)
+	}
+
+	// Then get the owner details using the username from pet record
+	owner, err := s.storeDB.GetUser(ctx, pet.Username)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get owner: %w", err)
+	}
+
+	return &user.UserResponse{
+		Username:    owner.Username,
+		Email:       owner.Email,
+		Role:        owner.Role.String,
+		PhoneNumber: owner.PhoneNumber.String,
+		FullName:    owner.FullName,
+		Address:     owner.Address.String,
 	}, nil
 }

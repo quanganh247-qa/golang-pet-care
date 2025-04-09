@@ -302,3 +302,11 @@ ORDER BY
 SELECT COUNT(DISTINCT pet_id) 
 FROM appointments
 WHERE date BETWEEN $1 AND $2;
+
+-- -- name: UpdateRoomStatus :exec
+-- UPDATE rooms
+-- SET status = $2,
+--     current_appointment_id = $3,
+--     available_at = $4
+-- WHERE id = $1;
+

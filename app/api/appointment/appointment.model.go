@@ -236,3 +236,23 @@ type AppointmentResponse struct {
 	CreatedAt time.Time `json:"created_at" example:"2023-03-30T09:00:00Z"`
 	UpdatedAt time.Time `json:"updated_at" example:"2023-03-30T09:00:00Z"`
 }
+
+type createWalkInAppointmentRequest struct {
+	PetID     int64   `json:"pet_id"`
+	DoctorID  int64   `json:"doctor_id"`
+	ServiceID int64   `json:"service_id"`
+	Reason    string  `json:"reason"`
+	Priority  string  `json:"priority"`
+	Owner     *Owner  `json:"owner,omitempty"` // Optional owner information for new users
+	Pet       *NewPet `json:"pet,omitempty"`   // Optional pet information for new pets
+}
+
+// NewPet represents the information needed to create a new pet
+type NewPet struct {
+	Name      string  `json:"name"`
+	Breed     string  `json:"breed"`
+	Species   string  `json:"species"`
+	BirthDate string  `json:"birth_date"`
+	Gender    string  `json:"gender"`
+	Weight    float64 `json:"weight"`
+}

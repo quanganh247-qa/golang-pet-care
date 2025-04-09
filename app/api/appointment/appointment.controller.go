@@ -1,6 +1,7 @@
 package appointment
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -33,6 +34,8 @@ type AppointmentControllerInterface interface {
 
 	// statistic
 	GetAppointmentDistribution(ctx *gin.Context)
+
+	CreateWalkInAppointment(c *gin.Context)
 }
 
 func (c *AppointmentController) createAppointment(ctx *gin.Context) {
@@ -391,4 +394,56 @@ func (c *AppointmentController) GetAppointmentDistribution(ctx *gin.Context) {
 		"success": true,
 		"data":    distributions,
 	})
+}
+
+func (ac *AppointmentController) CreateWalkInAppointment(c *gin.Context) {
+	var req createWalkInAppointmentRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, util.ErrorResponse(err))
+		return
+	}
+
+	// Validate the request
+	if req.DoctorID == 0 {
+		c.JSON(http.StatusBadRequest, util.ErrorResponse(fmt.Errorf("doctor ID is required")))
+		return
+	}
+
+	if req.ServiceID == 0 {
+		c.JSON(http.StatusBadRequest, util.ErrorResponse(fmt.Errorf("service ID is required")))
+		return
+	}
+
+	// Case 1: New user with new pet
+	if req.Owner != nil {
+		if req.Owner.OwnerName == "" || req.Owner.OwnerPhone == "" {
+			c.JSON(http.StatusBadRequest, util.ErrorResponse(fmt.Errorf("owner name and phone are required for new users")))
+			return
+		}
+
+		if req.Pet == nil {
+			c.JSON(http.StatusBadRequest, util.ErrorResponse(fmt.Errorf("pet information is required for new users")))
+			return
+		}
+
+		if req.Pet.Name == "" || req.Pet.Species == "" {
+			c.JSON(http.StatusBadRequest, util.ErrorResponse(fmt.Errorf("pet name and species are required")))
+			return
+		}
+	} else {
+		// Case 2: Existing pet
+		if req.PetID == 0 {
+			c.JSON(http.StatusBadRequest, util.ErrorResponse(fmt.Errorf("pet ID is required for existing users")))
+			return
+		}
+	}
+
+	// Create walk-in appointment
+	response, err := ac.service.CreateWalkInAppointment(c, req)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, util.ErrorResponse(err))
+		return
+	}
+
+	c.JSON(http.StatusOK, response)
 }

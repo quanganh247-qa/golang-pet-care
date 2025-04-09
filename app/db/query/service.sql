@@ -7,7 +7,7 @@ INSERT INTO services (
 RETURNING *;
 
 -- name: GetServices :many
-SELECT * FROM services where removed_at is NULL ORDER BY name LIMIT $1 OFFSET $2;
+SELECT * FROM services  ORDER BY name LIMIT $1 OFFSET $2;
 
 -- name: GetServiceByID :one
 SELECT * FROM services

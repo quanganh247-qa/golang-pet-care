@@ -83,7 +83,7 @@ func (q *Queries) GetServiceByID(ctx context.Context, id int64) (Service, error)
 }
 
 const getServices = `-- name: GetServices :many
-SELECT id, name, description, duration, cost, category, priority, created_at FROM services where removed_at is NULL ORDER BY name LIMIT $1 OFFSET $2
+SELECT id, name, description, duration, cost, category, priority, created_at FROM services  ORDER BY name LIMIT $1 OFFSET $2
 `
 
 type GetServicesParams struct {

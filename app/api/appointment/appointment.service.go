@@ -20,6 +20,7 @@ type AppointmentServiceInterface interface {
 	CreateSOAPService(ctx *gin.Context, soap CreateSOAPRequest, appointmentID int64) (*SOAPResponse, error)
 	UpdateSOAPService(ctx *gin.Context, soap UpdateSOAPRequest, appointmentID int64) (*SOAPResponse, error)
 	CreateAppointment(ctx *gin.Context, req createAppointmentRequest, username string) (*createAppointmentResponse, error)
+	CreateWalkInAppointment(ctx *gin.Context, req createWalkInAppointmentRequest) (*createAppointmentResponse, error)
 	ConfirmPayment(ctx context.Context, appointmentID int64) error
 	CheckInAppoinment(ctx *gin.Context, id, roomID int64, priority string) error
 	GetAppointmentByID(ctx *gin.Context, id int64) (*Appointment, error)
@@ -174,6 +175,164 @@ func (s *AppointmentService) CreateAppointment(ctx *gin.Context, req createAppoi
 		redis.Client.RemoveCacheByKey(GetAppointmentListByUserCacheKey(username))
 		redis.Client.RemoveCacheByKey(GetAppointmentListByDoctorCacheKey(doctor.ID))
 		redis.Client.RemoveCacheByKey(GetTimeSlotsKey(doctor.ID, req.Date))
+	}
+
+	return response, nil
+}
+
+func (s *AppointmentService) CreateWalkInAppointment(ctx *gin.Context, req createWalkInAppointmentRequest) (*createAppointmentResponse, error) {
+	var err error
+	var doctor user.DoctorResponse
+	var service db.Service
+	var wg sync.WaitGroup
+	var username string
+	var petID int64
+
+	errChan := make(chan error, 2)
+	wg.Add(2)
+
+	go func() {
+		defer wg.Done()
+		d, err := s.storeDB.GetDoctor(ctx, req.DoctorID)
+		if err != nil {
+			errChan <- fmt.Errorf("failed to get doctor: %w", err)
+			return
+		}
+		doctor = user.DoctorResponse{
+			ID:             d.ID,
+			Specialization: d.Specialization.String,
+			Name:           d.Name,
+			YearsOfExp:     d.YearsOfExperience.Int32,
+			Education:      d.Education.String,
+			Certificate:    d.CertificateNumber.String,
+			Bio:            d.Bio.String,
+		}
+	}()
+
+	go func() {
+		defer wg.Done()
+		service, err = s.storeDB.GetServiceByID(ctx, req.ServiceID)
+		if err != nil {
+			errChan <- fmt.Errorf("failed to get service: %w", err)
+			return
+		}
+	}()
+
+	wg.Wait()
+	close(errChan)
+	for err := range errChan {
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	// Get current time
+	now := time.Now()
+
+	// Create the appointment within a transaction
+	var appointment db.Appointment
+	err = s.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
+		// Case 1: New user with new pet
+		if req.Owner != nil {
+			// Generate a temporary username based on phone number
+			tempUsername := fmt.Sprintf("temp_%s", req.Owner.OwnerPhone)
+
+			// Create new user
+			_, err = q.CreateUser(ctx, db.CreateUserParams{
+				Username:    tempUsername,
+				FullName:    req.Owner.OwnerName,
+				PhoneNumber: pgtype.Text{String: req.Owner.OwnerPhone, Valid: true},
+				Email:       req.Owner.OwnerEmail,
+				Address:     pgtype.Text{String: req.Owner.OwnerAddress, Valid: true},
+				Role:        pgtype.Text{String: "customer", Valid: true},
+			})
+			if err != nil {
+				return fmt.Errorf("failed to create user: %w", err)
+			}
+			username = tempUsername
+
+			// If pet info is provided, create a new pet
+			if req.Pet != nil {
+				birthDate, err := time.Parse("2006-01-02", req.Pet.BirthDate)
+				if err != nil {
+					return fmt.Errorf("invalid birth date format: %w", err)
+				}
+
+				pet, err := q.CreatePet(ctx, db.CreatePetParams{
+					Username:  username,
+					Name:      req.Pet.Name,
+					Breed:     pgtype.Text{String: req.Pet.Breed, Valid: true},
+					Type:      req.Pet.Species,
+					BirthDate: pgtype.Date{Time: birthDate, Valid: true},
+					Gender:    pgtype.Text{String: req.Pet.Gender, Valid: true},
+					Weight:    pgtype.Float8{Float64: req.Pet.Weight, Valid: true},
+				})
+				if err != nil {
+					return fmt.Errorf("failed to create pet: %w", err)
+				}
+				petID = pet.Petid
+			} else {
+				return fmt.Errorf("pet information is required for new users")
+			}
+		} else {
+			// Case 2: Existing pet, just create appointment
+			// Validate that the pet exists
+			pet, err := q.GetPetByID(ctx, req.PetID)
+			if err != nil {
+				return fmt.Errorf("pet not found: %w", err)
+			}
+			petID = pet.Petid
+			username = pet.Username
+		}
+
+		appointment, err = q.CreateAppointment(ctx, db.CreateAppointmentParams{
+			DoctorID:          pgtype.Int8{Int64: int64(doctor.ID), Valid: true},
+			Petid:             pgtype.Int8{Int64: petID, Valid: true},
+			ServiceID:         pgtype.Int8{Int64: service.ID, Valid: true},
+			AppointmentReason: pgtype.Text{String: req.Reason, Valid: true},
+			Date:              pgtype.Timestamp{Time: now, Valid: true},
+			TimeSlotID:        pgtype.Int8{Int64: 0, Valid: true}, // No time slot for walk-in
+			Username:          pgtype.Text{String: username, Valid: true},
+			Priority:          pgtype.Text{String: req.Priority, Valid: true},
+			ArrivalTime:       pgtype.Timestamp{Time: now, Valid: true},
+		})
+		if err != nil {
+			return fmt.Errorf("failed to create appointment: %w", err)
+		}
+
+		return nil
+	})
+	if err != nil {
+		return nil, fmt.Errorf("transaction failed: %w", err)
+	}
+
+	detail, err := s.storeDB.GetAppointmentDetailByAppointmentID(ctx, appointment.AppointmentID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get appointment detail: %w", err)
+	}
+
+	// Prepare the response
+	response := &createAppointmentResponse{
+		ID:          appointment.AppointmentID,
+		DoctorName:  doctor.Name,
+		PetName:     detail.PetName.String,
+		Reason:      detail.AppointmentReason.String,
+		Date:        appointment.Date.Time.Format(time.RFC3339),
+		ServiceName: detail.ServiceName.String,
+		TimeSlot: timeslot{
+			StartTime: now.Format("15:04:05"),
+			EndTime:   now.Add(time.Duration(service.Duration.Int16) * time.Minute).Format("15:04:05"),
+		},
+		State:        detail.StateName.String,
+		ReminderSend: appointment.ReminderSend.Bool,
+		CreatedAt:    appointment.CreatedAt.Time.Format("2006-01-02 15:04:05"),
+		RoomType:     service.Category.String,
+	}
+
+	// Clear any cached appointment lists
+	if redis.Client != nil {
+		redis.Client.RemoveCacheByKey(GetAppointmentListByUserCacheKey(username))
+		redis.Client.RemoveCacheByKey(GetAppointmentListByDoctorCacheKey(doctor.ID))
 	}
 
 	return response, nil
