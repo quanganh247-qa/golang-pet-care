@@ -23,6 +23,7 @@ type VaccinationService struct {
 }
 
 func (s *VaccinationService) CreateVaccination(ctx *gin.Context, req createVaccinationRequest) (*VaccinationResponse, error) {
+
 	res, err := s.storeDB.CreateVaccination(ctx, db.CreateVaccinationParams{
 		Petid:            pgtype.Int8{Int64: req.PetID, Valid: true},
 		Vaccinename:      req.VaccineName,

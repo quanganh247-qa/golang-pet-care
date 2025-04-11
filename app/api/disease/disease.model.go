@@ -6,6 +6,7 @@ import (
 	"github.com/lib/pq"
 	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
 	"github.com/quanganh247-qa/go-blog-be/app/service/elasticsearch"
+	"github.com/quanganh247-qa/go-blog-be/app/service/llm"
 )
 
 var (
@@ -37,7 +38,8 @@ type DiseaseApi struct {
 }
 
 type DiseaseController struct {
-	service DiseaseServiceInterface
+	service    DiseaseServiceInterface
+	llmService llm.AIService
 }
 
 type DiseaseService struct {
@@ -184,4 +186,9 @@ type MedicineResponse struct {
 	EndDate        string `json:"end_date,omitempty"`
 	ExpirationDate string `json:"expiration_date,omitempty"`
 	Quantity       int64  `json:"quantity,omitempty"`
+}
+
+type SymptomAnalysisRequest struct {
+	PatientID int64  `json:"patient_id"`
+	Symptoms  string `json:"symptoms"`
 }

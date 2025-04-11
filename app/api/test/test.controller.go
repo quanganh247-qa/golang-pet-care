@@ -41,105 +41,83 @@ func (c *TestController) HandleWebSocket(ctx *gin.Context) {
 	c.ws.HandleWebSocket(ctx)
 }
 
-// func (c *TestController) CreateTest(ctx *gin.Context) {
-// 	var req TestOrderRequest
-// 	if err := ctx.ShouldBindJSON(&req); err != nil {
-// 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-// 		return
-// 	}
+// ListAllItems lists all tests and vaccines
+func (c *TestController) ListAllItems(ctx *gin.Context) {
+	// Get type filter from query parameters (optional)
+	itemType := ctx.Query("type")
 
-// 	test, err := c.service.CreateTestOrder(ctx, req.PetID, req.DoctorID, req.TestType)
-// 	if err != nil {
-// 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-// 		return
-// 	}
+	items, err := c.service.ListItems(ctx, ItemType(itemType))
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
 
-// 	ctx.JSON(http.StatusCreated, test)
-// }
+	ctx.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"message": "Items retrieved successfully",
+		"data":    items,
+	})
+}
 
-// func (c *TestController) UpdateTestStatus(ctx *gin.Context) {
-// 	testID, err := strconv.ParseInt(ctx.Param("test_id"), 10, 64)
-// 	if err != nil {
-// 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid test ID"})
-// 		return
-// 	}
-
-// 	var req struct {
-// 		Status string `json:"status" binding:"required"`
-// 	}
-
-// 	if err := ctx.ShouldBindJSON(&req); err != nil {
-// 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-// 		return
-// 	}
-
-// 	if err := c.service.UpdateTestStatus(ctx, testID, req.Status); err != nil {
-// 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-// 		return
-// 	}
-
-// 	ctx.JSON(http.StatusOK, gin.H{"message": "Test status updated successfully"})
-// }
-
-// func (c *TestController) AddTestResult(ctx *gin.Context) {
-// 	testID, err := strconv.ParseInt(ctx.Param("test_id"), 10, 64)
-// 	if err != nil {
-// 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid test ID"})
-// 		return
-// 	}
-
-// 	var result TestResult
-// 	if err := ctx.ShouldBindJSON(&result); err != nil {
-// 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-// 		return
-// 	}
-
-// 	if err := c.service.AddTestResult(ctx, testID, result); err != nil {
-// 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-// 		return
-// 	}
-
-// 	ctx.JSON(http.StatusOK, gin.H{"message": "Test result added successfully"})
-// }
-
-// func (c *TestController) GetTestsByPetsID(ctx *gin.Context) {
-// 	petID, err := strconv.ParseInt(ctx.Query("pet_id"), 10, 64)
-// 	if err != nil {
-// 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid pet ID"})
-// 		return
-// 	}
-// 	tests, err := c.service.GetTestsByPetID(ctx, petID)
-// 	if err != nil {
-// 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-// 		return
-// 	}
-// 	ctx.JSON(http.StatusOK, gin.H{
-// 		"success": true,
-// 		"message": "Get tests successfully",
-// 		"data":    tests,
-// 	})
-// }
-
+// ListTests lists only tests (for backward compatibility)
 func (c *TestController) ListTests(ctx *gin.Context) {
-	tests, err := c.service.ListTests(ctx)
+	items, err := c.service.ListItems(ctx, TypeTest)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 	ctx.JSON(http.StatusOK, gin.H{
 		"success": true,
-		"message": "Get tests successfully",
-		"data":    tests,
+		"message": "Tests retrieved successfully",
+		"data":    items,
 	})
 }
 
+// ListVaccines lists only vaccines
+func (c *TestController) ListVaccines(ctx *gin.Context) {
+	items, err := c.service.ListItems(ctx, TypeVaccine)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	ctx.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"message": "Vaccines retrieved successfully",
+		"data":    items,
+	})
+}
+
+// CreateOrder creates a new order for tests/vaccines
+func (c *TestController) CreateOrder(ctx *gin.Context) {
+	var req TestOrderRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	err := c.service.CreateOrder(ctx, req)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusCreated, gin.H{"message": "Order created successfully"})
+}
+
+// CreateTestOrder is for backward compatibility
 func (c *TestController) CreateTestOrder(ctx *gin.Context) {
 	var req TestOrderRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	err := c.service.CreateTestOrder(ctx, req)
+
+	// Set default type to test if not provided
+	// if req.ItemType == "" {
+	// 	req.ItemType = TypeTest
+	// }
+
+	err := c.service.CreateOrder(ctx, req)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -148,14 +126,15 @@ func (c *TestController) CreateTestOrder(ctx *gin.Context) {
 	ctx.JSON(http.StatusCreated, gin.H{"message": "Test order created successfully"})
 }
 
-func (c *TestController) GetTestByID(ctx *gin.Context) {
+// GetItemByID gets a test or vaccine by ID
+func (c *TestController) GetItemByID(ctx *gin.Context) {
 	id, err := strconv.ParseInt(ctx.Param("id"), 10, 32)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid test ID"})
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid item ID"})
 		return
 	}
 
-	test, err := c.service.GetTestByID(ctx, int32(id))
+	item, err := c.service.GetItemByID(ctx, int32(id))
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -163,11 +142,53 @@ func (c *TestController) GetTestByID(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, gin.H{
 		"success": true,
-		"message": "Get test details successfully",
-		"data":    test,
+		"message": "Item details retrieved successfully",
+		"data":    item,
 	})
 }
 
+// GetTestByID is for backward compatibility
+func (c *TestController) GetTestByID(ctx *gin.Context) {
+	id, err := strconv.ParseInt(ctx.Param("id"), 10, 32)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid test ID"})
+		return
+	}
+
+	item, err := c.service.GetItemByID(ctx, int32(id))
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"message": "Test details retrieved successfully",
+		"data":    item,
+	})
+}
+
+// SoftDeleteItem removes an item (test or vaccine)
+func (c *TestController) SoftDeleteItem(ctx *gin.Context) {
+	itemID := ctx.Param("item_id")
+	if itemID == "" {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Item ID is required"})
+		return
+	}
+
+	err := c.service.SoftDeleteItem(ctx, itemID)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"message": "Item deleted successfully",
+	})
+}
+
+// SoftDeleteTest is for backward compatibility
 func (c *TestController) SoftDeleteTest(ctx *gin.Context) {
 	testID := ctx.Param("test_id")
 	if testID == "" {
@@ -175,7 +196,7 @@ func (c *TestController) SoftDeleteTest(ctx *gin.Context) {
 		return
 	}
 
-	err := c.service.SoftDeleteTest(ctx, testID)
+	err := c.service.SoftDeleteItem(ctx, testID)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -187,6 +208,38 @@ func (c *TestController) SoftDeleteTest(ctx *gin.Context) {
 	})
 }
 
+// GetOrderedItemsByAppointment gets ordered items by appointment ID
+func (c *TestController) GetOrderedItemsByAppointment(ctx *gin.Context) {
+	appointmentID := ctx.Query("appointment_id")
+	if appointmentID == "" {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "appointment_id is required"})
+		return
+	}
+
+	// Get optional type filter
+	itemType := ctx.Query("type")
+
+	// Convert appointmentID to int64
+	appointmentIDInt, err := strconv.ParseInt(appointmentID, 10, 64)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid appointment ID"})
+		return
+	}
+
+	orderedItems, err := c.service.GetOrderedItemsByAppointment(ctx, appointmentIDInt, ItemType(itemType))
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"message": "Ordered items retrieved successfully",
+		"data":    orderedItems,
+	})
+}
+
+// GetOrderedTestsByAppointment is for backward compatibility
 func (c *TestController) GetOrderedTestsByAppointment(ctx *gin.Context) {
 	appointmentID := ctx.Query("appointment_id")
 	if appointmentID == "" {
@@ -201,17 +254,17 @@ func (c *TestController) GetOrderedTestsByAppointment(ctx *gin.Context) {
 		return
 	}
 
-	tests, err := c.service.GetOrderedTestsByAppointment(ctx, appointmentIDInt)
+	orderedItems, err := c.service.GetOrderedItemsByAppointment(ctx, appointmentIDInt, TypeTest)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
+
 	ctx.JSON(http.StatusOK, gin.H{
 		"success": true,
-		"message": "Get tests successfully",
-		"data":    tests,
+		"message": "Ordered tests retrieved successfully",
+		"data":    orderedItems,
 	})
-
 }
 
 func (c *TestController) GetAllAppointmentsWithOrders(ctx *gin.Context) {
@@ -225,5 +278,32 @@ func (c *TestController) GetAllAppointmentsWithOrders(ctx *gin.Context) {
 		"success": true,
 		"message": "Get appointments successfully",
 		"data":    appointments,
+	})
+}
+
+func (c *TestController) GetTestByAppointment(ctx *gin.Context) {
+	appointmentID := ctx.Query("appointment_id")
+	if appointmentID == "" {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "appointment_id is required"})
+		return
+	}
+
+	// Convert appointmentID to int64
+	appointmentIDInt, err := strconv.ParseInt(appointmentID, 10, 64)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid appointment ID"})
+		return
+	}
+
+	tests, err := c.service.GetTestByAppointment(ctx, appointmentIDInt)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"message": "Tests retrieved successfully",
+		"data":    tests,
 	})
 }

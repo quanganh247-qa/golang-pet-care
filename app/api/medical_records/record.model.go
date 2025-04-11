@@ -41,7 +41,6 @@ type MedicalRecordResponse struct {
 type MedicalHistoryRequest struct {
 	Condition     string `json:"condition" binding:"required"`
 	DiagnosisDate string `json:"diagnosis_date" binding:"required,datetime=2006-01-02 15:04:05"`
-	Treatment     int64  `json:"treatment" binding:"required"`
 	Notes         string `json:"notes"`
 }
 
@@ -57,14 +56,14 @@ type MedicalHistoryResponse struct {
 }
 
 type Allergy struct {
-	ID              int64     `json:"id"`
-	MedicalRecordID int64     `json:"medical_record_id"`
-	Allergen        string    `json:"allergen"`
-	Severity        string    `json:"severity"`
-	Reaction        string    `json:"reaction"`
-	Notes           string    `json:"notes"`
-	CreatedAt       string    `json:"created_at"`
-	UpdatedAt       string    `json:"updated_at"`
+	ID              int64  `json:"id"`
+	MedicalRecordID int64  `json:"medical_record_id"`
+	Allergen        string `json:"allergen"`
+	Severity        string `json:"severity"`
+	Reaction        string `json:"reaction"`
+	Notes           string `json:"notes"`
+	CreatedAt       string `json:"created_at"`
+	UpdatedAt       string `json:"updated_at"`
 }
 
 type AllergyRequest struct {

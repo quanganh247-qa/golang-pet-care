@@ -670,11 +670,22 @@ CREATE TABLE public.tests (
 	is_active bool DEFAULT true NULL,
 	created_at timestamptz DEFAULT CURRENT_TIMESTAMP NULL,
 	updated_at timestamptz DEFAULT CURRENT_TIMESTAMP NULL,
+"type" varchar NULL,
+	quantity int4 DEFAULT 0 NULL,
+	expiration_date date NULL,
+	batch_number varchar(50) NULL,
+	supplier_id int4 NULL,
 	CONSTRAINT tests_pkey PRIMARY KEY (id),
-	CONSTRAINT tests_test_id_key UNIQUE (test_id),
-	CONSTRAINT tests_category_id_fkey FOREIGN KEY (category_id) REFERENCES public.test_categories(category_id) ON DELETE CASCADE
+	CONSTRAINT tests_test_id_key UNIQUE (test_id)
 );
 
+
+
+-- public.test_orders definition
+
+-- Drop table
+
+-- DROP TABLE public.test_orders;
 
 -- public.test_orders definition
 
@@ -695,23 +706,23 @@ CREATE TABLE public.test_orders (
 );
 
 
--- public.test_results definition
+-- -- public.test_results definition
 
--- Drop table
+-- -- Drop table
 
--- DROP TABLE public.test_results;
+-- -- DROP TABLE public.test_results;
 
-CREATE TABLE public.test_results (
-	result_id serial4 NOT NULL,
-	ordered_test_id int4 NULL,
-	parameter_name varchar(100) NOT NULL,
-	result_value varchar(100) NULL,
-	normal_range varchar(100) NULL,
-	units varchar(20) NULL,
-	interpretation text NULL,
-	created_at timestamptz DEFAULT CURRENT_TIMESTAMP NULL,
-	CONSTRAINT test_results_pkey PRIMARY KEY (result_id)
-);
+-- CREATE TABLE public.test_results (
+-- 	result_id serial4 NOT NULL,
+-- 	ordered_test_id int4 NULL,
+-- 	parameter_name varchar(100) NOT NULL,
+-- 	result_value varchar(100) NULL,
+-- 	normal_range varchar(100) NULL,
+-- 	units varchar(20) NULL,
+-- 	interpretation text NULL,
+-- 	created_at timestamptz DEFAULT CURRENT_TIMESTAMP NULL,
+-- 	CONSTRAINT test_results_pkey PRIMARY KEY (result_id)
+-- );
 
 -- public.ordered_tests definition
 
@@ -745,9 +756,9 @@ ALTER TABLE public.ordered_tests ADD CONSTRAINT ordered_tests_test_id_fkey FOREI
 ALTER TABLE public.test_orders ADD CONSTRAINT test_orders_appointment_id_fkey FOREIGN KEY (appointment_id) REFERENCES public.appointments(appointment_id) ON DELETE CASCADE;
 
 
--- public.test_results foreign keys
+-- -- public.test_results foreign keys
 
-ALTER TABLE public.test_results ADD CONSTRAINT test_results_ordered_test_id_fkey FOREIGN KEY (ordered_test_id) REFERENCES public.ordered_tests(id) ON DELETE CASCADE;
+-- ALTER TABLE public.test_results ADD CONSTRAINT test_results_ordered_test_id_fkey FOREIGN KEY (ordered_test_id) REFERENCES public.ordered_tests(id) ON DELETE CASCADE;
 
 
 -- public.invoices definition

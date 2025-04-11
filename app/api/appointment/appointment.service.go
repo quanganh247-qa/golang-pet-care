@@ -266,6 +266,7 @@ func (s *AppointmentService) CreateWalkInAppointment(ctx *gin.Context, req creat
 					BirthDate: pgtype.Date{Time: birthDate, Valid: true},
 					Gender:    pgtype.Text{String: req.Pet.Gender, Valid: true},
 					Weight:    pgtype.Float8{Float64: req.Pet.Weight, Valid: true},
+					Age:       pgtype.Int4{Int32: int32(req.Pet.Age), Valid: true},
 				})
 				if err != nil {
 					return fmt.Errorf("failed to create pet: %w", err)
@@ -798,7 +799,8 @@ func (s *AppointmentService) GetAllAppointments(ctx *gin.Context, date string, o
 				OwnerEmail:   appointment.OwnerEmail.String,
 				OwnerAddress: appointment.OwnerAddress.String,
 			},
-			Reason: appointment.AppointmentReason.String,
+			Reason:      appointment.AppointmentReason.String,
+			ArrivalTime: appointment.ArrivalTime.Time.Format("2006-01-02 15:04:05"),
 		})
 
 	}

@@ -67,51 +67,6 @@ func (q *Queries) AddTestCategory(ctx context.Context, arg AddTestCategoryParams
 	return err
 }
 
-const addTestResult = `-- name: AddTestResult :one
-INSERT INTO test_results (
-    ordered_test_id, 
-    parameter_name, 
-    result_value, 
-    normal_range, 
-    units, 
-    interpretation
-) VALUES (
-    $1, $2, $3, $4, $5, $6
-) RETURNING result_id, ordered_test_id, parameter_name, result_value, normal_range, units, interpretation, created_at
-`
-
-type AddTestResultParams struct {
-	OrderedTestID  pgtype.Int4 `json:"ordered_test_id"`
-	ParameterName  string      `json:"parameter_name"`
-	ResultValue    pgtype.Text `json:"result_value"`
-	NormalRange    pgtype.Text `json:"normal_range"`
-	Units          pgtype.Text `json:"units"`
-	Interpretation pgtype.Text `json:"interpretation"`
-}
-
-func (q *Queries) AddTestResult(ctx context.Context, arg AddTestResultParams) (TestResult, error) {
-	row := q.db.QueryRow(ctx, addTestResult,
-		arg.OrderedTestID,
-		arg.ParameterName,
-		arg.ResultValue,
-		arg.NormalRange,
-		arg.Units,
-		arg.Interpretation,
-	)
-	var i TestResult
-	err := row.Scan(
-		&i.ResultID,
-		&i.OrderedTestID,
-		&i.ParameterName,
-		&i.ResultValue,
-		&i.NormalRange,
-		&i.Units,
-		&i.Interpretation,
-		&i.CreatedAt,
-	)
-	return i, err
-}
-
 const cancelTestOrder = `-- name: CancelTestOrder :exec
 UPDATE test_orders 
 SET status = 'cancelled'
@@ -127,7 +82,7 @@ const createTest = `-- name: CreateTest :one
 INSERT INTO tests (test_id, category_id, name, description, price, turnaround_time)
 VALUES (
     $1, $2, $3, $4, $5, $6
-) RETURNING id, test_id, category_id, name, description, price, turnaround_time, is_active, created_at, updated_at
+) RETURNING id, test_id, category_id, name, description, price, turnaround_time, is_active, created_at, updated_at, type, quantity, expiration_date, batch_number, supplier_id
 `
 
 type CreateTestParams struct {
@@ -160,6 +115,11 @@ func (q *Queries) CreateTest(ctx context.Context, arg CreateTestParams) (Test, e
 		&i.IsActive,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.Type,
+		&i.Quantity,
+		&i.ExpirationDate,
+		&i.BatchNumber,
+		&i.SupplierID,
 	)
 	return i, err
 }
@@ -263,6 +223,7 @@ func (q *Queries) GetAllAppointmentsWithOrders(ctx context.Context) ([]GetAllApp
 }
 
 const getOrderedTestsByAppointment = `-- name: GetOrderedTestsByAppointment :many
+
 SELECT 
     ot.id AS ordered_test_id,
     t.test_id,
@@ -293,6 +254,21 @@ type GetOrderedTestsByAppointmentRow struct {
 	Notes         pgtype.Text        `json:"notes"`
 }
 
+// -- name: AddTestResult :one
+// INSERT INTO test_results (
+//
+//	ordered_test_id,
+//	parameter_name,
+//	result_value,
+//	normal_range,
+//	units,
+//	interpretation
+//
+// ) VALUES (
+//
+//	$1, $2, $3, $4, $5, $6
+//
+// ) RETURNING *;
 func (q *Queries) GetOrderedTestsByAppointment(ctx context.Context, appointmentID pgtype.Int4) ([]GetOrderedTestsByAppointmentRow, error) {
 	rows, err := q.db.Query(ctx, getOrderedTestsByAppointment, appointmentID)
 	if err != nil {
@@ -385,7 +361,7 @@ func (q *Queries) GetOrderedTestsByOrderID(ctx context.Context, orderID pgtype.I
 }
 
 const getTestByID = `-- name: GetTestByID :one
-SELECT id, test_id, category_id, name, description, price, turnaround_time, is_active, created_at, updated_at FROM tests WHERE id = $1 AND is_active = true
+SELECT id, test_id, category_id, name, description, price, turnaround_time, is_active, created_at, updated_at, type, quantity, expiration_date, batch_number, supplier_id FROM tests WHERE id = $1 AND is_active = true
 `
 
 func (q *Queries) GetTestByID(ctx context.Context, id int32) (Test, error) {
@@ -402,6 +378,11 @@ func (q *Queries) GetTestByID(ctx context.Context, id int32) (Test, error) {
 		&i.IsActive,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.Type,
+		&i.Quantity,
+		&i.ExpirationDate,
+		&i.BatchNumber,
+		&i.SupplierID,
 	)
 	return i, err
 }
@@ -478,7 +459,7 @@ func (q *Queries) GetTestOrderByID(ctx context.Context, orderID int32) (TestOrde
 }
 
 const getTestsByCategory = `-- name: GetTestsByCategory :many
-SELECT id, test_id, category_id, name, description, price, turnaround_time, is_active, created_at, updated_at FROM tests 
+SELECT id, test_id, category_id, name, description, price, turnaround_time, is_active, created_at, updated_at, type, quantity, expiration_date, batch_number, supplier_id FROM tests 
 WHERE category_id = $1 AND is_active = TRUE
 `
 
@@ -502,6 +483,11 @@ func (q *Queries) GetTestsByCategory(ctx context.Context, categoryID pgtype.Text
 			&i.IsActive,
 			&i.CreatedAt,
 			&i.UpdatedAt,
+			&i.Type,
+			&i.Quantity,
+			&i.ExpirationDate,
+			&i.BatchNumber,
+			&i.SupplierID,
 		); err != nil {
 			return nil, err
 		}
@@ -514,7 +500,7 @@ func (q *Queries) GetTestsByCategory(ctx context.Context, categoryID pgtype.Text
 }
 
 const listTests = `-- name: ListTests :many
-SELECT id, test_id, category_id, name, description, price, turnaround_time, is_active, created_at, updated_at FROM tests WHERE is_active is true
+SELECT id, test_id, category_id, name, description, price, turnaround_time, is_active, created_at, updated_at, type, quantity, expiration_date, batch_number, supplier_id FROM tests WHERE is_active is true
 `
 
 func (q *Queries) ListTests(ctx context.Context) ([]Test, error) {
@@ -537,6 +523,11 @@ func (q *Queries) ListTests(ctx context.Context) ([]Test, error) {
 			&i.IsActive,
 			&i.CreatedAt,
 			&i.UpdatedAt,
+			&i.Type,
+			&i.Quantity,
+			&i.ExpirationDate,
+			&i.BatchNumber,
+			&i.SupplierID,
 		); err != nil {
 			return nil, err
 		}
@@ -563,7 +554,7 @@ const updateTest = `-- name: UpdateTest :one
 UPDATE tests
 SET name = $2, description = $3, price = $4, turnaround_time = $5
 WHERE test_id = $1
-RETURNING id, test_id, category_id, name, description, price, turnaround_time, is_active, created_at, updated_at
+RETURNING id, test_id, category_id, name, description, price, turnaround_time, is_active, created_at, updated_at, type, quantity, expiration_date, batch_number, supplier_id
 `
 
 type UpdateTestParams struct {
@@ -594,6 +585,11 @@ func (q *Queries) UpdateTest(ctx context.Context, arg UpdateTestParams) (Test, e
 		&i.IsActive,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.Type,
+		&i.Quantity,
+		&i.ExpirationDate,
+		&i.BatchNumber,
+		&i.SupplierID,
 	)
 	return i, err
 }

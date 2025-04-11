@@ -369,6 +369,11 @@ type Test struct {
 	IsActive       pgtype.Bool        `json:"is_active"`
 	CreatedAt      pgtype.Timestamptz `json:"created_at"`
 	UpdatedAt      pgtype.Timestamptz `json:"updated_at"`
+	Type           pgtype.Text        `json:"type"`
+	Quantity       pgtype.Int4        `json:"quantity"`
+	ExpirationDate pgtype.Date        `json:"expiration_date"`
+	BatchNumber    pgtype.Text        `json:"batch_number"`
+	SupplierID     pgtype.Int4        `json:"supplier_id"`
 }
 
 type TestCategory struct {
@@ -390,17 +395,6 @@ type TestOrder struct {
 	Notes         pgtype.Text        `json:"notes"`
 	CreatedAt     pgtype.Timestamptz `json:"created_at"`
 	UpdatedAt     pgtype.Timestamptz `json:"updated_at"`
-}
-
-type TestResult struct {
-	ResultID       int32              `json:"result_id"`
-	OrderedTestID  pgtype.Int4        `json:"ordered_test_id"`
-	ParameterName  string             `json:"parameter_name"`
-	ResultValue    pgtype.Text        `json:"result_value"`
-	NormalRange    pgtype.Text        `json:"normal_range"`
-	Units          pgtype.Text        `json:"units"`
-	Interpretation pgtype.Text        `json:"interpretation"`
-	CreatedAt      pgtype.Timestamptz `json:"created_at"`
 }
 
 type TimeSlot struct {

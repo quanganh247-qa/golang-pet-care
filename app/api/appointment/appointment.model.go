@@ -28,7 +28,7 @@ type Pet struct {
 
 type Owner struct {
 	OwnerName    string `json:"owner_name"`
-	OwnerPhone   string `json:"owner_phone"`
+	OwnerPhone   string `json:"owner_number"`
 	OwnerEmail   string `json:"owner_email"`
 	OwnerAddress string `json:"owner_address"`
 }
@@ -57,6 +57,7 @@ type Appointment struct {
 	Reason       string   `json:"reason"`
 	ReminderSend bool     `json:"reminder_send"`
 	CreatedAt    string   `json:"created_at"`
+	ArrivalTime  string   `json:"arrival_time"`
 }
 
 type createAppointmentRequest struct {
@@ -255,4 +256,5 @@ type NewPet struct {
 	BirthDate string  `json:"birth_date"`
 	Gender    string  `json:"gender"`
 	Weight    float64 `json:"weight"`
+	Age       int     `json:"age"`
 }

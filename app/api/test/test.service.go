@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"strconv"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5/pgtype"
@@ -12,18 +13,22 @@ import (
 )
 
 type TestServiceInterface interface {
-	// CreateTest(ctx *gin.Context, petID, doctorID int64, testType string) (*TestResponse, error)
-	// UpdateTestStatus(ctx *gin.Context, testID int64, status string) error
-	// AddTestResult(ctx *gin.Context, testID int64, result TestResult) error
-	// // GetStatusHistory(ctx *gin.Context, testID int64) ([]StatusHistory, error)
-	// GetTestsByPetID(ctx *gin.Context, petID int64) ([]TestResponse, error)
+	// Updated methods for combined test/vaccine functionality
+	ListItems(ctx *gin.Context, itemType ItemType) (*[]TestCategoryResponse, error)
+	CreateOrder(ctx *gin.Context, req TestOrderRequest) error
+	GetItemByID(ctx *gin.Context, id int32) (*TestItem, error)
+	UpdateItem(ctx *gin.Context, req UpdateTestRequest) (*TestItem, error)
+	SoftDeleteItem(ctx *gin.Context, itemID string) error
+	GetOrderedItemsByAppointment(ctx *gin.Context, appointmentID int64, itemType ItemType) (*[]OrderedItemDetail, error)
+	GetAllAppointmentsWithOrders(ctx *gin.Context) (*[]AppointmentWithOrders, error)
+	GetTestByAppointment(ctx *gin.Context, appointmentID int64) (*[]TestByAppointment, error)
+	// Legacy methods for backward compatibility
 	ListTests(ctx *gin.Context) (*[]TestCategoryResponse, error)
 	CreateTestOrder(ctx *gin.Context, req TestOrderRequest) error
 	GetTestByID(ctx *gin.Context, id int32) (*Test, error)
 	UpdateTest(ctx *gin.Context, req UpdateTestRequest) (*Test, error)
 	SoftDeleteTest(ctx *gin.Context, testID string) error
 	GetOrderedTestsByAppointment(ctx *gin.Context, appointmentID int64) (*[]OrderedTestDetail, error)
-	GetAllAppointmentsWithOrders(ctx *gin.Context) (*[]AppointmentWithOrders, error)
 }
 
 func NewTestService(store db.Store, ws *websocket.WSClientManager) *TestService {
@@ -33,122 +38,28 @@ func NewTestService(store db.Store, ws *websocket.WSClientManager) *TestService 
 	}
 }
 
-// func (s *TestService) CreateTest(ctx *gin.Context, petID, doctorID int64, testType string) (*TestResponse, error) {
-// 	test, err := s.storeDB.CreateTest(ctx, db.CreateTestParams{
-// 		PetID:    pgtype.Int8{Int64: petID, Valid: true},
-// 		DoctorID: pgtype.Int8{Int64: doctorID, Valid: true},
-// 		TestType: testType,
-// 		Status:   "Pending",
-// 	})
-// 	if err != nil {
-// 		return nil, fmt.Errorf("failed to create test: %w", err)
-// 	}
-
-// 	// Notify doctor about new test if connected
-// 	doctorClientID := fmt.Sprintf("doctor_%d", doctorID)
-// 	if s.ws.IsClientConnected(doctorClientID) {
-// 		s.ws.SendToClient(doctorClientID, websocket.WebSocketMessage{
-// 			Type:    "test_created",
-// 			Message: fmt.Sprintf("New test created for pet #%d", petID),
-// 			Data:    test,
-// 		})
-// 	}
-
-// 	return &TestResponse{
-// 		ID:        test.ID,
-// 		PetID:     test.PetID.Int64,
-// 		DoctorID:  test.DoctorID.Int64,
-// 		TestType:  test.TestType,
-// 		Status:    test.Status,
-// 		CreatedAt: test.CreatedAt.Time,
-// 	}, nil
-// }
-
-// func (s *TestService) UpdateTestStatus(ctx *gin.Context, testID int64, status string) error {
-// 	err := s.storeDB.UpdateTestStatus(ctx, db.UpdateTestStatusParams{
-// 		ID:     testID,
-// 		Status: status,
-// 	})
-// 	if err != nil {
-// 		return fmt.Errorf("failed to update test status: %w", err)
-// 	}
-
-// 	// Get test details to notify relevant parties
-// 	test, err := s.storeDB.GetTestByID(ctx, testID)
-// 	if err != nil {
-// 		return err
-// 	}
-
-// 	// Notify both doctor and patient
-// 	s.ws.SendToClient(fmt.Sprintf("doctor_%d", test.DoctorID.Int64), websocket.WebSocketMessage{
-// 		Type:    "test_status_updated",
-// 		Message: fmt.Sprintf("Test #%d status updated to %s", testID, status),
-// 	})
-
-// 	return nil
-// }
-
-// func (s *TestService) AddTestResult(ctx *gin.Context, testID int64, result TestResult) error {
-// 	// Store test result
-// 	_, err := s.storeDB.AddTestResult(ctx, db.AddTestResultParams{
-// 		TestID:     pgtype.Int8{Int64: testID, Valid: true},
-// 		Parameters: []byte(fmt.Sprintf("%v", result.Parameters)),
-// 		Notes:      pgtype.Text{String: result.Notes, Valid: true},
-// 		Files:      result.Files,
-// 	})
-// 	if err != nil {
-// 		return fmt.Errorf("failed to add test result: %w", err)
-// 	}
-
-// 	// Get test details
-// 	test, err := s.storeDB.GetTestByID(ctx, testID)
-// 	if err != nil {
-// 		return err
-// 	}
-
-// 	// Send real-time notification
-// 	s.ws.SendToClient(fmt.Sprintf("doctor_%d", test.DoctorID.Int64), websocket.WebSocketMessage{
-// 		Type:    "test_result_added",
-// 		Message: fmt.Sprintf("New results available for test #%d", testID),
-// 	})
-
-// 	return nil
-// }
-
-// func (s *TestService) GetTestsByPetID(ctx *gin.Context, petID int64) ([]TestResponse, error) {
-
-// 	res, err := s.storeDB.GetTestsByPetID(ctx, pgtype.Int8{Int64: petID, Valid: true})
-// 	if err != nil {
-// 		return []TestResponse{}, fmt.Errorf("failed to add test result: %w", err)
-// 	}
-
-// 	var testResults []TestResponse
-// 	for _, r := range res {
-// 		testResults = append(testResults, TestResponse{
-// 			ID:        r.ID,
-// 			PetID:     r.PetID.Int64,
-// 			DoctorID:  r.DoctorID.Int64,
-// 			TestType:  r.TestType,
-// 			Status:    r.Status,
-// 			CreatedAt: r.CreatedAt.Time,
-// 		})
-// 	}
-// 	return testResults, nil
-// }
-
-func (s *TestService) ListTests(ctx *gin.Context) (*[]TestCategoryResponse, error) {
+// ListItems lists all items (tests and/or vaccines) based on optional type filter
+func (s *TestService) ListItems(ctx *gin.Context, itemType ItemType) (*[]TestCategoryResponse, error) {
+	// Get all items from database
 	res, err := s.storeDB.ListTests(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("failed to add test result: %w", err)
+		return nil, fmt.Errorf("failed to list items: %w", err)
 	}
-	// Group tests by category
+
+	// Group items by category
 	categoriesMap := make(map[string]*TestCategoryResponse)
 
 	for _, r := range res {
+		// If itemType filter is provided, skip items that don't match
+		if itemType != "" {
+			if ItemType(r.Type.String) != itemType && r.Type.String != "" {
+				continue
+			}
+		}
 
 		categoryID := r.CategoryID.String
 
-		test := Test{
+		item := TestItem{
 			ID:             r.ID,
 			Name:           r.Name,
 			Price:          r.Price,
@@ -156,6 +67,7 @@ func (s *TestService) ListTests(ctx *gin.Context) (*[]TestCategoryResponse, erro
 			TurnaroundTime: r.TurnaroundTime,
 			CategoryID:     categoryID,
 			TestID:         r.TestID,
+			Type:           ItemType(r.Type.String),
 			IsActive:       r.IsActive.Bool,
 			CreatedAt:      r.CreatedAt.Time.String(),
 			UpdatedAt:      r.UpdatedAt.Time.String(),
@@ -163,7 +75,6 @@ func (s *TestService) ListTests(ctx *gin.Context) (*[]TestCategoryResponse, erro
 
 		// If category doesn't exist in map yet, create it
 		if _, exists := categoriesMap[categoryID]; !exists {
-
 			category, err := s.storeDB.GetTestCategoryByID(ctx, categoryID)
 			if err != nil {
 				return nil, fmt.Errorf("failed to get test category by ID: %w", err)
@@ -171,15 +82,15 @@ func (s *TestService) ListTests(ctx *gin.Context) (*[]TestCategoryResponse, erro
 
 			categoriesMap[categoryID] = &TestCategoryResponse{
 				ID:          categoryID,
-				Name:        category.Name,               // Implement this helper function
-				Icon:        category.IconName.String,    // Implement this helper function
-				Description: category.Description.String, // Implement this helper function
-				Tests:       []Test{},
+				Name:        category.Name,
+				Icon:        category.IconName.String,
+				Description: category.Description.String,
+				Items:       []TestItem{},
 			}
 		}
 
-		// Add test to its category
-		categoriesMap[categoryID].Tests = append(categoriesMap[categoryID].Tests, test)
+		// Add item to its category
+		categoriesMap[categoryID].Items = append(categoriesMap[categoryID].Items, item)
 	}
 
 	// Convert map to slice
@@ -191,100 +102,110 @@ func (s *TestService) ListTests(ctx *gin.Context) (*[]TestCategoryResponse, erro
 	return &categories, nil
 }
 
-func (s *TestService) CreateTestOrder(ctx *gin.Context, req TestOrderRequest) error {
+// For backward compatibility
+func (s *TestService) ListTests(ctx *gin.Context) (*[]TestCategoryResponse, error) {
+	return s.ListItems(ctx, TypeTest)
+}
+
+// CreateOrder creates a new order for tests or vaccines
+func (s *TestService) CreateOrder(ctx *gin.Context, req TestOrderRequest) error {
 	// Calculate total amount
 	var totalAmount float64
-	for _, testID := range req.TestIDs {
-		test, err := s.storeDB.GetTestByID(ctx, int32(testID))
+	for _, itemID := range req.ItemIDs {
+		item, err := s.storeDB.GetTestByID(ctx, int32(itemID))
 		if err != nil {
-			return fmt.Errorf("failed to get test by ID: %w", err)
+			return fmt.Errorf("failed to get item by ID: %w", err)
 		}
-		totalAmount += test.Price
+		totalAmount += item.Price
 	}
 
 	err := s.storeDB.ExecWithTransaction(ctx, func(queries *db.Queries) error {
-
 		order, err := queries.CreateTestOrder(ctx, db.CreateTestOrderParams{
 			AppointmentID: pgtype.Int4{Int32: int32(req.AppointmentID), Valid: true},
 			TotalAmount:   pgtype.Float8{Float64: totalAmount, Valid: true},
 			Notes:         pgtype.Text{String: req.Notes, Valid: req.Notes != ""},
 		})
 		if err != nil {
-			return fmt.Errorf("failed to create test order: %w", err)
+			return fmt.Errorf("failed to create order: %w", err)
 		}
 
-		// Add ordered tests
-		var orderedTests []OrderedTest
-		for _, testID := range req.TestIDs {
-			test, _ := queries.GetTestByID(ctx, int32(testID))
-			// Add ordered test to database
+		// Add ordered items
+		for _, itemID := range req.ItemIDs {
+			item, _ := queries.GetTestByID(ctx, int32(itemID))
+			// Add ordered item to database
 			_, err = queries.AddOrderedTest(ctx, db.AddOrderedTestParams{
 				OrderID:      pgtype.Int4{Int32: order.OrderID, Valid: true},
-				TestID:       pgtype.Int4{Int32: int32(testID), Valid: true},
-				PriceAtOrder: test.Price,
+				TestID:       pgtype.Int4{Int32: int32(itemID), Valid: true},
+				PriceAtOrder: item.Price,
 			})
 			if err != nil {
-				return fmt.Errorf("failed to add ordered test: %w", err)
+				return fmt.Errorf("failed to add ordered item: %w", err)
 			}
-
-			orderedTests = append(orderedTests, OrderedTest{
-				TestID:   testID,
-				TestName: test.Name,
-				Price:    test.Price,
-				Status:   "pending",
-			})
 		}
 
 		return nil
 	})
 
-	if err != nil {
-		return err
-	}
+	return err
+}
 
-	return nil
+// For backward compatibility
+func (s *TestService) CreateTestOrder(ctx *gin.Context, req TestOrderRequest) error {
+	return s.CreateOrder(ctx, req)
 }
 
 func (s *TestService) GetOrderedTestsByAppointment(ctx *gin.Context, appointmentID int64) (*[]OrderedTestDetail, error) {
 	orderedTests, err := s.storeDB.GetOrderedTestsByAppointment(ctx, pgtype.Int4{Int32: int32(appointmentID), Valid: true})
 	if err != nil {
-		return nil, fmt.Errorf("failed to get ordered tests by appointment: %w", err)
+		return nil, fmt.Errorf("failed to get ordered items by appointment: %w", err)
 	}
+
 	var res []OrderedTestDetail
 	for _, ot := range orderedTests {
 		res = append(res, OrderedTestDetail{
-			OrderedTestID: int(ot.OrderedTestID),
-			TestID:        ot.TestID,
-			TestName:      ot.TestName,
+			OrderedItemID: int(ot.OrderedTestID),
+			ItemID:        ot.TestID,
+			ItemName:      ot.TestName,
+			CategoryID:    ot.CategoryID.String,
+			CategoryName:  ot.CategoryName,
 			Price:         ot.PriceAtOrder,
 			Status:        ot.Status.String,
 			Notes:         ot.Notes.String,
+			OrderedDate:   ot.OrderedDate.Time.String(),
 		})
 	}
 	return &res, nil
 }
 
-func (s *TestService) GetTestByID(ctx *gin.Context, id int32) (*Test, error) {
-	test, err := s.storeDB.GetTestByID(ctx, id)
+// GetItemByID gets an item (test or vaccine) by ID
+func (s *TestService) GetItemByID(ctx *gin.Context, id int32) (*TestItem, error) {
+	item, err := s.storeDB.GetTestByID(ctx, id)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get test by ID: %w", err)
+		return nil, fmt.Errorf("failed to get item by ID: %w", err)
 	}
 
-	return &Test{
-		ID:             test.ID,
-		Name:           test.Name,
-		Price:          test.Price,
-		Description:    test.Description.String,
-		TurnaroundTime: test.TurnaroundTime,
-		CategoryID:     test.CategoryID.String,
-		TestID:         test.TestID,
-		IsActive:       test.IsActive.Bool,
-		CreatedAt:      test.CreatedAt.Time.String(),
-		UpdatedAt:      test.UpdatedAt.Time.String(),
+	return &TestItem{
+		ID:             item.ID,
+		Name:           item.Name,
+		Price:          item.Price,
+		Description:    item.Description.String,
+		TurnaroundTime: item.TurnaroundTime,
+		CategoryID:     item.CategoryID.String,
+		TestID:         item.TestID,
+		Type:           ItemType(item.Type.String),
+		IsActive:       item.IsActive.Bool,
+		CreatedAt:      item.CreatedAt.Time.String(),
+		UpdatedAt:      item.UpdatedAt.Time.String(),
 	}, nil
 }
 
-func (s *TestService) UpdateTest(ctx *gin.Context, req UpdateTestRequest) (*Test, error) {
+// For backward compatibility
+func (s *TestService) GetTestByID(ctx *gin.Context, id int32) (*Test, error) {
+	return s.GetItemByID(ctx, id)
+}
+
+// UpdateItem updates an item (test or vaccine)
+func (s *TestService) UpdateItem(ctx *gin.Context, req UpdateTestRequest) (*TestItem, error) {
 	// Create update params from request
 	updateParams := db.UpdateTestParams{
 		TestID:         req.TestID,
@@ -294,33 +215,44 @@ func (s *TestService) UpdateTest(ctx *gin.Context, req UpdateTestRequest) (*Test
 		TurnaroundTime: req.TurnaroundTime,
 	}
 
-	// Update test in database
-	updatedTest, err := s.storeDB.UpdateTest(ctx, updateParams)
+	// Update item in database
+	updatedItem, err := s.storeDB.UpdateTest(ctx, updateParams)
 	if err != nil {
-		return nil, fmt.Errorf("failed to update test: %w", err)
+		return nil, fmt.Errorf("failed to update item: %w", err)
 	}
 
-	return &Test{
-		ID:             updatedTest.ID,
-		Name:           updatedTest.Name,
-		Price:          updatedTest.Price,
-		Description:    updatedTest.Description.String,
-		TurnaroundTime: updatedTest.TurnaroundTime,
-		CategoryID:     updatedTest.CategoryID.String,
-		TestID:         updatedTest.TestID,
-		IsActive:       updatedTest.IsActive.Bool,
-		CreatedAt:      updatedTest.CreatedAt.Time.String(),
-		UpdatedAt:      updatedTest.UpdatedAt.Time.String(),
+	return &TestItem{
+		ID:             updatedItem.ID,
+		Name:           updatedItem.Name,
+		Price:          updatedItem.Price,
+		Description:    updatedItem.Description.String,
+		TurnaroundTime: updatedItem.TurnaroundTime,
+		CategoryID:     updatedItem.CategoryID.String,
+		TestID:         updatedItem.TestID,
+		Type:           ItemType(updatedItem.Type.String),
+		IsActive:       updatedItem.IsActive.Bool,
+		CreatedAt:      updatedItem.CreatedAt.Time.String(),
+		UpdatedAt:      updatedItem.UpdatedAt.Time.String(),
 	}, nil
 }
 
-func (s *TestService) SoftDeleteTest(ctx *gin.Context, testID string) error {
-	err := s.storeDB.SoftDeleteTest(ctx, testID)
-	if err != nil {
-		return fmt.Errorf("failed to soft delete test: %w", err)
+// For backward compatibility
+func (s *TestService) UpdateTest(ctx *gin.Context, req UpdateTestRequest) (*Test, error) {
+	// Set default type to test if not provided
+	if req.Type == "" {
+		req.Type = TypeTest
 	}
+	return s.UpdateItem(ctx, req)
+}
 
-	return nil
+// SoftDeleteItem soft deletes an item (test or vaccine)
+func (s *TestService) SoftDeleteItem(ctx *gin.Context, itemID string) error {
+	return s.storeDB.SoftDeleteTest(ctx, itemID)
+}
+
+// For backward compatibility
+func (s *TestService) SoftDeleteTest(ctx *gin.Context, testID string) error {
+	return s.SoftDeleteItem(ctx, testID)
 }
 
 func (s *TestService) GetAllAppointmentsWithOrders(ctx *gin.Context) (*[]AppointmentWithOrders, error) {
@@ -378,14 +310,16 @@ func (s *TestService) GetAllAppointmentsWithOrders(ctx *gin.Context) (*[]Appoint
 
 								// Extract test_id
 								if testID, ok := testMap["test_id"].(string); ok {
-									test.TestID, _ = strconv.Atoi(testID)
-								} else if testID, ok := testMap["test_id"].(float64); ok {
-									test.TestID = int(testID)
+									intTestID, err := strconv.Atoi(testID)
+									if err != nil {
+										continue
+									}
+									test.ItemID = intTestID
 								}
 
 								// Extract test_name
 								if testName, ok := testMap["test_name"].(string); ok {
-									test.TestName = testName
+									test.ItemName = testName
 								}
 
 								// Extract price
@@ -401,7 +335,7 @@ func (s *TestService) GetAllAppointmentsWithOrders(ctx *gin.Context) (*[]Appoint
 								tests = append(tests, test)
 							}
 						}
-						order.Tests = tests
+						order.Items = tests
 					}
 
 					orders = append(orders, order)
@@ -426,4 +360,111 @@ func (s *TestService) GetAllAppointmentsWithOrders(ctx *gin.Context) (*[]Appoint
 		}
 	}
 	return &response, nil
+}
+
+// GetOrderedItemsByAppointment gets ordered items by appointment ID with optional type filter
+func (s *TestService) GetOrderedItemsByAppointment(ctx *gin.Context, appointmentID int64, itemType ItemType) (*[]OrderedItemDetail, error) {
+	// Get ordered items from database
+	orderedItems, err := s.storeDB.GetOrderedTestsByAppointment(ctx, pgtype.Int4{Int32: int32(appointmentID), Valid: true})
+	if err != nil {
+		return nil, fmt.Errorf("failed to get ordered items by appointment: %w", err)
+	}
+
+	var res []OrderedItemDetail
+	for _, item := range orderedItems {
+		// Convert string ID to int32
+		testID, err := strconv.ParseInt(item.TestID, 10, 32)
+		if err != nil {
+			continue // Skip this item if we can't parse the ID
+		}
+
+		// Get the item type from the test record
+		test, err := s.storeDB.GetTestByID(ctx, int32(testID))
+		if err != nil {
+			continue // Skip this item if we can't get its type
+		}
+
+		// If itemType filter is provided, skip items that don't match
+		if itemType != "" {
+			if ItemType(test.Type.String) != itemType && test.Type.String != "" {
+				continue
+			}
+		}
+
+		res = append(res, OrderedItemDetail{
+			OrderedItemID: int(item.OrderedTestID),
+			ItemID:        item.TestID,
+			ItemName:      item.TestName,
+			ItemType:      ItemType(test.Type.String),
+			CategoryID:    item.CategoryID.String,
+			CategoryName:  item.CategoryName,
+			Price:         item.PriceAtOrder,
+			Status:        item.Status.String,
+			Notes:         item.Notes.String,
+			OrderedDate:   item.OrderedDate.Time.String(),
+		})
+	}
+	return &res, nil
+}
+
+func (s *TestService) GetTestByAppointment(ctx *gin.Context, appointmentID int64) (*[]TestByAppointment, error) {
+	var tests []TestByAppointment
+
+	results, err := s.storeDB.ExecStatementMany(ctx, `
+			SELECT DISTINCT ON (t.test_id)
+				t.test_id AS test_identifier,
+				t.name AS test_name,
+				t.description AS test_description,
+				t.price AS current_price,
+				ot.price_at_order AS ordered_price,
+				t.turnaround_time,
+				t.type AS test_type,
+				t.expiration_date,
+				t.batch_number,
+				tc.name AS category_name,
+				tc.description AS category_description,
+				tor.order_id,
+				tor.order_date,
+				tor.status AS order_status,
+				ot.status AS test_status
+			FROM test_orders tor
+			JOIN ordered_tests ot ON tor.order_id = ot.order_id
+			JOIN tests t ON ot.test_id = t.id
+			LEFT JOIN test_categories tc ON t.category_id = tc.category_id
+			WHERE tor.appointment_id = $1 AND t.type = 'vaccine'
+			ORDER BY t.test_id, tor.order_date DESC;
+	`, []interface{}{appointmentID})
+
+	if err != nil {
+		return nil, err
+	}
+
+	for _, result := range results {
+		var test TestByAppointment
+
+		fmt.Println(result["expiration_date"])
+
+		if testName, ok := result["test_name"].(string); ok {
+			test.TestName = testName
+		}
+
+		if testIdentifier, ok := result["test_identifier"].(string); ok {
+			test.TestID = testIdentifier
+		}
+
+		if batchNumber, ok := result["batch_number"].(string); ok {
+			test.BatchNumber = batchNumber
+		}
+
+		// Extract and set the expiration_date field
+		if expirationDate, ok := result["expiration_date"].(time.Time); ok {
+			test.ExpirationDate = expirationDate.Format("2006-01-02")
+		} else if expirationDateStr, ok := result["expiration_date"].(string); ok {
+			test.ExpirationDate = expirationDateStr
+		}
+
+		tests = append(tests, test)
+	}
+
+	return &tests, nil
 }

@@ -5,6 +5,8 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
+	"github.com/quanganh247-qa/go-blog-be/app/models"
 	"github.com/quanganh247-qa/go-blog-be/app/util"
 )
 
@@ -24,7 +26,7 @@ type DiseaseControllerInterface interface {
 	CreateAllergy(ctx *gin.Context)
 	GetAllergiesByPetID(ctx *gin.Context)
 	// GetAllMedicines(ctx *gin.Context) // Add this new method
-
+	AnalyzeSymptoms(ctx *gin.Context)
 }
 
 // @Summary Create a new disease
@@ -511,3 +513,45 @@ func (c *DiseaseController) GetAllergiesByPetID(ctx *gin.Context) {
 // 		"data":    medicines,
 // 	})
 // }
+
+// AnalyzeSymptoms processes symptom data through AI and returns treatment recommendations
+func (h *DiseaseController) AnalyzeSymptoms(c *gin.Context) {
+	var request SymptomAnalysisRequest
+	if err := c.ShouldBindJSON(&request); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	// Check if llmService's client is initialized
+	if h.llmService.IsInitialized() == false {
+		c.JSON(http.StatusServiceUnavailable, gin.H{
+			"error": "AI service is not available. Please check API key configuration.",
+		})
+		return
+	}
+
+	// Validate that the patient exists
+	patient, err := db.StoreDB.GetPetByID(c, request.PatientID)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Patient not found"})
+		return
+	}
+
+	patientModel := models.Patient{
+		ID:     patient.Petid,
+		Name:   patient.Name,
+		Breed:  patient.Breed.String,
+		Age:    float64(patient.Age.Int32),
+		Gender: patient.Gender.String,
+		Weight: float64(patient.Weight.Float64),
+	}
+
+	// Process the symptoms through the AI service
+	treatmentPlan, err := h.llmService.AnalyzeSymptoms(patientModel, request.Symptoms)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to analyze symptoms: " + err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, treatmentPlan)
+}

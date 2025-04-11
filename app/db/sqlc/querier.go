@@ -15,7 +15,6 @@ type Querier interface {
 	AddItemToCart(ctx context.Context, arg AddItemToCartParams) (CartItem, error)
 	AddOrderedTest(ctx context.Context, arg AddOrderedTestParams) (OrderedTest, error)
 	AddTestCategory(ctx context.Context, arg AddTestCategoryParams) error
-	AddTestResult(ctx context.Context, arg AddTestResultParams) (TestResult, error)
 	// Assign Carprofen to the Initial Phase
 	AssignCarprofenToInitialPhase(ctx context.Context, arg AssignCarprofenToInitialPhaseParams) error
 	AssignMedicationToTreatmentPhase(ctx context.Context, arg AssignMedicationToTreatmentPhaseParams) (PhaseMedicine, error)
@@ -146,6 +145,17 @@ type Querier interface {
 	GetMedicineTransactionsByDate(ctx context.Context, arg GetMedicineTransactionsByDateParams) ([]GetMedicineTransactionsByDateRow, error)
 	GetMedicineTransactionsByMedicineID(ctx context.Context, arg GetMedicineTransactionsByMedicineIDParams) ([]GetMedicineTransactionsByMedicineIDRow, error)
 	GetOrderById(ctx context.Context, id int64) (Order, error)
+	// -- name: AddTestResult :one
+	// INSERT INTO test_results (
+	//     ordered_test_id,
+	//     parameter_name,
+	//     result_value,
+	//     normal_range,
+	//     units,
+	//     interpretation
+	// ) VALUES (
+	//     $1, $2, $3, $4, $5, $6
+	// ) RETURNING *;
 	GetOrderedTestsByAppointment(ctx context.Context, appointmentID pgtype.Int4) ([]GetOrderedTestsByAppointmentRow, error)
 	GetOrderedTestsByOrderID(ctx context.Context, orderID pgtype.Int4) ([]GetOrderedTestsByOrderIDRow, error)
 	// Returning fields you may want to use

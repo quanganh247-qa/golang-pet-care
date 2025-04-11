@@ -67,17 +67,17 @@ SET status = $2
 WHERE id = $1
 RETURNING *;
 
--- name: AddTestResult :one
-INSERT INTO test_results (
-    ordered_test_id, 
-    parameter_name, 
-    result_value, 
-    normal_range, 
-    units, 
-    interpretation
-) VALUES (
-    $1, $2, $3, $4, $5, $6
-) RETURNING *;
+-- -- name: AddTestResult :one
+-- INSERT INTO test_results (
+--     ordered_test_id, 
+--     parameter_name, 
+--     result_value, 
+--     normal_range, 
+--     units, 
+--     interpretation
+-- ) VALUES (
+--     $1, $2, $3, $4, $5, $6
+-- ) RETURNING *;
 
 -- name: GetOrderedTestsByAppointment :many
 SELECT 

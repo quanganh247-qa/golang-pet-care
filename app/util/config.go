@@ -41,6 +41,7 @@ type Config struct {
 	GoogleAPIKey       string `mapstructure:"GOOGLE_API_KEY"`
 
 	OpenFDAAPIKey string `mapstructure:"OPENFDA_API_KEY"`
+	OpenAIAPIKey  string `mapstructure:"OPENAI_API_KEY"`
 
 	GoongAPIKey  string `mapstructure:"GOONG_API_KEY"`
 	GoongBaseURL string `mapstructure:"GOONG_BASE_URL"`

@@ -1,8 +1,12 @@
 package disease
 
 import (
+	"fmt"
+
 	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
 	"github.com/quanganh247-qa/go-blog-be/app/middleware"
+	"github.com/quanganh247-qa/go-blog-be/app/service/llm"
+	"github.com/quanganh247-qa/go-blog-be/app/util"
 	"github.com/quanganh247-qa/go-blog-be/app/util/perms"
 )
 
@@ -11,6 +15,15 @@ func Routes(routerGroup middleware.RouterGroup) {
 	authRoute := routerGroup.RouterAuth(dicease)
 	perRoute := routerGroup.RouterPermission(dicease)
 
+	// Initialize AIService with API key from config
+	config := util.Configs
+	aiService, err := llm.NewAIService(config.OpenAIAPIKey)
+	if err != nil {
+		// Log the error but continue with nil service
+		// The AnalyzeSymptoms function will return an appropriate error
+		fmt.Println("Error initializing AIService:", err)
+	}
+
 	// Khoi tao api
 	diseaseApi := &DiseaseApi{
 		&DiseaseController{
@@ -18,6 +31,7 @@ func Routes(routerGroup middleware.RouterGroup) {
 				storeDB: db.StoreDB, // This should refer to the actual instance
 				// es:      es,
 			},
+			llmService: *aiService, // Dereference the pointer
 		},
 	}
 
@@ -42,5 +56,7 @@ func Routes(routerGroup middleware.RouterGroup) {
 	}
 
 	dicease.POST("/disease", diseaseApi.controller.CreateDisease)
+
+	dicease.POST("/symptom-analysis", diseaseApi.controller.AnalyzeSymptoms)
 
 }

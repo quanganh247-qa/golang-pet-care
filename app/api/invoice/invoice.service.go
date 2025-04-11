@@ -34,12 +34,25 @@ func (s *InvoiceService) CreateInvoice(ctx *gin.Context, req CreateInvoiceReques
 			status = "unpaid"
 		}
 
+		dateStr := req.Date.Format("2006-01-02")
+		dueDateStr := req.DueDate.Format("2006-01-02")
+
+		parsedDate, err := time.Parse("2006-01-02", dateStr)
+		if err != nil {
+			return fmt.Errorf("failed to parse date: %w", err)
+		}
+
+		parsedDueDate, err := time.Parse("2006-01-02", dueDateStr)
+		if err != nil {
+			return fmt.Errorf("failed to parse due date: %w", err)
+		}
+
 		// Create invoice
 		invoice, err = queries.CreateInvoice(ctx, db.CreateInvoiceParams{
 			InvoiceNumber: req.InvoiceNumber,
 			Amount:        req.Amount,
-			Date:          pgtype.Date{Time: date, Valid: true},
-			DueDate:       pgtype.Date{Time: req.DueDate, Valid: true},
+			Date:          pgtype.Date{Time: parsedDate, Valid: true},
+			DueDate:       pgtype.Date{Time: parsedDueDate, Valid: true},
 			Status:        status,
 			Description:   pgtype.Text{String: req.Description, Valid: req.Description != ""},
 			CustomerName:  pgtype.Text{String: req.CustomerName, Valid: req.CustomerName != ""},

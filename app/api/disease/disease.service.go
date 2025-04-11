@@ -58,11 +58,6 @@ func (s *DiseaseService) CreateDisease(ctx context.Context, arg CreateDiseaseReq
 		return nil, err
 	}
 
-	// // Tự động index vào Elasticsearch
-	// if err := s.es.IndexDisease(&disease); err != nil {
-	// 	log.Printf("Warning: Failed to index disease: %v", err)
-	// }
-
 	return &disease, nil
 }
 
