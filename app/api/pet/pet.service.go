@@ -81,6 +81,9 @@ func (s *PetService) CreatePet(ctx *gin.Context, username string, req createPetR
 }
 
 func (s *PetService) GetPetByID(ctx *gin.Context, petid int64) (*CreatePetResponse, error) {
+
+	// s.redis.ClearPetInfoCache()
+
 	// Try to get from cache
 	pet, err := s.redis.PetInfoLoadCache(petid)
 	if err != nil {
@@ -100,6 +103,8 @@ func (s *PetService) GetPetByID(ctx *gin.Context, petid int64) (*CreatePetRespon
 		Name:            pet.Name,
 		Type:            pet.Type,
 		Breed:           pet.Breed,
+		Gender:          pet.Gender,
+		Healthnotes:     pet.Healthnotes,
 		Age:             pet.Age,
 		BOD:             pet.BOD,
 		Weight:          pet.Weight,
@@ -176,9 +181,13 @@ func (s *PetService) UpdatePet(ctx *gin.Context, petid int64, req updatePetReque
 			return fmt.Errorf("failed to parse BOD: %w", err)
 		}
 		params.BirthDate = pgtype.Date{Time: bod, Valid: true}
+
+		age := time.Since(bod).Hours() / 24 / 365
+		params.Age = pgtype.Int4{Int32: int32(age), Valid: true}
 	} else {
 		params.BirthDate = pet.BirthDate
-
+		age := time.Since(pet.BirthDate.Time).Hours() / 24 / 365
+		params.Age = pgtype.Int4{Int32: int32(age), Valid: true}
 	}
 	if req.Name != "" {
 		params.Name = req.Name
@@ -203,11 +212,11 @@ func (s *PetService) UpdatePet(ctx *gin.Context, petid int64, req updatePetReque
 		params.Breed = pet.Breed
 	}
 
-	if req.Age != 0 {
-		params.Age = pgtype.Int4{Int32: int32(req.Age), Valid: true}
-	} else {
-		params.Age = pet.Age
-	}
+	// if req.Age != 0 {
+	// 	params.Age = pgtype.Int4{Int32: int32(req.Age), Valid: true}
+	// } else {
+	// 	params.Age = pet.Age
+	// }
 
 	if req.Weight != 0 {
 		params.Weight = pgtype.Float8{Float64: req.Weight, Valid: true}

@@ -59,26 +59,26 @@ type listPetsRequest struct {
 
 // Add this new struct to your pet.model.go file
 type PetLogWithPetInfo struct {
-	PetID         int64  `json:"pet_id"`
-	PetName       string `json:"pet_name"`
-	PetType       string `json:"pet_type"`
-	PetBreed      string `json:"pet_breed"`
-	LogID         int64  `json:"log_id"`
-	DateTime      string `json:"date_time"`
-	Title         string `json:"title"`
-	Notes         string `json:"notes"`
+	PetID    int64  `json:"pet_id"`
+	PetName  string `json:"pet_name"`
+	PetType  string `json:"pet_type"`
+	PetBreed string `json:"pet_breed"`
+	LogID    int64  `json:"log_id"`
+	DateTime string `json:"date_time"`
+	Title    string `json:"title"`
+	Notes    string `json:"notes"`
 }
 
 type updatePetRequest struct {
-	Name            string  `json:"name"`
-	Type            string  `json:"type"`
-	Breed           string  `json:"breed"`
-	Age             int     `json:"age"`
+	Name  string `json:"name"`
+	Type  string `json:"type"`
+	Breed string `json:"breed"`
+	// Age             int     `json:"age"`
 	Weight          float64 `json:"weight"`
 	Gender          string  `json:"gender"`
 	Healthnotes     string  `json:"healthnotes"`
-	BOD             string  `json:"birth_date"`
 	MicrochipNumber string  `json:"microchip_number"`
+	BOD             string  `json:"birth_date"`
 }
 
 type updatePetAvatarRequest struct {

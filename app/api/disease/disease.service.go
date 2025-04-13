@@ -216,6 +216,7 @@ func (s *DiseaseService) GetTreatmentsByPetID(ctx *gin.Context, petID int64, pag
 			for _, medicine := range medicines {
 				meds = append(meds, PhaseMedicine{
 					PhaseID:      phase.ID,
+					MedicineID:   medicine.ID,
 					MedicineName: medicine.Name,
 					Dosage:       medicine.Dosage.String,
 					Frequency:    medicine.Frequency.String,
@@ -323,6 +324,7 @@ func (s *DiseaseService) GetMedicinesByPhase(ctx *gin.Context, phaseID int64, pa
 	for _, medicine := range medicines {
 		result = append(result, PhaseMedicine{
 			PhaseID:      phaseID,
+			MedicineID:   medicine.ID,
 			MedicineName: medicine.Name,
 			Dosage:       medicine.Dosage.String,
 			Frequency:    medicine.Frequency.String,

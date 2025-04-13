@@ -24,8 +24,8 @@ func (s *InvoiceService) CreateInvoice(ctx *gin.Context, req CreateInvoiceReques
 	err = s.storeDB.ExecWithTransaction(ctx, func(queries *db.Queries) error {
 		// Set default date if not provided
 		date := req.Date
-		if date.IsZero() {
-			date = time.Now()
+		if date == "" {
+			date = time.Now().Format("2006-01-02")
 		}
 
 		// Set default status if not provided
@@ -34,8 +34,8 @@ func (s *InvoiceService) CreateInvoice(ctx *gin.Context, req CreateInvoiceReques
 			status = "unpaid"
 		}
 
-		dateStr := req.Date.Format("2006-01-02")
-		dueDateStr := req.DueDate.Format("2006-01-02")
+		dateStr := date
+		dueDateStr := req.DueDate
 
 		parsedDate, err := time.Parse("2006-01-02", dateStr)
 		if err != nil {
@@ -432,8 +432,8 @@ func (s *InvoiceService) CreateInvoiceFromTestOrder(ctx *gin.Context, testOrderI
 	invoiceReq := CreateInvoiceRequest{
 		InvoiceNumber: invoiceNumber,
 		Amount:        totalAmount,
-		Date:          time.Now(),
-		DueDate:       dueDate,
+		Date:          time.Now().Format("2006-01-02"),
+		DueDate:       dueDate.Format("2006-01-02"),
 		Status:        "unpaid",
 		Description:   description,
 		CustomerName:  appointment.Username.String,

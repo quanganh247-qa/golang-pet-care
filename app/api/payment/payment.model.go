@@ -62,7 +62,7 @@ type Bank struct {
 }
 
 type QRRequest struct {
-	Amount      int    `json:"amount"`
+	Amount      int64  `json:"amount"`
 	AccountName string `json:"accountName"`
 	AccountNo   string `json:"accountNo"`
 	AcqId       string `json:"acqId"`

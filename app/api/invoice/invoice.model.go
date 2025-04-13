@@ -36,8 +36,8 @@ type InvoiceServiceInterface interface {
 type CreateInvoiceRequest struct {
 	InvoiceNumber string        `json:"invoice_number" binding:"required"`
 	Amount        float64       `json:"amount" binding:"required"`
-	Date          time.Time     `json:"date"`
-	DueDate       time.Time     `json:"due_date" binding:"required"`
+	Date          string        `json:"date"`
+	DueDate       string        `json:"due_date" binding:"required"`
 	Status        string        `json:"status"`
 	Description   string        `json:"description"`
 	CustomerName  string        `json:"customer_name" binding:"required"`

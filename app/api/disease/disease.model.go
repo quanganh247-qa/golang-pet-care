@@ -130,6 +130,7 @@ type TreatmentPhase struct {
 
 type PhaseMedicine struct {
 	PhaseID      int64  `json:"phase_id"`
+	MedicineID   int64  `json:"medicine_id"`
 	MedicineName string `json:"medicine_name"`
 	Dosage       string `json:"dosage"`
 	Frequency    string `json:"frequency"`

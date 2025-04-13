@@ -108,7 +108,6 @@ func (c *ClientType) PetInfoLoadCache(petid int64) (*PetInfo, error) {
 	petInfo := PetInfo{}
 	err := c.GetWithBackground(petKey, &petInfo)
 	if err != nil {
-		log.Printf("Error when get cache for key %s: %v", petKey, err)
 		res, err := db.StoreDB.GetPetByID(ctxRedis, petid)
 		if err != nil {
 			if err == pgx.ErrNoRows {
