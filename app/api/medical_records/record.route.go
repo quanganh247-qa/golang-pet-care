@@ -22,15 +22,11 @@ func Routes(routerGroup middleware.RouterGroup) {
 	{
 		authRoute.GET("/pets/:pet_id/medical-records", MedicalRecordApi.controller.GetMedicalRecord)
 		authRoute.POST("/pets/:pet_id/medical-records", MedicalRecordApi.controller.CreateMedicalRecord)
-		authRoute.GET("/pets/:pet_id/medical-histories", MedicalRecordApi.controller.ListMedicalHistory)
+		authRoute.GET("/pets/:pet_id/medical-records/:medical_record_id/medical-histories", MedicalRecordApi.controller.ListMedicalHistory)
 		authRoute.POST("/pets/:pet_id/medical-histories", MedicalRecordApi.controller.CreateMedicalHistory)
 		authRoute.GET("/pets/:pet_id/medical-histories/:id", MedicalRecordApi.controller.GetMedicalHistoryByID)
-	}
+		authRoute.GET("/pets/:pet_id/medical-histories", MedicalRecordApi.controller.GetMedicalHistoryByPetID)
 
-	// {
-	// 	// Example: Only users with the "MANAGE_SERVICES" permission can access this route
-	// 	perRoute([]perms.Permission{perms.ManageMedicalRecords}).POST("/pets/:pet_id/medical-records", MedicalRecordApi.controller.CreateMedicalRecord)
-	// 	perRoute([]perms.Permission{perms.ManageMedicalRecords}).POST("/pets/:pet_id/medical-histories", MedicalRecordApi.controller.CreateMedicalHistory)
-	// }
+	}
 
 }

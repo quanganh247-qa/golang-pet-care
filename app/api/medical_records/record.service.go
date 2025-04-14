@@ -17,6 +17,7 @@ type MedicalRecordServiceInterface interface {
 	GetMedicalRecord(ctx *gin.Context, petID int64) (*MedicalRecordResponse, error)
 	ListMedicalHistory(ctx *gin.Context, recordID int64, pagination *util.Pagination) ([]MedicalHistoryResponse, error)
 	GetMedicalHistoryByID(ctx *gin.Context, medicalHistoryID int64) (*MedicalHistoryResponse, error)
+	GetMedicalHistoryByPetID(ctx *gin.Context, petID int64) ([]MedicalHistoryResponse, error)
 }
 
 // Quản lý Bệnh án
@@ -54,6 +55,7 @@ func (s *MedicalRecordService) CreateMedicalHistory(ctx *gin.Context, req *Medic
 	t, _ := time.Parse(layout, req.DiagnosisDate)
 
 	err = s.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
+
 		rec, err = q.CreateMedicalHistory(ctx, db.CreateMedicalHistoryParams{
 			MedicalRecordID: pgtype.Int8{Int64: recordID, Valid: true},
 			Condition:       pgtype.Text{String: req.Condition, Valid: true},
@@ -137,4 +139,25 @@ func (s *MedicalRecordService) GetMedicalHistoryByID(ctx *gin.Context, medicalHi
 		ID:              medicalHistory.ID,
 		MedicalRecordID: medicalHistory.MedicalRecordID.Int64,
 	}, nil
+}
+
+func (s *MedicalRecordService) GetMedicalHistoryByPetID(ctx *gin.Context, petID int64) ([]MedicalHistoryResponse, error) {
+	medicalHistories, err := s.storeDB.GetMedicalHistoryByPetID(ctx, pgtype.Int8{Int64: petID, Valid: true})
+	if err != nil {
+		return nil, fmt.Errorf("failed to get medical history: %w", err)
+	}
+
+	var medicalHistoryResponse []MedicalHistoryResponse
+	for _, medicalHistory := range medicalHistories {
+		medicalHistoryResponse = append(medicalHistoryResponse, MedicalHistoryResponse{
+			ID:              medicalHistory.ID,
+			MedicalRecordID: medicalHistory.MedicalRecordID.Int64,
+			Condition:       medicalHistory.Condition.String,
+			DiagnosisDate:   medicalHistory.DiagnosisDate.Time.Format("2006-01-02 15:04:05"),
+			Notes:           medicalHistory.Notes.String,
+			CreatedAt:       medicalHistory.CreatedAt.Time.Format("2006-01-02 15:04:05"),
+			UpdatedAt:       medicalHistory.UpdatedAt.Time.Format("2006-01-02 15:04:05"),
+		})
+	}
+	return medicalHistoryResponse, nil
 }

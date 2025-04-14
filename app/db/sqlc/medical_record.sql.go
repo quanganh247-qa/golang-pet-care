@@ -141,6 +141,58 @@ func (q *Queries) GetMedicalHistoryByID(ctx context.Context, id int64) (MedicalH
 	return i, err
 }
 
+const getMedicalHistoryByPetID = `-- name: GetMedicalHistoryByPetID :many
+SELECT medical_history.id, medical_record_id, condition, diagnosis_date, notes, medical_history.created_at, medical_history.updated_at, medical_records.id, pet_id, medical_records.created_at, medical_records.updated_at FROM medical_history
+LEFT JOIN medical_records ON medical_history.medical_record_id = medical_records.id
+WHERE medical_records.pet_id = $1
+`
+
+type GetMedicalHistoryByPetIDRow struct {
+	ID              int64            `json:"id"`
+	MedicalRecordID pgtype.Int8      `json:"medical_record_id"`
+	Condition       pgtype.Text      `json:"condition"`
+	DiagnosisDate   pgtype.Timestamp `json:"diagnosis_date"`
+	Notes           pgtype.Text      `json:"notes"`
+	CreatedAt       pgtype.Timestamp `json:"created_at"`
+	UpdatedAt       pgtype.Timestamp `json:"updated_at"`
+	ID_2            pgtype.Int8      `json:"id_2"`
+	PetID           pgtype.Int8      `json:"pet_id"`
+	CreatedAt_2     pgtype.Timestamp `json:"created_at_2"`
+	UpdatedAt_2     pgtype.Timestamp `json:"updated_at_2"`
+}
+
+func (q *Queries) GetMedicalHistoryByPetID(ctx context.Context, petID pgtype.Int8) ([]GetMedicalHistoryByPetIDRow, error) {
+	rows, err := q.db.Query(ctx, getMedicalHistoryByPetID, petID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetMedicalHistoryByPetIDRow{}
+	for rows.Next() {
+		var i GetMedicalHistoryByPetIDRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.MedicalRecordID,
+			&i.Condition,
+			&i.DiagnosisDate,
+			&i.Notes,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.ID_2,
+			&i.PetID,
+			&i.CreatedAt_2,
+			&i.UpdatedAt_2,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getMedicalRecord = `-- name: GetMedicalRecord :one
 SELECT id, pet_id, created_at, updated_at FROM medical_records
 WHERE id = $1 LIMIT 1

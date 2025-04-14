@@ -49,7 +49,6 @@ type MedicalHistoryResponse struct {
 	MedicalRecordID int64  `json:"medical_record_id"`
 	Condition       string `json:"condition"`
 	DiagnosisDate   string `json:"diagnosis_date"`
-	Treatment       int64  `json:"treatment"`
 	Notes           string `json:"notes"`
 	CreatedAt       string `json:"created_at"`
 	UpdatedAt       string `json:"updated_at"`

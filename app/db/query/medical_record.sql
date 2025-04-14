@@ -7,6 +7,7 @@ RETURNING *;
 SELECT * FROM medical_records
 WHERE id = $1 LIMIT 1;
 
+
 -- name: UpdateMedicalRecord :exec
 UPDATE medical_records
 SET updated_at = NOW()
@@ -24,6 +25,11 @@ RETURNING *;
 -- name: GetMedicalHistory :many
 SELECT * FROM medical_history
 WHERE medical_record_id = $1 LIMIT $2 OFFSET $3;
+
+-- name: GetMedicalHistoryByPetID :many
+SELECT * FROM medical_history
+LEFT JOIN medical_records ON medical_history.medical_record_id = medical_records.id
+WHERE medical_records.pet_id = $1;
 
 -- name: GetMedicalHistoryByID :one
 SELECT * FROM medical_history

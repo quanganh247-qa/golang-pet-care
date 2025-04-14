@@ -136,6 +136,7 @@ type Querier interface {
 	GetLowStockMedicines(ctx context.Context) ([]GetLowStockMedicinesRow, error)
 	GetMedicalHistory(ctx context.Context, arg GetMedicalHistoryParams) ([]MedicalHistory, error)
 	GetMedicalHistoryByID(ctx context.Context, id int64) (MedicalHistory, error)
+	GetMedicalHistoryByPetID(ctx context.Context, petID pgtype.Int8) ([]GetMedicalHistoryByPetIDRow, error)
 	GetMedicalRecord(ctx context.Context, id int64) (MedicalRecord, error)
 	GetMedicalRecordByPetID(ctx context.Context, petID pgtype.Int8) (MedicalRecord, error)
 	GetMedicationsByPhase(ctx context.Context, phaseID int64) ([]GetMedicationsByPhaseRow, error)
