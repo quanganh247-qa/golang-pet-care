@@ -24,6 +24,7 @@ import (
 	"github.com/quanganh247-qa/go-blog-be/app/api/user"
 	"github.com/quanganh247-qa/go-blog-be/app/api/vaccination"
 	"github.com/quanganh247-qa/go-blog-be/app/middleware"
+	"github.com/quanganh247-qa/go-blog-be/app/service/inference"
 	"github.com/quanganh247-qa/go-blog-be/app/service/websocket"
 	"github.com/quanganh247-qa/go-blog-be/app/service/worker"
 	"github.com/quanganh247-qa/go-blog-be/app/util"
@@ -41,6 +42,8 @@ func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor, config
 
 	// Setup route handlers
 	chatHandler := handlers.NewChatHandler(config.GoogleAPIKey, config.OpenFDAAPIKey)
+	// Add Roboflow inference handler
+	inferenceHandler := inference.NewInferenceHandler(config.RoboflowAPIKey)
 
 	// logger, _ := zap.NewProduction()
 	// defer logger.Sync()
@@ -59,6 +62,8 @@ func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor, config
 
 	// Register all API routes
 	chatbot.Routes(routerGroup, chatHandler)
+	// Register inference routes
+	inferenceHandler.RegisterRoutes(router)
 	user.Routes(routerGroup, taskDistributor, config)
 	pet.Routes(routerGroup)
 	service.Routes(routerGroup)

@@ -60,6 +60,8 @@ type Config struct {
 	MinIOAccessKey   string `mapstructure:"MINIO_ACCESS_KEY"`
 	MinIOSecretKey   string `mapstructure:"MINIO_SECRET_KEY"`
 	MinIOSSL         bool   `mapstructure:"MINIO_SSL"`
+
+	RoboflowAPIKey string `mapstructure:"ROBOFLOW_API_KEY"`
 }
 
 var Configs = Config{}
