@@ -52,6 +52,9 @@ const (
 	ManageTest Permission = "MANAGE_TEST"
 	ReadTest   Permission = "READ_TEST"
 	CreateTest Permission = "CREATE_TEST"
+
+	// System
+	ManageSystem Permission = "MANAGE_SYSTEM"
 )
 
 // RolePermissions maps roles to their respective permissions
@@ -59,7 +62,7 @@ var RolePermissions = map[string][]Permission{
 	RoleAdmin: {CreateAppointment, ReadAppointment, UpdateAppointment,
 		DeleteAppointment, ManageUsers, ManageDoctors,
 		ViewReports, ManageServices, ManageMedicalRecords,
-		ManageDoctor},
+		ManageDoctor, ManageSystem},
 	RoleDoctor: {CreateAppointment, ReadAppointment, UpdateAppointment,
 		ViewReports, ManageServices, ManageMedicalRecords,
 		ManageTreatment, ManageDisease, ManageDoctor,

@@ -6,6 +6,7 @@ import (
 	"github.com/hibiken/asynq"
 	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
 	mail "github.com/quanganh247-qa/go-blog-be/app/service/mail"
+	"github.com/quanganh247-qa/go-blog-be/app/util"
 
 	"github.com/rs/zerolog/log"
 )
@@ -24,9 +25,10 @@ type RedisTaskProccessor struct {
 	server *asynq.Server
 	store  db.Store
 	mailer mail.EmailSender
+	config util.Config
 }
 
-func NewRedisTaskProccessor(redisOpt asynq.RedisClientOpt, store db.Store, mailer mail.EmailSender) TaskProccessor {
+func NewRedisTaskProccessor(redisOpt asynq.RedisClientOpt, store db.Store, config util.Config) TaskProccessor {
 	server := asynq.NewServer(
 		redisOpt,
 		asynq.Config{
@@ -41,10 +43,15 @@ func NewRedisTaskProccessor(redisOpt asynq.RedisClientOpt, store db.Store, maile
 			Logger: NewLogger(),
 		},
 	)
+
+	// Get the appropriate mailer
+	mailer := mail.GetEmailSender(config, store)
+
 	return &RedisTaskProccessor{
 		server: server,
 		store:  store,
 		mailer: mailer,
+		config: config,
 	}
 }
 

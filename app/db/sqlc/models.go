@@ -196,6 +196,18 @@ type Notification struct {
 	NotifyType  pgtype.Text      `json:"notify_type"`
 }
 
+type OfflineMessage struct {
+	ID          int64              `json:"id"`
+	ClientID    string             `json:"client_id"`
+	Username    string             `json:"username"`
+	MessageType string             `json:"message_type"`
+	Data        []byte             `json:"data"`
+	CreatedAt   pgtype.Timestamptz `json:"created_at"`
+	DeliveredAt pgtype.Timestamptz `json:"delivered_at"`
+	Status      string             `json:"status"`
+	RetryCount  int32              `json:"retry_count"`
+}
+
 type Order struct {
 	ID              int64            `json:"id"`
 	UserID          int64            `json:"user_id"`
@@ -349,6 +361,18 @@ type Shift struct {
 	MaxPatients      pgtype.Int4      `json:"max_patients"`
 	AssignedPatients pgtype.Int4      `json:"assigned_patients"`
 	CreatedAt        pgtype.Timestamp `json:"created_at"`
+}
+
+type SmtpConfig struct {
+	ID        int64              `json:"id"`
+	Name      string             `json:"name"`
+	Email     string             `json:"email"`
+	Password  string             `json:"password"`
+	SmtpHost  string             `json:"smtp_host"`
+	SmtpPort  string             `json:"smtp_port"`
+	IsDefault bool               `json:"is_default"`
+	CreatedAt pgtype.Timestamptz `json:"created_at"`
+	UpdatedAt pgtype.Timestamptz `json:"updated_at"`
 }
 
 type State struct {

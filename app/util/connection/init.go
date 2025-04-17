@@ -10,7 +10,6 @@ import (
 	"github.com/hibiken/asynq"
 	"github.com/jackc/pgx/v5/pgxpool"
 	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
-	"github.com/quanganh247-qa/go-blog-be/app/service/mail"
 	"github.com/quanganh247-qa/go-blog-be/app/service/minio"
 	"github.com/quanganh247-qa/go-blog-be/app/service/redis"
 	"github.com/quanganh247-qa/go-blog-be/app/service/token"
@@ -20,6 +19,8 @@ import (
 
 type Connection struct {
 	Close func()
+	Store db.Store
+	DB    *pgxpool.Pool
 }
 
 func Init(config util.Config) (*Connection, error) {
@@ -49,28 +50,27 @@ func Init(config util.Config) (*Connection, error) {
 		return nil, fmt.Errorf("cannot ping database: %w", err)
 	}
 
+	// Initialize store
+	store := db.InitStore(connPool)
+
 	// Initialize Redis with debug mode
 	go redis.InitRedis(config.RedisAddress, config.DebugMode)
-	go runTaskProcessor(&config, asynq.RedisClientOpt{Addr: config.RedisAddress}, db.InitStore(connPool))
+	go runTaskProcessor(&config, asynq.RedisClientOpt{Addr: config.RedisAddress}, store)
 	go initMinio(&config)
 
 	conn := &Connection{
 		Close: func() {
 			connPool.Close()
 		},
+		Store: store,
+		DB:    connPool,
 	}
 	return conn, nil
 }
 
 func runTaskProcessor(config *util.Config, redisOpt asynq.RedisClientOpt, store db.Store) {
-	// Kiểm tra mailer
-	mailer := mail.NewGmailSender(config.EmailSenderName, config.EmailSenderAddress, config.EmailSenderPassword)
-	if mailer == nil {
-		log.Fatal("Failed to create mailer")
-	}
-
-	// Khởi tạo task processor
-	taskProcessor := worker.NewRedisTaskProccessor(redisOpt, store, mailer)
+	// Khởi tạo task processor với cấu hình
+	taskProcessor := worker.NewRedisTaskProccessor(redisOpt, store, *config)
 	if taskProcessor == nil {
 		log.Fatal("Failed to create task processor")
 	}

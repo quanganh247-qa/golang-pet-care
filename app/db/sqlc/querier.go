@@ -42,6 +42,7 @@ type Querier interface {
 	CreateMedicine(ctx context.Context, arg CreateMedicineParams) (Medicine, error)
 	// Transaction management
 	CreateMedicineTransaction(ctx context.Context, arg CreateMedicineTransactionParams) (MedicineTransaction, error)
+	CreateOfflineMessage(ctx context.Context, arg CreateOfflineMessageParams) (OfflineMessage, error)
 	CreateOrder(ctx context.Context, arg CreateOrderParams) (Order, error)
 	CreatePayment(ctx context.Context, arg CreatePaymentParams) (Payment, error)
 	CreatePet(ctx context.Context, arg CreatePetParams) (Pet, error)
@@ -49,6 +50,7 @@ type Querier interface {
 	CreatePetLog(ctx context.Context, arg CreatePetLogParams) (PetLog, error)
 	CreatePetSchedule(ctx context.Context, arg CreatePetScheduleParams) error
 	CreateRoom(ctx context.Context, arg CreateRoomParams) (Room, error)
+	CreateSMTPConfig(ctx context.Context, arg CreateSMTPConfigParams) (SmtpConfig, error)
 	CreateSOAP(ctx context.Context, arg CreateSOAPParams) (Consultation, error)
 	CreateService(ctx context.Context, arg CreateServiceParams) (Service, error)
 	CreateShift(ctx context.Context, arg CreateShiftParams) (CreateShiftRow, error)
@@ -72,11 +74,13 @@ type Querier interface {
 	DeleteMedicalRecord(ctx context.Context, id int64) error
 	DeleteMedicine(ctx context.Context, id int64) error
 	DeleteNotificationsByUsername(ctx context.Context, username string) error
+	DeleteOldMessages(ctx context.Context, arg DeleteOldMessagesParams) error
 	DeletePet(ctx context.Context, petid int64) error
 	DeletePetAllergy(ctx context.Context, id int64) error
 	DeletePetLog(ctx context.Context, logID int64) error
 	DeletePetSchedule(ctx context.Context, id int64) error
 	DeleteRoom(ctx context.Context, id int64) error
+	DeleteSMTPConfig(ctx context.Context, id int64) error
 	DeleteService(ctx context.Context, id int64) error
 	DeleteShiftsByDate(ctx context.Context, arg DeleteShiftsByDateParams) error
 	DeleteSupplier(ctx context.Context, id int64) error
@@ -116,6 +120,7 @@ type Querier interface {
 	GetCartItemsByUserId(ctx context.Context, userID int64) ([]GetCartItemsByUserIdRow, error)
 	GetCartTotal(ctx context.Context, cartID int64) (float64, error)
 	GetClinicInfo(ctx context.Context, id int64) (GetClinicInfoRow, error)
+	GetDefaultSMTPConfig(ctx context.Context) (SmtpConfig, error)
 	GetDeviceTokenByUsername(ctx context.Context, username string) ([]DeviceToken, error)
 	// 1. Query cơ bản để lấy thông tin bệnh và thuốc điều trị
 	GetDiceaseAndMedicinesInfo(ctx context.Context, lower string) ([]GetDiceaseAndMedicinesInfoRow, error)
@@ -145,6 +150,7 @@ type Querier interface {
 	GetMedicineTransactions(ctx context.Context, arg GetMedicineTransactionsParams) ([]GetMedicineTransactionsRow, error)
 	GetMedicineTransactionsByDate(ctx context.Context, arg GetMedicineTransactionsByDateParams) ([]GetMedicineTransactionsByDateRow, error)
 	GetMedicineTransactionsByMedicineID(ctx context.Context, arg GetMedicineTransactionsByMedicineIDParams) ([]GetMedicineTransactionsByMedicineIDRow, error)
+	GetMessagesForRetry(ctx context.Context, arg GetMessagesForRetryParams) ([]OfflineMessage, error)
 	GetOrderById(ctx context.Context, id int64) (Order, error)
 	// -- name: AddTestResult :one
 	// INSERT INTO test_results (
@@ -163,6 +169,7 @@ type Querier interface {
 	GetOrdersByUserId(ctx context.Context, userID int64) ([]Order, error)
 	GetPaymentByOrderID(ctx context.Context, orderID pgtype.Int4) (Payment, error)
 	GetPaymentByTestOrderID(ctx context.Context, testOrderID pgtype.Int4) (Payment, error)
+	GetPendingMessagesForClient(ctx context.Context) ([]OfflineMessage, error)
 	GetPetAllergy(ctx context.Context, id int64) (PetAllergy, error)
 	GetPetByID(ctx context.Context, petid int64) (Pet, error)
 	GetPetDetailByUserID(ctx context.Context, arg GetPetDetailByUserIDParams) (GetPetDetailByUserIDRow, error)
@@ -174,6 +181,7 @@ type Querier interface {
 	GetRevenueByPaymentMethod(ctx context.Context, arg GetRevenueByPaymentMethodParams) ([]GetRevenueByPaymentMethodRow, error)
 	GetRevenueLastSevenDays(ctx context.Context) ([]GetRevenueLastSevenDaysRow, error)
 	GetRoomByID(ctx context.Context, id int64) (Room, error)
+	GetSMTPConfig(ctx context.Context, id int64) (SmtpConfig, error)
 	GetSOAPByAppointmentID(ctx context.Context, appointmentID pgtype.Int8) (Consultation, error)
 	GetServiceByID(ctx context.Context, id int64) (Service, error)
 	GetServices(ctx context.Context, arg GetServicesParams) ([]Service, error)
@@ -201,7 +209,9 @@ type Querier interface {
 	GetTreatmentsByPet(ctx context.Context, arg GetTreatmentsByPetParams) ([]PetTreatment, error)
 	GetUser(ctx context.Context, username string) (GetUserRow, error)
 	GetUserByEmail(ctx context.Context, email string) (User, error)
+	GetUserByID(ctx context.Context, id int64) (GetUserByIDRow, error)
 	GetVaccinationByID(ctx context.Context, vaccinationid int64) (Vaccination, error)
+	IncrementMessageRetryCount(ctx context.Context, id int64) error
 	InsertDeviceToken(ctx context.Context, arg InsertDeviceTokenParams) (DeviceToken, error)
 	InsertDoctor(ctx context.Context, arg InsertDoctorParams) (Doctor, error)
 	InsertProduct(ctx context.Context, arg InsertProductParams) (Product, error)
@@ -215,13 +225,16 @@ type Querier interface {
 	ListPetSchedulesByUsername(ctx context.Context, username string) ([]ListPetSchedulesByUsernameRow, error)
 	ListPets(ctx context.Context, arg ListPetsParams) ([]Pet, error)
 	ListPetsByUsername(ctx context.Context, arg ListPetsByUsernameParams) ([]Pet, error)
+	ListSMTPConfigs(ctx context.Context) ([]SmtpConfig, error)
 	ListTests(ctx context.Context) ([]Test, error)
 	ListTreatmentsByPet(ctx context.Context, arg ListTreatmentsByPetParams) ([]PetTreatment, error)
 	ListVaccinationsByPetID(ctx context.Context, arg ListVaccinationsByPetIDParams) ([]Vaccination, error)
+	MarkMessageDelivered(ctx context.Context, id int64) error
 	MarkNotificationAsRead(ctx context.Context, id int64) error
 	ReleaseRoom(ctx context.Context, arg ReleaseRoomParams) error
 	RemoveItemFromCart(ctx context.Context, arg RemoveItemFromCartParams) error
 	SearchMedicinesByName(ctx context.Context, arg SearchMedicinesByNameParams) ([]Medicine, error)
+	SetAsDefaultSMTPConfig(ctx context.Context) error
 	SetPetInactive(ctx context.Context, petid int64) error
 	SoftDeleteTest(ctx context.Context, testID string) error
 	UpdateAppointmentByID(ctx context.Context, arg UpdateAppointmentByIDParams) error
@@ -246,6 +259,7 @@ type Querier interface {
 	UpdatePetLog(ctx context.Context, arg UpdatePetLogParams) error
 	UpdatePetSchedule(ctx context.Context, arg UpdatePetScheduleParams) error
 	UpdateRoom(ctx context.Context, arg UpdateRoomParams) error
+	UpdateSMTPConfig(ctx context.Context, arg UpdateSMTPConfigParams) (SmtpConfig, error)
 	UpdateSOAP(ctx context.Context, arg UpdateSOAPParams) (Consultation, error)
 	UpdateService(ctx context.Context, arg UpdateServiceParams) (Service, error)
 	UpdateSupplier(ctx context.Context, arg UpdateSupplierParams) error

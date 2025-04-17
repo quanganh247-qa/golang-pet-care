@@ -20,6 +20,7 @@ import (
 	"github.com/quanganh247-qa/go-blog-be/app/api/reports"
 	"github.com/quanganh247-qa/go-blog-be/app/api/rooms"
 	"github.com/quanganh247-qa/go-blog-be/app/api/service"
+	"github.com/quanganh247-qa/go-blog-be/app/api/smtp"
 	"github.com/quanganh247-qa/go-blog-be/app/api/test"
 	"github.com/quanganh247-qa/go-blog-be/app/api/user"
 	"github.com/quanganh247-qa/go-blog-be/app/api/vaccination"
@@ -67,7 +68,7 @@ func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor, config
 	user.Routes(routerGroup, taskDistributor, config)
 	pet.Routes(routerGroup)
 	service.Routes(routerGroup)
-	appointment.Routes(routerGroup, taskDistributor)
+	appointment.Routes(routerGroup, taskDistributor, ws)
 	device_token.Routes(routerGroup)
 	disease.Routes(routerGroup)
 	petschedule.Routes(routerGroup, &config)
@@ -83,5 +84,8 @@ func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor, config
 	rooms.Routes(routerGroup)
 	invoice.Routes(routerGroup)
 	reports.Routes(routerGroup)
+	// Register SMTP configuration routes
+	smtp.RegisterRoutes(router, config, server.store)
+
 	server.Router = routerDefault
 }

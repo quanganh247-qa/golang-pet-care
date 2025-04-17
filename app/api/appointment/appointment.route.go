@@ -3,6 +3,7 @@ package appointment
 import (
 	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
 	"github.com/quanganh247-qa/go-blog-be/app/middleware"
+	"github.com/quanganh247-qa/go-blog-be/app/service/websocket"
 	"github.com/quanganh247-qa/go-blog-be/app/service/worker"
 )
 
@@ -10,7 +11,7 @@ import (
 // @Summary Appointment routes setup
 // @Description Initializes all appointment related API endpoints
 // @Tags appointments
-func Routes(routerGroup middleware.RouterGroup, taskDistributor worker.TaskDistributor) {
+func Routes(routerGroup middleware.RouterGroup, taskDistributor worker.TaskDistributor, ws *websocket.WSClientManager) {
 	appointment := routerGroup.RouterDefault.Group("/")
 	authRoute := routerGroup.RouterAuth(appointment)
 
@@ -20,6 +21,7 @@ func Routes(routerGroup middleware.RouterGroup, taskDistributor worker.TaskDistr
 			service: &AppointmentService{
 				storeDB:         db.StoreDB,
 				taskDistributor: taskDistributor,
+				ws:              ws,
 			},
 		},
 	}
@@ -59,5 +61,13 @@ func Routes(routerGroup middleware.RouterGroup, taskDistributor worker.TaskDistr
 
 		// Walk-in appointments
 		authRoute.POST("/appointments/walk-in", appointmentApi.controller.CreateWalkInAppointment)
+
+		// WebSocket routes
+		authRoute.GET("/appointment/websocket", appointmentApi.controller.HandleWebSocket)
+
+		// Pending notifications
+		authRoute.GET("/appointment/notifications/pending", appointmentApi.controller.getPendingNotifications)
+
+		authRoute.PUT("/appointment/notifications/:id/delivered", appointmentApi.controller.MarkMessageDelivered)
 	}
 }

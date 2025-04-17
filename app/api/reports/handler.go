@@ -2,10 +2,13 @@ package reports
 
 import (
 	"database/sql"
+	"math"
+	"math/big"
 	"net/http"
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/jackc/pgx/v5/pgtype"
 	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
 )
 
@@ -306,7 +309,7 @@ type MedicalRecordsReportRequest struct {
 }
 
 type MedicalRecordsReportResponse struct {
-	TotalExaminations  int                `json:"total_examinations"`
+	TotalExaminations  int64              `json:"total_examinations"`
 	CommonDiseases     []DiseaseStats     `json:"common_diseases"`
 	ExaminationsByType map[string]int     `json:"examinations_by_type"`
 	MonthlyTrends      []MonthlyExamStats `json:"monthly_trends"`
@@ -314,13 +317,13 @@ type MedicalRecordsReportResponse struct {
 
 type DiseaseStats struct {
 	Disease    string  `json:"disease"`
-	Count      int     `json:"count"`
+	Count      int64   `json:"count"`
 	Percentage float64 `json:"percentage"`
 }
 
 type MonthlyExamStats struct {
 	Month        string `json:"month"`
-	Examinations int    `json:"examinations"`
+	Examinations int64  `json:"examinations"`
 }
 
 func (h *Handler) GetMedicalRecordsReport(ctx *gin.Context) {
@@ -380,8 +383,8 @@ func (h *Handler) GetMedicalRecordsReport(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, response)
 }
 
-func (h *Handler) getTotalExaminations(ctx *gin.Context, startDate, endDate time.Time) (int, error) {
-	var count int
+func (h *Handler) getTotalExaminations(ctx *gin.Context, startDate, endDate time.Time) (int64, error) {
+	var count int64
 	result, err := h.store.ExecStatementOne(ctx, `
 		SELECT COUNT(*) 
 		FROM appointments
@@ -394,7 +397,7 @@ func (h *Handler) getTotalExaminations(ctx *gin.Context, startDate, endDate time
 	}
 
 	if value, ok := result["count"]; ok {
-		count, _ = value.(int)
+		count, _ = value.(int64)
 	}
 
 	return count, nil
@@ -447,11 +450,16 @@ func (h *Handler) getCommonDiseases(ctx *gin.Context, startDate, endDate time.Ti
 		if disease, ok := result["disease"].(string); ok {
 			ds.Disease = disease
 		}
-		if count, ok := result["count"].(int); ok {
+		if count, ok := result["count"].(int64); ok {
 			ds.Count = count
 		}
-		if percentage, ok := result["percentage"].(float64); ok {
-			ds.Percentage = percentage
+		if percentage, ok := result["percentage"].(pgtype.Numeric); ok {
+			// Convert numeric value to float64, accounting for the exponent
+			// Get the big.Int as a float64
+			floatValue, _ := new(big.Float).SetInt(percentage.Int).Float64()
+
+			// Apply the exponent by multiplying by 10^Exp
+			ds.Percentage = floatValue * math.Pow10(int(percentage.Exp))
 		}
 
 		diseases = append(diseases, ds)
@@ -543,7 +551,7 @@ func (h *Handler) getMonthlyExaminationTrends(ctx *gin.Context, startDate, endDa
 		if month, ok := result["month"].(string); ok {
 			data.Month = month
 		}
-		if count, ok := result["count"].(int); ok {
+		if count, ok := result["examinations"].(int64); ok {
 			data.Examinations = count
 		}
 

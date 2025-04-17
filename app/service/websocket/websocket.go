@@ -1,10 +1,12 @@
 package websocket
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
+	"strings"
 	"sync"
 	"time"
 
@@ -15,28 +17,40 @@ import (
 
 // WSClient represents a connected WebSocket client
 type WSClient struct {
-	conn     *websocket.Conn
-	send     chan []byte
-	clientID string
+	conn          *websocket.Conn
+	send          chan []byte
+	clientID      string
+	username      string
+	clientType    string // Can be "user", "doctor", etc.
+	isAuthSuccess bool
+	lastActivity  time.Time
 }
 
 // WSClientManager manages WebSocket connections
 type WSClientManager struct {
-	clientsMap map[string]*WSClient // Map with clientID as key
-	mutex      sync.Mutex
-	broadcast  chan []byte
-	register   chan *WSClient
-	unregister chan *WSClient
+	clientsMap   map[string]*WSClient // Map with clientID as key
+	mutex        sync.Mutex
+	broadcast    chan []byte
+	register     chan *WSClient
+	unregister   chan *WSClient
+	MessageStore *MessageStore // Changed from messageStore to MessageStore (public)
+	storeDB      db.Store
 }
 
-// Update NewWSClientManager
-func NewWSClientManager() *WSClientManager {
-	return &WSClientManager{
+// Update NewWSClientManager to accept store
+func NewWSClientManager(store db.Store) *WSClientManager {
+	manager := &WSClientManager{
 		clientsMap: make(map[string]*WSClient),
 		broadcast:  make(chan []byte),
 		register:   make(chan *WSClient),
 		unregister: make(chan *WSClient),
+		storeDB:    store,
 	}
+
+	// Initialize the message store
+	manager.MessageStore = NewMessageStore(store)
+
+	return manager
 }
 
 func (manager *WSClientManager) Run() {
@@ -46,7 +60,9 @@ func (manager *WSClientManager) Run() {
 			manager.mutex.Lock()
 			manager.clientsMap[client.clientID] = client
 			manager.mutex.Unlock()
-			log.Printf("Client connected: %s. Total clients: %d", client.clientID, len(manager.clientsMap))
+
+			// Check for pending messages on client registration
+			go manager.deliverPendingMessages(client)
 
 		case client := <-manager.unregister:
 			manager.mutex.Lock()
@@ -55,7 +71,6 @@ func (manager *WSClientManager) Run() {
 				close(client.send)
 			}
 			manager.mutex.Unlock()
-			log.Printf("Client disconnected: %s. Total clients: %d", client.clientID, len(manager.clientsMap))
 
 		case message := <-manager.broadcast:
 			manager.mutex.Lock()
@@ -98,6 +113,7 @@ func (manager *WSClientManager) BroadcastToAll(message interface{}) {
 		return
 	}
 	manager.broadcast <- data
+	log.Printf("Sent message to all clients: %s", string(data))
 }
 
 // BroadcastNotification sends a notification to all connected clients
@@ -108,7 +124,33 @@ func (manager *WSClientManager) BroadcastNotification(notification db.Notificati
 		Data: notification,
 	}
 
-	manager.BroadcastToAll(wsMessage)
+	// Store the notification in the database first
+	err := manager.storeDB.ExecWithTransaction(context.Background(), func(q *db.Queries) error {
+		_, err := q.CreatetNotification(context.Background(), db.CreatetNotificationParams{
+			Username:    notification.Username,
+			Title:       notification.Title,
+			Content:     notification.Content,
+			NotifyType:  notification.NotifyType,
+			RelatedID:   notification.RelatedID,
+			RelatedType: notification.RelatedType,
+		})
+		return err
+	})
+
+	if err != nil {
+		log.Printf("Error storing notification in database: %v", err)
+	}
+
+	// Try to send directly to the user if online
+	clientID := fmt.Sprintf("user_%s", notification.Username)
+	if !manager.SendToClient(clientID, wsMessage) {
+		// User is offline, store the message for later delivery
+		ctx := context.Background()
+		err := manager.MessageStore.StoreMessage(ctx, clientID, notification.Username, "notification", notification)
+		if err != nil {
+			log.Printf("Error storing offline notification: %v", err)
+		}
+	}
 }
 
 // HandleWebSocket handles WebSocket connections
@@ -116,7 +158,25 @@ func (manager *WSClientManager) HandleWebSocket(c *gin.Context) {
 	// Get client ID from query parameters
 	clientID := c.Request.URL.Query().Get("clientId")
 	if clientID == "" {
-		clientID = time.Now().String() // Use timestamp as fallback ID
+		// Try from header (set by middleware)
+		clientID = c.Request.Header.Get("X-Client-ID")
+		if clientID == "" {
+			clientID = time.Now().String() // Use timestamp as fallback ID
+		}
+	}
+
+	// Get username if available
+	var username string
+	if userVal, exists := c.Get("username"); exists {
+		if u, ok := userVal.(string); ok {
+			username = u
+		}
+	}
+
+	// Extract client type (user, doctor, etc.)
+	clientType := "user" // Default
+	if strings.HasPrefix(clientID, "doctor_") {
+		clientType = "doctor"
 	}
 
 	// Create WebSocket connection
@@ -128,9 +188,13 @@ func (manager *WSClientManager) HandleWebSocket(c *gin.Context) {
 
 	// Create and register client
 	client := &WSClient{
-		conn:     conn,
-		send:     make(chan []byte, 256),
-		clientID: clientID,
+		conn:          conn,
+		send:          make(chan []byte, 256),
+		clientID:      clientID,
+		username:      username,
+		clientType:    clientType,
+		isAuthSuccess: username != "", // If username is set, consider auth successful
+		lastActivity:  time.Now(),
 	}
 
 	// Register client before starting pumps
@@ -148,30 +212,109 @@ func (manager *WSClientManager) HandleWebSocket(c *gin.Context) {
 		Message: fmt.Sprintf("Successfully connected to WebSocket server with ID: %s", clientID),
 	}
 	client.sendJSON(welcomeMsg)
+
+	// Mark the client as successfully authenticated if we have username
+	if username != "" {
+		log.Printf("WebSocket client %s authenticated as %s", clientID, username)
+		client.isAuthSuccess = true
+
+		// Deliver any pending messages
+		go manager.deliverPendingMessages(client)
+	}
 }
 
-// Update SendToClient method to use clientsMap
-func (manager *WSClientManager) SendToClient(clientID string, message interface{}) {
+// SendToClient sends a message to a specific client and returns true if successful
+func (manager *WSClientManager) SendToClient(clientID string, message interface{}) bool {
 	data, err := json.Marshal(message)
 	if err != nil {
 		log.Printf("Error marshaling message: %v", err)
-		return
+		return false
 	}
 
 	manager.mutex.Lock()
 	defer manager.mutex.Unlock()
 
-	if client, ok := manager.clientsMap[clientID]; ok {
-		select {
-		case client.send <- data:
-			log.Printf("Sent message to client: %s", clientID)
-		default:
-			close(client.send)
-			delete(manager.clientsMap, clientID)
-			log.Printf("Failed to send message to client: %s", clientID)
-		}
-	} else {
+	client, ok := manager.clientsMap[clientID]
+	if !ok {
 		log.Printf("Client not found: %s", clientID)
+		return false
+	}
+
+	select {
+	case client.send <- data:
+		return true
+	default:
+		log.Printf("Client channel full, closing connection: %s", clientID)
+		close(client.send)
+		delete(manager.clientsMap, clientID)
+		return false
+	}
+}
+
+// deliverPendingMessages delivers any pending messages to a client that just connected
+func (manager *WSClientManager) deliverPendingMessages(client *WSClient) {
+	// Wait a short time for connection to stabilize
+	time.Sleep(500 * time.Millisecond)
+
+	// Only deliver if the client is authenticated
+	if !client.isAuthSuccess || client.username == "" {
+		return
+	}
+
+	ctx := context.Background()
+	messages, err := manager.MessageStore.GetPendingMessages(ctx)
+	if err != nil {
+		log.Printf("Error retrieving pending messages for client %s: %v", client.clientID, err)
+		return
+	}
+
+	if len(messages) == 0 {
+		return
+	}
+
+	log.Printf("Delivering %d pending messages to client %s", len(messages), client.clientID)
+
+	for _, msg := range messages {
+		// Parse the message data
+		var msgData interface{}
+
+		switch msg.MessageType {
+		case "notification":
+			var notification db.Notification
+			if err := json.Unmarshal(msg.Data, &notification); err != nil {
+				log.Printf("Error unmarshaling notification: %v", err)
+				continue
+			}
+			msgData = WebSocketMessage{
+				Type: "notification",
+				Data: notification,
+			}
+		case "appointment_alert":
+			// This is just an example, adjust based on your actual message types
+			msgData = WebSocketMessage{
+				Type: "appointment_alert",
+				Data: json.RawMessage(msg.Data),
+			}
+		default:
+			// Generic message
+			msgData = WebSocketMessage{
+				Type: msg.MessageType,
+				Data: json.RawMessage(msg.Data),
+			}
+		}
+
+		// Send the message
+		if manager.SendToClient(client.clientID, msgData) {
+			// Mark as delivered
+			if err := manager.MessageStore.MarkMessageDelivered(ctx, msg.ID); err != nil {
+				log.Printf("Error marking message %d as delivered: %v", msg.ID, err)
+			}
+		} else {
+			// Failed to deliver
+			if err := manager.MessageStore.MarkMessageFailed(ctx, msg.ID); err != nil {
+				log.Printf("Error marking message %d as failed: %v", msg.ID, err)
+			}
+		}
 	}
 }
 
@@ -186,6 +329,7 @@ func (client *WSClient) readPump(manager *WSClientManager) {
 	client.conn.SetReadDeadline(time.Now().Add(60 * time.Second))
 	client.conn.SetPongHandler(func(string) error {
 		client.conn.SetReadDeadline(time.Now().Add(60 * time.Second))
+		client.lastActivity = time.Now()
 		return nil
 	})
 
@@ -198,12 +342,23 @@ func (client *WSClient) readPump(manager *WSClientManager) {
 			break
 		}
 
+		// Update last activity time
+		client.lastActivity = time.Now()
+
 		// Process the received message
 		log.Printf("Received message from client %s: %s", client.clientID, string(message))
 
-		// Here you can process client->server messages if needed
-		// For now, we'll just echo it back
-		client.send <- message
+		// Handle message - could be a client command or heartbeat
+		var wsMessage WebSocketMessage
+		if err := json.Unmarshal(message, &wsMessage); err == nil {
+			// Handle based on message type
+			if wsMessage.Type == "heartbeat" {
+				// Send pong back
+				client.sendJSON(WebSocketMessage{
+					Type: "pong",
+				})
+			}
+		}
 	}
 }
 

@@ -3,13 +3,18 @@ package main
 import (
 	"fmt"
 	"log"
+	"os"
+	"os/signal"
+	"syscall"
 
 	"github.com/fatih/color"
 	"github.com/hibiken/asynq"
 	"github.com/quanganh247-qa/go-blog-be/app/api"
+	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
 	"github.com/quanganh247-qa/go-blog-be/app/service/websocket"
 	"github.com/quanganh247-qa/go-blog-be/app/service/worker"
 	"github.com/quanganh247-qa/go-blog-be/app/util"
+	"github.com/quanganh247-qa/go-blog-be/app/util/connection"
 	_ "github.com/quanganh247-qa/go-blog-be/docs" // Import swagger docs
 	"go.uber.org/zap"
 )
@@ -42,40 +47,49 @@ func main() {
 	logger, _ := zap.NewProduction()
 	defer logger.Sync()
 
+	// Initialize database connection
+	conn, err := connection.Init(*config)
+	if err != nil {
+		log.Fatal("cannot initialize connection:", err)
+	}
+	defer conn.Close()
+
+	// Access the store from the connection
+	storeDB := conn.Store
+
+	// Ensure global StoreDB is initialized for package-wide access
+	if db.StoreDB == nil {
+		db.InitStore(conn.DB)
+	}
+
+	// Initialize Redis Task Distributor
 	redisOpt := asynq.RedisClientOpt{
 		Addr: config.RedisAddress,
 	}
 	taskDistributor := worker.NewRedisTaskDistributor(redisOpt)
 
-	// // Initialize Elasticsearch
-	// es, err := elasticsearch.NewESService(*config)
-	// if err != nil {
-	// 	fmt.Printf(color.RedString("❌ ERROR: Failed to create elasticsearch client: %v\n", err))
-	// }
-
-	// es.CreateIndices()
 	// Initialize WebSocket
-	ws := websocket.NewWSClientManager()
+	ws := websocket.NewWSClientManager(storeDB)
 	go ws.Run()
 
-	server := runGinServer(*config, taskDistributor, ws)
+	// Start the server in a goroutine
+	go func() {
+		server, err := api.NewServer(*config, taskDistributor, ws, storeDB)
+		if err != nil {
+			log.Fatalf("Failed to create server: %v", err)
+		}
 
-	defer func() {
-		server.Connection.Close()
+		fmt.Printf(color.GreenString("Starting server at %s\n", config.HTTPServerAddress))
+		if err := server.Start(config.HTTPServerAddress); err != nil {
+			log.Fatalf("Failed to start server: %v", err)
+		}
 	}()
 
-}
+	// Wait for interrupt signal to gracefully shut down the server
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+	<-quit
 
-func runGinServer(config util.Config, taskDistributor worker.TaskDistributor, ws *websocket.WSClientManager) *api.Server {
-	server, err := api.NewServer(config, taskDistributor, ws)
-	if err != nil {
-		fmt.Printf(color.RedString("❌ ERROR: Failed to create server: %v\n", err))
-	}
-
-	err = server.Start(config.HTTPServerAddress)
-	if err != nil {
-		fmt.Printf(color.RedString("❌ ERROR: Failed to start server: %v\n", err))
-	}
-
-	return server
+	fmt.Println(color.YellowString("\nShutting down server..."))
+	fmt.Println(color.GreenString("Server gracefully stopped"))
 }

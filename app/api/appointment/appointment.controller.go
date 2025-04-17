@@ -36,8 +36,24 @@ type AppointmentControllerInterface interface {
 	GetAppointmentDistribution(ctx *gin.Context)
 
 	CreateWalkInAppointment(c *gin.Context)
+
+	HandleWebSocket(ctx *gin.Context)
+
+	// getPendingNotifications retrieves any pending notifications for the current user
+	getPendingNotifications(ctx *gin.Context)
+	MarkMessageDelivered(ctx *gin.Context)
 }
 
+// createAppointment creates a new appointment
+// @Summary Create a new appointment
+// @Description Create a new appointment for a user
+// @Accept json
+// @Produce json
+// @Param appointment body createAppointmentRequest true "Appointment details"
+// @Success 200 {object} util.SuccessResponse{data=createAppointmentResponse} "Appointment created successfully"
+// @Failure 400 {object} util.ErrorResponse "Invalid request"
+// @Failure 500 {object} util.ErrorResponse "Internal server error"
+// @Router /appointment [post]
 func (c *AppointmentController) createAppointment(ctx *gin.Context) {
 	var req createAppointmentRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -102,6 +118,16 @@ func (c *AppointmentController) checkinAppointment(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, util.SuccessResponse("checkin appointment successful", nil))
 }
 
+// getAppointmentByID retrieves an appointment by its ID
+// @Summary Get an appointment by ID
+// @Description Retrieve an appointment by its unique identifier
+// @Accept json
+// @Produce json
+// @Param id path string true "Appointment ID"
+// @Success 200 {object} util.SuccessResponse{data=Appointment} "Appointment retrieved successfully"
+// @Failure 400 {object} util.ErrorResponse "Invalid request"
+// @Failure 500 {object} util.ErrorResponse "Internal server error"
+// @Router /appointment/{id} [get]
 func (c *AppointmentController) getAppointmentByID(ctx *gin.Context) {
 	appointmentID := ctx.Param("id")
 	if appointmentID == "" {
@@ -446,4 +472,59 @@ func (ac *AppointmentController) CreateWalkInAppointment(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, response)
+}
+
+// HandleWebSocket handles WebSocket connections
+func (c *AppointmentController) HandleWebSocket(ctx *gin.Context) {
+	// Get user information for client ID
+	authPayload, err := middleware.GetAuthorizationPayload(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
+	}
+
+	// Set client ID in query parameters
+	clientID := fmt.Sprintf("user_%s", authPayload.Username)
+	ctx.Request.Header.Set("X-Client-ID", clientID)
+
+	// Handle WebSocket connection
+	c.service.HandleWebSocket(ctx)
+}
+
+// getPendingNotifications retrieves any pending notifications for the current user
+func (c *AppointmentController) getPendingNotifications(ctx *gin.Context) {
+
+	// Get pending notifications
+	notifications, err := c.service.GetPendingNotifications(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"error": fmt.Sprintf("Failed to retrieve pending notifications: %v", err),
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"message": fmt.Sprintf("Retrieved %d pending notifications", len(notifications)),
+		"data":    notifications,
+	})
+}
+
+func (c *AppointmentController) MarkMessageDelivered(ctx *gin.Context) {
+	appointmentID := ctx.Param("id")
+	if appointmentID == "" {
+		ctx.JSON(http.StatusBadRequest, nil)
+		return
+	}
+	id, err := strconv.ParseInt(appointmentID, 10, 64)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
+		return
+	}
+	err = c.service.MarkMessageDelivered(ctx, id)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, util.ErrorResponse(err))
+		return
+	}
+	ctx.JSON(http.StatusOK, util.SuccessResponse("Message delivered", nil))
 }

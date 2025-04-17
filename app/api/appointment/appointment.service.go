@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"log"
 	"sync"
 	"time"
 
@@ -13,6 +14,7 @@ import (
 	"github.com/quanganh247-qa/go-blog-be/app/api/user"
 	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
 	"github.com/quanganh247-qa/go-blog-be/app/service/redis"
+	"github.com/quanganh247-qa/go-blog-be/app/service/websocket"
 	"github.com/quanganh247-qa/go-blog-be/app/util"
 )
 
@@ -35,6 +37,9 @@ type AppointmentServiceInterface interface {
 	GetHistoryAppointmentsByPetID(ctx *gin.Context, petID int64) ([]historyAppointmentResponse, error)
 	GetSOAPByAppointmentID(ctx *gin.Context, appointmentID int64) (*SOAPResponse, error)
 	GetAppointmentDistributionByService(ctx *gin.Context, startDate, endDate string) ([]AppointmentDistribution, error)
+	HandleWebSocket(ctx *gin.Context)
+	GetPendingNotifications(ctx *gin.Context) ([]websocket.OfflineMessage, error)
+	MarkMessageDelivered(ctx *gin.Context, id int64) error
 }
 
 func (s *AppointmentService) CreateAppointment(ctx *gin.Context, req createAppointmentRequest, username string) (*createAppointmentResponse, error) {
@@ -152,6 +157,30 @@ func (s *AppointmentService) CreateAppointment(ctx *gin.Context, req createAppoi
 		return nil, fmt.Errorf("failed to get appointment detail: %w", err)
 	}
 
+	title := fmt.Sprintf("New Appointment for %s", detail.PetName.String)
+
+	notification := AppointmentNotification{
+		ID:            fmt.Sprintf("%s-%d-%s-%s", "app", appointment.AppointmentID, detail.PetName.String, doctor.Name),
+		Title:         title,
+		AppointmentID: appointment.AppointmentID,
+		Doctor: Doctor{
+			DoctorID:   doctor.ID,
+			DoctorName: doctor.Name,
+		},
+		Pet: Pet{
+			PetID:   detail.PetID.Int64,
+			PetName: detail.PetName.String,
+		},
+		Reason: detail.AppointmentReason.String,
+		Date:   appointment.Date.Time.Format("2006-01-02"),
+		TimeSlot: timeslot{
+			StartTime: startTimeFormatted,
+			EndTime:   endTimeFormatted,
+		}, ServiceName: detail.ServiceName.String,
+	}
+
+	s.sendAppointmentNotification(ctx, notification)
+
 	// Prepare the response
 	response := &createAppointmentResponse{
 		ID:          appointment.AppointmentID,
@@ -178,6 +207,44 @@ func (s *AppointmentService) CreateAppointment(ctx *gin.Context, req createAppoi
 	}
 
 	return response, nil
+}
+
+func (s *AppointmentService) sendAppointmentNotification(ctx context.Context, notification AppointmentNotification) {
+	// Send notification via WebSocket
+	wsMessage := websocket.WebSocketMessage{
+		Type: "appointment_alert",
+		Data: notification,
+	}
+
+	// Try to send to the doctor
+	doctorClientID := fmt.Sprintf("doctor_%d", notification.Doctor.DoctorID)
+	// Doctor is offline, store the message for later delivery
+	err := s.ws.MessageStore.StoreMessage(ctx, doctorClientID, "", "appointment_alert", notification)
+	if err != nil {
+		log.Printf("Error storing offline appointment notification for doctor: %v", err)
+	}
+
+	s.ws.BroadcastToAll(wsMessage)
+
+	// // Get the user's username from the appointment
+	// appointmentDetail, err := s.storeDB.GetAppointmentDetailByAppointmentID(context.Background(), notification.AppointmentID)
+	// if err != nil {
+	// 	log.Printf("Error getting appointment details for notification: %v", err)
+	// 	return
+	// }
+
+	// if appointmentDetail.Username.Valid {
+	// 	// Send to the pet owner/user
+	// 	userClientID := fmt.Sprintf("user_%s", appointmentDetail.Username.String)
+	// 	if !s.ws.SendToClient(userClientID, wsMessage) {
+	// 		// User is offline, store the message for later delivery
+	// 		ctx := context.Background()
+	// 		err := s.ws.MessageStore.StoreMessage(ctx, userClientID, appointmentDetail.Username.String, "appointment_alert", notification)
+	// 		if err != nil {
+	// 			log.Printf("Error storing offline appointment notification for user: %v", err)
+	// 		}
+	// 	}
+	// }
 }
 
 func (s *AppointmentService) CreateWalkInAppointment(ctx *gin.Context, req createWalkInAppointmentRequest) (*createAppointmentResponse, error) {
@@ -388,7 +455,6 @@ func (s *AppointmentService) ConfirmPayment(ctx context.Context, appointmentID i
 		}); err != nil {
 			return fmt.Errorf("failed to update appointment status: %w", err)
 		}
-
 		return nil
 	})
 
@@ -811,7 +877,6 @@ func (s *AppointmentService) GetAllAppointments(ctx *gin.Context, date string, o
 	}
 	return response.Build(), nil
 }
-
 func (s *AppointmentService) GetAllAppointmentsByDate(ctx *gin.Context, pagination *util.Pagination, date string) ([]Appointment, error) {
 	offset := (pagination.Page - 1) * pagination.PageSize
 
@@ -1062,7 +1127,6 @@ func (s *AppointmentService) GetQueueService(ctx *gin.Context, username string) 
 		if err != nil {
 			return nil, fmt.Errorf("failed to get doctor: %v", err)
 		}
-
 		// Calculate waiting time
 		waitingSince := appointment.ArrivalTime.Time
 		actualWaitTime := time.Since(waitingSince).Round(time.Minute).String()
@@ -1206,4 +1270,37 @@ func (s *AppointmentService) GetAppointmentDistributionByService(ctx *gin.Contex
 	}
 
 	return distributions, nil
+}
+
+func (s *AppointmentService) HandleWebSocket(ctx *gin.Context) {
+	s.ws.HandleWebSocket(ctx)
+}
+
+// GetPendingNotifications retrieves any pending notifications for a client
+func (s *AppointmentService) GetPendingNotifications(ctx *gin.Context) ([]websocket.OfflineMessage, error) {
+	// Get pending notifications from the WebSocket message store
+	pendingMessages, err := s.ws.MessageStore.GetPendingMessages(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get pending messages: %w", err)
+	}
+
+	// Create a map of existing message IDs for quick lookup
+	existingMsgIds := make(map[string]bool)
+	for _, msg := range pendingMessages {
+		// Create a key based on message content to avoid duplicates
+		key := fmt.Sprintf("%s-%s", msg.MessageType, string(msg.Data))
+		existingMsgIds[key] = true
+	}
+
+	return pendingMessages, nil
+}
+
+func (s *AppointmentService) MarkMessageDelivered(ctx *gin.Context, id int64) error {
+	return s.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
+		err := q.MarkMessageDelivered(ctx, id)
+		if err != nil {
+			return fmt.Errorf("failed to mark message as delivered: %w", err)
+		}
+		return nil
+	})
 }

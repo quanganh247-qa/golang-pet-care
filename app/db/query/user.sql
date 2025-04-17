@@ -8,6 +8,10 @@ SELECT id, username, hashed_password, full_name, email, phone_number, address, d
 FROM users
 WHERE username = $1;
 
+-- name: GetUserByID :one
+SELECT id, username, hashed_password, full_name, email, phone_number, address, data_image, original_image, role, created_at, is_verified_email
+FROM users
+WHERE id = $1;
 
 -- name: GetUserByEmail :one
 SELECT *

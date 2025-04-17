@@ -2,30 +2,25 @@ package api
 
 import (
 	"github.com/gin-gonic/gin"
+	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
 	"github.com/quanganh247-qa/go-blog-be/app/service/websocket"
 	"github.com/quanganh247-qa/go-blog-be/app/service/worker"
 	"github.com/quanganh247-qa/go-blog-be/app/util"
-	"github.com/quanganh247-qa/go-blog-be/app/util/connection"
 )
 
 type Server struct {
 	Router          *gin.Engine
-	Connection      *connection.Connection
 	taskDistributor worker.TaskDistributor
-	// es              *elasticsearch.ESService
-	ws *websocket.WSClientManager
+	ws              *websocket.WSClientManager
+	store           db.Store
 }
 
-func NewServer(config util.Config, taskDistributor worker.TaskDistributor, ws *websocket.WSClientManager) (*Server, error) {
-	conn, err := connection.Init(config)
-	if err != nil {
-		return nil, err
-	}
+func NewServer(config util.Config, taskDistributor worker.TaskDistributor, ws *websocket.WSClientManager, store db.Store) (*Server, error) {
 	server := &Server{
 		Router:          gin.Default(),
-		Connection:      conn,
 		taskDistributor: taskDistributor,
 		ws:              ws,
+		store:           store,
 	}
 
 	server.SetupRoutes(taskDistributor, config, ws)

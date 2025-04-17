@@ -15,7 +15,3 @@ func NewNotificationService(store db.Store, ws *WSClientManager) *NotificationSe
 		ws:      ws,
 	}
 }
-
-// func (s *NotificationService) SendNotificationToDoctor(ctx *gin.Context, testID int64, message string) error {
-
-// }

@@ -4,6 +4,7 @@ import (
 	"time"
 
 	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
+	"github.com/quanganh247-qa/go-blog-be/app/service/websocket"
 	"github.com/quanganh247-qa/go-blog-be/app/service/worker"
 )
 
@@ -14,6 +15,7 @@ type AppointmentController struct {
 type AppointmentService struct {
 	storeDB         db.Store
 	taskDistributor worker.TaskDistributor
+	ws              *websocket.WSClientManager
 }
 
 type AppointmentApi struct {
@@ -257,4 +259,16 @@ type NewPet struct {
 	Gender    string  `json:"gender"`
 	Weight    float64 `json:"weight"`
 	Age       int     `json:"age"`
+}
+
+type AppointmentNotification struct {
+	ID            string   `json:"id"`
+	Title         string   `json:"title"`
+	AppointmentID int64    `json:"appointment_id"`
+	Pet           Pet      `json:"pet"`
+	Doctor        Doctor   `json:"doctor"`
+	Reason        string   `json:"reason"`
+	Date          string   `json:"date"`
+	TimeSlot      timeslot `json:"time_slot"`
+	ServiceName   string   `json:"service_name"`
 }
