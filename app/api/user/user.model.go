@@ -152,3 +152,25 @@ type UpdatePasswordParams struct {
 	OldPassword string `json:"old_password"`
 	Password    string `json:"password"`
 }
+
+type CreateStaffRequest struct {
+	Username        string `json:"username" binding:"required,alphanum"`
+	Password        string `json:"password" binding:"required,min=6,max=25"`
+	FullName        string `json:"full_name" binding:"required"`
+	Email           string `json:"email" binding:"required,email"`
+	PhoneNumber     string `json:"phone_number"`
+	Specialization  string `json:"specialization"`
+	Address         string `json:"address"`
+	Role            string `json:"role"`
+	IsVerifiedEmail bool   `json:"is_verified_email"`
+}
+
+type CreateStaffResponse struct {
+	Username    string    `json:"username"`
+	FullName    string    `json:"full_name"`
+	Email       string    `json:"email"`
+	PhoneNumber string    `json:"phone_number"`
+	Address     string    `json:"address"`
+	Role        string    `json:"role"`
+	CreatedAt   time.Time `json:"created_at"`
+}

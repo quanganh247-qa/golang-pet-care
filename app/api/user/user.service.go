@@ -2,9 +2,11 @@ package user
 
 import (
 	"database/sql"
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/hibiken/asynq"
 	"github.com/jackc/pgx/v5/pgtype"
@@ -33,6 +35,9 @@ type UserServiceInterface interface {
 	ForgotPasswordService(ctx *gin.Context, email string) error
 	UpdatePasswordService(ctx *gin.Context, username string, arg UpdatePasswordParams) error
 	GetAllRoleService(ctx *gin.Context) ([]string, error)
+
+	// New function for creating staff
+	createStaffService(ctx *gin.Context, req CreateStaffRequest) (*CreateStaffResponse, error)
 }
 
 func (server *UserService) createUserService(ctx *gin.Context, req createUserRequest) (*VerrifyEmailTxParams, error) {
@@ -481,4 +486,106 @@ func (s *UserService) GetAllRoleService(ctx *gin.Context) ([]string, error) {
 		roleList = append(roleList, role.String)
 	}
 	return roleList, nil
+}
+
+func (server *UserService) createStaffService(ctx *gin.Context, req CreateStaffRequest) (*CreateStaffResponse, error) {
+	hashedPwd, err := util.HashPassword(req.Password)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, fmt.Sprintf("cannot hash password: %v", err))
+		return nil, fmt.Errorf("cannot hash password: %v", err)
+	}
+
+	// Set default verified email status for staff to true as they're created by admin
+	isVerified := true
+	if !req.IsVerifiedEmail {
+		isVerified = req.IsVerifiedEmail
+	}
+
+	arg := db.CreateUserParams{
+		Username:        req.Username,
+		HashedPassword:  hashedPwd,
+		FullName:        req.FullName,
+		Email:           req.Email,
+		PhoneNumber:     pgtype.Text{String: req.PhoneNumber, Valid: true},
+		Address:         pgtype.Text{String: req.Address, Valid: true},
+		Role:            pgtype.Text{String: req.Role, Valid: true},
+		IsVerifiedEmail: pgtype.Bool{Bool: isVerified, Valid: true},
+	}
+
+	var user db.User
+	err = server.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
+		createdUser, err := server.storeDB.CreateUser(ctx, arg)
+		if err != nil {
+			if pqErr, ok := err.(*pq.Error); ok {
+				switch pqErr.Code.Name() {
+				case "unique_violation":
+					ctx.JSON(http.StatusForbidden, "username or email already exists")
+					return fmt.Errorf("username or email already exists")
+				}
+			}
+			ctx.JSON(http.StatusInternalServerError, "internal server error")
+			return fmt.Errorf("internal server error: %v", err)
+		}
+		user = createdUser
+
+		// Update the user's verified status
+		if isVerified {
+			_, err = server.storeDB.VerifiedUser(ctx, req.Username)
+			if err != nil {
+				return fmt.Errorf("failed to verify user: %v", err)
+			}
+		}
+
+		doctor, err := server.storeDB.CreateDoctor(ctx, db.CreateDoctorParams{
+			UserID:         user.ID,
+			Specialization: pgtype.Text{String: req.Specialization, Valid: true},
+		})
+		if err != nil {
+			return fmt.Errorf("failed to create doctor: %v", err)
+		}
+
+		// Store department and position in Redis for quick access
+		// This is a workaround since we don't have a dedicated staff_info table
+		staffInfo := map[string]interface{}{
+			"doctor_id":      doctor.ID,
+			"role":           req.Role,
+			"specialization": req.Specialization,
+		}
+
+		// Encode the staff info as JSON for Redis storage
+		staffInfoBytes, err := json.Marshal(staffInfo)
+		if err != nil {
+			log.Printf("Warning: failed to marshal staff info: %v", err)
+		} else {
+			// Use a generic Redis set method to store staff metadata
+			// The key format "staff_info:{username}" allows easy retrieval
+			err = server.redis.Set(ctx, fmt.Sprintf("staff_info:%s", req.Username), string(staffInfoBytes), 0)
+			if err != nil {
+				// Non-critical error, log but don't fail the transaction
+				log.Printf("Warning: failed to store staff info in Redis: %v", err)
+			}
+		}
+
+		return nil
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	// Convert timestamp to time.Time for the response
+	var createdAt time.Time
+	if user.CreatedAt.Valid {
+		createdAt = user.CreatedAt.Time
+	}
+
+	return &CreateStaffResponse{
+		Username:    user.Username,
+		FullName:    user.FullName,
+		Email:       user.Email,
+		PhoneNumber: user.PhoneNumber.String,
+		Address:     user.Address.String,
+		Role:        user.Role.String,
+		CreatedAt:   createdAt,
+	}, nil
 }

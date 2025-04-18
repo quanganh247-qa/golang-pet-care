@@ -195,11 +195,11 @@ func (q *Queries) GetMedicalHistoryByPetID(ctx context.Context, petID pgtype.Int
 
 const getMedicalRecord = `-- name: GetMedicalRecord :one
 SELECT id, pet_id, created_at, updated_at FROM medical_records
-WHERE id = $1 LIMIT 1
+WHERE pet_id = $1 LIMIT 1
 `
 
-func (q *Queries) GetMedicalRecord(ctx context.Context, id int64) (MedicalRecord, error) {
-	row := q.db.QueryRow(ctx, getMedicalRecord, id)
+func (q *Queries) GetMedicalRecord(ctx context.Context, petID pgtype.Int8) (MedicalRecord, error) {
+	row := q.db.QueryRow(ctx, getMedicalRecord, petID)
 	var i MedicalRecord
 	err := row.Scan(
 		&i.ID,

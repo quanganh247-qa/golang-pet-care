@@ -94,7 +94,7 @@ func (s *MedicalRecordService) GetMedicalRecord(ctx *gin.Context, petID int64) (
 		return nil, fmt.Errorf("pet is not active")
 	}
 
-	record, err := s.storeDB.GetMedicalRecord(ctx, petID)
+	record, err := s.storeDB.GetMedicalRecord(ctx, pgtype.Int8{Int64: petID, Valid: true})
 	if err != nil {
 		return nil, fmt.Errorf("failed to get medical record: %w", err)
 	}

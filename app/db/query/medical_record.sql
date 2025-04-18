@@ -5,7 +5,7 @@ RETURNING *;
 
 -- name: GetMedicalRecord :one
 SELECT * FROM medical_records
-WHERE id = $1 LIMIT 1;
+WHERE pet_id = $1 LIMIT 1;
 
 
 -- name: UpdateMedicalRecord :exec

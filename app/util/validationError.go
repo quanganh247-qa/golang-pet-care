@@ -29,19 +29,17 @@ func ErrorValidator(err error) map[string]any {
 func msgForTag(tag string, defaultError string) string {
 	switch tag {
 	case "required":
-		return "Trường này không được để trống"
+		return "Field is required"
 	case "min":
-		return "Trường này chưa đủ độ dài tối thiểu"
+		return "Field is not enough length"
 	case "max":
-		return "Trường này vượt quá độ dài tối đa"
+		return "Field exceeds maximum length"
 	case "alphanum":
-		return "Trường này chỉ được chứa chữ và số"
+		return "Field must contain only letters and numbers"
 	case "email":
-		return "Email không hợp lệ"
-	case "currency":
-		return "Loại tiền phải thuộc các giá trị sau : USD, EUR,"
+		return "Email is not valid"
 	case "method":
-		return "Method phải thuộc các giá trị sau : GET, POST, PUT, DELETE"
+		return "Method must be one of the following: GET, POST, PUT, DELETE"
 	default:
 		return defaultError
 	}

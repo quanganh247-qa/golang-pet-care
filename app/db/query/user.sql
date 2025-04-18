@@ -1,6 +1,6 @@
 -- name: CreateUser :one
 INSERT INTO users (username, hashed_password, full_name, email, phone_number, address, data_image, original_image, role, created_at, is_verified_email)
-VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, NOW(), false)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, NOW(), $10)
 RETURNING *;
 
 -- name: GetUser :one
@@ -17,7 +17,6 @@ WHERE id = $1;
 SELECT *
 FROM users
 WHERE email = $1;
-
 
 -- name: GetAllUsers :many
 SELECT * FROM users ;

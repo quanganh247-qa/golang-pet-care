@@ -31,6 +31,7 @@ type UserControllerInterface interface {
 	sessioninfo(ctx *gin.Context)
 	userinfo(ctx *gin.Context)
 	GetAllRole(ctx *gin.Context)
+	createStaff(ctx *gin.Context)
 }
 
 func (controller *UserController) createUser(ctx *gin.Context) {
@@ -329,4 +330,42 @@ func (controller *UserController) GetAllRole(ctx *gin.Context) {
 		return
 	}
 	ctx.JSON(http.StatusOK, util.SuccessResponse("Success", res))
+}
+
+func (controller *UserController) createStaff(ctx *gin.Context) {
+	// First check if the requesting user has admin role
+	authPayload, err := middleware.GetAuthorizationPayload(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, util.ErrorResponse(err))
+		return
+	}
+
+	// Get user details to check role
+	user, err := controller.service.getUserDetailsService(ctx, authPayload.Username)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
+		return
+	}
+
+	// Only admin can create staff accounts
+	if user.Role != "admin" {
+		ctx.JSON(http.StatusForbidden, util.ErrorResponse(errors.New("only admin can create staff accounts")))
+		return
+	}
+
+	var req CreateStaffRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, util.ErrorValidator(err))
+		return
+	}
+
+	// Set verified email to true for staff by default
+	req.IsVerifiedEmail = true
+
+	res, err := controller.service.createStaffService(ctx, req)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
+		return
+	}
+	ctx.JSON(http.StatusCreated, util.SuccessResponse("Staff created successfully", res))
 }
