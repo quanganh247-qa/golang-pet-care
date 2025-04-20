@@ -129,8 +129,6 @@ func (ms *MessageStore) GetPendingMessages(ctx context.Context) ([]OfflineMessag
 		return nil, fmt.Errorf("failed to get pending messages: %w", err)
 	}
 
-	fmt.Println("dbMessages", dbMessages[0])
-
 	messages := make([]OfflineMessage, 0, len(dbMessages))
 	for _, dbMsg := range dbMessages {
 		msg := OfflineMessage{

@@ -11,6 +11,7 @@ import (
 )
 
 type DoctorControllerInterface interface {
+	editDoctorProfile(ctx *gin.Context)
 	loginDoctor(ctx *gin.Context)
 	getDoctorProfile(ctx *gin.Context)
 	getAllDoctor(ctx *gin.Context)
@@ -34,6 +35,24 @@ func (c *DoctorController) loginDoctor(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, util.SuccessResponse("login successful", res))
+}
+
+func (c *DoctorController) editDoctorProfile(ctx *gin.Context) {
+	authPayload, err := middleware.GetAuthorizationPayload(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, util.ErrorResponse(err))
+		return
+	}
+	var req EditDoctorProfileRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, util.ErrorValidator(err))
+		return
+	}
+	if err := c.service.EditDoctorProfileService(ctx, authPayload.Username, req); err != nil {
+		ctx.JSON(http.StatusInternalServerError, util.ErrorResponse(err))
+		return
+	}
+	ctx.JSON(http.StatusOK, util.SuccessResponse("doctor profile updated successfully", nil))
 }
 
 func (c *DoctorController) getDoctorProfile(ctx *gin.Context) {

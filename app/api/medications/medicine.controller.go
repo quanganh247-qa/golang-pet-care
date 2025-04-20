@@ -6,6 +6,7 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
 	"github.com/quanganh247-qa/go-blog-be/app/middleware"
 	"github.com/quanganh247-qa/go-blog-be/app/util"
 )
@@ -32,6 +33,8 @@ type MedicineControllerInterface interface {
 	// Expiration alerts
 	GetExpiringMedicines(ctx *gin.Context)
 	GetLowStockMedicines(ctx *gin.Context)
+
+	CountAllMedicines(ctx *gin.Context)
 
 	// WebSocket connection
 	HandleWebSocket(ctx *gin.Context)
@@ -334,4 +337,13 @@ func (c *MedicineController) HandleWebSocket(ctx *gin.Context) {
 
 	// Handle WebSocket connection
 	c.service.HandleWebSocket(ctx)
+}
+
+func (c *MedicineController) CountAllMedicines(ctx *gin.Context) {
+	count, err := db.StoreDB.CountAllMedicines(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	ctx.JSON(http.StatusOK, gin.H{"count": count})
 }

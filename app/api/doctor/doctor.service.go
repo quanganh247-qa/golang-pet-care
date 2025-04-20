@@ -14,6 +14,7 @@ import (
 )
 
 type DoctorServiceInterface interface {
+	EditDoctorProfileService(ctx *gin.Context, username string, req EditDoctorProfileRequest) error
 	LoginDoctorService(ctx *gin.Context, req loginDoctorRequest) (*loginDoctorResponse, error)
 	GetDoctorProfile(ctx *gin.Context, username string) (*DoctorDetail, error)
 	GetAllDoctorService(ctx *gin.Context) ([]DoctorDetail, error)
@@ -101,16 +102,49 @@ func (service *DoctorService) LoginDoctorService(ctx *gin.Context, req loginDoct
 	}, nil
 }
 
+func (service *DoctorService) EditDoctorProfileService(ctx *gin.Context, username string, req EditDoctorProfileRequest) error {
+	user, err := service.storeDB.GetUser(ctx, username)
+	if err != nil {
+		return fmt.Errorf("failed to get user: %v", err)
+	}
+	if user.Role.String != "doctor" {
+		return fmt.Errorf("user is not a doctor")
+	}
+	doctor, err := service.storeDB.GetDoctorByUserId(ctx, user.ID)
+	if err != nil {
+		return fmt.Errorf("failed to get doctor profile: %v", err)
+	}
+
+	var reqUpdate db.UpdateDoctorParams
+	reqUpdate.ID = doctor.ID
+	if req.Specialization != "" {
+		reqUpdate.Specialization = pgtype.Text{String: req.Specialization, Valid: true}
+	}
+	if req.YearsOfExp != 0 {
+		reqUpdate.YearsOfExperience = pgtype.Int4{Int32: req.YearsOfExp, Valid: true}
+	}
+	if req.Education != "" {
+		reqUpdate.Education = pgtype.Text{String: req.Education, Valid: true}
+	}
+	if req.Certificate != "" {
+		reqUpdate.CertificateNumber = pgtype.Text{String: req.Certificate, Valid: true}
+	}
+	if req.Bio != "" {
+		reqUpdate.Bio = pgtype.Text{String: req.Bio, Valid: true}
+	}
+
+	_, err = service.storeDB.UpdateDoctor(ctx, reqUpdate)
+	if err != nil {
+		return fmt.Errorf("failed to update doctor profile: %v", err)
+	}
+	return nil
+}
+
 func (service *DoctorService) GetDoctorProfile(ctx *gin.Context, username string) (*DoctorDetail, error) {
 	// Get user details
 	user, err := service.storeDB.GetUser(ctx, username)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get user: %v", err)
-	}
-
-	// Check if the user is a doctor
-	if user.Role.String != "doctor" {
-		return nil, fmt.Errorf("user is not a doctor")
 	}
 
 	// Get doctor details
@@ -122,8 +156,12 @@ func (service *DoctorService) GetDoctorProfile(ctx *gin.Context, username string
 	return &DoctorDetail{
 		DoctorID:       doctor.ID,
 		Username:       user.Username,
-		DoctorName:     user.FullName,
+		FullName:       user.FullName,
+		Address:        user.Address.String,
+		PhoneNumber:    user.PhoneNumber.String,
 		Email:          user.Email,
+		Role:           user.Role.String,
+		DoctorName:     user.FullName,
 		Specialization: doctor.Specialization.String,
 		YearsOfExp:     doctor.YearsOfExperience.Int32,
 		Education:      doctor.Education.String,

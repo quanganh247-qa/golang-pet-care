@@ -20,6 +20,14 @@ type DoctorApi struct {
 }
 
 // Request and response structures
+
+type EditDoctorProfileRequest struct {
+	Specialization string `json:"specialization"`
+	YearsOfExp     int32  `json:"years_of_experience"`
+	Education      string `json:"education"`
+	Certificate    string `json:"certificate_number"`
+	Bio            string `json:"bio"`
+}
 type loginDoctorRequest struct {
 	Username string `json:"username" binding:"required,alphanum"`
 	Password string `json:"password" binding:"required,min=6,max=25"`
@@ -36,7 +44,10 @@ type loginDoctorResponse struct {
 type DoctorDetail struct {
 	DoctorID       int64  `json:"doctor_id"`
 	Username       string `json:"username"`
+	FullName       string `json:"full_name"`
 	DoctorName     string `json:"doctor_name"`
+	PhoneNumber    string `json:"phone_number"`
+	Address        string `json:"address"`
 	Email          string `json:"email"`
 	Role           string `json:"role"`
 	Specialization string `json:"specialization"`

@@ -31,6 +31,7 @@ func Routes(routerGroup middleware.RouterGroup, taskDistributor worker.TaskDistr
 		authRoute.GET("/medicines/:pet_id", MedicineApi.controller.ListMedicines)
 		authRoute.PUT("/medicine/:medicine_id", MedicineApi.controller.UpdateMedicine)
 		authRoute.GET("/medicines", MedicineApi.controller.GetAllMedicines)
+		authRoute.GET("/medicines/count", MedicineApi.controller.CountAllMedicines)
 
 		authRoute.GET("/medicine/ws", MedicineApi.controller.HandleWebSocket)
 

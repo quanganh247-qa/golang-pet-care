@@ -68,6 +68,11 @@ type Medication struct {
 	ReorderLevel   int64   `json:"reorder_level"`
 }
 
+type ListMedicineResponse struct {
+	Medications []Medication `json:"medications"`
+	Total       int64        `json:"total"`
+}
+
 // Models for inventory management
 type MedicineTransactionRequest struct {
 	MedicineID      int64   `json:"medicine_id" validate:"required"`

@@ -26,6 +26,7 @@ func Routes(routerGroup middleware.RouterGroup) {
 		authRoute.GET("/doctors", doctorApi.controller.getAllDoctor)
 		authRoute.GET("/doctor/:doctor_id", doctorApi.controller.getDoctorById)
 		authRoute.GET("/doctor/profile", doctorApi.controller.getDoctorProfile)
+		authRoute.PUT("/doctor/profile", doctorApi.controller.editDoctorProfile)
 		// Private routes
 		perRoute([]perms.Permission{perms.ManageDoctor}).GET("/doctor/shifts", doctorApi.controller.getShifts)
 		perRoute([]perms.Permission{perms.ManageDoctor}).POST("/doctor/shifts", doctorApi.controller.createShift)
