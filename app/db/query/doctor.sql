@@ -75,3 +75,56 @@ JOIN users u ON d.user_id = u.id
 JOIN time_slots ts ON ts.doctor_id = d.id
 WHERE ts.date = $1
 AND ts.booked_patients < ts.max_patients;
+
+
+-- name: CreateLeaveRequest :one
+INSERT INTO leave_requests (
+    doctor_id,
+    start_date,
+    end_date,
+    leave_type,
+    reason,
+    status
+) VALUES ($1, $2, $3, $4, $5, $6)
+RETURNING *;
+
+-- name: GetLeaveRequests :many
+SELECT * FROM leave_requests
+WHERE doctor_id = $1
+ORDER BY created_at DESC
+LIMIT $2 OFFSET $3;
+
+-- name: UpdateLeaveRequest :one
+UPDATE leave_requests
+SET status = $2,
+    updated_at = CURRENT_TIMESTAMP,
+    reviewed_by = $3,
+    review_notes = $4
+WHERE id = $1
+RETURNING *;
+
+-- name: GetDoctorAttendance :many
+SELECT s.start_time::date as work_date,
+       COUNT(a.appointment_id) as total_appointments,
+       COUNT(CASE WHEN a.state_id = (SELECT id FROM states WHERE state = 'Completed') THEN 1 END) as completed_appointments,
+       EXTRACT(epoch FROM (s.end_time - s.start_time))/3600 as work_hours
+FROM shifts s
+LEFT JOIN appointments a ON a.doctor_id = s.doctor_id 
+    AND a.date BETWEEN s.start_time AND s.end_time
+WHERE s.doctor_id = $1
+    AND s.start_time BETWEEN $2 AND $3
+GROUP BY s.start_time::date
+ORDER BY s.start_time::date;
+
+-- name: GetDoctorWorkload :one
+SELECT 
+    COUNT(a.appointment_id) as total_appointments,
+    COUNT(CASE WHEN a.state_id = (SELECT id FROM states WHERE state = 'Completed') THEN 1 END) as completed_appointments,
+    ROUND(AVG(EXTRACT(epoch FROM (s.end_time - s.start_time))/3600), 2) as avg_work_hours_per_day,
+    COUNT(DISTINCT s.start_time::date) as total_work_days
+FROM shifts s
+LEFT JOIN appointments a ON a.doctor_id = s.doctor_id 
+    AND a.date BETWEEN s.start_time AND s.end_time
+WHERE s.doctor_id = $1
+    AND s.start_time BETWEEN $2 AND $3
+GROUP BY s.doctor_id;

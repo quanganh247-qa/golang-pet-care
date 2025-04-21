@@ -448,6 +448,7 @@ func (s *UserService) UpdatePasswordService(ctx *gin.Context, username string, a
 		ctx.JSON(http.StatusInternalServerError, "internal server error")
 		return fmt.Errorf("internal server error: %v", err)
 	}
+
 	// Check if the old password is correct
 	err = util.CheckPassword(arg.OldPassword, user.HashedPassword)
 	if err != nil {

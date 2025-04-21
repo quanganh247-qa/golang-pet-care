@@ -22,6 +22,11 @@ type DoctorServiceInterface interface {
 	CreateShift(ctx *gin.Context, req CreateShiftRequest) (*Shift, error)
 	GetShiftByDoctorId(ctx *gin.Context, doctorId int64) ([]ShiftResponse, error)
 	GetDoctorById(ctx *gin.Context, doctorId int64) (DoctorDetail, error)
+	CreateLeaveRequest(ctx *gin.Context, doctorID int64, req CreateLeaveRequest) (*LeaveRequest, error)
+	GetLeaveRequests(ctx *gin.Context, doctorID int64, page, pageSize int) ([]LeaveRequest, error)
+	UpdateLeaveRequest(ctx *gin.Context, leaveID int64, reviewerID int64, req UpdateLeaveRequest) error
+	GetDoctorAttendance(ctx *gin.Context, doctorID int64, startDate, endDate time.Time) ([]AttendanceRecord, error)
+	GetDoctorWorkload(ctx *gin.Context, doctorID int64, startDate, endDate time.Time) (*WorkloadMetrics, error)
 }
 
 func (service *DoctorService) LoginDoctorService(ctx *gin.Context, req loginDoctorRequest) (*loginDoctorResponse, error) {
@@ -107,9 +112,7 @@ func (service *DoctorService) EditDoctorProfileService(ctx *gin.Context, usernam
 	if err != nil {
 		return fmt.Errorf("failed to get user: %v", err)
 	}
-	if user.Role.String != "doctor" {
-		return fmt.Errorf("user is not a doctor")
-	}
+
 	doctor, err := service.storeDB.GetDoctorByUserId(ctx, user.ID)
 	if err != nil {
 		return fmt.Errorf("failed to get doctor profile: %v", err)
@@ -274,5 +277,139 @@ func (service *DoctorService) GetDoctorById(ctx *gin.Context, doctorId int64) (D
 		Role:           doctor.Role.String,
 		Certificate:    doctor.CertificateNumber.String,
 		Bio:            doctor.Bio.String,
+	}, nil
+}
+
+func (service *DoctorService) CreateLeaveRequest(ctx *gin.Context, doctorID int64, req CreateLeaveRequest) (*LeaveRequest, error) {
+	// First check if there are any existing shifts during the leave period
+	shifts, err := service.storeDB.GetShiftByDoctorId(ctx, doctorID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to check existing shifts: %v", err)
+	}
+
+	// Check for conflicting shifts
+	for _, shift := range shifts {
+		if shift.StartTime.Time.Before(req.EndDate) && shift.EndTime.Time.After(req.StartDate) {
+			return nil, fmt.Errorf("leave request conflicts with existing shifts")
+		}
+	}
+
+	// Create the leave request
+	leave, err := service.storeDB.CreateLeaveRequest(ctx, db.CreateLeaveRequestParams{
+		DoctorID:  doctorID,
+		StartDate: pgtype.Timestamp{Time: req.StartDate, Valid: true},
+		EndDate:   pgtype.Timestamp{Time: req.EndDate, Valid: true},
+		LeaveType: req.LeaveType,
+		Reason:    pgtype.Text{String: req.Reason, Valid: true},
+		Status:    pgtype.Text{String: "pending", Valid: true},
+	})
+
+	if err != nil {
+		return nil, fmt.Errorf("failed to create leave request: %v", err)
+	}
+
+	return &LeaveRequest{
+		ID:        leave.ID,
+		DoctorID:  leave.DoctorID,
+		StartDate: leave.StartDate.Time,
+		EndDate:   leave.EndDate.Time,
+		LeaveType: leave.LeaveType,
+		Reason:    leave.Reason.String,
+		Status:    leave.Status.String,
+		CreatedAt: leave.CreatedAt.Time,
+		UpdatedAt: leave.UpdatedAt.Time,
+	}, nil
+}
+
+func (service *DoctorService) GetLeaveRequests(ctx *gin.Context, doctorID int64, page, pageSize int) ([]LeaveRequest, error) {
+	offset := (page - 1) * pageSize
+	leaves, err := service.storeDB.GetLeaveRequests(ctx,
+		db.GetLeaveRequestsParams{
+			DoctorID: doctorID,
+			Limit:    int32(pageSize),
+			Offset:   int32(offset),
+		},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get leave requests: %v", err)
+	}
+
+	var leaveRequests []LeaveRequest
+	for _, leave := range leaves {
+		leaveRequests = append(leaveRequests, LeaveRequest{
+			ID:          leave.ID,
+			DoctorID:    leave.DoctorID,
+			StartDate:   leave.StartDate.Time,
+			EndDate:     leave.EndDate.Time,
+			LeaveType:   leave.LeaveType,
+			Reason:      leave.Reason.String,
+			Status:      leave.Status.String,
+			ReviewedBy:  leave.ReviewedBy.Int64,
+			ReviewNotes: leave.ReviewNotes.String,
+			CreatedAt:   leave.CreatedAt.Time,
+			UpdatedAt:   leave.UpdatedAt.Time,
+		})
+	}
+
+	return leaveRequests, nil
+}
+
+func (service *DoctorService) UpdateLeaveRequest(ctx *gin.Context, leaveID int64, reviewerID int64, req UpdateLeaveRequest) error {
+	_, err := service.storeDB.UpdateLeaveRequest(ctx, db.UpdateLeaveRequestParams{
+		ID:          leaveID,
+		Status:      pgtype.Text{String: req.Status, Valid: true},
+		ReviewedBy:  pgtype.Int8{Int64: reviewerID, Valid: true},
+		ReviewNotes: pgtype.Text{String: req.ReviewNotes, Valid: true},
+	})
+	if err != nil {
+		return fmt.Errorf("failed to update leave request: %v", err)
+	}
+	return nil
+}
+
+func (service *DoctorService) GetDoctorAttendance(ctx *gin.Context, doctorID int64, startDate, endDate time.Time) ([]AttendanceRecord, error) {
+	records, err := service.storeDB.GetDoctorAttendance(ctx, db.GetDoctorAttendanceParams{
+		DoctorID:    doctorID,
+		StartTime:   pgtype.Timestamp{Time: startDate, Valid: true},
+		StartTime_2: pgtype.Timestamp{Time: endDate, Valid: true},
+	})
+	if err != nil {
+		return nil, fmt.Errorf("failed to get doctor attendance: %v", err)
+	}
+
+	var attendance []AttendanceRecord
+	for _, record := range records {
+		attendance = append(attendance, AttendanceRecord{
+			WorkDate:              record.WorkDate.Time,
+			TotalAppointments:     int(record.TotalAppointments),
+			CompletedAppointments: int(record.CompletedAppointments),
+			WorkHours:             float64(record.WorkHours),
+		})
+	}
+
+	return attendance, nil
+}
+
+func (service *DoctorService) GetDoctorWorkload(ctx *gin.Context, doctorID int64, startDate, endDate time.Time) (*WorkloadMetrics, error) {
+	metrics, err := service.storeDB.GetDoctorWorkload(ctx, db.GetDoctorWorkloadParams{
+		DoctorID:    doctorID,
+		StartTime:   pgtype.Timestamp{Time: startDate, Valid: true},
+		StartTime_2: pgtype.Timestamp{Time: endDate, Valid: true},
+	})
+	if err != nil {
+		return nil, fmt.Errorf("failed to get doctor workload: %v", err)
+	}
+
+	// Convert Numeric to float64
+	avgWorkHours, err := metrics.AvgWorkHoursPerDay.Float64Value()
+	if err != nil {
+		return nil, fmt.Errorf("failed to convert average work hours: %v", err)
+	}
+
+	return &WorkloadMetrics{
+		TotalAppointments:     int(metrics.TotalAppointments),
+		CompletedAppointments: int(metrics.CompletedAppointments),
+		AvgWorkHoursPerDay:    avgWorkHours.Float64,
+		TotalWorkDays:         int(metrics.TotalWorkDays),
 	}, nil
 }

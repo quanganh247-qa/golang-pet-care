@@ -98,3 +98,42 @@ func (c *VaccinationController) DeleteVaccination(ctx *gin.Context) {
 	}
 	ctx.JSON(http.StatusOK, gin.H{"message": "Vaccination deleted successfully"})
 }
+
+func (c *VaccinationController) GetUpcomingVaccinations(ctx *gin.Context) {
+	// Parse pet ID if provided (optional)
+	var petID int64 = 0
+	petIDParam := ctx.Query("pet_id")
+	if petIDParam != "" {
+		var err error
+		petID, err = strconv.ParseInt(petIDParam, 10, 64)
+		if err != nil {
+			ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid pet ID"})
+			return
+		}
+	}
+
+	// Parse days parameter (defaults to 30 days if not provided)
+	daysAhead := 30
+	daysParam := ctx.Query("days")
+	if daysParam != "" {
+		var err error
+		daysAhead, err = strconv.Atoi(daysParam)
+		if err != nil || daysAhead < 1 {
+			ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid days parameter"})
+			return
+		}
+	}
+
+	pagination, err := util.GetPageInQuery(ctx.Request.URL.Query())
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, util.ErrorValidator(err))
+		return
+	}
+
+	res, err := c.service.GetUpcomingVaccinations(ctx, petID, daysAhead, pagination)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	ctx.JSON(http.StatusOK, res)
+}

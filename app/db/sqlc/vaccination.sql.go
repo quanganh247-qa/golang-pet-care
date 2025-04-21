@@ -68,6 +68,57 @@ func (q *Queries) DeleteVaccination(ctx context.Context, vaccinationid int64) er
 	return err
 }
 
+const getUpcomingVaccinations = `-- name: GetUpcomingVaccinations :many
+SELECT vaccinationid, petid, vaccinename, dateadministered, nextduedate, vaccineprovider, batchnumber, notes FROM vaccinations
+WHERE nextDueDate >= $1 AND nextDueDate <= $2
+AND ($3::bigint = 0 OR petID = $3)
+ORDER BY nextDueDate ASC
+LIMIT $4 OFFSET $5
+`
+
+type GetUpcomingVaccinationsParams struct {
+	Nextduedate   pgtype.Timestamp `json:"nextduedate"`
+	Nextduedate_2 pgtype.Timestamp `json:"nextduedate_2"`
+	Column3       int64            `json:"column_3"`
+	Limit         int32            `json:"limit"`
+	Offset        int32            `json:"offset"`
+}
+
+func (q *Queries) GetUpcomingVaccinations(ctx context.Context, arg GetUpcomingVaccinationsParams) ([]Vaccination, error) {
+	rows, err := q.db.Query(ctx, getUpcomingVaccinations,
+		arg.Nextduedate,
+		arg.Nextduedate_2,
+		arg.Column3,
+		arg.Limit,
+		arg.Offset,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []Vaccination{}
+	for rows.Next() {
+		var i Vaccination
+		if err := rows.Scan(
+			&i.Vaccinationid,
+			&i.Petid,
+			&i.Vaccinename,
+			&i.Dateadministered,
+			&i.Nextduedate,
+			&i.Vaccineprovider,
+			&i.Batchnumber,
+			&i.Notes,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getVaccinationByID = `-- name: GetVaccinationByID :one
 SELECT vaccinationid, petid, vaccinename, dateadministered, nextduedate, vaccineprovider, batchnumber, notes FROM vaccinations 
 WHERE vaccinationID = $1

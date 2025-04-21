@@ -1,6 +1,3 @@
-
-
-
 -- -- public.checkouts definition
 
 -- -- Drop table
@@ -133,6 +130,8 @@ CREATE TABLE public.services (
 	category varchar(255) NULL,
 	priority int2 DEFAULT 1 NULL,
 	created_at timestamp DEFAULT now() NULL,
+	removed_at timestamp NULL,
+	updated_at timestamp NULL,
 	CONSTRAINT services_pkey PRIMARY KEY (id)
 );
 
@@ -212,24 +211,6 @@ CREATE TABLE public.carts (
 	CONSTRAINT carts_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE
 );
 
-
--- -- public.checkout_services definition
-
--- -- Drop table
-
--- -- DROP TABLE public.checkout_services;
-
--- CREATE TABLE public.checkout_services (
--- 	checkoutservice_id bigserial NOT NULL,
--- 	checkoutid int8 NULL,
--- 	serviceid int8 NULL,
--- 	quantity int4 DEFAULT 1 NULL,
--- 	unitprice float8 NULL,
--- 	subtotal float8 NULL,
--- 	CONSTRAINT checkout_services_pkey PRIMARY KEY (checkoutservice_id),
--- 	CONSTRAINT cs_checkout_fk FOREIGN KEY (checkoutid) REFERENCES public.checkouts(checkout_id),
--- 	CONSTRAINT cs_service_fk FOREIGN KEY (serviceid) REFERENCES public.services(id)
--- );
 
 
 -- public.device_tokens definition
@@ -706,24 +687,6 @@ CREATE TABLE public.test_orders (
 );
 
 
--- -- public.test_results definition
-
--- -- Drop table
-
--- -- DROP TABLE public.test_results;
-
--- CREATE TABLE public.test_results (
--- 	result_id serial4 NOT NULL,
--- 	ordered_test_id int4 NULL,
--- 	parameter_name varchar(100) NOT NULL,
--- 	result_value varchar(100) NULL,
--- 	normal_range varchar(100) NULL,
--- 	units varchar(20) NULL,
--- 	interpretation text NULL,
--- 	created_at timestamptz DEFAULT CURRENT_TIMESTAMP NULL,
--- 	CONSTRAINT test_results_pkey PRIMARY KEY (result_id)
--- );
-
 -- public.ordered_tests definition
 
 -- Drop table
@@ -755,10 +718,6 @@ ALTER TABLE public.ordered_tests ADD CONSTRAINT ordered_tests_test_id_fkey FOREI
 
 ALTER TABLE public.test_orders ADD CONSTRAINT test_orders_appointment_id_fkey FOREIGN KEY (appointment_id) REFERENCES public.appointments(appointment_id) ON DELETE CASCADE;
 
-
--- -- public.test_results foreign keys
-
--- ALTER TABLE public.test_results ADD CONSTRAINT test_results_ordered_test_id_fkey FOREIGN KEY (ordered_test_id) REFERENCES public.ordered_tests(id) ON DELETE CASCADE;
 
 
 -- public.invoices definition
@@ -1085,4 +1044,27 @@ CREATE INDEX idx_medicine_transactions_supplier_id ON public.medicine_transactio
 
 -- Functions for medicine inventory management
 
---
+-- public.leave_requests definition
+CREATE TABLE public.leave_requests (
+    id bigserial NOT NULL,
+    doctor_id int8 NOT NULL,
+    start_date timestamp NOT NULL,
+    end_date timestamp NOT NULL,
+    leave_type varchar(50) NOT NULL,  -- e.g., 'vacation', 'sick', 'personal'
+    reason text,
+    status varchar(20) DEFAULT 'pending',  -- 'pending', 'approved', 'rejected'
+    reviewed_by int8,
+    review_notes text,
+    created_at timestamp DEFAULT CURRENT_TIMESTAMP,
+    updated_at timestamp DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT leave_requests_pkey PRIMARY KEY (id),
+    CONSTRAINT leave_requests_doctor_id_fkey FOREIGN KEY (doctor_id) REFERENCES public.doctors(id),
+    CONSTRAINT leave_requests_reviewed_by_fkey FOREIGN KEY (reviewed_by) REFERENCES public.users(id),
+    CONSTRAINT leave_requests_status_check CHECK (status IN ('pending', 'approved', 'rejected')),
+    CONSTRAINT leave_requests_leave_type_check CHECK (leave_type IN ('vacation', 'sick', 'personal', 'other'))
+);
+
+-- Add indexes for leave_requests
+CREATE INDEX idx_leave_requests_doctor_id ON public.leave_requests (doctor_id);
+CREATE INDEX idx_leave_requests_status ON public.leave_requests (status);
+CREATE INDEX idx_leave_requests_date_range ON public.leave_requests (start_date, end_date);

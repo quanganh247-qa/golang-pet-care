@@ -120,6 +120,20 @@ type InvoiceItem struct {
 	Quantity  int32   `json:"quantity"`
 }
 
+type LeaveRequest struct {
+	ID          int64            `json:"id"`
+	DoctorID    int64            `json:"doctor_id"`
+	StartDate   pgtype.Timestamp `json:"start_date"`
+	EndDate     pgtype.Timestamp `json:"end_date"`
+	LeaveType   string           `json:"leave_type"`
+	Reason      pgtype.Text      `json:"reason"`
+	Status      pgtype.Text      `json:"status"`
+	ReviewedBy  pgtype.Int8      `json:"reviewed_by"`
+	ReviewNotes pgtype.Text      `json:"review_notes"`
+	CreatedAt   pgtype.Timestamp `json:"created_at"`
+	UpdatedAt   pgtype.Timestamp `json:"updated_at"`
+}
+
 type MedicalHistory struct {
 	ID              int64            `json:"id"`
 	MedicalRecordID pgtype.Int8      `json:"medical_record_id"`
@@ -351,6 +365,8 @@ type Service struct {
 	Category    pgtype.Text      `json:"category"`
 	Priority    pgtype.Int2      `json:"priority"`
 	CreatedAt   pgtype.Timestamp `json:"created_at"`
+	RemovedAt   pgtype.Timestamp `json:"removed_at"`
+	UpdatedAt   pgtype.Timestamp `json:"updated_at"`
 }
 
 type Shift struct {

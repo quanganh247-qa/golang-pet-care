@@ -21,5 +21,6 @@ func Routes(routerGroup middleware.RouterGroup) {
 		authRoute.GET("vaccinations/pet/:pet_id", vaccinationController.ListVaccinationsByPetID)
 		authRoute.PUT("vaccination/:vaccination_id", vaccinationController.UpdateVaccination)
 		authRoute.DELETE("vaccination/:vaccination_id", vaccinationController.DeleteVaccination)
+		authRoute.GET("vaccinations/upcoming", vaccinationController.GetUpcomingVaccinations)
 	}
 }

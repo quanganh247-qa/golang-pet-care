@@ -3,6 +3,7 @@ package vaccination
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5/pgtype"
@@ -16,6 +17,7 @@ type VaccinationServiceInterface interface {
 	ListVaccinationsByPetID(ctx *gin.Context, petID int64, pagination *util.Pagination) ([]VaccinationResponse, error)
 	UpdateVaccination(ctx *gin.Context, req updateVaccinationRequest) error
 	DeleteVaccination(ctx context.Context, vaccinationID int64) error
+	GetUpcomingVaccinations(ctx *gin.Context, petID int64, daysAhead int, pagination *util.Pagination) ([]VaccinationResponse, error)
 }
 
 type VaccinationService struct {
@@ -118,4 +120,41 @@ func (s *VaccinationService) DeleteVaccination(ctx context.Context, vaccinationI
 		return fmt.Errorf("failed to delete vaccination: %w", err)
 	}
 	return nil
+}
+
+func (s *VaccinationService) GetUpcomingVaccinations(ctx *gin.Context, petID int64, daysAhead int, pagination *util.Pagination) ([]VaccinationResponse, error) {
+	// Calculate the date range for upcoming vaccinations
+	now := time.Now()
+	futureDate := now.AddDate(0, 0, daysAhead) // daysAhead days from now
+
+	offset := (pagination.Page - 1) * pagination.PageSize
+
+	// Query the database for upcoming vaccinations
+	res, err := s.storeDB.GetUpcomingVaccinations(ctx, db.GetUpcomingVaccinationsParams{
+		Nextduedate:   pgtype.Timestamp{Time: now, Valid: true},
+		Nextduedate_2: pgtype.Timestamp{Time: futureDate, Valid: true},
+		Column3:       petID,
+		Limit:         int32(pagination.PageSize),
+		Offset:        int32(offset),
+	})
+	if err != nil {
+		return nil, fmt.Errorf("failed to get upcoming vaccinations: %w", err)
+	}
+
+	var vaccinations []VaccinationResponse
+	for _, r := range res {
+		vaccinations = append(vaccinations, VaccinationResponse{
+			VaccinationID:    r.Vaccinationid,
+			PetID:            r.Petid.Int64,
+			VaccineName:      r.Vaccinename,
+			DateAdministered: r.Dateadministered.Time,
+			NextDueDate:      r.Nextduedate.Time,
+			VaccineProvider:  r.Vaccineprovider.String,
+			BatchNumber:      r.Batchnumber.String,
+			Notes:            r.Notes.String,
+			DaysRemaining:    int(r.Nextduedate.Time.Sub(now).Hours() / 24), // Calculate days remaining
+		})
+	}
+
+	return vaccinations, nil
 }

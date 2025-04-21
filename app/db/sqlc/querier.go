@@ -37,6 +37,7 @@ type Querier interface {
 	CreateFile(ctx context.Context, arg CreateFileParams) (File, error)
 	CreateInvoice(ctx context.Context, arg CreateInvoiceParams) (Invoice, error)
 	CreateInvoiceItem(ctx context.Context, arg CreateInvoiceItemParams) (InvoiceItem, error)
+	CreateLeaveRequest(ctx context.Context, arg CreateLeaveRequestParams) (LeaveRequest, error)
 	CreateMedicalHistory(ctx context.Context, arg CreateMedicalHistoryParams) (MedicalHistory, error)
 	CreateMedicalRecord(ctx context.Context, petID pgtype.Int8) (MedicalRecord, error)
 	CreateMedicine(ctx context.Context, arg CreateMedicineParams) (Medicine, error)
@@ -127,8 +128,10 @@ type Querier interface {
 	GetDiseaseByID(ctx context.Context, id int64) (Disease, error)
 	GetDiseaseTreatmentPlanWithPhases(ctx context.Context, lower string) ([]GetDiseaseTreatmentPlanWithPhasesRow, error)
 	GetDoctor(ctx context.Context, id int64) (GetDoctorRow, error)
+	GetDoctorAttendance(ctx context.Context, arg GetDoctorAttendanceParams) ([]GetDoctorAttendanceRow, error)
 	GetDoctorByUserId(ctx context.Context, userID int64) (Doctor, error)
 	GetDoctorByUsername(ctx context.Context, username string) (GetDoctorByUsernameRow, error)
+	GetDoctorWorkload(ctx context.Context, arg GetDoctorWorkloadParams) (GetDoctorWorkloadRow, error)
 	GetDoctors(ctx context.Context) ([]GetDoctorsRow, error)
 	GetExpiringMedicines(ctx context.Context, dollar_1 pgtype.Date) ([]GetExpiringMedicinesRow, error)
 	GetFileByID(ctx context.Context, id int64) (File, error)
@@ -138,6 +141,7 @@ type Querier interface {
 	GetInvoiceItemByID(ctx context.Context, id int32) (InvoiceItem, error)
 	GetInvoiceItems(ctx context.Context, invoiceID int32) ([]InvoiceItem, error)
 	GetInvoiceWithItems(ctx context.Context, id int32) ([]GetInvoiceWithItemsRow, error)
+	GetLeaveRequests(ctx context.Context, arg GetLeaveRequestsParams) ([]LeaveRequest, error)
 	GetLowStockMedicines(ctx context.Context) ([]GetLowStockMedicinesRow, error)
 	GetMedicalHistory(ctx context.Context, arg GetMedicalHistoryParams) ([]MedicalHistory, error)
 	GetMedicalHistoryByID(ctx context.Context, id int64) (MedicalHistory, error)
@@ -207,6 +211,7 @@ type Querier interface {
 	GetTreatmentPhasesByTreatment(ctx context.Context, arg GetTreatmentPhasesByTreatmentParams) ([]GetTreatmentPhasesByTreatmentRow, error)
 	GetTreatmentProgress(ctx context.Context, id int64) ([]GetTreatmentProgressRow, error)
 	GetTreatmentsByPet(ctx context.Context, arg GetTreatmentsByPetParams) ([]PetTreatment, error)
+	GetUpcomingVaccinations(ctx context.Context, arg GetUpcomingVaccinationsParams) ([]Vaccination, error)
 	GetUser(ctx context.Context, username string) (GetUserRow, error)
 	GetUserByEmail(ctx context.Context, email string) (User, error)
 	GetUserByID(ctx context.Context, id int64) (GetUserByIDRow, error)
@@ -246,6 +251,7 @@ type Querier interface {
 	UpdateInvoiceAmount(ctx context.Context, invoiceID int32) error
 	UpdateInvoiceItem(ctx context.Context, arg UpdateInvoiceItemParams) (InvoiceItem, error)
 	UpdateInvoiceStatus(ctx context.Context, arg UpdateInvoiceStatusParams) error
+	UpdateLeaveRequest(ctx context.Context, arg UpdateLeaveRequestParams) (LeaveRequest, error)
 	UpdateMedicalHistory(ctx context.Context, arg UpdateMedicalHistoryParams) error
 	UpdateMedicalRecord(ctx context.Context, id int64) error
 	UpdateMedicine(ctx context.Context, arg UpdateMedicineParams) error

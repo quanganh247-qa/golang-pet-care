@@ -31,4 +31,5 @@ type VaccinationResponse struct {
 	VaccineProvider  string    `json:"vaccine_provider,omitempty"`
 	BatchNumber      string    `json:"batch_number,omitempty"`
 	Notes            string    `json:"notes,omitempty"`
+	DaysRemaining    int       `json:"days_remaining,omitempty"` // How many days remain until the vaccine is due
 }

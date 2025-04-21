@@ -33,3 +33,10 @@ WHERE vaccinationID = $1;
 -- name: DeleteVaccination :exec
 DELETE FROM vaccinations
 WHERE vaccinationID = $1;
+
+-- name: GetUpcomingVaccinations :many
+SELECT * FROM vaccinations
+WHERE nextDueDate >= $1 AND nextDueDate <= $2
+AND ($3::bigint = 0 OR petID = $3)
+ORDER BY nextDueDate ASC
+LIMIT $4 OFFSET $5;

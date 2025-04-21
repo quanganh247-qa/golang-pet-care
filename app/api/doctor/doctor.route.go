@@ -31,6 +31,10 @@ func Routes(routerGroup middleware.RouterGroup) {
 		perRoute([]perms.Permission{perms.ManageDoctor}).GET("/doctor/shifts", doctorApi.controller.getShifts)
 		perRoute([]perms.Permission{perms.ManageDoctor}).POST("/doctor/shifts", doctorApi.controller.createShift)
 		perRoute([]perms.Permission{perms.ManageDoctor}).GET("/doctor/:doctor_id/shifts", doctorApi.controller.getShiftByDoctorId)
-
+		perRoute([]perms.Permission{perms.ManageDoctor}).POST("/doctor/:doctor_id/leave", doctorApi.controller.createLeaveRequest)
+		perRoute([]perms.Permission{perms.ManageDoctor}).GET("/doctor/:doctor_id/leave", doctorApi.controller.getLeaveRequests)
+		perRoute([]perms.Permission{perms.ManageDoctor}).PUT("/leave/:leave_id", doctorApi.controller.updateLeaveRequest)
+		perRoute([]perms.Permission{perms.ManageDoctor}).GET("/doctor/:doctor_id/attendance", doctorApi.controller.getDoctorAttendance)
+		perRoute([]perms.Permission{perms.ManageDoctor}).GET("/doctor/:doctor_id/workload", doctorApi.controller.getDoctorWorkload)
 	}
 }
