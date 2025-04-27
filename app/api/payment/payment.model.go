@@ -72,6 +72,7 @@ type QRRequest struct {
 	Format      string `json:"format"`
 	OrderID     int64  `json:"order_id"`
 	TestOrderID int64  `json:"test_order_id"`
+	Medicine    bool   `json:"medicine"`
 }
 
 type GenerateQRCodeResponse struct {
@@ -241,6 +242,7 @@ type QuickLinkRequest struct {
 	Template    string `json:"template" binding:"required"`   // Template hiển thị (compact2, compact, qr_only, print)
 	Description string `json:"description,omitempty"`         // Nội dung chuyển khoản (tối đa 50 ký tự)
 	AccountName string `json:"account_name,omitempty"`        // Tên người thụ hưởng
+	Amount      int64  `json:"amount,omitempty"`              // Số tiền chuyển khoản (tối đa 12 chữ số)
 
 	// Internal fields for application use
 	OrderID       int64 `json:"order_id,omitempty"`       // ID đơn hàng trong hệ thống

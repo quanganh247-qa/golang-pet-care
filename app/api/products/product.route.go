@@ -29,6 +29,11 @@ func Routes(routerGroup middleware.RouterGroup) {
 		authRoute.POST("/", petApi.controller.CreateProduct)
 		authRoute.GET("/:product_id", petApi.controller.GetProductByID)
 
+		// Routes for stock management
+		authRoute.POST("/:product_id/import", petApi.controller.ImportStock)
+		authRoute.POST("/:product_id/export", petApi.controller.ExportStock)
+		authRoute.GET("/:product_id/movements", petApi.controller.GetProductStockMovements)
+
 	}
 
 }

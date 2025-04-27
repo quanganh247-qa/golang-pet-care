@@ -14,3 +14,34 @@ CREATE TABLE IF NOT EXISTS smtp_configs (
 -- Create index for faster queries
 CREATE INDEX idx_smtp_configs_email ON smtp_configs(email);
 CREATE INDEX idx_smtp_configs_is_default ON smtp_configs(is_default);
+
+-- Add inventory management fields to products table
+ALTER TABLE products 
+ADD COLUMN expiration_date date NULL,
+ADD COLUMN reorder_level int DEFAULT 10 NULL,
+ADD COLUMN supplier_id int8 NULL;
+
+-- Create product_transactions table for inventory tracking
+CREATE TABLE public.product_transactions (
+    id bigserial NOT NULL,
+    product_id int8 NOT NULL,
+    quantity int8 NOT NULL,
+    transaction_type varchar(20) NOT NULL, -- 'import' or 'export'
+    unit_price float8 NULL,
+    total_amount float8 NULL,
+    transaction_date timestamptz DEFAULT CURRENT_TIMESTAMP NULL,
+    supplier_id int8 NULL,
+    expiration_date date NULL,
+    notes text NULL,
+    order_id int8 NULL,
+    created_by varchar(255) NULL,
+    created_at timestamptz DEFAULT CURRENT_TIMESTAMP NULL,
+    CONSTRAINT product_transactions_pkey PRIMARY KEY (id),
+    CONSTRAINT product_transactions_product_id_fkey FOREIGN KEY (product_id) REFERENCES public.products(product_id),
+    CONSTRAINT product_transactions_supplier_id_fkey FOREIGN KEY (supplier_id) REFERENCES public.medicine_suppliers(id),
+    CONSTRAINT product_transactions_order_id_fkey FOREIGN KEY (order_id) REFERENCES public.orders(id)
+);
+
+-- Add index for faster queries
+CREATE INDEX product_transactions_product_id_idx ON public.product_transactions (product_id);
+CREATE INDEX product_transactions_transaction_date_idx ON public.product_transactions (transaction_date);

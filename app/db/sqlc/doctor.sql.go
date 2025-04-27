@@ -54,53 +54,6 @@ func (q *Queries) CreateDoctor(ctx context.Context, arg CreateDoctorParams) (Doc
 	return i, err
 }
 
-const createLeaveRequest = `-- name: CreateLeaveRequest :one
-INSERT INTO leave_requests (
-    doctor_id,
-    start_date,
-    end_date,
-    leave_type,
-    reason,
-    status
-) VALUES ($1, $2, $3, $4, $5, $6)
-RETURNING id, doctor_id, start_date, end_date, leave_type, reason, status, reviewed_by, review_notes, created_at, updated_at
-`
-
-type CreateLeaveRequestParams struct {
-	DoctorID  int64            `json:"doctor_id"`
-	StartDate pgtype.Timestamp `json:"start_date"`
-	EndDate   pgtype.Timestamp `json:"end_date"`
-	LeaveType string           `json:"leave_type"`
-	Reason    pgtype.Text      `json:"reason"`
-	Status    pgtype.Text      `json:"status"`
-}
-
-func (q *Queries) CreateLeaveRequest(ctx context.Context, arg CreateLeaveRequestParams) (LeaveRequest, error) {
-	row := q.db.QueryRow(ctx, createLeaveRequest,
-		arg.DoctorID,
-		arg.StartDate,
-		arg.EndDate,
-		arg.LeaveType,
-		arg.Reason,
-		arg.Status,
-	)
-	var i LeaveRequest
-	err := row.Scan(
-		&i.ID,
-		&i.DoctorID,
-		&i.StartDate,
-		&i.EndDate,
-		&i.LeaveType,
-		&i.Reason,
-		&i.Status,
-		&i.ReviewedBy,
-		&i.ReviewNotes,
-		&i.CreatedAt,
-		&i.UpdatedAt,
-	)
-	return i, err
-}
-
 const deleteDoctor = `-- name: DeleteDoctor :exec
 DELETE FROM doctors
 WHERE id = $1
@@ -165,6 +118,7 @@ func (q *Queries) GetAvailableDoctors(ctx context.Context, date pgtype.Date) ([]
 const getDoctor = `-- name: GetDoctor :one
 SELECT 
     d.id, d.user_id, d.specialization, d.years_of_experience, d.education, d.certificate_number, d.bio,
+    u.id AS user_id,
     u.full_name AS name,
     u.role,
     u.email
@@ -181,6 +135,7 @@ type GetDoctorRow struct {
 	Education         pgtype.Text `json:"education"`
 	CertificateNumber pgtype.Text `json:"certificate_number"`
 	Bio               pgtype.Text `json:"bio"`
+	UserID_2          int64       `json:"user_id_2"`
 	Name              string      `json:"name"`
 	Role              pgtype.Text `json:"role"`
 	Email             string      `json:"email"`
@@ -197,63 +152,12 @@ func (q *Queries) GetDoctor(ctx context.Context, id int64) (GetDoctorRow, error)
 		&i.Education,
 		&i.CertificateNumber,
 		&i.Bio,
+		&i.UserID_2,
 		&i.Name,
 		&i.Role,
 		&i.Email,
 	)
 	return i, err
-}
-
-const getDoctorAttendance = `-- name: GetDoctorAttendance :many
-SELECT s.start_time::date as work_date,
-       COUNT(a.appointment_id) as total_appointments,
-       COUNT(CASE WHEN a.state_id = (SELECT id FROM states WHERE state = 'Completed') THEN 1 END) as completed_appointments,
-       EXTRACT(epoch FROM (s.end_time - s.start_time))/3600 as work_hours
-FROM shifts s
-LEFT JOIN appointments a ON a.doctor_id = s.doctor_id 
-    AND a.date BETWEEN s.start_time AND s.end_time
-WHERE s.doctor_id = $1
-    AND s.start_time BETWEEN $2 AND $3
-GROUP BY s.start_time::date
-ORDER BY s.start_time::date
-`
-
-type GetDoctorAttendanceParams struct {
-	DoctorID    int64            `json:"doctor_id"`
-	StartTime   pgtype.Timestamp `json:"start_time"`
-	StartTime_2 pgtype.Timestamp `json:"start_time_2"`
-}
-
-type GetDoctorAttendanceRow struct {
-	WorkDate              pgtype.Date `json:"work_date"`
-	TotalAppointments     int64       `json:"total_appointments"`
-	CompletedAppointments int64       `json:"completed_appointments"`
-	WorkHours             int32       `json:"work_hours"`
-}
-
-func (q *Queries) GetDoctorAttendance(ctx context.Context, arg GetDoctorAttendanceParams) ([]GetDoctorAttendanceRow, error) {
-	rows, err := q.db.Query(ctx, getDoctorAttendance, arg.DoctorID, arg.StartTime, arg.StartTime_2)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	items := []GetDoctorAttendanceRow{}
-	for rows.Next() {
-		var i GetDoctorAttendanceRow
-		if err := rows.Scan(
-			&i.WorkDate,
-			&i.TotalAppointments,
-			&i.CompletedAppointments,
-			&i.WorkHours,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
 }
 
 const getDoctorByUserId = `-- name: GetDoctorByUserId :one
@@ -316,90 +220,6 @@ func (q *Queries) GetDoctorByUsername(ctx context.Context, username string) (Get
 		&i.Email,
 	)
 	return i, err
-}
-
-const getDoctorWorkload = `-- name: GetDoctorWorkload :one
-SELECT 
-    COUNT(a.appointment_id) as total_appointments,
-    COUNT(CASE WHEN a.state_id = (SELECT id FROM states WHERE state = 'Completed') THEN 1 END) as completed_appointments,
-    ROUND(AVG(EXTRACT(epoch FROM (s.end_time - s.start_time))/3600), 2) as avg_work_hours_per_day,
-    COUNT(DISTINCT s.start_time::date) as total_work_days
-FROM shifts s
-LEFT JOIN appointments a ON a.doctor_id = s.doctor_id 
-    AND a.date BETWEEN s.start_time AND s.end_time
-WHERE s.doctor_id = $1
-    AND s.start_time BETWEEN $2 AND $3
-GROUP BY s.doctor_id
-`
-
-type GetDoctorWorkloadParams struct {
-	DoctorID    int64            `json:"doctor_id"`
-	StartTime   pgtype.Timestamp `json:"start_time"`
-	StartTime_2 pgtype.Timestamp `json:"start_time_2"`
-}
-
-type GetDoctorWorkloadRow struct {
-	TotalAppointments     int64          `json:"total_appointments"`
-	CompletedAppointments int64          `json:"completed_appointments"`
-	AvgWorkHoursPerDay    pgtype.Numeric `json:"avg_work_hours_per_day"`
-	TotalWorkDays         int64          `json:"total_work_days"`
-}
-
-func (q *Queries) GetDoctorWorkload(ctx context.Context, arg GetDoctorWorkloadParams) (GetDoctorWorkloadRow, error) {
-	row := q.db.QueryRow(ctx, getDoctorWorkload, arg.DoctorID, arg.StartTime, arg.StartTime_2)
-	var i GetDoctorWorkloadRow
-	err := row.Scan(
-		&i.TotalAppointments,
-		&i.CompletedAppointments,
-		&i.AvgWorkHoursPerDay,
-		&i.TotalWorkDays,
-	)
-	return i, err
-}
-
-const getLeaveRequests = `-- name: GetLeaveRequests :many
-SELECT id, doctor_id, start_date, end_date, leave_type, reason, status, reviewed_by, review_notes, created_at, updated_at FROM leave_requests
-WHERE doctor_id = $1
-ORDER BY created_at DESC
-LIMIT $2 OFFSET $3
-`
-
-type GetLeaveRequestsParams struct {
-	DoctorID int64 `json:"doctor_id"`
-	Limit    int32 `json:"limit"`
-	Offset   int32 `json:"offset"`
-}
-
-func (q *Queries) GetLeaveRequests(ctx context.Context, arg GetLeaveRequestsParams) ([]LeaveRequest, error) {
-	rows, err := q.db.Query(ctx, getLeaveRequests, arg.DoctorID, arg.Limit, arg.Offset)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	items := []LeaveRequest{}
-	for rows.Next() {
-		var i LeaveRequest
-		if err := rows.Scan(
-			&i.ID,
-			&i.DoctorID,
-			&i.StartDate,
-			&i.EndDate,
-			&i.LeaveType,
-			&i.Reason,
-			&i.Status,
-			&i.ReviewedBy,
-			&i.ReviewNotes,
-			&i.CreatedAt,
-			&i.UpdatedAt,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
 }
 
 const listDoctors = `-- name: ListDoctors :many
@@ -505,47 +325,6 @@ func (q *Queries) UpdateDoctor(ctx context.Context, arg UpdateDoctorParams) (Doc
 		&i.Education,
 		&i.CertificateNumber,
 		&i.Bio,
-	)
-	return i, err
-}
-
-const updateLeaveRequest = `-- name: UpdateLeaveRequest :one
-UPDATE leave_requests
-SET status = $2,
-    updated_at = CURRENT_TIMESTAMP,
-    reviewed_by = $3,
-    review_notes = $4
-WHERE id = $1
-RETURNING id, doctor_id, start_date, end_date, leave_type, reason, status, reviewed_by, review_notes, created_at, updated_at
-`
-
-type UpdateLeaveRequestParams struct {
-	ID          int64       `json:"id"`
-	Status      pgtype.Text `json:"status"`
-	ReviewedBy  pgtype.Int8 `json:"reviewed_by"`
-	ReviewNotes pgtype.Text `json:"review_notes"`
-}
-
-func (q *Queries) UpdateLeaveRequest(ctx context.Context, arg UpdateLeaveRequestParams) (LeaveRequest, error) {
-	row := q.db.QueryRow(ctx, updateLeaveRequest,
-		arg.ID,
-		arg.Status,
-		arg.ReviewedBy,
-		arg.ReviewNotes,
-	)
-	var i LeaveRequest
-	err := row.Scan(
-		&i.ID,
-		&i.DoctorID,
-		&i.StartDate,
-		&i.EndDate,
-		&i.LeaveType,
-		&i.Reason,
-		&i.Status,
-		&i.ReviewedBy,
-		&i.ReviewNotes,
-		&i.CreatedAt,
-		&i.UpdatedAt,
 	)
 	return i, err
 }

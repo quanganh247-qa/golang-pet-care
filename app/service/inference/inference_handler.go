@@ -30,7 +30,8 @@ func NewInferenceHandler(apiKey string) *InferenceHandler {
 	return &InferenceHandler{
 		roboflowClient:    NewRoboflowClient(apiKey, ""),
 		defaultCatModelID: "cat-breeds-cbvra/1",
-		defaultDogModelID: "dogsdetector/2",
+		// defaultDogModelID: "dogsdetector/2",
+		defaultDogModelID: "dog-breed-8ej59/3",
 	}
 }
 

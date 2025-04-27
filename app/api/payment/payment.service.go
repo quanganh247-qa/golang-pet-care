@@ -792,6 +792,10 @@ func (s *PaymentService) GenerateQuickLink(c *gin.Context, request QuickLinkRequ
 		params.Add("amount", fmt.Sprintf("%.0f", amount))
 	}
 
+	if request.OrderID == 0 && request.TestOrderID == 0 {
+		amount = float64(request.Amount)
+		params.Add("amount", fmt.Sprintf("%.0f", amount))
+	}
 	// Construct the final URL
 	quickLink := baseURL
 	if len(params) > 0 {

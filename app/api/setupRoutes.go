@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/quanganh247-qa/go-blog-be/app/api/appointment"
 	"github.com/quanganh247-qa/go-blog-be/app/api/cart"
+	"github.com/quanganh247-qa/go-blog-be/app/api/chat"
 	"github.com/quanganh247-qa/go-blog-be/app/api/chatbot"
 	"github.com/quanganh247-qa/go-blog-be/app/api/chatbot/handlers"
 	"github.com/quanganh247-qa/go-blog-be/app/api/device_token"
@@ -86,6 +87,8 @@ func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor, config
 	reports.Routes(routerGroup)
 	// Register SMTP configuration routes
 	smtp.RegisterRoutes(router, config, server.store)
+	// Register chat routes
+	chat.RegisterRoutes(routerGroup, server.store, ws)
 
 	server.Router = routerDefault
 }

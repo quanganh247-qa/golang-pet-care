@@ -110,6 +110,7 @@ CREATE TABLE public.products (
 	original_image varchar(255) NULL,
 	created_at timestamp DEFAULT now() NULL,
 	is_available bool DEFAULT true NULL,
+	updated_at timestamp NULL,
 	removed_at timestamp NULL,
 	CONSTRAINT products_pkey PRIMARY KEY (product_id)
 );
@@ -1033,38 +1034,3 @@ CREATE TABLE public.medicine_transactions (
 	CONSTRAINT medicine_transactions_appointment_id_fkey FOREIGN KEY (appointment_id) REFERENCES public.appointments(appointment_id),
 	CONSTRAINT medicine_transactions_transaction_type_check CHECK (transaction_type IN ('import', 'export'))
 );
-
--- Indexing for medicine tables
-CREATE INDEX idx_medicine_suppliers_name ON public.medicine_suppliers (name);
-
-CREATE INDEX idx_medicine_transactions_medicine_id ON public.medicine_transactions (medicine_id);
-CREATE INDEX idx_medicine_transactions_transaction_date ON public.medicine_transactions (transaction_date);
-CREATE INDEX idx_medicine_transactions_transaction_type ON public.medicine_transactions (transaction_type);
-CREATE INDEX idx_medicine_transactions_supplier_id ON public.medicine_transactions (supplier_id);
-
--- Functions for medicine inventory management
-
--- public.leave_requests definition
-CREATE TABLE public.leave_requests (
-    id bigserial NOT NULL,
-    doctor_id int8 NOT NULL,
-    start_date timestamp NOT NULL,
-    end_date timestamp NOT NULL,
-    leave_type varchar(50) NOT NULL,  -- e.g., 'vacation', 'sick', 'personal'
-    reason text,
-    status varchar(20) DEFAULT 'pending',  -- 'pending', 'approved', 'rejected'
-    reviewed_by int8,
-    review_notes text,
-    created_at timestamp DEFAULT CURRENT_TIMESTAMP,
-    updated_at timestamp DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT leave_requests_pkey PRIMARY KEY (id),
-    CONSTRAINT leave_requests_doctor_id_fkey FOREIGN KEY (doctor_id) REFERENCES public.doctors(id),
-    CONSTRAINT leave_requests_reviewed_by_fkey FOREIGN KEY (reviewed_by) REFERENCES public.users(id),
-    CONSTRAINT leave_requests_status_check CHECK (status IN ('pending', 'approved', 'rejected')),
-    CONSTRAINT leave_requests_leave_type_check CHECK (leave_type IN ('vacation', 'sick', 'personal', 'other'))
-);
-
--- Add indexes for leave_requests
-CREATE INDEX idx_leave_requests_doctor_id ON public.leave_requests (doctor_id);
-CREATE INDEX idx_leave_requests_status ON public.leave_requests (status);
-CREATE INDEX idx_leave_requests_date_range ON public.leave_requests (start_date, end_date);

@@ -5,8 +5,54 @@
 package db
 
 import (
+	"database/sql/driver"
+	"fmt"
+	"time"
+
 	"github.com/jackc/pgx/v5/pgtype"
 )
+
+type MovementTypeEnum string
+
+const (
+	MovementTypeEnumImport MovementTypeEnum = "import"
+	MovementTypeEnumExport MovementTypeEnum = "export"
+)
+
+func (e *MovementTypeEnum) Scan(src interface{}) error {
+	switch s := src.(type) {
+	case []byte:
+		*e = MovementTypeEnum(s)
+	case string:
+		*e = MovementTypeEnum(s)
+	default:
+		return fmt.Errorf("unsupported scan type for MovementTypeEnum: %T", src)
+	}
+	return nil
+}
+
+type NullMovementTypeEnum struct {
+	MovementTypeEnum MovementTypeEnum `json:"movement_type_enum"`
+	Valid            bool             `json:"valid"` // Valid is true if MovementTypeEnum is not NULL
+}
+
+// Scan implements the Scanner interface.
+func (ns *NullMovementTypeEnum) Scan(value interface{}) error {
+	if value == nil {
+		ns.MovementTypeEnum, ns.Valid = "", false
+		return nil
+	}
+	ns.Valid = true
+	return ns.MovementTypeEnum.Scan(value)
+}
+
+// Value implements the driver Valuer interface.
+func (ns NullMovementTypeEnum) Value() (driver.Value, error) {
+	if !ns.Valid {
+		return nil, nil
+	}
+	return string(ns.MovementTypeEnum), nil
+}
 
 type Appointment struct {
 	AppointmentID     int64            `json:"appointment_id"`
@@ -61,6 +107,22 @@ type Consultation struct {
 	CreatedAt     pgtype.Timestamp `json:"created_at"`
 }
 
+type Conversation struct {
+	ID        int64            `json:"id"`
+	Type      string           `json:"type"`
+	Name      pgtype.Text      `json:"name"`
+	CreatedAt pgtype.Timestamp `json:"created_at"`
+	UpdatedAt pgtype.Timestamp `json:"updated_at"`
+}
+
+type ConversationParticipant struct {
+	ConversationID int64            `json:"conversation_id"`
+	UserID         int64            `json:"user_id"`
+	JoinedAt       pgtype.Timestamp `json:"joined_at"`
+	LeftAt         pgtype.Timestamp `json:"left_at"`
+	IsAdmin        bool             `json:"is_admin"`
+}
+
 type DeviceToken struct {
 	ID         int64            `json:"id"`
 	Username   string           `json:"username"`
@@ -88,6 +150,18 @@ type Doctor struct {
 	Education         pgtype.Text `json:"education"`
 	CertificateNumber pgtype.Text `json:"certificate_number"`
 	Bio               pgtype.Text `json:"bio"`
+}
+
+type Examination struct {
+	ID               int64            `json:"id"`
+	MedicalHistoryID int64            `json:"medical_history_id"`
+	ExamDate         pgtype.Timestamp `json:"exam_date"`
+	ExamType         string           `json:"exam_type"`
+	Findings         string           `json:"findings"`
+	VetNotes         pgtype.Text      `json:"vet_notes"`
+	DoctorID         int64            `json:"doctor_id"`
+	CreatedAt        pgtype.Timestamp `json:"created_at"`
+	UpdatedAt        pgtype.Timestamp `json:"updated_at"`
 }
 
 type File struct {
@@ -118,20 +192,6 @@ type InvoiceItem struct {
 	Name      string  `json:"name"`
 	Price     float64 `json:"price"`
 	Quantity  int32   `json:"quantity"`
-}
-
-type LeaveRequest struct {
-	ID          int64            `json:"id"`
-	DoctorID    int64            `json:"doctor_id"`
-	StartDate   pgtype.Timestamp `json:"start_date"`
-	EndDate     pgtype.Timestamp `json:"end_date"`
-	LeaveType   string           `json:"leave_type"`
-	Reason      pgtype.Text      `json:"reason"`
-	Status      pgtype.Text      `json:"status"`
-	ReviewedBy  pgtype.Int8      `json:"reviewed_by"`
-	ReviewNotes pgtype.Text      `json:"review_notes"`
-	CreatedAt   pgtype.Timestamp `json:"created_at"`
-	UpdatedAt   pgtype.Timestamp `json:"updated_at"`
 }
 
 type MedicalHistory struct {
@@ -196,6 +256,23 @@ type MedicineTransaction struct {
 	AppointmentID   pgtype.Int8        `json:"appointment_id"`
 	CreatedBy       pgtype.Text        `json:"created_by"`
 	CreatedAt       pgtype.Timestamptz `json:"created_at"`
+}
+
+type Message struct {
+	ID             int64            `json:"id"`
+	ConversationID int64            `json:"conversation_id"`
+	SenderID       int64            `json:"sender_id"`
+	Content        string           `json:"content"`
+	MessageType    string           `json:"message_type"`
+	Metadata       []byte           `json:"metadata"`
+	CreatedAt      pgtype.Timestamp `json:"created_at"`
+	UpdatedAt      pgtype.Timestamp `json:"updated_at"`
+}
+
+type MessageReadStatus struct {
+	MessageID int64            `json:"message_id"`
+	UserID    int64            `json:"user_id"`
+	ReadAt    pgtype.Timestamp `json:"read_at"`
 }
 
 type Notification struct {
@@ -333,18 +410,71 @@ type PhaseMedicine struct {
 	IsReceived pgtype.Bool        `json:"is_received"`
 }
 
+type Prescription struct {
+	ID               int64            `json:"id"`
+	MedicalHistoryID int64            `json:"medical_history_id"`
+	ExaminationID    int64            `json:"examination_id"`
+	PrescriptionDate pgtype.Timestamp `json:"prescription_date"`
+	DoctorID         int64            `json:"doctor_id"`
+	Notes            pgtype.Text      `json:"notes"`
+	CreatedAt        pgtype.Timestamp `json:"created_at"`
+	UpdatedAt        pgtype.Timestamp `json:"updated_at"`
+}
+
+type PrescriptionMedication struct {
+	ID             int64            `json:"id"`
+	PrescriptionID int64            `json:"prescription_id"`
+	MedicineID     int64            `json:"medicine_id"`
+	Dosage         string           `json:"dosage"`
+	Frequency      string           `json:"frequency"`
+	Duration       string           `json:"duration"`
+	Instructions   pgtype.Text      `json:"instructions"`
+	CreatedAt      pgtype.Timestamp `json:"created_at"`
+	UpdatedAt      pgtype.Timestamp `json:"updated_at"`
+}
+
 type Product struct {
-	ProductID     int64            `json:"product_id"`
-	Name          string           `json:"name"`
-	Description   pgtype.Text      `json:"description"`
-	Price         float64          `json:"price"`
-	StockQuantity pgtype.Int4      `json:"stock_quantity"`
-	Category      pgtype.Text      `json:"category"`
-	DataImage     []byte           `json:"data_image"`
-	OriginalImage pgtype.Text      `json:"original_image"`
-	CreatedAt     pgtype.Timestamp `json:"created_at"`
-	IsAvailable   pgtype.Bool      `json:"is_available"`
-	RemovedAt     pgtype.Timestamp `json:"removed_at"`
+	ProductID      int64            `json:"product_id"`
+	Name           string           `json:"name"`
+	Description    pgtype.Text      `json:"description"`
+	Price          float64          `json:"price"`
+	StockQuantity  pgtype.Int4      `json:"stock_quantity"`
+	Category       pgtype.Text      `json:"category"`
+	DataImage      []byte           `json:"data_image"`
+	OriginalImage  pgtype.Text      `json:"original_image"`
+	CreatedAt      pgtype.Timestamp `json:"created_at"`
+	IsAvailable    pgtype.Bool      `json:"is_available"`
+	UpdatedAt      pgtype.Timestamp `json:"updated_at"`
+	RemovedAt      pgtype.Timestamp `json:"removed_at"`
+	ExpirationDate pgtype.Date      `json:"expiration_date"`
+	ReorderLevel   pgtype.Int4      `json:"reorder_level"`
+	SupplierID     pgtype.Int8      `json:"supplier_id"`
+}
+
+type ProductStockMovement struct {
+	MovementID   int64            `json:"movement_id"`
+	ProductID    int64            `json:"product_id"`
+	MovementType MovementTypeEnum `json:"movement_type"`
+	Quantity     int32            `json:"quantity"`
+	Reason       pgtype.Text      `json:"reason"`
+	MovementDate time.Time        `json:"movement_date"`
+	Price        pgtype.Numeric   `json:"price"`
+}
+
+type ProductTransaction struct {
+	ID              int64              `json:"id"`
+	ProductID       int64              `json:"product_id"`
+	Quantity        int64              `json:"quantity"`
+	TransactionType string             `json:"transaction_type"`
+	UnitPrice       pgtype.Float8      `json:"unit_price"`
+	TotalAmount     pgtype.Float8      `json:"total_amount"`
+	TransactionDate pgtype.Timestamptz `json:"transaction_date"`
+	SupplierID      pgtype.Int8        `json:"supplier_id"`
+	ExpirationDate  pgtype.Date        `json:"expiration_date"`
+	Notes           pgtype.Text        `json:"notes"`
+	OrderID         pgtype.Int8        `json:"order_id"`
+	CreatedBy       pgtype.Text        `json:"created_by"`
+	CreatedAt       pgtype.Timestamptz `json:"created_at"`
 }
 
 type Room struct {
@@ -435,6 +565,20 @@ type TestOrder struct {
 	Notes         pgtype.Text        `json:"notes"`
 	CreatedAt     pgtype.Timestamptz `json:"created_at"`
 	UpdatedAt     pgtype.Timestamptz `json:"updated_at"`
+}
+
+type TestResult struct {
+	ID               int64            `json:"id"`
+	MedicalHistoryID int64            `json:"medical_history_id"`
+	ExaminationID    int64            `json:"examination_id"`
+	TestType         string           `json:"test_type"`
+	TestDate         pgtype.Timestamp `json:"test_date"`
+	Results          string           `json:"results"`
+	Interpretation   pgtype.Text      `json:"interpretation"`
+	FileUrl          pgtype.Text      `json:"file_url"`
+	DoctorID         int64            `json:"doctor_id"`
+	CreatedAt        pgtype.Timestamp `json:"created_at"`
+	UpdatedAt        pgtype.Timestamp `json:"updated_at"`
 }
 
 type TimeSlot struct {

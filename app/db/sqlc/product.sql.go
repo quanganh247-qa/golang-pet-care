@@ -12,7 +12,7 @@ import (
 )
 
 const getAllProducts = `-- name: GetAllProducts :many
-SELECT product_id, name, description, price, stock_quantity, category, data_image, original_image, created_at, is_available, removed_at from Products  ORDER BY name  LIMIT $1 OFFSET $2
+SELECT product_id, name, description, price, stock_quantity, category, data_image, original_image, created_at, is_available, updated_at, removed_at, expiration_date, reorder_level, supplier_id from Products  ORDER BY name  LIMIT $1 OFFSET $2
 `
 
 type GetAllProductsParams struct {
@@ -40,7 +40,11 @@ func (q *Queries) GetAllProducts(ctx context.Context, arg GetAllProductsParams) 
 			&i.OriginalImage,
 			&i.CreatedAt,
 			&i.IsAvailable,
+			&i.UpdatedAt,
 			&i.RemovedAt,
+			&i.ExpirationDate,
+			&i.ReorderLevel,
+			&i.SupplierID,
 		); err != nil {
 			return nil, err
 		}
@@ -53,7 +57,7 @@ func (q *Queries) GetAllProducts(ctx context.Context, arg GetAllProductsParams) 
 }
 
 const getProductByID = `-- name: GetProductByID :one
-SELECT product_id, name, description, price, stock_quantity, category, data_image, original_image, created_at, is_available, removed_at from Products where product_id = $1
+SELECT product_id, name, description, price, stock_quantity, category, data_image, original_image, created_at, is_available, updated_at, removed_at, expiration_date, reorder_level, supplier_id from Products where product_id = $1
 `
 
 func (q *Queries) GetProductByID(ctx context.Context, productID int64) (Product, error) {
@@ -70,14 +74,45 @@ func (q *Queries) GetProductByID(ctx context.Context, productID int64) (Product,
 		&i.OriginalImage,
 		&i.CreatedAt,
 		&i.IsAvailable,
+		&i.UpdatedAt,
 		&i.RemovedAt,
+		&i.ExpirationDate,
+		&i.ReorderLevel,
+		&i.SupplierID,
+	)
+	return i, err
+}
+
+const getProductByIDForUpdate = `-- name: GetProductByIDForUpdate :one
+SELECT product_id, name, description, price, stock_quantity, category, data_image, original_image, created_at, is_available, updated_at, removed_at, expiration_date, reorder_level, supplier_id from Products where product_id = $1 FOR NO KEY UPDATE
+`
+
+func (q *Queries) GetProductByIDForUpdate(ctx context.Context, productID int64) (Product, error) {
+	row := q.db.QueryRow(ctx, getProductByIDForUpdate, productID)
+	var i Product
+	err := row.Scan(
+		&i.ProductID,
+		&i.Name,
+		&i.Description,
+		&i.Price,
+		&i.StockQuantity,
+		&i.Category,
+		&i.DataImage,
+		&i.OriginalImage,
+		&i.CreatedAt,
+		&i.IsAvailable,
+		&i.UpdatedAt,
+		&i.RemovedAt,
+		&i.ExpirationDate,
+		&i.ReorderLevel,
+		&i.SupplierID,
 	)
 	return i, err
 }
 
 const insertProduct = `-- name: InsertProduct :one
 INSERT INTO Products (name, description, price, category, stock_quantity,data_image,original_image,created_at,is_available) 
-VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING product_id, name, description, price, stock_quantity, category, data_image, original_image, created_at, is_available, removed_at
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING product_id, name, description, price, stock_quantity, category, data_image, original_image, created_at, is_available, updated_at, removed_at, expiration_date, reorder_level, supplier_id
 `
 
 type InsertProductParams struct {
@@ -116,7 +151,47 @@ func (q *Queries) InsertProduct(ctx context.Context, arg InsertProductParams) (P
 		&i.OriginalImage,
 		&i.CreatedAt,
 		&i.IsAvailable,
+		&i.UpdatedAt,
 		&i.RemovedAt,
+		&i.ExpirationDate,
+		&i.ReorderLevel,
+		&i.SupplierID,
+	)
+	return i, err
+}
+
+const updateProductStock = `-- name: UpdateProductStock :one
+UPDATE Products
+SET stock_quantity = $2,
+    updated_at = CURRENT_TIMESTAMP
+WHERE product_id = $1
+RETURNING product_id, name, description, price, stock_quantity, category, data_image, original_image, created_at, is_available, updated_at, removed_at, expiration_date, reorder_level, supplier_id
+`
+
+type UpdateProductStockParams struct {
+	ProductID     int64       `json:"product_id"`
+	StockQuantity pgtype.Int4 `json:"stock_quantity"`
+}
+
+func (q *Queries) UpdateProductStock(ctx context.Context, arg UpdateProductStockParams) (Product, error) {
+	row := q.db.QueryRow(ctx, updateProductStock, arg.ProductID, arg.StockQuantity)
+	var i Product
+	err := row.Scan(
+		&i.ProductID,
+		&i.Name,
+		&i.Description,
+		&i.Price,
+		&i.StockQuantity,
+		&i.Category,
+		&i.DataImage,
+		&i.OriginalImage,
+		&i.CreatedAt,
+		&i.IsAvailable,
+		&i.UpdatedAt,
+		&i.RemovedAt,
+		&i.ExpirationDate,
+		&i.ReorderLevel,
+		&i.SupplierID,
 	)
 	return i, err
 }

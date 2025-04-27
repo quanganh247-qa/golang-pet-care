@@ -253,6 +253,11 @@ func (c *ClientType) ProductsListLoadCache(page int32, pageSize int32) ([]Produc
 	return productsList, nil
 }
 
+func (client *ClientType) RemoveProductListCache(page int32, pageSize int32) {
+	listKey := fmt.Sprintf("%s:list:%d:%d", PRODUCT_INFO_KEY, page, pageSize)
+	client.RemoveCacheByKey(listKey)
+}
+
 // PetLogInfo is a simplified structure for caching pet logs
 type PetLogInfo struct {
 	LogID    int64     `json:"log_id"`

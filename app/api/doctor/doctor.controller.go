@@ -4,10 +4,8 @@ import (
 	"errors"
 	"net/http"
 	"strconv"
-	"time"
 
 	"github.com/gin-gonic/gin"
-	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
 	"github.com/quanganh247-qa/go-blog-be/app/middleware"
 	"github.com/quanganh247-qa/go-blog-be/app/util"
 )
@@ -21,11 +19,6 @@ type DoctorControllerInterface interface {
 	createShift(ctx *gin.Context)
 	getShiftByDoctorId(ctx *gin.Context)
 	getDoctorById(ctx *gin.Context)
-	createLeaveRequest(ctx *gin.Context)
-	getLeaveRequests(ctx *gin.Context)
-	updateLeaveRequest(ctx *gin.Context)
-	getDoctorAttendance(ctx *gin.Context)
-	getDoctorWorkload(ctx *gin.Context)
 }
 
 func (c *DoctorController) loginDoctor(ctx *gin.Context) {
@@ -146,143 +139,4 @@ func (c *DoctorController) getDoctorById(ctx *gin.Context) {
 		return
 	}
 	ctx.JSON(http.StatusOK, util.SuccessResponse("Success", res))
-}
-
-func (c *DoctorController) createLeaveRequest(ctx *gin.Context) {
-	// Get doctor ID from params
-	doctorIDStr := ctx.Param("doctor_id")
-	doctorID, err := strconv.ParseInt(doctorIDStr, 10, 64)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
-		return
-	}
-
-	var req CreateLeaveRequest
-	if err := ctx.ShouldBindJSON(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, util.ErrorValidator(err))
-		return
-	}
-
-	leave, err := c.service.CreateLeaveRequest(ctx, doctorID, req)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, util.ErrorResponse(err))
-		return
-	}
-
-	ctx.JSON(http.StatusCreated, util.SuccessResponse("leave request created successfully", leave))
-}
-
-func (c *DoctorController) getLeaveRequests(ctx *gin.Context) {
-	doctorIDStr := ctx.Param("doctor_id")
-	doctorID, err := strconv.ParseInt(doctorIDStr, 10, 64)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
-		return
-	}
-
-	page, _ := strconv.Atoi(ctx.DefaultQuery("page", "1"))
-	pageSize, _ := strconv.Atoi(ctx.DefaultQuery("page_size", "10"))
-
-	leaves, err := c.service.GetLeaveRequests(ctx, doctorID, page, pageSize)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, util.ErrorResponse(err))
-		return
-	}
-
-	ctx.JSON(http.StatusOK, util.SuccessResponse("leave requests retrieved successfully", leaves))
-}
-
-func (c *DoctorController) updateLeaveRequest(ctx *gin.Context) {
-	leaveIDStr := ctx.Param("leave_id")
-	leaveID, err := strconv.ParseInt(leaveIDStr, 10, 64)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
-		return
-	}
-
-	// Get reviewer info from auth token
-	authPayload, err := middleware.GetAuthorizationPayload(ctx)
-	if err != nil {
-		ctx.JSON(http.StatusUnauthorized, util.ErrorResponse(err))
-		return
-	}
-
-	var req UpdateLeaveRequest
-	if err := ctx.ShouldBindJSON(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, util.ErrorValidator(err))
-		return
-	}
-
-	// Get reviewer's user ID
-	user, err := db.StoreDB.GetUser(ctx, authPayload.Username)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, util.ErrorResponse(err))
-		return
-	}
-
-	err = c.service.UpdateLeaveRequest(ctx, leaveID, user.ID, req)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, util.ErrorResponse(err))
-		return
-	}
-
-	ctx.JSON(http.StatusOK, util.SuccessResponse("leave request updated successfully", nil))
-}
-
-func (c *DoctorController) getDoctorAttendance(ctx *gin.Context) {
-	doctorIDStr := ctx.Param("doctor_id")
-	doctorID, err := strconv.ParseInt(doctorIDStr, 10, 64)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
-		return
-	}
-
-	startDate, err := time.Parse("2006-01-02", ctx.Query("start_date"))
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(errors.New("invalid start_date format")))
-		return
-	}
-
-	endDate, err := time.Parse("2006-01-02", ctx.Query("end_date"))
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(errors.New("invalid end_date format")))
-		return
-	}
-
-	attendance, err := c.service.GetDoctorAttendance(ctx, doctorID, startDate, endDate)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, util.ErrorResponse(err))
-		return
-	}
-
-	ctx.JSON(http.StatusOK, util.SuccessResponse("attendance records retrieved successfully", attendance))
-}
-
-func (c *DoctorController) getDoctorWorkload(ctx *gin.Context) {
-	doctorIDStr := ctx.Param("doctor_id")
-	doctorID, err := strconv.ParseInt(doctorIDStr, 10, 64)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
-		return
-	}
-
-	startDate, err := time.Parse("2006-01-02", ctx.Query("start_date"))
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(errors.New("invalid start_date format")))
-		return
-	}
-
-	endDate, err := time.Parse("2006-01-02", ctx.Query("end_date"))
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(errors.New("invalid end_date format")))
-		return
-	}
-
-	workload, err := c.service.GetDoctorWorkload(ctx, doctorID, startDate, endDate)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, util.ErrorResponse(err))
-		return
-	}
-
-	ctx.JSON(http.StatusOK, util.SuccessResponse("workload metrics retrieved successfully", workload))
 }

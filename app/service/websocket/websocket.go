@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -74,12 +75,12 @@ func (manager *WSClientManager) Run() {
 
 		case message := <-manager.broadcast:
 			manager.mutex.Lock()
-			for _, client := range manager.clientsMap {
+			for clientID, client := range manager.clientsMap {
 				select {
 				case client.send <- message:
 				default:
 					close(client.send)
-					delete(manager.clientsMap, client.clientID)
+					delete(manager.clientsMap, clientID)
 				}
 			}
 			manager.mutex.Unlock()
@@ -94,6 +95,10 @@ type WebSocketMessage struct {
 	ID        string      `json:"id,omitempty"`
 	PatientID string      `json:"patientId,omitempty"`
 	Message   string      `json:"message,omitempty"`
+	// Chat-specific fields
+	ConversationID int64  `json:"conversationId,omitempty"`
+	Action         string `json:"action,omitempty"`    // For chat: "send", "read", "typing"
+	MessageID      int64  `json:"messageId,omitempty"` // For referencing specific messages
 }
 
 var upgrader = websocket.Upgrader{
@@ -103,6 +108,17 @@ var upgrader = websocket.Upgrader{
 	CheckOrigin: func(r *http.Request) bool {
 		return true
 	},
+}
+
+// MessageTypeHandler is a function that handles a specific type of WebSocket message
+type MessageTypeHandler func(message WebSocketMessage, clientID string, userID int64)
+
+// messageHandlers stores registered handlers for message types
+var messageHandlers = make(map[string]MessageTypeHandler)
+
+// RegisterMessageTypeHandler registers a handler for a specific message type
+func (manager *WSClientManager) RegisterMessageTypeHandler(messageType string, handler MessageTypeHandler) {
+	messageHandlers[messageType] = handler
 }
 
 // BroadcastToAll sends a message to all connected clients
@@ -155,15 +171,15 @@ func (manager *WSClientManager) BroadcastNotification(notification db.Notificati
 
 // HandleWebSocket handles WebSocket connections
 func (manager *WSClientManager) HandleWebSocket(c *gin.Context) {
-	// Get client ID from query parameters
-	clientID := c.Request.URL.Query().Get("clientId")
+	// // Get client ID from query parameters
+	// clientID := c.Request.URL.Query().Get("clientId")
+	// if clientID == "" {
+	// Try from header (set by middleware)
+	clientID := c.Request.Header.Get("X-Client-ID")
 	if clientID == "" {
-		// Try from header (set by middleware)
-		clientID = c.Request.Header.Get("X-Client-ID")
-		if clientID == "" {
-			clientID = time.Now().String() // Use timestamp as fallback ID
-		}
+		clientID = time.Now().String() // Use timestamp as fallback ID
 	}
+	// }
 
 	// Get username if available
 	var username string
@@ -215,7 +231,6 @@ func (manager *WSClientManager) HandleWebSocket(c *gin.Context) {
 
 	// Mark the client as successfully authenticated if we have username
 	if username != "" {
-		log.Printf("WebSocket client %s authenticated as %s", clientID, username)
 		client.isAuthSuccess = true
 
 		// Deliver any pending messages
@@ -227,7 +242,6 @@ func (manager *WSClientManager) HandleWebSocket(c *gin.Context) {
 func (manager *WSClientManager) SendToClient(clientID string, message interface{}) bool {
 	data, err := json.Marshal(message)
 	if err != nil {
-		log.Printf("Error marshaling message: %v", err)
 		return false
 	}
 
@@ -236,7 +250,6 @@ func (manager *WSClientManager) SendToClient(clientID string, message interface{
 
 	client, ok := manager.clientsMap[clientID]
 	if !ok {
-		log.Printf("Client not found: %s", clientID)
 		return false
 	}
 
@@ -244,7 +257,6 @@ func (manager *WSClientManager) SendToClient(clientID string, message interface{
 	case client.send <- data:
 		return true
 	default:
-		log.Printf("Client channel full, closing connection: %s", clientID)
 		close(client.send)
 		delete(manager.clientsMap, clientID)
 		return false
@@ -357,6 +369,32 @@ func (client *WSClient) readPump(manager *WSClientManager) {
 				client.sendJSON(WebSocketMessage{
 					Type: "pong",
 				})
+				continue
+			}
+
+			// Extract user ID from client ID if it exists
+			var userID int64 = 0
+			if strings.HasPrefix(client.clientID, "user_") {
+				// Find user details from username
+				if client.username != "" {
+					// In a real implementation, you'd look up the user's ID
+					// This is simplified for now
+					// You could add a new method to store to get user ID by username
+					// userID = getUserIDFromUsername(client.username)
+				}
+			} else if strings.HasPrefix(client.clientID, "doctor_") {
+				doctorIDStr := strings.TrimPrefix(client.clientID, "doctor_")
+				if doctorID, err := strconv.ParseInt(doctorIDStr, 10, 64); err == nil {
+					userID = doctorID
+				}
+			}
+
+			// Check if we have a handler for this message type
+			if handler, ok := messageHandlers[wsMessage.Type]; ok {
+				// Call the handler with the message
+				handler(wsMessage, client.clientID, userID)
+			} else {
+				log.Printf("No handler registered for message type: %s", wsMessage.Type)
 			}
 		}
 	}
