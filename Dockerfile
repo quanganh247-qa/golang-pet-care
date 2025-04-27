@@ -20,6 +20,8 @@ RUN CGO_ENABLED=0 GOOS=linux go build -o main .
 FROM alpine:latest
 
 LABEL description="Pet Care Service Backend"
+LABEL maintainer="Dinh Huu Quang Anh"
+LABEL version="1.0.0"
 
 WORKDIR /app
 
