@@ -35,7 +35,7 @@ jobs:
           
           HTTP_SERVER_ADDRESS=:8088
           
-          SYMMETRIC_KEY=${{ secrets.SYMMETRIC_KEY || '12345678901234567890123456789012' }}
+          SYMMETRIC_KEY=${{ secrets.SYMMETRIC_KEY }}
           ACCESS_TOKEN_DURATION=168h
           REFRESH_TOKEN_DURATION=168h
           
