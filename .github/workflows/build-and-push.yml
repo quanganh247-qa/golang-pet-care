@@ -1,0 +1,48 @@
+name: Build and Push to Docker Registry
+
+on:
+  push:
+    branches: [feature/golang]
+    paths:
+      - 'app/**'
+      - 'docs/**'
+      - go.mod
+      - go.sum
+      - Makefile
+      - Dockerfile
+      - '.github/**'
+      - main.go        # Your application entry point
+      - sqlc.yaml      # SQL generation config
+      - docker-compose.yml  # Docker composition that might affect container behavior
+      - .dockerignore  # Affects Docker build context
+
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out code.
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          ref: ${{ github.event.workflow_run.branch }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Docker registry
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USN }}
+          password: ${{ secrets.DOCKERHUB_PWD }}
+
+      - name: Build and push image
+        uses: docker/build-push-action@v5
+        with:
+          context: .  # Path to your Dockerfile
+          file: ./Dockerfile
+          tags: |
+            huuquanganhdinh573/go-pet-care:${{ github.sha }}
+            huuquanganhdinh573/go-pet-care:latest
+          push: true

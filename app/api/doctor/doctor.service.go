@@ -207,6 +207,11 @@ func (service *DoctorService) GetShifts(ctx *gin.Context) ([]Shift, error) {
 			fmt.Println("Error parsing time:", err)
 		}
 
+		doctor, err := service.storeDB.GetDoctor(ctx, s.DoctorID)
+		if err != nil {
+			return nil, fmt.Errorf("failed to get doctor: %w", err)
+		}
+
 		shiftList = append(shiftList, Shift{
 			ID:               s.ID,
 			StartTime:        parsedTime,
@@ -214,6 +219,7 @@ func (service *DoctorService) GetShifts(ctx *gin.Context) ([]Shift, error) {
 			AssignedPatients: s.AssignedPatients.Int32,
 			CreatedAt:        s.CreatedAt.Time,
 			DoctorID:         s.DoctorID,
+			DoctorName:       doctor.Name,
 		})
 	}
 	return shiftList, nil
@@ -247,12 +253,17 @@ func (service *DoctorService) GetShiftByDoctorId(ctx *gin.Context, doctorId int6
 	}
 	shiftList := make([]ShiftResponse, 0)
 	for _, s := range shifts {
+		doctor, err := service.storeDB.GetDoctor(ctx, s.DoctorID)
+		if err != nil {
+			return nil, fmt.Errorf("failed to get doctor: %w", err)
+		}
 		shiftList = append(shiftList, ShiftResponse{
 			ID:               s.ID,
 			StartTime:        s.StartTime.Time.Format("2006-01-02 15:04:05"),
 			EndTime:          s.EndTime.Time.Format("2006-01-02 15:04:05"),
 			AssignedPatients: s.AssignedPatients.Int32,
 			DoctorID:         s.DoctorID,
+			DoctorName:       doctor.Name,
 		})
 	}
 	return shiftList, nil

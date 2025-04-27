@@ -1,59 +1,59 @@
-services:
-  redis:
-    image: redis:7-alpine
-    ports:
-      - "6379:6379"
-    volumes:
-      - redis_data:/data
+# services:
+#   redis:
+#     image: redis:7-alpine
+#     ports:
+#       - "6379:6379"
+#     volumes:
+#       - redis_data:/data
 
-  # elasticsearch:
-  #   image: elasticsearch:8.12.0
-  #   environment:
-  #     - discovery.type=single-node
-  #     - xpack.security.enabled=false
-  #     - ES_JAVA_OPTS=-Xms512m -Xmx512m # Optional: limit memory usage
-  #   ports:
-  #     - "9200:9200"
-  #   volumes:
-  #     - elasticsearch_data:/usr/share/elasticsearch/data
-  #   healthcheck: # Ensure readiness
-  #     test: ["CMD", "curl", "-f", "http://localhost:9200"]
-  #     interval: 10s
-  #     timeout: 5s
-  #     retries: 5
+#   # elasticsearch:
+#   #   image: elasticsearch:8.12.0
+#   #   environment:
+#   #     - discovery.type=single-node
+#   #     - xpack.security.enabled=false
+#   #     - ES_JAVA_OPTS=-Xms512m -Xmx512m # Optional: limit memory usage
+#   #   ports:
+#   #     - "9200:9200"
+#   #   volumes:
+#   #     - elasticsearch_data:/usr/share/elasticsearch/data
+#   #   healthcheck: # Ensure readiness
+#   #     test: ["CMD", "curl", "-f", "http://localhost:9200"]
+#   #     interval: 10s
+#   #     timeout: 5s
+#   #     retries: 5
 
-  # minio:
-  #   image: minio/minio:latest
-  #   ports:
-  #     - "9000:9000"
-  #     - "9001:9001" # Add console UI port
-  #   environment:
-  #     MINIO_ROOT_USER: ${MINIO_ACCESS_KEY:-1View}
-  #     MINIO_ROOT_PASSWORD: ${MINIO_SECRET_KEY:-12345678}
-  #   volumes:
-  #     - minio_data:/data
-  #   command: server /data --console-address ":9001" # Enable console UI
+#   # minio:
+#   #   image: minio/minio:latest
+#   #   ports:
+#   #     - "9000:9000"
+#   #     - "9001:9001" # Add console UI port
+#   #   environment:
+#   #     MINIO_ROOT_USER: ${MINIO_ACCESS_KEY:-1View}
+#   #     MINIO_ROOT_PASSWORD: ${MINIO_SECRET_KEY:-12345678}
+#   #   volumes:
+#   #     - minio_data:/data
+#   #   command: server /data --console-address ":9001" # Enable console UI
 
-  app:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    ports:
-      - "8088:8088"
-    environment:
-      - DATABASE_URL=${DATABASE_URL:-postgresql://postgres.prmzavhkqqthcwdnrkgt:postgres@aws-0-ap-southeast-1.pooler.supabase.com:5432/postgres} # Use .env file
-      - REDIS_ADDRESS=redis:6379
-      - ELASTICSEARCH_URL=http://elasticsearch:9200
-      - MINIO_ENDPOINT=minio:9000
-    depends_on:
-      # elasticsearch:
-      #   condition: service_healthy # Wait for Elasticsearch to be ready
-      redis:
-        condition: service_started
-      # minio:
-      #   condition: service_started
+#   app:
+#     build:
+#       context: .
+#       dockerfile: Dockerfile
+#     ports:
+#       - "8088:8088"
+#     environment:
+#       - DATABASE_URL=${DATABASE_URL:-postgresql://postgres.prmzavhkqqthcwdnrkgt:postgres@aws-0-ap-southeast-1.pooler.supabase.com:5432/postgres} # Use .env file
+#       - REDIS_ADDRESS=redis:6379
+#       - ELASTICSEARCH_URL=http://elasticsearch:9200
+#       - MINIO_ENDPOINT=minio:9000
+#     depends_on:
+#       # elasticsearch:
+#       #   condition: service_healthy # Wait for Elasticsearch to be ready
+#       redis:
+#         condition: service_started
+#       # minio:
+#       #   condition: service_started
 
-volumes:
-  redis_data:
-  # elasticsearch_data:
-  # minio_data:
+# volumes:
+#   redis_data:
+#   # elasticsearch_data:
+#   # minio_data:

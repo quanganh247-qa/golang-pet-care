@@ -99,6 +99,7 @@ type Shift struct {
 	AssignedPatients int32     `json:"assigned_patients"`
 	CreatedAt        time.Time `json:"created_at"`
 	DoctorID         int64     `json:"doctor_id"`
+	DoctorName       string    `json:"doctor_name"`
 }
 
 type ShiftResponse struct {
@@ -107,6 +108,7 @@ type ShiftResponse struct {
 	EndTime          string `json:"end_time"`
 	AssignedPatients int32  `json:"assigned_patients"`
 	DoctorID         int64  `json:"doctor_id"`
+	DoctorName       string `json:"doctor_name"`
 }
 
 type CreateShiftRequest struct {
