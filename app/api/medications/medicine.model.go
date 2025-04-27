@@ -2,7 +2,6 @@ package medications
 
 import (
 	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
-	"github.com/quanganh247-qa/go-blog-be/app/service/elasticsearch"
 	"github.com/quanganh247-qa/go-blog-be/app/service/websocket"
 	"github.com/quanganh247-qa/go-blog-be/app/service/worker"
 )
@@ -17,7 +16,6 @@ type MedicineController struct {
 
 type MedicineService struct {
 	storeDB         db.Store
-	es              *elasticsearch.ESService
 	ws              *websocket.WSClientManager
 	taskDistributor worker.TaskDistributor
 }

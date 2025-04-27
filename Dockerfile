@@ -28,7 +28,8 @@ RUN apk add --no-cache ca-certificates tzdata
 
 # Copy binary and config
 COPY --from=builder /app/main .
-COPY --from=builder /app/app.env .
+# COPY --from=builder /app/app.env .
+COPY --from=builder /app/.env.example ./app.env
 COPY --from=builder /app/app/db/migration ./migration
 
 # Expose port

@@ -28,6 +28,44 @@ jobs:
           fetch-depth: 1
           ref: ${{ github.event.workflow_run.branch }}
 
+      - name: Create app.env from secrets
+        run: |
+          cat > app.env << EOF
+          DATABASE_URL=${{ secrets.DATABASE_URL }}
+          
+          HTTP_SERVER_ADDRESS=:8088
+          
+          SYMMETRIC_KEY=${{ secrets.SYMMETRIC_KEY || '12345678901234567890123456789012' }}
+          ACCESS_TOKEN_DURATION=168h
+          REFRESH_TOKEN_DURATION=168h
+          
+          ACCESS_CONTROL_ALLOW_ORIGIN=*
+          
+          API_PREFIX=/api/v1
+          
+          REGEX_IGNORE_LOGGING=^\/api\/v1\/(monitor\/.*|common\/file.*|swagger\/.*)
+          
+          COOKIE_SAME_SITE=LAX
+          COOKIE_SECURE=false
+          COOKIE_USE_HOST=false
+          
+          GOONG_API_KEY=${{ secrets.GOONG_API_KEY }}
+          GOONG_BASE_URL=https://rsapi.goong.io
+          GOONG_API_KEY_MAP=${{ secrets.GOONG_API_KEY_MAP }}
+          
+          VIETQR_API_KEY=${{ secrets.VIETQR_API_KEY }}
+          VIETQR_CLIENT_KEY=${{ secrets.VIETQR_CLIENT_KEY }}
+          VIETQR_BASE_URL=https://api.vietqr.io/v2
+          
+          GOOGLE_API_KEY=${{ secrets.GOOGLE_API_KEY }}
+          OPENFDA_API_KEY=${{ secrets.OPENFDA_API_KEY }}
+          
+          REDIS_ADDRESS=${{ secrets.REDIS_ADDRESS }}
+        
+          OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}
+          ROBOFLOW_API_KEY=${{ secrets.ROBOFLOW_API_KEY }}
+          EOF
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 

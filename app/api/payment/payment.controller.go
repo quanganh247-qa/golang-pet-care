@@ -12,14 +12,6 @@ type PaymentControllerInterface interface {
 	GetBanks(c *gin.Context)
 	GenerateQRCode(c *gin.Context)
 
-	CreatePayPalOrder(c *gin.Context)
-	CapturePayPalOrder(c *gin.Context)
-	GetOrderDetails(c *gin.Context)
-	UpdateOrder(c *gin.Context)
-	TrackOrder(c *gin.Context)
-
-	CreatePayOSLink(c *gin.Context)
-
 	GetRevenueLastSevenDays(ctx *gin.Context)
 
 	// Add this new method
@@ -60,113 +52,6 @@ func (c *PaymentController) GenerateQRCode(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, result)
-}
-
-func (c *PaymentController) CreatePayPalOrder(ctx *gin.Context) {
-	var orderRequest OrderRequest
-	if err := ctx.ShouldBindJSON(&orderRequest); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	// Get PayPal access token
-	accessToken, err := c.service.getPayPalAccessToken()
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get PayPal access token: " + err.Error()})
-		return
-	}
-
-	result, err := c.service.createPayPalOrder(accessToken, orderRequest)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	ctx.JSON(http.StatusOK, result)
-}
-
-func (c *PaymentController) CapturePayPalOrder(ctx *gin.Context) {
-	orderID := ctx.Param("orderID")
-	accessToken, err := c.service.getPayPalAccessToken()
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get PayPal access token: " + err.Error()})
-		return
-	}
-	result, err := c.service.capturePayPalOrder(accessToken, orderID)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	ctx.JSON(http.StatusOK, result)
-}
-
-func (c *PaymentController) GetOrderDetails(ctx *gin.Context) {
-	orderID := ctx.Param("orderID")
-	accessToken, err := c.service.getPayPalAccessToken()
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get PayPal access token: " + err.Error()})
-		return
-	}
-	result, err := c.service.getOrderDetails(accessToken, orderID)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	ctx.JSON(http.StatusOK, result)
-}
-
-func (c *PaymentController) UpdateOrder(ctx *gin.Context) {
-	orderID := ctx.Param("orderID")
-	accessToken, err := c.service.getPayPalAccessToken()
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get PayPal access token: " + err.Error()})
-		return
-	}
-	var updates []OrderUpdateRequest
-	if err := ctx.ShouldBindJSON(&updates); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	result, err := c.service.updateOrder(accessToken, orderID, updates)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	ctx.JSON(http.StatusOK, result)
-}
-
-func (c *PaymentController) TrackOrder(ctx *gin.Context) {
-	orderID := ctx.Param("orderID")
-	accessToken, err := c.service.getPayPalAccessToken()
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get PayPal access token: " + err.Error()})
-		return
-	}
-	result, err := c.service.trackOrder(accessToken, orderID)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	ctx.JSON(http.StatusOK, result)
-}
-
-func (c *PaymentController) CreatePayOSLink(ctx *gin.Context) {
-	var orderRequest CreatePaymentLinkRequest
-	if err := ctx.ShouldBindJSON(&orderRequest); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-	result, err := c.service.createPaymentLink(ctx, orderRequest)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
 	ctx.JSON(http.StatusOK, result)
 }
 

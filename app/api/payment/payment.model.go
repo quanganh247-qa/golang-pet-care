@@ -12,15 +12,6 @@ type PaymentConfig struct {
 	VietQRAPIKey    string
 	VietQRClientKey string
 	VietQRBaseURL   string
-
-	PayPalClientID     string
-	PayPalClientSecret string
-	PayPalBaseURL      string
-	PayPalEnvironment  string
-
-	PayOSAPIKey     string
-	PayOSClientKey  string
-	PayOSChecsumKey string
 }
 
 // GoongService handles interactions with VierQR Maps API

@@ -5,7 +5,6 @@ import (
 
 	"github.com/lib/pq"
 	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
-	"github.com/quanganh247-qa/go-blog-be/app/service/elasticsearch"
 	"github.com/quanganh247-qa/go-blog-be/app/service/llm"
 )
 
@@ -44,7 +43,6 @@ type DiseaseController struct {
 
 type DiseaseService struct {
 	storeDB db.Store
-	es      *elasticsearch.ESService
 }
 
 // DiseaseMedicineInfo holds the disease and associated medicine information.
