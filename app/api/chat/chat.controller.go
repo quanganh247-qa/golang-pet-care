@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/quanganh247-qa/go-blog-be/app/middleware"
@@ -372,5 +373,17 @@ func (c *ChatController) HandleWebSocketChat(ctx *gin.Context) {
 	ctx.Set("userID", userID)
 
 	// Pass to the WebSocket handler
+	c.service.wsManager.HandleWebSocket(ctx)
+}
+
+// HandleWebSocketConnection handles a single WebSocket connection without token auth
+// Client will need to authenticate by sending an 'authenticate' message after connecting
+func (c *ChatController) HandleWebSocketConnection(ctx *gin.Context) {
+	// Generate a temporary client ID
+	tempClientID := fmt.Sprintf("temp_%d", time.Now().UnixNano())
+	ctx.Request.Header.Set("X-Client-ID", tempClientID)
+
+	// Pass to the WebSocket handler without authentication
+	// Client will be required to authenticate via WebSocket message
 	c.service.wsManager.HandleWebSocket(ctx)
 }

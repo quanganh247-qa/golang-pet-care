@@ -177,3 +177,17 @@ type MedicalHistorySummary struct {
 	Conditions    []MedicalHistoryResponse `json:"conditions"`
 	Allergies     []Allergy                `json:"allergies"`
 }
+
+type SoapNoteResponse struct {
+	ID               int64  `json:"id"`
+	PetID            int64  `json:"pet_id"`
+	Subjective       string `json:"subjective"`
+	Objective        string `json:"objective"`
+	Assessment       string `json:"assessment"`
+	Plan             string `json:"plan"`
+	DoctorID         int64  `json:"doctor_id"`
+	DoctorName       string `json:"doctor_name"`
+	ConsultationDate string `json:"consultation_date"`
+	CreatedAt        string `json:"created_at"`
+	UpdatedAt        string `json:"updated_at"`
+}

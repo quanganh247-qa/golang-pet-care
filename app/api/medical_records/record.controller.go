@@ -30,6 +30,9 @@ type MedicalRecordControllerInterface interface {
 	ListTestResults(ctx *gin.Context)
 
 	GetCompleteMedicalHistory(ctx *gin.Context)
+
+	// New method for SOAP notes
+	GetAllSoapNotes(ctx *gin.Context)
 }
 
 func (c *MedicalRecordController) CreateMedicalRecord(ctx *gin.Context) {
@@ -394,4 +397,21 @@ func (c *MedicalRecordController) GetCompleteMedicalHistory(ctx *gin.Context) {
 		return
 	}
 	ctx.JSON(http.StatusOK, util.SuccessResponse("Medical History", res))
+}
+
+// New controller method for SOAP notes
+func (c *MedicalRecordController) GetAllSoapNotes(ctx *gin.Context) {
+	petID := ctx.Param("pet_id")
+	id, err := strconv.ParseInt(petID, 10, 64)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
+		return
+	}
+
+	res, err := c.service.GetAllSoapNotesByPetID(ctx, id)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	ctx.JSON(http.StatusOK, util.SuccessResponse("SOAP Notes", res))
 }

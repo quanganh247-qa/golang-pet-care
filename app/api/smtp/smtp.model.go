@@ -43,12 +43,13 @@ type SetDefaultSMTPConfigRequest struct {
 
 // TestSMTPConfigRequest đại diện cho yêu cầu kiểm tra cấu hình SMTP
 type TestSMTPConfigRequest struct {
-	Name      string `json:"name" binding:"required"`
-	Email     string `json:"email" binding:"required,email"`
-	Password  string `json:"password" binding:"required"`
-	SMTPHost  string `json:"smtp_host"`
-	SMTPPort  string `json:"smtp_port"`
+	// Name      string `json:"name" binding:"required"`
+	// Email     string `json:"email" binding:"required,email"`
+	// Password  string `json:"password" binding:"required"`
+	// SMTPHost  string `json:"smtp_host"`
+	// SMTPPort  string `json:"smtp_port"`
 	TestEmail string `json:"test_email" binding:"required,email"`
+	SMTPId    int64  `json:"smtp_id" binding:"required"`
 }
 
 // TestSMTPConfigResponse đại diện cho phản hồi kiểm tra cấu hình SMTP

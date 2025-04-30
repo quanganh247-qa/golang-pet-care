@@ -39,6 +39,7 @@ type MedicalRecordServiceInterface interface {
 
 	// Comprehensive medical history
 	GetCompleteMedicalHistory(ctx *gin.Context, petID int64) (*MedicalHistorySummary, error)
+	GetAllSoapNotesByPetID(ctx *gin.Context, petID int64) ([]SoapNoteResponse, error)
 }
 
 // Quản lý Bệnh án
@@ -326,8 +327,6 @@ func (s *MedicalRecordService) ListExaminationsByPet(ctx *gin.Context, petID int
 	// Use the ListExaminationsByMedicalHistory function
 	return s.ListExaminationsByMedicalHistory(ctx, medicalRecord.ID, pagination)
 }
-
-// Prescription-related service methods
 
 // CreatePrescription creates a new prescription record
 func (s *MedicalRecordService) CreatePrescription(ctx *gin.Context, req *PrescriptionRequest) (*PrescriptionResponse, error) {
@@ -804,4 +803,36 @@ func (s *MedicalRecordService) GetCompleteMedicalHistory(ctx *gin.Context, petID
 	}
 
 	return summary, nil
+}
+
+// Get all soap notes by pet
+func (s *MedicalRecordService) GetAllSoapNotesByPetID(ctx *gin.Context, petID int64) ([]SoapNoteResponse, error) {
+	// Get medical histories for pet
+	histories, err := s.storeDB.ListSOAPNotes(ctx, pgtype.Int8{Int64: petID, Valid: true})
+	if err != nil {
+		return nil, fmt.Errorf("failed to get medical histories: %w", err)
+	}
+
+	if len(histories) == 0 {
+		return []SoapNoteResponse{}, nil
+	}
+
+	// Get SOAP notes for each medical history and combine them
+	var allSoapNotes []SoapNoteResponse
+	for _, history := range histories {
+		allSoapNotes = append(allSoapNotes, SoapNoteResponse{
+			ID:               int64(history.ID),
+			PetID:            history.PetID.Int64,
+			Subjective:       history.Subjective.String,
+			Objective:        string(history.Objective), // Convert []byte to string
+			Assessment:       history.Assessment.String,
+			Plan:             fmt.Sprint(history.Plan.Int64), // Convert int64 to string
+			DoctorID:         history.DoctorID,
+			DoctorName:       history.DoctorName,
+			ConsultationDate: history.ConsultationDate.Time.Format("2006-01-02 15:04:05"),
+			CreatedAt:        history.CreatedAt.Time.Format("2006-01-02 15:04:05"),
+		})
+	}
+
+	return allSoapNotes, nil
 }

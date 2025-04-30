@@ -7,6 +7,7 @@ import (
 	"log"
 	"time"
 
+	"github.com/quanganh247-qa/go-blog-be/app/util"
 	"github.com/redis/go-redis/v9"
 )
 
@@ -20,14 +21,14 @@ var (
 	ctxRedis = context.Background()
 )
 
-func InitRedis(address string, debug bool) {
+func InitRedis(address string, debug bool, config util.Config) {
 	Client = &ClientType{
 		RedisClient: redis.NewClient(&redis.Options{
 			Addr:         address,
-			Password:     "", // no password set
-			DB:           0,  // use default DB
-			PoolSize:     10, // Số kết nối tối đa trong pool
-			MinIdleConns: 1,  // Số kết nối nhàn rỗi tối thiểu
+			Username:     config.RedisUsername, // default username
+			Password:     config.RedisPassword, // no password set
+			PoolSize:     10,                   // Số kết nối tối đa trong pool
+			MinIdleConns: 1,                    // Số kết nối nhàn rỗi tối thiểu
 		}),
 		Debug: debug,
 	}

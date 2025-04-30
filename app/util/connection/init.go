@@ -52,7 +52,7 @@ func Init(config util.Config) (*Connection, error) {
 	store := db.InitStore(connPool)
 
 	// Initialize Redis with debug mode
-	go redis.InitRedis(config.RedisAddress, config.DebugMode)
+	go redis.InitRedis(config.RedisAddress, config.DebugMode, config)
 	go runTaskProcessor(&config, asynq.RedisClientOpt{Addr: config.RedisAddress}, store)
 	// go initMinio(&config)
 

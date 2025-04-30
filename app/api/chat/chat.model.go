@@ -87,7 +87,7 @@ type SendMessageRequest struct {
 	ConversationID int64           `json:"conversationId" binding:"required"`
 	Content        string          `json:"content" binding:"required"`
 	MessageType    ChatMessageType `json:"messageType" binding:"required,oneof=text image file"`
-	// Metadata       json.RawMessage `json:"metadata,omitempty"`
+	Metadata       json.RawMessage `json:"metadata,omitempty"`
 }
 
 // ReadMessageRequest represents a request to mark messages as read

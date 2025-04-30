@@ -320,19 +320,14 @@ func (s *SMTPConfigService) TestSMTPConfig(ctx *gin.Context) {
 		return
 	}
 
-	// Set default values if not provided
-	smtpHost := req.SMTPHost
-	if smtpHost == "" {
-		smtpHost = "smtp.gmail.com"
+	// Get the existing config
+	existingConfig, err := s.store.GetSMTPConfig(ctx, req.SMTPId)
+	if err != nil {
+		ctx.JSON(http.StatusNotFound, gin.H{"error": "SMTP configuration not found"})
+		return
 	}
-
-	smtpPort := req.SMTPPort
-	if smtpPort == "" {
-		smtpPort = "587"
-	}
-
 	// Create a test email sender
-	emailSender := mail.NewCustomSMTPSender(req.Name, req.Email, req.Password, smtpHost, smtpPort)
+	emailSender := mail.NewCustomSMTPSender(existingConfig.Name, existingConfig.Email, existingConfig.Password, existingConfig.SmtpHost, existingConfig.SmtpPort)
 
 	// Try to send a test email
 	subject := "SMTP Configuration Test"
@@ -355,11 +350,11 @@ func (s *SMTPConfigService) TestSMTPConfig(ctx *gin.Context) {
 			<p>Best regards,<br>Pet Care App Team</p>
 		</div>
 	</body>
-	</html>`, req.Name, req.Email, smtpHost, smtpPort, time.Now().Format(time.RFC3339))
+	</html>`, existingConfig.Name, existingConfig.Email, existingConfig.SmtpHost, existingConfig.SmtpPort, time.Now().Format(time.RFC3339))
 
 	to := []string{req.TestEmail}
 
-	err := emailSender.SendEmail(subject, content, to, nil, nil, nil)
+	err = emailSender.SendEmail(subject, content, to, nil, nil, nil)
 	if err != nil {
 		ctx.JSON(http.StatusOK, TestSMTPConfigResponse{
 			Success: false,

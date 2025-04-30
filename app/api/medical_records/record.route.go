@@ -52,5 +52,8 @@ func Routes(routerGroup middleware.RouterGroup) {
 		authRoute.POST("/medical-records/test-results", MedicalRecordApi.controller.CreateTestResult)
 		authRoute.GET("/medical-records/test-results/:test_result_id", MedicalRecordApi.controller.GetTestResult)
 		authRoute.GET("/medical-records/test-results", MedicalRecordApi.controller.ListTestResults)
+
+		// SOAP Notes routes
+		authRoute.GET("/pets/:pet_id/soap-notes", MedicalRecordApi.controller.GetAllSoapNotes)
 	}
 }

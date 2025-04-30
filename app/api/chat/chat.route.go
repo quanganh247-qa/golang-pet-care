@@ -7,7 +7,6 @@ import (
 
 	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
 	"github.com/quanganh247-qa/go-blog-be/app/middleware"
-	"github.com/quanganh247-qa/go-blog-be/app/service/token"
 	"github.com/quanganh247-qa/go-blog-be/app/service/websocket"
 )
 
@@ -27,8 +26,8 @@ func (api *ChatApi) SetupRoutes(routerGroup middleware.RouterGroup) {
 	chatRoutes := routerGroup.RouterDefault.Group("/")
 
 	{
-		// Public route for WebSocket connection
-		chatRoutes.GET("/ws/messages", middleware.AuthMiddleware(token.TokenMaker), api.controller.HandleWebSocketChat)
+		// Public route for WebSocket connection - no auth required
+		chatRoutes.GET("/ws/chat", api.controller.HandleWebSocketConnection)
 
 		// Protected routes
 		authRoutes := routerGroup.RouterAuth(chatRoutes)

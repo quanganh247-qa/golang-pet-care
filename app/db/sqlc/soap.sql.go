@@ -56,6 +56,114 @@ func (q *Queries) GetSOAPByAppointmentID(ctx context.Context, appointmentID pgty
 	return i, err
 }
 
+const getSOAPNote = `-- name: GetSOAPNote :one
+SELECT 
+    c.id, c.appointment_id, c.subjective, c.objective, c.assessment, c.plan, c.created_at,
+    d.id as doctor_id,
+    u.full_name as doctor_name,
+    a.petid as pet_id,
+    a.date as consultation_date
+FROM consultations c
+JOIN appointments a ON c.appointment_id = a.appointment_id
+JOIN doctors d ON a.doctor_id = d.id
+JOIN users u ON d.user_id = u.id
+WHERE c.id = $1
+`
+
+type GetSOAPNoteRow struct {
+	ID               int32            `json:"id"`
+	AppointmentID    pgtype.Int8      `json:"appointment_id"`
+	Subjective       pgtype.Text      `json:"subjective"`
+	Objective        []byte           `json:"objective"`
+	Assessment       pgtype.Text      `json:"assessment"`
+	Plan             pgtype.Int8      `json:"plan"`
+	CreatedAt        pgtype.Timestamp `json:"created_at"`
+	DoctorID         int64            `json:"doctor_id"`
+	DoctorName       string           `json:"doctor_name"`
+	PetID            pgtype.Int8      `json:"pet_id"`
+	ConsultationDate pgtype.Timestamp `json:"consultation_date"`
+}
+
+func (q *Queries) GetSOAPNote(ctx context.Context, id int32) (GetSOAPNoteRow, error) {
+	row := q.db.QueryRow(ctx, getSOAPNote, id)
+	var i GetSOAPNoteRow
+	err := row.Scan(
+		&i.ID,
+		&i.AppointmentID,
+		&i.Subjective,
+		&i.Objective,
+		&i.Assessment,
+		&i.Plan,
+		&i.CreatedAt,
+		&i.DoctorID,
+		&i.DoctorName,
+		&i.PetID,
+		&i.ConsultationDate,
+	)
+	return i, err
+}
+
+const listSOAPNotes = `-- name: ListSOAPNotes :many
+SELECT 
+    c.id, c.appointment_id, c.subjective, c.objective, c.assessment, c.plan, c.created_at,
+    d.id as doctor_id,
+    u.full_name as doctor_name,
+    a.petid as pet_id,
+    a.date as consultation_date
+FROM consultations c
+JOIN appointments a ON c.appointment_id = a.appointment_id
+JOIN doctors d ON a.doctor_id = d.id
+JOIN users u ON d.user_id = u.id
+WHERE a.petid = $1
+ORDER BY c.created_at DESC
+`
+
+type ListSOAPNotesRow struct {
+	ID               int32            `json:"id"`
+	AppointmentID    pgtype.Int8      `json:"appointment_id"`
+	Subjective       pgtype.Text      `json:"subjective"`
+	Objective        []byte           `json:"objective"`
+	Assessment       pgtype.Text      `json:"assessment"`
+	Plan             pgtype.Int8      `json:"plan"`
+	CreatedAt        pgtype.Timestamp `json:"created_at"`
+	DoctorID         int64            `json:"doctor_id"`
+	DoctorName       string           `json:"doctor_name"`
+	PetID            pgtype.Int8      `json:"pet_id"`
+	ConsultationDate pgtype.Timestamp `json:"consultation_date"`
+}
+
+func (q *Queries) ListSOAPNotes(ctx context.Context, petid pgtype.Int8) ([]ListSOAPNotesRow, error) {
+	rows, err := q.db.Query(ctx, listSOAPNotes, petid)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []ListSOAPNotesRow{}
+	for rows.Next() {
+		var i ListSOAPNotesRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.AppointmentID,
+			&i.Subjective,
+			&i.Objective,
+			&i.Assessment,
+			&i.Plan,
+			&i.CreatedAt,
+			&i.DoctorID,
+			&i.DoctorName,
+			&i.PetID,
+			&i.ConsultationDate,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const updateSOAP = `-- name: UpdateSOAP :one
 UPDATE consultations SET subjective = $2, objective = $3, assessment = $4
 WHERE appointment_id = $1 RETURNING id, appointment_id, subjective, objective, assessment, plan, created_at

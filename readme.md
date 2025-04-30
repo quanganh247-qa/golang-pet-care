@@ -4,9 +4,9 @@
 
 This project is a comprehensive pet care service backend built with Go, featuring a robust server-side architecture that supports a React Native mobile application. The system provides a complete solution for pet clinics and pet owners, offering features like appointment management, medical records tracking, pet scheduling, and e-commerce capabilities.
 
-## Architecture
+## Documentation
 
-![Architecture Diagram](https://github.com/user-attachments/assets/ec053782-9055-42d0-9a1d-59407e2f5ff3)
+   https://deepwiki.com/quanganh247-qa/golang-pet-care
 
 ### Component Diagram
 
@@ -19,8 +19,6 @@ This project is a comprehensive pet care service backend built with Go, featurin
 - **Gin Web Framework**: HTTP web framework
 - **PostgreSQL**: Primary database
 - **Redis**: Caching and queue management
-- **Elasticsearch**: Search functionality
-- **MinIO**: Object storage for files and images
 - **Docker**: Containerization and deployment
 - **Swagger**: API documentation
 
@@ -215,10 +213,3 @@ make docker-down   # Stop all services
 make docker-logs   # View logs
 ```
 
-## Elasticsearch Commands
-
-```
-curl -X GET "localhost:9200/_cat/indices?v"  # List all indices
-curl -X DELETE "localhost:9200/petclinic_medicines"  # Delete medicines index
-curl -X DELETE "localhost:9200/petclinic_diseases"  # Delete diseases index
-```

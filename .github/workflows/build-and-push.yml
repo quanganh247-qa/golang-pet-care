@@ -64,6 +64,9 @@ jobs:
         
           OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}
           ROBOFLOW_API_KEY=${{ secrets.ROBOFLOW_API_KEY }}
+
+          REDIS_USERNAME=${{ secrets.REDIS_USERNAME }}
+          REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }}
           EOF
 
       - name: Set up Docker Buildx

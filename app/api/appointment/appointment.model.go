@@ -130,7 +130,7 @@ type UpdateSOAPRequest struct {
 	Subjective string        `json:"subjective"`
 	Objective  ObjectiveData `json:"objective"`
 	Assessment string        `json:"assessment"`
-	Plan       string        `json:"plan"`
+	Plan       int8          `json:"plan"`
 }
 
 type SOAPResponse struct {

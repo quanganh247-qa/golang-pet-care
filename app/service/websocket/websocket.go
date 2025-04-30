@@ -171,17 +171,13 @@ func (manager *WSClientManager) BroadcastNotification(notification db.Notificati
 
 // HandleWebSocket handles WebSocket connections
 func (manager *WSClientManager) HandleWebSocket(c *gin.Context) {
-	// // Get client ID from query parameters
-	// clientID := c.Request.URL.Query().Get("clientId")
-	// if clientID == "" {
-	// Try from header (set by middleware)
+	// Get client ID from header (set by middleware or controller)
 	clientID := c.Request.Header.Get("X-Client-ID")
 	if clientID == "" {
-		clientID = time.Now().String() // Use timestamp as fallback ID
+		clientID = fmt.Sprintf("temp_%d", time.Now().UnixNano()) // Use timestamp as fallback ID
 	}
-	// }
 
-	// Get username if available
+	// Get username if available (might be empty for unauthenticated connections)
 	var username string
 	if userVal, exists := c.Get("username"); exists {
 		if u, ok := userVal.(string); ok {
@@ -214,9 +210,7 @@ func (manager *WSClientManager) HandleWebSocket(c *gin.Context) {
 	}
 
 	// Register client before starting pumps
-	manager.mutex.Lock()
-	manager.clientsMap[clientID] = client
-	manager.mutex.Unlock()
+	manager.register <- client
 
 	// Start goroutines for reading and writing
 	go client.writePump(manager)
@@ -229,12 +223,13 @@ func (manager *WSClientManager) HandleWebSocket(c *gin.Context) {
 	}
 	client.sendJSON(welcomeMsg)
 
-	// Mark the client as successfully authenticated if we have username
-	if username != "" {
-		client.isAuthSuccess = true
-
-		// Deliver any pending messages
-		go manager.deliverPendingMessages(client)
+	// For unauthenticated connections, send auth required message
+	if !client.isAuthSuccess {
+		authRequiredMsg := WebSocketMessage{
+			Type:    "auth_required",
+			Message: "Please authenticate to continue",
+		}
+		client.sendJSON(authRequiredMsg)
 	}
 }
 
@@ -372,6 +367,25 @@ func (client *WSClient) readPump(manager *WSClientManager) {
 				continue
 			}
 
+			// Allow authenticate messages even for unauthenticated clients
+			if wsMessage.Type == "authenticate" {
+				// Check if we have a handler for this message type
+				if handler, ok := messageHandlers["authenticate"]; ok {
+					// Call the handler with the message - pass 0 for userID since not authenticated yet
+					handler(wsMessage, client.clientID, 0)
+				}
+				continue
+			}
+
+			// For all other message types, require authentication
+			if !client.isAuthSuccess && wsMessage.Type != "authenticate" {
+				client.sendJSON(WebSocketMessage{
+					Type:    "error",
+					Message: "Authentication required",
+				})
+				continue
+			}
+
 			// Extract user ID from client ID if it exists
 			var userID int64 = 0
 			if strings.HasPrefix(client.clientID, "user_") {
@@ -453,10 +467,37 @@ func (client *WSClient) sendJSON(message interface{}) {
 	client.send <- data
 }
 
-// Add this method to check if a client is connected
+// IsClientConnected checks if a client is connected
 func (manager *WSClientManager) IsClientConnected(clientID string) bool {
 	manager.mutex.Lock()
 	defer manager.mutex.Unlock()
 	_, exists := manager.clientsMap[clientID]
 	return exists
+}
+
+// UpdateClientUser updates client information after authentication
+// This allows a client to authenticate after connecting with a temporary ID
+func (manager *WSClientManager) UpdateClientUser(oldClientID string, newClientID string, username string, userID int64) bool {
+	manager.mutex.Lock()
+	defer manager.mutex.Unlock()
+
+	// Find the client with the old ID
+	client, exists := manager.clientsMap[oldClientID]
+	if !exists {
+		return false
+	}
+
+	// Update client information
+	client.clientID = newClientID
+	client.username = username
+	client.isAuthSuccess = true
+
+	// Remove the old client entry and add with the new ID
+	delete(manager.clientsMap, oldClientID)
+	manager.clientsMap[newClientID] = client
+
+	// Log the change
+	log.Printf("Client ID updated: %s -> %s (user: %s, ID: %d)", oldClientID, newClientID, username, userID)
+
+	return true
 }

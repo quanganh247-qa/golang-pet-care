@@ -55,9 +55,6 @@ func NewMessageStore(store db.Store) *MessageStore {
 	// Start cleanup routine
 	go ms.cleanupRoutine()
 
-	// Start retry routine
-	go ms.retryRoutine()
-
 	return ms
 }
 
@@ -195,32 +192,6 @@ func (ms *MessageStore) cleanupRoutine() {
 
 		if err != nil {
 			log.Printf("Error cleaning up old messages: %v", err)
-		}
-	}
-}
-
-// retryRoutine periodically retries sending failed messages
-func (ms *MessageStore) retryRoutine() {
-	for {
-		<-ms.retryTicker.C
-
-		ctx := context.Background()
-
-		// Get messages that need retry (status pending or failed, retry count < max)
-		messages, err := ms.storeDB.GetMessagesForRetry(ctx, db.GetMessagesForRetryParams{
-			Column1:    []string{string(StatusPending), string(StatusFailed)},
-			RetryCount: 5, // Maximum number of retries
-		})
-
-		if err != nil {
-			log.Printf("Error retrieving messages for retry: %v", err)
-			continue
-		}
-
-		for _, msg := range messages {
-			// Try to find the client and send the message
-			// This will be handled by the WSClientManager
-			log.Printf("Message %d scheduled for retry (attempt %d)", msg.ID, msg.RetryCount)
 		}
 	}
 }

@@ -14,6 +14,8 @@ type Config struct {
 	DATABASE_URL      string `mapstructure:"DATABASE_URL"`
 	DBSource          string `mapstructure:"DB_SOURCE"`
 	RedisAddress      string `mapstructure:"REDIS_ADDRESS"`
+	RedisPassword     string `mapstructure:"REDIS_PASSWORD"`
+	RedisUsername     string `mapstructure:"REDIS_USERNAME"`
 	HTTPServerAddress string `mapstructure:"HTTP_SERVER_ADDRESS"`
 	DebugMode         bool   `mapstructure:"DEBUG_MODE"`
 
