@@ -21,21 +21,18 @@ var (
 	ctxRedis = context.Background()
 )
 
-func InitRedis(address string, debug bool, config util.Config) {
+func InitRedis(config util.Config) {
 	Client = &ClientType{
 		RedisClient: redis.NewClient(&redis.Options{
-			Addr:         address,
+			Addr:         config.RedisAddress,
 			Username:     config.RedisUsername, // default username
 			Password:     config.RedisPassword, // no password set
 			PoolSize:     10,                   // Số kết nối tối đa trong pool
 			MinIdleConns: 1,                    // Số kết nối nhàn rỗi tối thiểu
 		}),
-		Debug: debug,
+		Debug: config.DebugMode, // Set debug mode based on configuration
 	}
 
-	if debug {
-		log.Println("Redis client initialized with debug logging enabled")
-	}
 }
 
 func (client *ClientType) Set(ctx context.Context, key string, value interface{}, duration time.Duration) error {

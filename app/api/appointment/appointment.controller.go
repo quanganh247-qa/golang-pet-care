@@ -38,10 +38,6 @@ type AppointmentControllerInterface interface {
 	CreateWalkInAppointment(c *gin.Context)
 
 	HandleWebSocket(ctx *gin.Context)
-
-	// getPendingNotifications retrieves any pending notifications for the current user
-	getPendingNotifications(ctx *gin.Context)
-	MarkMessageDelivered(ctx *gin.Context)
 }
 
 // createAppointment creates a new appointment
@@ -489,42 +485,4 @@ func (c *AppointmentController) HandleWebSocket(ctx *gin.Context) {
 
 	// Handle WebSocket connection
 	c.service.HandleWebSocket(ctx)
-}
-
-// getPendingNotifications retrieves any pending notifications for the current user
-func (c *AppointmentController) getPendingNotifications(ctx *gin.Context) {
-
-	// Get pending notifications
-	notifications, err := c.service.GetPendingNotifications(ctx)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"error": fmt.Sprintf("Failed to retrieve pending notifications: %v", err),
-		})
-		return
-	}
-
-	ctx.JSON(http.StatusOK, gin.H{
-		"success": true,
-		"message": fmt.Sprintf("Retrieved %d pending notifications", len(notifications)),
-		"data":    notifications,
-	})
-}
-
-func (c *AppointmentController) MarkMessageDelivered(ctx *gin.Context) {
-	appointmentID := ctx.Param("id")
-	if appointmentID == "" {
-		ctx.JSON(http.StatusBadRequest, nil)
-		return
-	}
-	id, err := strconv.ParseInt(appointmentID, 10, 64)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
-		return
-	}
-	err = c.service.MarkMessageDelivered(ctx, id)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, util.ErrorResponse(err))
-		return
-	}
-	ctx.JSON(http.StatusOK, util.SuccessResponse("Message delivered", nil))
 }

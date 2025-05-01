@@ -1,7 +1,6 @@
 package websocket
 
 import (
-	"context"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -29,13 +28,12 @@ type WSClient struct {
 
 // WSClientManager manages WebSocket connections
 type WSClientManager struct {
-	clientsMap   map[string]*WSClient // Map with clientID as key
-	mutex        sync.Mutex
-	broadcast    chan []byte
-	register     chan *WSClient
-	unregister   chan *WSClient
-	MessageStore *MessageStore // Changed from messageStore to MessageStore (public)
-	storeDB      db.Store
+	clientsMap map[string]*WSClient // Map with clientID as key
+	mutex      sync.Mutex
+	broadcast  chan []byte
+	register   chan *WSClient
+	unregister chan *WSClient
+	storeDB    db.Store
 }
 
 // Update NewWSClientManager to accept store
@@ -48,9 +46,6 @@ func NewWSClientManager(store db.Store) *WSClientManager {
 		storeDB:    store,
 	}
 
-	// Initialize the message store
-	manager.MessageStore = NewMessageStore(store)
-
 	return manager
 }
 
@@ -61,9 +56,6 @@ func (manager *WSClientManager) Run() {
 			manager.mutex.Lock()
 			manager.clientsMap[client.clientID] = client
 			manager.mutex.Unlock()
-
-			// Check for pending messages on client registration
-			go manager.deliverPendingMessages(client)
 
 		case client := <-manager.unregister:
 			manager.mutex.Lock()
@@ -130,43 +122,6 @@ func (manager *WSClientManager) BroadcastToAll(message interface{}) {
 	}
 	manager.broadcast <- data
 	log.Printf("Sent message to all clients: %s", string(data))
-}
-
-// BroadcastNotification sends a notification to all connected clients
-func (manager *WSClientManager) BroadcastNotification(notification db.Notification) {
-	// Format notification as a WebSocket message
-	wsMessage := WebSocketMessage{
-		Type: "notification",
-		Data: notification,
-	}
-
-	// Store the notification in the database first
-	err := manager.storeDB.ExecWithTransaction(context.Background(), func(q *db.Queries) error {
-		_, err := q.CreatetNotification(context.Background(), db.CreatetNotificationParams{
-			Username:    notification.Username,
-			Title:       notification.Title,
-			Content:     notification.Content,
-			NotifyType:  notification.NotifyType,
-			RelatedID:   notification.RelatedID,
-			RelatedType: notification.RelatedType,
-		})
-		return err
-	})
-
-	if err != nil {
-		log.Printf("Error storing notification in database: %v", err)
-	}
-
-	// Try to send directly to the user if online
-	clientID := fmt.Sprintf("user_%s", notification.Username)
-	if !manager.SendToClient(clientID, wsMessage) {
-		// User is offline, store the message for later delivery
-		ctx := context.Background()
-		err := manager.MessageStore.StoreMessage(ctx, clientID, notification.Username, "notification", notification)
-		if err != nil {
-			log.Printf("Error storing offline notification: %v", err)
-		}
-	}
 }
 
 // HandleWebSocket handles WebSocket connections
@@ -255,73 +210,6 @@ func (manager *WSClientManager) SendToClient(clientID string, message interface{
 		close(client.send)
 		delete(manager.clientsMap, clientID)
 		return false
-	}
-}
-
-// deliverPendingMessages delivers any pending messages to a client that just connected
-func (manager *WSClientManager) deliverPendingMessages(client *WSClient) {
-	// Wait a short time for connection to stabilize
-	time.Sleep(500 * time.Millisecond)
-
-	// Only deliver if the client is authenticated
-	if !client.isAuthSuccess || client.username == "" {
-		return
-	}
-
-	ctx := context.Background()
-	messages, err := manager.MessageStore.GetPendingMessages(ctx)
-	if err != nil {
-		log.Printf("Error retrieving pending messages for client %s: %v", client.clientID, err)
-		return
-	}
-
-	if len(messages) == 0 {
-		return
-	}
-
-	log.Printf("Delivering %d pending messages to client %s", len(messages), client.clientID)
-
-	for _, msg := range messages {
-		// Parse the message data
-		var msgData interface{}
-
-		switch msg.MessageType {
-		case "notification":
-			var notification db.Notification
-			if err := json.Unmarshal(msg.Data, &notification); err != nil {
-				log.Printf("Error unmarshaling notification: %v", err)
-				continue
-			}
-			msgData = WebSocketMessage{
-				Type: "notification",
-				Data: notification,
-			}
-		case "appointment_alert":
-			// This is just an example, adjust based on your actual message types
-			msgData = WebSocketMessage{
-				Type: "appointment_alert",
-				Data: json.RawMessage(msg.Data),
-			}
-		default:
-			// Generic message
-			msgData = WebSocketMessage{
-				Type: msg.MessageType,
-				Data: json.RawMessage(msg.Data),
-			}
-		}
-
-		// Send the message
-		if manager.SendToClient(client.clientID, msgData) {
-			// Mark as delivered
-			if err := manager.MessageStore.MarkMessageDelivered(ctx, msg.ID); err != nil {
-				log.Printf("Error marking message %d as delivered: %v", msg.ID, err)
-			}
-		} else {
-			// Failed to deliver
-			if err := manager.MessageStore.MarkMessageFailed(ctx, msg.ID); err != nil {
-				log.Printf("Error marking message %d as failed: %v", msg.ID, err)
-			}
-		}
 	}
 }
 

@@ -65,9 +65,5 @@ func Routes(routerGroup middleware.RouterGroup, taskDistributor worker.TaskDistr
 		// WebSocket routes
 		authRoute.GET("/appointment/websocket", appointmentApi.controller.HandleWebSocket)
 
-		// Pending notifications
-		authRoute.GET("/appointment/notifications/pending", appointmentApi.controller.getPendingNotifications)
-
-		authRoute.PUT("/appointment/notifications/:id/delivered", appointmentApi.controller.MarkMessageDelivered)
 	}
 }

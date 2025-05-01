@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"log"
 	"sync"
 	"time"
 
@@ -38,8 +37,6 @@ type AppointmentServiceInterface interface {
 	GetSOAPByAppointmentID(ctx *gin.Context, appointmentID int64) (*SOAPResponse, error)
 	GetAppointmentDistributionByService(ctx *gin.Context, startDate, endDate string) ([]AppointmentDistribution, error)
 	HandleWebSocket(ctx *gin.Context)
-	GetPendingNotifications(ctx *gin.Context) ([]websocket.OfflineMessage, error)
-	MarkMessageDelivered(ctx *gin.Context, id int64) error
 }
 
 func (s *AppointmentService) CreateAppointment(ctx *gin.Context, req createAppointmentRequest, username string) (*createAppointmentResponse, error) {
@@ -215,36 +212,7 @@ func (s *AppointmentService) sendAppointmentNotification(ctx context.Context, no
 		Type: "appointment_alert",
 		Data: notification,
 	}
-
-	// Try to send to the doctor
-	doctorClientID := fmt.Sprintf("doctor_%d", notification.Doctor.DoctorID)
-	// Doctor is offline, store the message for later delivery
-	err := s.ws.MessageStore.StoreMessage(ctx, doctorClientID, "", "appointment_alert", notification)
-	if err != nil {
-		log.Printf("Error storing offline appointment notification for doctor: %v", err)
-	}
-
 	s.ws.BroadcastToAll(wsMessage)
-
-	// // Get the user's username from the appointment
-	// appointmentDetail, err := s.storeDB.GetAppointmentDetailByAppointmentID(context.Background(), notification.AppointmentID)
-	// if err != nil {
-	// 	log.Printf("Error getting appointment details for notification: %v", err)
-	// 	return
-	// }
-
-	// if appointmentDetail.Username.Valid {
-	// 	// Send to the pet owner/user
-	// 	userClientID := fmt.Sprintf("user_%s", appointmentDetail.Username.String)
-	// 	if !s.ws.SendToClient(userClientID, wsMessage) {
-	// 		// User is offline, store the message for later delivery
-	// 		ctx := context.Background()
-	// 		err := s.ws.MessageStore.StoreMessage(ctx, userClientID, appointmentDetail.Username.String, "appointment_alert", notification)
-	// 		if err != nil {
-	// 			log.Printf("Error storing offline appointment notification for user: %v", err)
-	// 		}
-	// 	}
-	// }
 }
 
 func (s *AppointmentService) CreateWalkInAppointment(ctx *gin.Context, req createWalkInAppointmentRequest) (*createAppointmentResponse, error) {
@@ -1274,33 +1242,4 @@ func (s *AppointmentService) GetAppointmentDistributionByService(ctx *gin.Contex
 
 func (s *AppointmentService) HandleWebSocket(ctx *gin.Context) {
 	s.ws.HandleWebSocket(ctx)
-}
-
-// GetPendingNotifications retrieves any pending notifications for a client
-func (s *AppointmentService) GetPendingNotifications(ctx *gin.Context) ([]websocket.OfflineMessage, error) {
-	// Get pending notifications from the WebSocket message store
-	pendingMessages, err := s.ws.MessageStore.GetPendingMessages(ctx)
-	if err != nil {
-		return nil, fmt.Errorf("failed to get pending messages: %w", err)
-	}
-
-	// Create a map of existing message IDs for quick lookup
-	existingMsgIds := make(map[string]bool)
-	for _, msg := range pendingMessages {
-		// Create a key based on message content to avoid duplicates
-		key := fmt.Sprintf("%s-%s", msg.MessageType, string(msg.Data))
-		existingMsgIds[key] = true
-	}
-
-	return pendingMessages, nil
-}
-
-func (s *AppointmentService) MarkMessageDelivered(ctx *gin.Context, id int64) error {
-	return s.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
-		err := q.MarkMessageDelivered(ctx, id)
-		if err != nil {
-			return fmt.Errorf("failed to mark message as delivered: %w", err)
-		}
-		return nil
-	})
 }

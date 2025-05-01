@@ -107,22 +107,6 @@ type Consultation struct {
 	CreatedAt     pgtype.Timestamp `json:"created_at"`
 }
 
-type Conversation struct {
-	ID        int64            `json:"id"`
-	Type      string           `json:"type"`
-	Name      pgtype.Text      `json:"name"`
-	CreatedAt pgtype.Timestamp `json:"created_at"`
-	UpdatedAt pgtype.Timestamp `json:"updated_at"`
-}
-
-type ConversationParticipant struct {
-	ConversationID int64            `json:"conversation_id"`
-	UserID         int64            `json:"user_id"`
-	JoinedAt       pgtype.Timestamp `json:"joined_at"`
-	LeftAt         pgtype.Timestamp `json:"left_at"`
-	IsAdmin        bool             `json:"is_admin"`
-}
-
 type DeviceToken struct {
 	ID         int64            `json:"id"`
 	Username   string           `json:"username"`
@@ -258,23 +242,6 @@ type MedicineTransaction struct {
 	CreatedAt       pgtype.Timestamptz `json:"created_at"`
 }
 
-type Message struct {
-	ID             int64            `json:"id"`
-	ConversationID int64            `json:"conversation_id"`
-	SenderID       int64            `json:"sender_id"`
-	Content        string           `json:"content"`
-	MessageType    string           `json:"message_type"`
-	Metadata       []byte           `json:"metadata"`
-	CreatedAt      pgtype.Timestamp `json:"created_at"`
-	UpdatedAt      pgtype.Timestamp `json:"updated_at"`
-}
-
-type MessageReadStatus struct {
-	MessageID int64            `json:"message_id"`
-	UserID    int64            `json:"user_id"`
-	ReadAt    pgtype.Timestamp `json:"read_at"`
-}
-
 type Notification struct {
 	ID          int64            `json:"id"`
 	Username    string           `json:"username"`
@@ -285,18 +252,6 @@ type Notification struct {
 	RelatedType pgtype.Text      `json:"related_type"`
 	Datetime    pgtype.Timestamp `json:"datetime"`
 	NotifyType  pgtype.Text      `json:"notify_type"`
-}
-
-type OfflineMessage struct {
-	ID          int64              `json:"id"`
-	ClientID    string             `json:"client_id"`
-	Username    string             `json:"username"`
-	MessageType string             `json:"message_type"`
-	Data        []byte             `json:"data"`
-	CreatedAt   pgtype.Timestamptz `json:"created_at"`
-	DeliveredAt pgtype.Timestamptz `json:"delivered_at"`
-	Status      string             `json:"status"`
-	RetryCount  int32              `json:"retry_count"`
 }
 
 type Order struct {
