@@ -22,17 +22,18 @@ var (
 )
 
 func InitRedis(config util.Config) {
-	Client = &ClientType{
-		RedisClient: redis.NewClient(&redis.Options{
-			Addr:         config.RedisAddress,
-			Username:     config.RedisUsername, // default username
-			Password:     config.RedisPassword, // no password set
-			PoolSize:     10,                   // Số kết nối tối đa trong pool
-			MinIdleConns: 1,                    // Số kết nối nhàn rỗi tối thiểu
-		}),
-		Debug: config.DebugMode, // Set debug mode based on configuration
+	options := &redis.Options{
+		Addr:         config.RedisAddress,
+		Username:     config.RedisUsername,
+		Password:     config.RedisPassword,
+		PoolSize:     10, // Số kết nối tối đa trong pool
+		MinIdleConns: 1,  // Số kết nối nhàn rỗi tối thiểu
 	}
 
+	Client = &ClientType{
+		RedisClient: redis.NewClient(options),
+		Debug:       config.DebugMode, // Set debug mode based on configuration
+	}
 }
 
 func (client *ClientType) Set(ctx context.Context, key string, value interface{}, duration time.Duration) error {

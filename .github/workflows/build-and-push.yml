@@ -67,6 +67,8 @@ jobs:
 
           REDIS_USERNAME=${{ secrets.REDIS_USERNAME }}
           REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }}
+
+          DEBUG_MODE=true
           EOF
 
       - name: Set up Docker Buildx
