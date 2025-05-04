@@ -31,7 +31,7 @@ func Routes(routerGroup middleware.RouterGroup, config *util.Config) {
 	{
 		// Pet schedule management
 		authRoute.POST("/schedules", petScheduleApi.controller.createPetSchedule)
-		authRoute.GET("/schedules/pet/:pet_id", petScheduleApi.controller.getAllSchedulesByPet)
+		authRoute.GET("/schedules/pet/:petid", petScheduleApi.controller.getAllSchedulesByPet)
 		authRoute.GET("/schedules", petScheduleApi.controller.listPetSchedulesByUsername)
 		authRoute.PUT("/schedules/:schedule_id", petScheduleApi.controller.updatePetScheduleService)
 		authRoute.DELETE("/schedules/:schedule_id", petScheduleApi.controller.deletePetSchedule)

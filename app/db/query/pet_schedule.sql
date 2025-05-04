@@ -1,6 +1,6 @@
 -- name: GetAllSchedulesByPet :many
 SELECT * FROM pet_schedule 
-WHERE pet_id = $1 and removedat is null
+WHERE pet_id = $1 
 ORDER BY reminder_datetime 
 LIMIT $2 OFFSET $3;
 
@@ -31,9 +31,7 @@ SELECT
 FROM pet_schedule ps
 LEFT JOIN pets p ON ps.pet_id = p.petid
 LEFT JOIN users u ON p.username = u.username
-WHERE u.username = $1 
-    AND ps.removedat is null
-    AND p.is_active = true
+WHERE u.username = $1 AND p.is_active = true
 ORDER BY p.petid, ps.reminder_datetime;
 
 -- name: ActiveReminder :exec
@@ -42,8 +40,7 @@ SET is_active = $2
 WHERE id = $1;
 
 -- name: DeletePetSchedule :exec
-Update pet_schedule
-SET removedat = now()
+DELETE FROM pet_schedule
 WHERE id = $1;
 
 -- name: UpdatePetSchedule :exec
@@ -63,6 +60,6 @@ WHERE id = $1;
 
 -- name: ListPetSchedulesByPetID :many
 SELECT * FROM pet_schedule
-WHERE pet_id = $1 and removedat is null
+WHERE pet_id = $1 
 ORDER BY reminder_datetime 
 LIMIT $2 OFFSET $3;

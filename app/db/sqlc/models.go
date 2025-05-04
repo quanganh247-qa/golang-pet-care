@@ -336,7 +336,6 @@ type PetSchedule struct {
 	Notes            pgtype.Text      `json:"notes"`
 	IsActive         pgtype.Bool      `json:"is_active"`
 	CreatedAt        pgtype.Timestamp `json:"created_at"`
-	Removedat        pgtype.Timestamp `json:"removedat"`
 }
 
 type PetTreatment struct {

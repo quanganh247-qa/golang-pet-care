@@ -64,8 +64,7 @@ func (q *Queries) CreatePetSchedule(ctx context.Context, arg CreatePetSchedulePa
 }
 
 const deletePetSchedule = `-- name: DeletePetSchedule :exec
-Update pet_schedule
-SET removedat = now()
+DELETE FROM pet_schedule
 WHERE id = $1
 `
 
@@ -75,8 +74,8 @@ func (q *Queries) DeletePetSchedule(ctx context.Context, id int64) error {
 }
 
 const getAllSchedulesByPet = `-- name: GetAllSchedulesByPet :many
-SELECT id, pet_id, title, reminder_datetime, event_repeat, end_type, end_date, notes, is_active, created_at, removedat FROM pet_schedule 
-WHERE pet_id = $1 and removedat is null
+SELECT id, pet_id, title, reminder_datetime, event_repeat, end_type, end_date, notes, is_active, created_at FROM pet_schedule 
+WHERE pet_id = $1 
 ORDER BY reminder_datetime 
 LIMIT $2 OFFSET $3
 `
@@ -107,7 +106,6 @@ func (q *Queries) GetAllSchedulesByPet(ctx context.Context, arg GetAllSchedulesB
 			&i.Notes,
 			&i.IsActive,
 			&i.CreatedAt,
-			&i.Removedat,
 		); err != nil {
 			return nil, err
 		}
@@ -120,7 +118,7 @@ func (q *Queries) GetAllSchedulesByPet(ctx context.Context, arg GetAllSchedulesB
 }
 
 const getPetScheduleById = `-- name: GetPetScheduleById :one
-SELECT id, pet_id, title, reminder_datetime, event_repeat, end_type, end_date, notes, is_active, created_at, removedat FROM pet_schedule
+SELECT id, pet_id, title, reminder_datetime, event_repeat, end_type, end_date, notes, is_active, created_at FROM pet_schedule
 WHERE id = $1
 `
 
@@ -138,14 +136,13 @@ func (q *Queries) GetPetScheduleById(ctx context.Context, id int64) (PetSchedule
 		&i.Notes,
 		&i.IsActive,
 		&i.CreatedAt,
-		&i.Removedat,
 	)
 	return i, err
 }
 
 const listPetSchedulesByPetID = `-- name: ListPetSchedulesByPetID :many
-SELECT id, pet_id, title, reminder_datetime, event_repeat, end_type, end_date, notes, is_active, created_at, removedat FROM pet_schedule
-WHERE pet_id = $1 and removedat is null
+SELECT id, pet_id, title, reminder_datetime, event_repeat, end_type, end_date, notes, is_active, created_at FROM pet_schedule
+WHERE pet_id = $1 
 ORDER BY reminder_datetime 
 LIMIT $2 OFFSET $3
 `
@@ -176,7 +173,6 @@ func (q *Queries) ListPetSchedulesByPetID(ctx context.Context, arg ListPetSchedu
 			&i.Notes,
 			&i.IsActive,
 			&i.CreatedAt,
-			&i.Removedat,
 		); err != nil {
 			return nil, err
 		}
@@ -203,9 +199,7 @@ SELECT
 FROM pet_schedule ps
 LEFT JOIN pets p ON ps.pet_id = p.petid
 LEFT JOIN users u ON p.username = u.username
-WHERE u.username = $1 
-    AND ps.removedat is null
-    AND p.is_active = true
+WHERE u.username = $1 AND p.is_active = true
 ORDER BY p.petid, ps.reminder_datetime
 `
 

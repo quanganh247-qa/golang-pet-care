@@ -211,8 +211,7 @@ CREATE TABLE public.device_tokens (
 	last_used_at timestamp NULL,
 	expired_at timestamp NULL,
 	CONSTRAINT device_tokens_pkey PRIMARY KEY (id),
-	-- CONSTRAINT device_tokens_token_key UNIQUE (token),
-	device_tokens_unique UNIQUE ("token",username)
+	CONSTRAINT device_tokens_unique UNIQUE ("token",username),
 	CONSTRAINT fk_device_tokens_username FOREIGN KEY (username) REFERENCES public.users(username) ON DELETE CASCADE
 );
 
@@ -417,7 +416,6 @@ CREATE TABLE public.pet_schedule (
 	notes text NULL,
 	is_active bool NULL,
 	created_at timestamp DEFAULT CURRENT_TIMESTAMP NULL,
-	removedat timestamp NULL,
 	CONSTRAINT pet_schedule_pkey PRIMARY KEY (id),
 	CONSTRAINT pet_schedule_pet_id_fkey FOREIGN KEY (pet_id) REFERENCES public.pets(petid)
 );
