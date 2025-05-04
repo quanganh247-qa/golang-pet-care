@@ -32,7 +32,7 @@ func (c *PetScheduleController) createPetSchedule(ctx *gin.Context) {
 		return
 	}
 
-	err := c.service.CreatePetScheduleService(ctx, req, req.PetID)
+	res, err := c.service.CreatePetScheduleService(ctx, req, req.PetID)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, util.ErrorValidator(err))
 		return
@@ -42,7 +42,7 @@ func (c *PetScheduleController) createPetSchedule(ctx *gin.Context) {
 	middleware.InvalidateCache("pet_schedules")
 
 	// Return success response
-	ctx.JSON(http.StatusOK, gin.H{"message": "Pet schedule created successfully"})
+	ctx.JSON(http.StatusOK, util.SuccessResponse("Create pet schedule", res))
 }
 
 func (s *PetScheduleController) getAllSchedulesByPet(ctx *gin.Context) {

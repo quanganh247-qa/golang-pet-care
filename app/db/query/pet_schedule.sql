@@ -4,7 +4,7 @@ WHERE pet_id = $1
 ORDER BY reminder_datetime 
 LIMIT $2 OFFSET $3;
 
--- name: CreatePetSchedule :exec
+-- name: CreatePetSchedule :one
 INSERT INTO pet_schedule (
    pet_id,
    title,
@@ -14,7 +14,7 @@ INSERT INTO pet_schedule (
    end_date,
    notes,
    is_active
-) VALUES ($1, $2, $3, $4, $5, $6, $7, true);
+) VALUES ($1, $2, $3, $4, $5, $6, $7, true) RETURNING *;
 
 -- name: ListPetSchedulesByUsername :many
 SELECT 

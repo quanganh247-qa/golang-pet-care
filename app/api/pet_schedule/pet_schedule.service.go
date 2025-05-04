@@ -14,7 +14,7 @@ import (
 )
 
 type PetScheduleServiceInterface interface {
-	CreatePetScheduleService(ctx *gin.Context, req PetScheduleRequest, petID int64) error
+	CreatePetScheduleService(ctx *gin.Context, req PetScheduleRequest, petID int64) (*PetScheduleResponse, error)
 	GetAllSchedulesByPetService(ctx *gin.Context, petID int64, pagination *util.Pagination) ([]PetScheduleResponse, error)
 	ListPetSchedulesByUsernameService(ctx *gin.Context, username string) ([]PetSchedules, error)
 	ActivePetScheduleService(ctx *gin.Context, scheduleID int64, req ActiceRemider) error
@@ -23,17 +23,17 @@ type PetScheduleServiceInterface interface {
 	ProcessSuggestionGemini(ctx *gin.Context, description string) (*llm.BaseResponse, error)
 }
 
-func (s *PetScheduleService) CreatePetScheduleService(ctx *gin.Context, req PetScheduleRequest, petID int64) error {
+func (s *PetScheduleService) CreatePetScheduleService(ctx *gin.Context, req PetScheduleRequest, petID int64) (*PetScheduleResponse, error) {
 
 	if pet, err := s.storeDB.GetPetByID(ctx, petID); err != nil {
-		return fmt.Errorf("Cannot find pet with ID %s: %w", pet.Name, err)
+		return nil, fmt.Errorf("Cannot find pet with ID %s: %w", pet.Name, err)
 	}
 
 	const iso8601Format = "2006-01-02T15:04:05Z"
 
 	reminderTime, err := time.Parse(iso8601Format, req.ReminderDateTime)
 	if err != nil {
-		return fmt.Errorf("invalid reminder date time format: %v", err)
+		return nil, fmt.Errorf("invalid reminder date time format: %v", err)
 	}
 
 	var endDate pgtype.Date
@@ -41,15 +41,17 @@ func (s *PetScheduleService) CreatePetScheduleService(ctx *gin.Context, req PetS
 		// Try ISO 8601 format first (with time part)
 		parsedEndDate, err := time.Parse(time.RFC3339, req.EndDate)
 		if err != nil {
-			return fmt.Errorf("invalid end date format: %v", err)
+			return nil, fmt.Errorf("invalid end date format: %v", err)
 		}
 		endDate = pgtype.Date{Time: parsedEndDate, Valid: true}
 	} else {
 		endDate = pgtype.Date{Valid: false}
 	}
+
+	var res *PetScheduleResponse
 	// Implement logic to create a pet schedule
 	err = s.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
-		return q.CreatePetSchedule(ctx, db.CreatePetScheduleParams{
+		schedule, err := q.CreatePetSchedule(ctx, db.CreatePetScheduleParams{
 			PetID:            pgtype.Int8{Int64: petID, Valid: true},
 			Title:            pgtype.Text{String: req.Title, Valid: true},
 			ReminderDatetime: pgtype.Timestamp{Time: reminderTime, Valid: true},
@@ -57,9 +59,25 @@ func (s *PetScheduleService) CreatePetScheduleService(ctx *gin.Context, req PetS
 			EndDate:          endDate,
 			Notes:            pgtype.Text{String: req.Notes, Valid: true},
 		})
+		if err != nil {
+			return fmt.Errorf("error creating pet schedule: %w", err)
+		}
+		res = &PetScheduleResponse{
+			ID:               schedule.ID,
+			PetID:            schedule.PetID.Int64,
+			Title:            schedule.Title.String,
+			ReminderDateTime: schedule.ReminderDatetime.Time.Format(time.RFC3339),
+			EventRepeat:      schedule.EventRepeat.String,
+			EndType:          schedule.EndType.Bool,
+			EndDate:          schedule.EndDate.Time.Format(time.RFC3339),
+			Notes:            schedule.Notes.String,
+			IsActive:         schedule.IsActive.Bool,
+		}
+		return nil
+
 	})
 	if err != nil {
-		return fmt.Errorf("error creating pet schdule: ", err)
+		return nil, fmt.Errorf("error creating pet schdule: ", err)
 	}
 
 	// Invalidate cache after creating a new schedule
@@ -74,7 +92,7 @@ func (s *PetScheduleService) CreatePetScheduleService(ctx *gin.Context, req PetS
 		}
 	}
 
-	return nil
+	return res, nil
 }
 
 func (s *PetScheduleService) GetAllSchedulesByPetService(ctx *gin.Context, petID int64, pagination *util.Pagination) ([]PetScheduleResponse, error) {

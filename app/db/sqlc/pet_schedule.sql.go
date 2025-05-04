@@ -27,7 +27,7 @@ func (q *Queries) ActiveReminder(ctx context.Context, arg ActiveReminderParams) 
 	return err
 }
 
-const createPetSchedule = `-- name: CreatePetSchedule :exec
+const createPetSchedule = `-- name: CreatePetSchedule :one
 INSERT INTO pet_schedule (
    pet_id,
    title,
@@ -37,7 +37,7 @@ INSERT INTO pet_schedule (
    end_date,
    notes,
    is_active
-) VALUES ($1, $2, $3, $4, $5, $6, $7, true)
+) VALUES ($1, $2, $3, $4, $5, $6, $7, true) RETURNING id, pet_id, title, reminder_datetime, event_repeat, end_type, end_date, notes, is_active, created_at
 `
 
 type CreatePetScheduleParams struct {
@@ -50,8 +50,8 @@ type CreatePetScheduleParams struct {
 	Notes            pgtype.Text      `json:"notes"`
 }
 
-func (q *Queries) CreatePetSchedule(ctx context.Context, arg CreatePetScheduleParams) error {
-	_, err := q.db.Exec(ctx, createPetSchedule,
+func (q *Queries) CreatePetSchedule(ctx context.Context, arg CreatePetScheduleParams) (PetSchedule, error) {
+	row := q.db.QueryRow(ctx, createPetSchedule,
 		arg.PetID,
 		arg.Title,
 		arg.ReminderDatetime,
@@ -60,7 +60,20 @@ func (q *Queries) CreatePetSchedule(ctx context.Context, arg CreatePetSchedulePa
 		arg.EndDate,
 		arg.Notes,
 	)
-	return err
+	var i PetSchedule
+	err := row.Scan(
+		&i.ID,
+		&i.PetID,
+		&i.Title,
+		&i.ReminderDatetime,
+		&i.EventRepeat,
+		&i.EndType,
+		&i.EndDate,
+		&i.Notes,
+		&i.IsActive,
+		&i.CreatedAt,
+	)
+	return i, err
 }
 
 const deletePetSchedule = `-- name: DeletePetSchedule :exec

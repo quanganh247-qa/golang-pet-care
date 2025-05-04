@@ -37,6 +37,7 @@ docker-compose.override.yml
 /tmp
 *.log
 
-
-
 .txt
+
+# GitHub
+.github/

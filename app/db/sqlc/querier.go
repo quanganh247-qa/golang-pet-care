@@ -48,7 +48,7 @@ type Querier interface {
 	CreatePet(ctx context.Context, arg CreatePetParams) (Pet, error)
 	CreatePetAllergy(ctx context.Context, arg CreatePetAllergyParams) (PetAllergy, error)
 	CreatePetLog(ctx context.Context, arg CreatePetLogParams) (PetLog, error)
-	CreatePetSchedule(ctx context.Context, arg CreatePetScheduleParams) error
+	CreatePetSchedule(ctx context.Context, arg CreatePetScheduleParams) (PetSchedule, error)
 	CreatePrescription(ctx context.Context, arg CreatePrescriptionParams) (Prescription, error)
 	CreatePrescriptionMedication(ctx context.Context, arg CreatePrescriptionMedicationParams) (PrescriptionMedication, error)
 	CreateProductStockMovement(ctx context.Context, arg CreateProductStockMovementParams) (ProductStockMovement, error)
