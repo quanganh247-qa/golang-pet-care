@@ -20,26 +20,19 @@ type PetScheduleControllerInterface interface {
 }
 
 func (c *PetScheduleController) createPetSchedule(ctx *gin.Context) {
-
-	petIDStr := ctx.Param("petid")
-	if petIDStr == "" {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Missed value pet id"})
-		return
-	}
-	petID, err := strconv.ParseInt(petIDStr, 10, 64)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid convert pet id"})
-		return
-	}
-
 	var req PetScheduleRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, util.ErrorValidator(err))
-
 		return
 	}
 
-	err = c.service.CreatePetScheduleService(ctx, req, petID)
+	// Kiểm tra pet_id từ request body
+	if req.PetID <= 0 {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid pet_id"})
+		return
+	}
+
+	err := c.service.CreatePetScheduleService(ctx, req, req.PetID)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, util.ErrorValidator(err))
 		return

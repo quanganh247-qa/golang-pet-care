@@ -246,6 +246,46 @@ func (q *Queries) GetUserByID(ctx context.Context, id int64) (GetUserByIDRow, er
 	return i, err
 }
 
+const getUserByRole = `-- name: GetUserByRole :many
+SELECT id, username, hashed_password, full_name, email, phone_number, address, data_image, original_image, role, status, created_at, is_verified_email, removed_at FROM users
+WHERE role = $1
+`
+
+func (q *Queries) GetUserByRole(ctx context.Context, role pgtype.Text) ([]User, error) {
+	rows, err := q.db.Query(ctx, getUserByRole, role)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []User{}
+	for rows.Next() {
+		var i User
+		if err := rows.Scan(
+			&i.ID,
+			&i.Username,
+			&i.HashedPassword,
+			&i.FullName,
+			&i.Email,
+			&i.PhoneNumber,
+			&i.Address,
+			&i.DataImage,
+			&i.OriginalImage,
+			&i.Role,
+			&i.Status,
+			&i.CreatedAt,
+			&i.IsVerifiedEmail,
+			&i.RemovedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const insertDoctor = `-- name: InsertDoctor :one
 INSERT INTO Doctors (
     user_id,

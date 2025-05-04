@@ -15,13 +15,17 @@ func Routes(routerGroup middleware.RouterGroup, taskDistributor worker.TaskDistr
 	appointment := routerGroup.RouterDefault.Group("/")
 	authRoute := routerGroup.RouterAuth(appointment)
 
+	// Khởi tạo NotificationManager cho Long polling
+	notificationManager := NewNotificationManager()
+
 	// Khoi tao api
 	appointmentApi := &AppointmentApi{
 		&AppointmentController{
 			service: &AppointmentService{
-				storeDB:         db.StoreDB,
-				taskDistributor: taskDistributor,
-				ws:              ws,
+				storeDB:             db.StoreDB,
+				taskDistributor:     taskDistributor,
+				ws:                  ws,
+				notificationManager: notificationManager,
 			},
 		},
 	}
@@ -65,5 +69,18 @@ func Routes(routerGroup middleware.RouterGroup, taskDistributor worker.TaskDistr
 		// WebSocket routes
 		authRoute.GET("/appointment/websocket", appointmentApi.controller.HandleWebSocket)
 
+		authRoute.GET("/appointment/state", appointmentApi.controller.GetAppointmentByState)
+
+		// Long polling routes
+		authRoute.GET("/appointment/notifications/wait", appointmentApi.controller.waitForNotifications)
+		authRoute.GET("/appointment/notifications", appointmentApi.controller.getNotifications)
+
+		// Database notification routes
+		authRoute.GET("/appointment/notifications/db", appointmentApi.controller.getNotificationsFromDB)
+		authRoute.PUT("/appointment/notifications/read/:id", appointmentApi.controller.markNotificationAsRead)
+		authRoute.PUT("/appointment/notifications/read-all", appointmentApi.controller.markAllNotificationsAsRead)
+
+		// Đăng ký vai trò người dùng
+		authRoute.POST("/appointment/register-role", appointmentApi.controller.registerUserRole)
 	}
 }

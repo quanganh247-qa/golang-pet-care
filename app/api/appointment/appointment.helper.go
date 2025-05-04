@@ -6,6 +6,8 @@ import (
 	"sort"
 	"time"
 
+	"github.com/jackc/pgx/v5/pgtype"
+	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
 	"github.com/quanganh247-qa/go-blog-be/app/service/redis"
 )
 
@@ -128,4 +130,295 @@ func ClearAppointmentCacheByID(appointmentID int64) {
 
 	redis.Client.RemoveCacheByKey(GetAppointmentCacheKey(appointmentID))
 	redis.Client.RemoveCacheByKey(GetAppointmentSOAPCacheKey(appointmentID))
+}
+
+// SetUserRole thiết lập vai trò cho người dùng
+func (nm *NotificationManager) SetUserRole(username string, role string) {
+	nm.roleMutex.Lock()
+	defer nm.roleMutex.Unlock()
+	nm.userRoles[username] = role
+}
+
+// GetUserRole lấy vai trò của người dùng
+func (nm *NotificationManager) GetUserRole(username string) (string, bool) {
+	nm.roleMutex.RLock()
+	defer nm.roleMutex.RUnlock()
+	role, exists := nm.userRoles[username]
+	return role, exists
+}
+
+// AddMissedNotification lưu thông báo vào danh sách thông báo bị bỏ lỡ
+func (nm *NotificationManager) AddMissedNotification(username string, notification AppointmentNotification) {
+	nm.missedMutex.Lock()
+	defer nm.missedMutex.Unlock()
+
+	if _, exists := nm.missedNotifications[username]; !exists {
+		nm.missedNotifications[username] = make([]AppointmentNotification, 0)
+	}
+	nm.missedNotifications[username] = append(nm.missedNotifications[username], notification)
+}
+
+// GetMissedNotifications lấy danh sách thông báo bị bỏ lỡ của một người dùng
+func (nm *NotificationManager) GetMissedNotifications(username string) []AppointmentNotification {
+	nm.missedMutex.RLock()
+	defer nm.missedMutex.RUnlock()
+
+	if notifications, exists := nm.missedNotifications[username]; exists {
+		return notifications
+	}
+	return []AppointmentNotification{}
+}
+
+// ClearMissedNotifications xóa tất cả thông báo bị bỏ lỡ của một người dùng
+func (nm *NotificationManager) ClearMissedNotifications(username string) {
+	nm.missedMutex.Lock()
+	defer nm.missedMutex.Unlock()
+
+	if _, exists := nm.missedNotifications[username]; exists {
+		nm.missedNotifications[username] = []AppointmentNotification{}
+	}
+}
+
+// MoveMissedToNotifications chuyển tất cả thông báo bị bỏ lỡ của một người dùng vào danh sách thông báo thông thường
+func (nm *NotificationManager) MoveMissedToNotifications(username string) {
+	// Lấy danh sách thông báo bị bỏ lỡ
+	missedNotifications := nm.GetMissedNotifications(username)
+	if len(missedNotifications) == 0 {
+		return
+	}
+
+	// Thêm vào danh sách thông báo thông thường
+	for _, notification := range missedNotifications {
+		nm.AddNotification(username, notification)
+	}
+
+	// Xóa danh sách thông báo bị bỏ lỡ
+	nm.ClearMissedNotifications(username)
+}
+
+// Thêm các phương thức cho NotificationManager
+func (nm *NotificationManager) AddNotification(username string, notification AppointmentNotification) {
+
+	ctx := context.Background()
+	err := nm.SaveNotificationToDB(ctx, username, notification)
+	if err != nil {
+		// Log lỗi nhưng vẫn tiếp tục để thông báo được lưu trong bộ nhớ
+		fmt.Printf("Lỗi khi lưu thông báo vào cơ sở dữ liệu: %v\n", err)
+	}
+
+	nm.notificationMutex.Lock()
+	defer nm.notificationMutex.Unlock()
+
+	// Thêm thông báo vào danh sách thông báo của người dùng
+	if _, exists := nm.notifications[username]; !exists {
+		nm.notifications[username] = make([]AppointmentNotification, 0)
+	}
+	nm.notifications[username] = append(nm.notifications[username], notification)
+
+	// Gửi thông báo đến client nếu đang chờ
+	nm.clientMutex.RLock()
+	defer nm.clientMutex.RUnlock()
+
+	if ch, exists := nm.pendingClients[username]; exists {
+		// Chỉ gửi nếu kênh vẫn mở
+		select {
+		case ch <- notification:
+			// Thông báo đã được gửi
+		default:
+			// Kênh đã đóng hoặc đầy
+		}
+	}
+}
+
+// BroadcastNotificationToAll gửi thông báo đến tất cả người dùng (giữ lại để tương thích ngược)
+func (nm *NotificationManager) BroadcastNotificationToAll(notification AppointmentNotification) {
+	nm.notificationMutex.RLock()
+	// Tạo danh sách tất cả người dùng
+	usernames := make([]string, 0, len(nm.notifications))
+	for username := range nm.notifications {
+		usernames = append(usernames, username)
+	}
+	nm.notificationMutex.RUnlock()
+
+	// Thêm thông báo cho tất cả người dùng
+	for _, username := range usernames {
+		nm.AddNotification(username, notification)
+	}
+}
+
+// BroadcastNotificationByRole gửi thông báo đến tất cả người dùng có vai trò cụ thể
+func (nm *NotificationManager) BroadcastNotificationByRole(notification AppointmentNotification, targetRole string) {
+	// Danh sách người dùng có vai trò phù hợp
+	usersWithRole := nm.getUsersByRole(targetRole)
+
+	// Gửi thông báo đến từng người dùng có vai trò phù hợp
+	for _, username := range usersWithRole {
+		nm.AddNotification(username, notification)
+	}
+}
+
+// getUsersByRole lấy danh sách người dùng có vai trò cụ thể
+func (nm *NotificationManager) getUsersByRole(role string) []string {
+	nm.roleMutex.RLock()
+	defer nm.roleMutex.RUnlock()
+
+	var usernames []string
+
+	users, err := db.StoreDB.GetUserByRole(context.Background(), pgtype.Text{String: role, Valid: true})
+	if err != nil {
+		return []string{}
+	}
+
+	for _, user := range users {
+		if user.Role.String == role {
+			usernames = append(usernames, user.Username)
+		}
+	}
+	return usernames
+}
+
+// GetNotifications trả về tất cả thông báo của một người dùng
+func (nm *NotificationManager) GetNotifications(username string) []AppointmentNotification {
+	nm.notificationMutex.RLock()
+	defer nm.notificationMutex.RUnlock()
+
+	if notifications, exists := nm.notifications[username]; exists {
+		return notifications
+	}
+	return []AppointmentNotification{}
+}
+
+// ClearNotifications xóa tất cả thông báo của một người dùng
+func (nm *NotificationManager) ClearNotifications(username string) {
+	nm.notificationMutex.Lock()
+	defer nm.notificationMutex.Unlock()
+
+	if _, exists := nm.notifications[username]; exists {
+		nm.notifications[username] = []AppointmentNotification{}
+	}
+}
+
+// WaitForNotification thiết lập long polling để chờ thông báo mới
+func (nm *NotificationManager) WaitForNotification(username string, timeout time.Duration) (AppointmentNotification, bool) {
+	// Tạo kênh cho client này
+	notificationCh := make(chan AppointmentNotification, 1)
+
+	// Đăng ký client vào danh sách chờ
+	nm.clientMutex.Lock()
+	nm.pendingClients[username] = notificationCh
+	nm.clientMutex.Unlock()
+
+	// Đảm bảo kênh bị xóa khi hàm kết thúc
+	defer func() {
+		nm.clientMutex.Lock()
+		delete(nm.pendingClients, username)
+		nm.clientMutex.Unlock()
+		close(notificationCh)
+	}()
+
+	// Kiểm tra xem có thông báo mới ngay lập tức không
+	nm.notificationMutex.RLock()
+	if notifications, exists := nm.notifications[username]; exists && len(notifications) > 0 {
+		// Có thông báo mới, trả về thông báo đầu tiên và xóa nó
+		notification := notifications[0]
+		nm.notificationMutex.RUnlock()
+
+		nm.notificationMutex.Lock()
+		nm.notifications[username] = notifications[1:]
+		nm.notificationMutex.Unlock()
+
+		return notification, true
+	}
+	nm.notificationMutex.RUnlock()
+
+	// Không có thông báo ngay lập tức, thiết lập timeout để chờ
+	select {
+	case notification := <-notificationCh:
+		return notification, true
+	case <-time.After(timeout):
+		return AppointmentNotification{}, false
+	}
+}
+
+// ConvertToDBNotification chuyển đổi một AppointmentNotification thành dạng phù hợp cho DB
+func (nm *NotificationManager) ConvertToDBNotification(username string, notification AppointmentNotification) db.CreatetNotificationParams {
+	var content string
+	if notification.Reason != "" {
+		content = fmt.Sprintf("Lịch hẹn cho %s với bác sĩ %s ngày %s. Lý do: %s",
+			notification.Pet.PetName, notification.Doctor.DoctorName, notification.Date, notification.Reason)
+	} else {
+		content = fmt.Sprintf("Lịch hẹn cho %s với bác sĩ %s ngày %s",
+			notification.Pet.PetName, notification.Doctor.DoctorName, notification.Date)
+	}
+
+	return db.CreatetNotificationParams{
+		Username:    username,
+		Title:       notification.Title,
+		Content:     pgtype.Text{String: content, Valid: true},
+		NotifyType:  pgtype.Text{String: "appointment", Valid: true},
+		RelatedID:   pgtype.Int4{Int32: int32(notification.AppointmentID), Valid: true},
+		RelatedType: pgtype.Text{String: "appointment", Valid: true},
+	}
+}
+
+// SaveNotificationToDB lưu thông báo vào cơ sở dữ liệu
+func (nm *NotificationManager) SaveNotificationToDB(ctx context.Context, username string, notification AppointmentNotification) error {
+	params := nm.ConvertToDBNotification(username, notification)
+	_, err := db.StoreDB.CreatetNotification(ctx, params)
+	return err
+}
+
+// GetNotificationsFromDB lấy danh sách thông báo từ cơ sở dữ liệu
+func (nm *NotificationManager) GetNotificationsFromDB(ctx context.Context, username string, limit int32, offset int32) ([]DatabaseNotification, error) {
+	dbNotifications, err := db.StoreDB.ListNotificationsByUsername(ctx, db.ListNotificationsByUsernameParams{
+		Username: username,
+		Limit:    limit,
+		Offset:   offset,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	notifications := make([]DatabaseNotification, len(dbNotifications))
+	for i, n := range dbNotifications {
+		notifications[i] = DatabaseNotification{
+			ID:          n.ID,
+			Username:    n.Username,
+			Title:       n.Title,
+			Content:     n.Content.String,
+			NotifyType:  n.NotifyType.String,
+			RelatedID:   int64(n.RelatedID.Int32),
+			RelatedType: n.RelatedType.String,
+			IsRead:      n.IsRead.Bool,
+			CreatedAt:   n.Datetime.Time,
+		}
+	}
+
+	return notifications, nil
+}
+
+// ConvertDBToAppointmentNotification chuyển đổi thông báo từ DB sang AppointmentNotification
+func (nm *NotificationManager) ConvertDBToAppointmentNotification(dbNotification DatabaseNotification) AppointmentNotification {
+	// ID mặc định
+	id := fmt.Sprintf("db-%d", dbNotification.ID)
+
+	// Mặc định cho các trường khác
+	notification := AppointmentNotification{
+		ID:            id,
+		Title:         dbNotification.Title,
+		AppointmentID: dbNotification.RelatedID,
+		// Các trường khác sẽ được fill khi cần thiết
+	}
+
+	return notification
+}
+
+// MarkNotificationAsRead đánh dấu thông báo đã đọc trong cơ sở dữ liệu
+func (nm *NotificationManager) MarkNotificationAsReadInDB(ctx context.Context, notificationID int64) error {
+	return db.StoreDB.MarkNotificationAsRead(ctx, notificationID)
+}
+
+// DeleteNotificationsByUsername xóa tất cả thông báo của người dùng trong DB
+func (nm *NotificationManager) DeleteNotificationsByUsernameFromDB(ctx context.Context, username string) error {
+	return db.StoreDB.DeleteNotificationsByUsername(ctx, username)
 }

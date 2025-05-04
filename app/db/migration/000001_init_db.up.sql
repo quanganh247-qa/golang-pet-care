@@ -211,7 +211,8 @@ CREATE TABLE public.device_tokens (
 	last_used_at timestamp NULL,
 	expired_at timestamp NULL,
 	CONSTRAINT device_tokens_pkey PRIMARY KEY (id),
-	CONSTRAINT device_tokens_token_key UNIQUE (token),
+	-- CONSTRAINT device_tokens_token_key UNIQUE (token),
+	device_tokens_unique UNIQUE ("token",username)
 	CONSTRAINT fk_device_tokens_username FOREIGN KEY (username) REFERENCES public.users(username) ON DELETE CASCADE
 );
 

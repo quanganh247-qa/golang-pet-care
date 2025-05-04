@@ -6,7 +6,7 @@ import (
 )
 
 func Routes(routerGroup middleware.RouterGroup) {
-	device_token := routerGroup.RouterDefault.Group("/device-token")
+	device_token := routerGroup.RouterDefault.Group("")
 	authRoute := routerGroup.RouterAuth(device_token)
 	// DeviceToken.Use(middleware.IPbasedRateLimitingMiddleware())
 
@@ -20,10 +20,13 @@ func Routes(routerGroup middleware.RouterGroup) {
 		},
 	}
 
+	// Public routes
+	device_token.GET("/device-tokens", deviceTokenApi.controller.getDeviceTokens)
+
 	{
 		// authRoute.POST("/create", DeviceTokenApi.controller.createDeviceToken)
-		authRoute.POST("/create", deviceTokenApi.controller.insertDeviceToken)
-		authRoute.DELETE("/:token", deviceTokenApi.controller.deleteDeviceToken)
+		authRoute.POST("/device-token/create", deviceTokenApi.controller.insertDeviceToken)
+		authRoute.DELETE("/device-token/:token", deviceTokenApi.controller.deleteDeviceToken)
 
 	}
 

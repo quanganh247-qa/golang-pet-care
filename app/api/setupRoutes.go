@@ -42,7 +42,7 @@ func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor, config
 	routerDefault.Use(middleware.LoggingMiddleware())
 
 	// Setup route handlers
-	chatHandler := handlers.NewChatHandler(config.GoogleAPIKey, config.OpenFDAAPIKey)
+	chatHandler := handlers.NewChatHandler(config.GoogleAPIKey)
 	// Add Roboflow inference handler
 	inferenceHandler := inference.NewInferenceHandler(config.RoboflowAPIKey)
 

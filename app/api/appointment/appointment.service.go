@@ -13,7 +13,6 @@ import (
 	"github.com/quanganh247-qa/go-blog-be/app/api/user"
 	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
 	"github.com/quanganh247-qa/go-blog-be/app/service/redis"
-	"github.com/quanganh247-qa/go-blog-be/app/service/websocket"
 	"github.com/quanganh247-qa/go-blog-be/app/util"
 )
 
@@ -37,6 +36,7 @@ type AppointmentServiceInterface interface {
 	GetSOAPByAppointmentID(ctx *gin.Context, appointmentID int64) (*SOAPResponse, error)
 	GetAppointmentDistributionByService(ctx *gin.Context, startDate, endDate string) ([]AppointmentDistribution, error)
 	HandleWebSocket(ctx *gin.Context)
+	GetAppointmentByState(ctx *gin.Context, stateID string) ([]Appointment, error)
 }
 
 func (s *AppointmentService) CreateAppointment(ctx *gin.Context, req createAppointmentRequest, username string) (*createAppointmentResponse, error) {
@@ -176,7 +176,8 @@ func (s *AppointmentService) CreateAppointment(ctx *gin.Context, req createAppoi
 		}, ServiceName: detail.ServiceName.String,
 	}
 
-	s.sendAppointmentNotification(ctx, notification)
+	// Gửi thông báo đến bác sĩ được chỉ định
+	s.sendAppointmentNotification(ctx, notification, "admin")
 
 	// Prepare the response
 	response := &createAppointmentResponse{
@@ -206,13 +207,28 @@ func (s *AppointmentService) CreateAppointment(ctx *gin.Context, req createAppoi
 	return response, nil
 }
 
-func (s *AppointmentService) sendAppointmentNotification(ctx context.Context, notification AppointmentNotification) {
-	// Send notification via WebSocket
-	wsMessage := websocket.WebSocketMessage{
-		Type: "appointment_alert",
-		Data: notification,
+func (s *AppointmentService) sendAppointmentNotification(ctx context.Context, notification AppointmentNotification, targetRole string) {
+	// Sử dụng NotificationManager cho Long polling dựa trên vai trò
+	if s.notificationManager != nil {
+		if targetRole != "" {
+			// Gửi thông báo dựa trên vai trò nếu có
+			s.notificationManager.BroadcastNotificationByRole(notification, targetRole)
+		} else {
+			// Gửi thông báo đến tất cả nếu không có vai trò cụ thể
+			s.notificationManager.BroadcastNotificationToAll(notification)
+		}
 	}
-	s.ws.BroadcastToAll(wsMessage)
+
+	// if s.notificationManager != nil {
+	// 	s.notificationManager.SaveNotificationToDB(ctx, username, notification)
+	// }
+
+	// // Vẫn giữ WebSocket để tương thích ngược - có thể loại bỏ sau này
+	// wsMessage := websocket.WebSocketMessage{
+	// 	Type: "appointment_alert",
+	// 	Data: notification,
+	// }
+	// s.ws.BroadcastToAll(wsMessage)
 }
 
 func (s *AppointmentService) CreateWalkInAppointment(ctx *gin.Context, req createWalkInAppointmentRequest) (*createAppointmentResponse, error) {
@@ -779,64 +795,120 @@ func (s *AppointmentService) GetAvailableTimeSlots(ctx *gin.Context, doctorID in
 
 func (s *AppointmentService) GetAllAppointments(ctx *gin.Context, date string, option string, pagination *util.Pagination) (*util.PaginationResponse[Appointment], error) {
 	offset := (pagination.Page - 1) * pagination.PageSize
-
-	count, err := s.storeDB.CountAllAppointmentsByDate(ctx, date)
-	if err != nil {
-		return nil, fmt.Errorf("Cannot count appointment")
-	}
-
-	appointments, err := s.storeDB.GetAllAppointments(ctx, db.GetAllAppointmentsParams{
-		Date:    date,
-		Limit:   int32(pagination.PageSize),
-		Offset:  int32(offset),
-		Column4: option,
-	})
-	if err != nil {
-		return nil, fmt.Errorf("Cannot get appointment")
-	}
-
+	var count int64
 	var a []Appointment
-	for _, appointment := range appointments {
 
-		doc, err := s.storeDB.GetDoctor(ctx, appointment.DoctorID.Int64)
+	if option == "false" {
+
+		appointments, err := s.storeDB.GetAllAppointmentsWithDateOption(ctx, db.GetAllAppointmentsWithDateOptionParams{
+			Date:    date,
+			Limit:   int32(pagination.PageSize),
+			Offset:  int32(offset),
+			Column4: option,
+		})
 		if err != nil {
-			return nil, fmt.Errorf("Cannot get doctor")
+			return nil, fmt.Errorf("Cannot get appointment")
 		}
 
-		a = append(a, Appointment{
-			ID: appointment.AppointmentID,
-			Pet: Pet{
-				PetID:    appointment.PetID.Int64,
-				PetName:  appointment.PetName.String,
-				PetBreed: appointment.PetBreed.String,
-			},
-			Room: appointment.RoomName.String,
-			Serivce: Serivce{
-				ServiceName:     appointment.ServiceName.String,
-				ServiceDuration: appointment.ServiceDuration.Int16,
-			},
-			Doctor: Doctor{
-				DoctorID:   appointment.DoctorID.Int64,
-				DoctorName: doc.Name,
-			},
-			Date:         appointment.Date.Time.Format("2006-01-02"),
-			State:        appointment.StateName.String,
-			ReminderSend: appointment.ReminderSend.Bool,
-			CreatedAt:    appointment.CreatedAt.Time.Format("2006-01-02 15:04:05"),
-			TimeSlot: timeslot{
-				StartTime: time.UnixMicro(appointment.StartTime.Microseconds).UTC().Format("15:04:05"),
-				EndTime:   time.UnixMicro(appointment.EndTime.Microseconds).UTC().Format("15:04:05"),
-			},
-			Owner: Owner{
-				OwnerName:    appointment.OwnerName.String,
-				OwnerPhone:   appointment.OwnerPhone.String,
-				OwnerEmail:   appointment.OwnerEmail.String,
-				OwnerAddress: appointment.OwnerAddress.String,
-			},
-			Reason:      appointment.AppointmentReason.String,
-			ArrivalTime: appointment.ArrivalTime.Time.Format("2006-01-02 15:04:05"),
-		})
+		count = int64(len(appointments))
 
+		for _, appointment := range appointments {
+
+			doc, err := s.storeDB.GetDoctor(ctx, appointment.DoctorID.Int64)
+			if err != nil {
+				return nil, fmt.Errorf("Cannot get doctor")
+			}
+
+			a = append(a, Appointment{
+				ID: appointment.AppointmentID,
+				Pet: Pet{
+					PetID:    appointment.PetID.Int64,
+					PetName:  appointment.PetName.String,
+					PetBreed: appointment.PetBreed.String,
+				},
+				Room: appointment.RoomName.String,
+				Serivce: Serivce{
+					ServiceName:     appointment.ServiceName.String,
+					ServiceDuration: appointment.ServiceDuration.Int16,
+				},
+				Doctor: Doctor{
+					DoctorID:   appointment.DoctorID.Int64,
+					DoctorName: doc.Name,
+				},
+				Date:         appointment.Date.Time.Format("2006-01-02"),
+				State:        appointment.StateName.String,
+				ReminderSend: appointment.ReminderSend.Bool,
+				CreatedAt:    appointment.CreatedAt.Time.Format("2006-01-02 15:04:05"),
+				TimeSlot: timeslot{
+					StartTime: time.UnixMicro(appointment.StartTime.Microseconds).UTC().Format("15:04:05"),
+					EndTime:   time.UnixMicro(appointment.EndTime.Microseconds).UTC().Format("15:04:05"),
+				},
+				Owner: Owner{
+					OwnerName:    appointment.OwnerName.String,
+					OwnerPhone:   appointment.OwnerPhone.String,
+					OwnerEmail:   appointment.OwnerEmail.String,
+					OwnerAddress: appointment.OwnerAddress.String,
+				},
+				Reason:      appointment.AppointmentReason.String,
+				ArrivalTime: appointment.ArrivalTime.Time.Format("2006-01-02 15:04:05"),
+			})
+
+		}
+
+	} else {
+
+		appointments, err := s.storeDB.GetAllAppointments(ctx, db.GetAllAppointmentsParams{
+			Limit:  int32(pagination.PageSize),
+			Offset: int32(offset),
+		})
+		if err != nil {
+			return nil, fmt.Errorf("Cannot get appointment")
+		}
+
+		count = int64(len(appointments))
+
+		for _, appointment := range appointments {
+
+			doc, err := s.storeDB.GetDoctor(ctx, appointment.DoctorID.Int64)
+			if err != nil {
+				return nil, fmt.Errorf("Cannot get doctor")
+			}
+
+			a = append(a, Appointment{
+				ID: appointment.AppointmentID,
+				Pet: Pet{
+					PetID:    appointment.PetID.Int64,
+					PetName:  appointment.PetName.String,
+					PetBreed: appointment.PetBreed.String,
+				},
+				Room: appointment.RoomName.String,
+				Serivce: Serivce{
+					ServiceName:     appointment.ServiceName.String,
+					ServiceDuration: appointment.ServiceDuration.Int16,
+				},
+				Doctor: Doctor{
+					DoctorID:   appointment.DoctorID.Int64,
+					DoctorName: doc.Name,
+				},
+				Date:         appointment.Date.Time.Format("2006-01-02"),
+				State:        appointment.StateName.String,
+				ReminderSend: appointment.ReminderSend.Bool,
+				CreatedAt:    appointment.CreatedAt.Time.Format("2006-01-02 15:04:05"),
+				TimeSlot: timeslot{
+					StartTime: time.UnixMicro(appointment.StartTime.Microseconds).UTC().Format("15:04:05"),
+					EndTime:   time.UnixMicro(appointment.EndTime.Microseconds).UTC().Format("15:04:05"),
+				},
+				Owner: Owner{
+					OwnerName:    appointment.OwnerName.String,
+					OwnerPhone:   appointment.OwnerPhone.String,
+					OwnerEmail:   appointment.OwnerEmail.String,
+					OwnerAddress: appointment.OwnerAddress.String,
+				},
+				Reason:      appointment.AppointmentReason.String,
+				ArrivalTime: appointment.ArrivalTime.Time.Format("2006-01-02 15:04:05"),
+			})
+
+		}
 	}
 
 	response := &util.PaginationResponse[Appointment]{
@@ -845,14 +917,15 @@ func (s *AppointmentService) GetAllAppointments(ctx *gin.Context, date string, o
 	}
 	return response.Build(), nil
 }
+
 func (s *AppointmentService) GetAllAppointmentsByDate(ctx *gin.Context, pagination *util.Pagination, date string) ([]Appointment, error) {
 	offset := (pagination.Page - 1) * pagination.PageSize
 
-	appointments, err := s.storeDB.GetAllAppointments(ctx, db.GetAllAppointmentsParams{
+	appointments, err := s.storeDB.GetAllAppointmentsWithDateOption(ctx, db.GetAllAppointmentsWithDateOptionParams{
 		Date:    date,
 		Limit:   int32(pagination.PageSize),
 		Offset:  int32(offset),
-		Column4: true,
+		Column4: "false",
 	})
 	if err != nil {
 		return nil, fmt.Errorf("Cannot get appointment")
@@ -1242,4 +1315,43 @@ func (s *AppointmentService) GetAppointmentDistributionByService(ctx *gin.Contex
 
 func (s *AppointmentService) HandleWebSocket(ctx *gin.Context) {
 	s.ws.HandleWebSocket(ctx)
+}
+
+func (s *AppointmentService) GetAppointmentByState(ctx *gin.Context, stateID string) ([]Appointment, error) {
+	appointments, err := s.storeDB.GetAppointmentByState(ctx, stateID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get appointments by state: %w", err)
+	}
+
+	var a []Appointment
+	for _, appointment := range appointments {
+		doc, err := s.storeDB.GetDoctor(ctx, appointment.DoctorID.Int64)
+		if err != nil {
+			return nil, fmt.Errorf("failed to get doctor: %w", err)
+		}
+
+		a = append(a, Appointment{
+			ID: appointment.AppointmentID,
+			Pet: Pet{
+				PetName: appointment.PetName.String,
+			},
+			Serivce: Serivce{
+				ServiceName: appointment.ServiceName.String,
+			},
+			Doctor: Doctor{
+				DoctorID:   appointment.DoctorID.Int64,
+				DoctorName: doc.Name,
+			},
+			Date:         appointment.Date.Time.Format("2006-01-02"),
+			State:        appointment.StateName.String,
+			ReminderSend: appointment.ReminderSend.Bool,
+			CreatedAt:    appointment.CreatedAt.Time.Format("2006-01-02 15:04:05"),
+			TimeSlot: timeslot{
+				StartTime: time.UnixMicro(appointment.StartTime.Microseconds).UTC().Format("15:04:05"),
+				EndTime:   time.UnixMicro(appointment.EndTime.Microseconds).UTC().Format("15:04:05"),
+			},
+			Reason: appointment.AppointmentReason.String,
+		})
+	}
+	return a, nil
 }

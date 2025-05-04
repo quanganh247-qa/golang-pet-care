@@ -4,8 +4,10 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/gin-gonic/gin"
+	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
 	"github.com/quanganh247-qa/go-blog-be/app/middleware"
 	"github.com/quanganh247-qa/go-blog-be/app/util"
 )
@@ -36,8 +38,21 @@ type AppointmentControllerInterface interface {
 	GetAppointmentDistribution(ctx *gin.Context)
 
 	CreateWalkInAppointment(c *gin.Context)
-
+	GetAppointmentByState(ctx *gin.Context)
 	HandleWebSocket(ctx *gin.Context)
+
+	// Long polling
+	waitForNotifications(ctx *gin.Context)
+	getNotifications(ctx *gin.Context)
+	getMissedNotifications(ctx *gin.Context)
+
+	// User role registration
+	registerUserRole(ctx *gin.Context)
+
+	// Notifications from DB
+	getNotificationsFromDB(ctx *gin.Context)
+	markNotificationAsRead(ctx *gin.Context)
+	markAllNotificationsAsRead(ctx *gin.Context)
 }
 
 // createAppointment creates a new appointment
@@ -203,14 +218,17 @@ func (c *AppointmentController) getAvailableTimeSlots(ctx *gin.Context) {
 }
 
 func (c *AppointmentController) getAllAppointments(ctx *gin.Context) {
-
-	date := ctx.Query("date")
-	if date == "" {
-		ctx.JSON(http.StatusBadRequest, nil)
-		return
-	}
-
+	var date string
 	option := ctx.Query("option")
+	if option == "false" {
+
+		date = ctx.Query("date")
+		if date == "" {
+			ctx.JSON(http.StatusBadRequest, nil)
+			return
+		}
+
+	}
 
 	pagination, err := util.GetPageInQuery(ctx.Request.URL.Query())
 	if err != nil {
@@ -485,4 +503,226 @@ func (c *AppointmentController) HandleWebSocket(ctx *gin.Context) {
 
 	// Handle WebSocket connection
 	c.service.HandleWebSocket(ctx)
+}
+
+func (c *AppointmentController) GetAppointmentByState(ctx *gin.Context) {
+	// Get the state from the query parameters
+	state := ctx.Query("state")
+	if state == "" {
+		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(fmt.Errorf("state is required")))
+		return
+	}
+
+	// Get the appointments by state
+	appointments, err := c.service.GetAppointmentByState(ctx, state)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, util.ErrorResponse(err))
+		return
+	}
+
+	ctx.JSON(http.StatusOK, appointments)
+}
+
+// WaitForNotifications thực hiện Long polling để chờ thông báo mới
+// Phương thức này sẽ giữ kết nối mở trong thời gian chờ quy định (30s)
+func (c *AppointmentController) waitForNotifications(ctx *gin.Context) {
+	// Xác thực người dùng
+	authPayload, err := middleware.GetAuthorizationPayload(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
+	}
+
+	// Chuyển các thông báo bị bỏ lỡ sang danh sách thông báo thông thường
+	service, ok := c.service.(*AppointmentService)
+	if !ok {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Server configuration error"})
+		return
+	}
+	service.notificationManager.MoveMissedToNotifications(authPayload.Username)
+
+	// Thời gian tối đa chờ đợi: 30 giây
+	timeout := 30 * time.Second
+
+	// Chờ thông báo từ NotificationManager
+	notification, hasNotification := service.notificationManager.WaitForNotification(authPayload.Username, timeout)
+	if !hasNotification {
+		// Trả về mã trạng thái 204 (No Content) nếu không có thông báo trong thời gian chờ
+		ctx.Status(http.StatusNoContent)
+		return
+	}
+
+	// Trả về thông báo cho client
+	ctx.JSON(http.StatusOK, notification)
+}
+
+// GetNotifications trả về danh sách tất cả thông báo hiện tại và thông báo bị bỏ lỡ của người dùng
+func (c *AppointmentController) getNotifications(ctx *gin.Context) {
+	// Xác thực người dùng
+	authPayload, err := middleware.GetAuthorizationPayload(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
+	}
+
+	service, ok := c.service.(*AppointmentService)
+	if !ok {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Server configuration error"})
+		return
+	}
+
+	// Chuyển các thông báo bị bỏ lỡ sang danh sách thông báo thông thường
+	service.notificationManager.MoveMissedToNotifications(authPayload.Username)
+
+	// Lấy danh sách thông báo từ NotificationManager
+	notifications := service.notificationManager.GetNotifications(authPayload.Username)
+
+	ctx.JSON(http.StatusOK, notifications)
+}
+
+// GetMissedNotifications trả về danh sách thông báo bị bỏ lỡ của người dùng
+func (c *AppointmentController) getMissedNotifications(ctx *gin.Context) {
+	// Xác thực người dùng
+	authPayload, err := middleware.GetAuthorizationPayload(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
+	}
+
+	// Lấy danh sách thông báo bị bỏ lỡ từ NotificationManager
+	missed := c.service.(*AppointmentService).notificationManager.GetMissedNotifications(authPayload.Username)
+
+	ctx.JSON(http.StatusOK, missed)
+}
+
+// RegisterUserRole đăng ký vai trò cho người dùng để nhận thông báo phù hợp
+func (c *AppointmentController) registerUserRole(ctx *gin.Context) {
+	// Xác thực người dùng
+	authPayload, err := middleware.GetAuthorizationPayload(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
+	}
+
+	user, err := db.StoreDB.GetUser(ctx, authPayload.Username)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get user"})
+		return
+	}
+
+	// Kiểm tra tính hợp lệ của vai trò
+	validRoles := map[string]bool{
+		"admin":  true,
+		"doctor": true,
+		"nurse":  true,
+	}
+
+	role := user.Role.String
+
+	if !validRoles[role] {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid role"})
+		return
+	}
+
+	// Đăng ký vai trò với NotificationManager
+	c.service.(*AppointmentService).notificationManager.SetUserRole(authPayload.Username, role)
+
+	ctx.JSON(http.StatusOK, gin.H{"message": "Role registered successfully"})
+}
+
+// GetNotificationsFromDB lấy danh sách thông báo từ cơ sở dữ liệu
+func (c *AppointmentController) getNotificationsFromDB(ctx *gin.Context) {
+	// Xác thực người dùng
+	authPayload, err := middleware.GetAuthorizationPayload(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
+	}
+
+	pagination, err := util.GetPageInQuery(ctx.Request.URL.Query())
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
+		return
+	}
+
+	offset := (pagination.Page - 1) * pagination.PageSize
+	limit := pagination.PageSize
+
+	// Lấy thông báo từ database
+	service, ok := c.service.(*AppointmentService)
+	if !ok {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Server configuration error"})
+		return
+	}
+
+	dbNotifications, err := service.notificationManager.GetNotificationsFromDB(ctx, authPayload.Username, int32(limit), int32(offset))
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("Không thể lấy thông báo từ database: %v", err)})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, dbNotifications)
+}
+
+// MarkNotificationAsRead đánh dấu thông báo đã đọc
+func (c *AppointmentController) markNotificationAsRead(ctx *gin.Context) {
+	// Xác thực người dùng
+	_, err := middleware.GetAuthorizationPayload(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
+	}
+
+	// Lấy ID thông báo
+	idParam := ctx.Param("id")
+	id, err := strconv.ParseInt(idParam, 10, 64)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid notification ID"})
+		return
+	}
+
+	// Đánh dấu thông báo đã đọc
+	service, ok := c.service.(*AppointmentService)
+	if !ok {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Server configuration error"})
+		return
+	}
+
+	err = service.notificationManager.MarkNotificationAsReadInDB(ctx, id)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("Không thể đánh dấu thông báo đã đọc: %v", err)})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"message": "Đã đánh dấu thông báo đã đọc"})
+}
+
+// MarkAllNotificationsAsRead đánh dấu tất cả thông báo của người dùng đã đọc
+func (c *AppointmentController) markAllNotificationsAsRead(ctx *gin.Context) {
+	// Xác thực người dùng
+	authPayload, err := middleware.GetAuthorizationPayload(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
+	}
+
+	// Xóa tất cả thông báo trong bộ nhớ
+	service, ok := c.service.(*AppointmentService)
+	if !ok {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Server configuration error"})
+		return
+	}
+
+	// Xóa tất cả thông báo trong database
+	err = service.notificationManager.DeleteNotificationsByUsernameFromDB(ctx, authPayload.Username)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("Không thể xóa thông báo từ database: %v", err)})
+		return
+	}
+
+	// Xóa thông báo trong bộ nhớ
+	service.notificationManager.ClearNotifications(authPayload.Username)
+	service.notificationManager.ClearMissedNotifications(authPayload.Username)
+
+	ctx.JSON(http.StatusOK, gin.H{"message": "Đã đánh dấu tất cả thông báo đã đọc"})
 }

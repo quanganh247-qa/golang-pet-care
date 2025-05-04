@@ -13,6 +13,7 @@ import (
 type DeviceTokenServiceInterface interface {
 	InsertToken(ctx context.Context, req DVTRequest, username string) (*DVTResponse, error)
 	DeleteDevicetToken(ctx context.Context, username string, token string) error
+	GetDeviceTokenByUsername(ctx context.Context, username string) ([]DVTResponse, error)
 }
 
 func (s *DeviceTokenService) InsertToken(ctx context.Context, req DVTRequest, username string) (*DVTResponse, error) {
@@ -62,4 +63,26 @@ func (s *DeviceTokenService) DeleteDevicetToken(ctx context.Context, username st
 	}
 	return err
 
+}
+
+func (s *DeviceTokenService) GetDeviceTokenByUsername(ctx context.Context, username string) ([]DVTResponse, error) {
+	tokens, err := s.storeDB.GetDeviceTokenByUsername(ctx, username)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get device token: %w", err)
+	}
+
+	var response []DVTResponse
+	for _, token := range tokens {
+		response = append(response, DVTResponse{
+			ID:         token.ID,
+			Username:   token.Username,
+			Token:      token.Token,
+			DeviceType: token.DeviceType.String,
+			CreatedAt:  token.CreatedAt.Time.Format(time.RFC3339),
+			LastUsedAt: token.LastUsedAt.Time.Format(time.RFC3339),
+			ExpiredAt:  token.ExpiredAt.Time.Format(time.RFC3339),
+		})
+	}
+
+	return response, nil
 }

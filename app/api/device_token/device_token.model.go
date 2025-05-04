@@ -33,3 +33,7 @@ type DVTResponse struct {
 	LastUsedAt string `json:"last_used_at"`
 	ExpiredAt  string `json:"expired_at"`
 }
+
+type DVTList struct {
+	UserID int64 `json:"user_id"`
+}

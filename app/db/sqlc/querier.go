@@ -98,6 +98,7 @@ type Querier interface {
 	GetActiveTreatments(ctx context.Context, arg GetActiveTreatmentsParams) ([]GetActiveTreatmentsRow, error)
 	GetAllAppointments(ctx context.Context, arg GetAllAppointmentsParams) ([]GetAllAppointmentsRow, error)
 	GetAllAppointmentsByDate(ctx context.Context, arg GetAllAppointmentsByDateParams) ([]GetAllAppointmentsByDateRow, error)
+	GetAllAppointmentsWithDateOption(ctx context.Context, arg GetAllAppointmentsWithDateOptionParams) ([]GetAllAppointmentsWithDateOptionRow, error)
 	GetAllAppointmentsWithOrders(ctx context.Context) ([]GetAllAppointmentsWithOrdersRow, error)
 	GetAllMedicines(ctx context.Context) ([]GetAllMedicinesRow, error)
 	GetAllOrders(ctx context.Context, arg GetAllOrdersParams) ([]Order, error)
@@ -109,6 +110,13 @@ type Querier interface {
 	GetAllSuppliers(ctx context.Context, arg GetAllSuppliersParams) ([]MedicineSupplier, error)
 	GetAllTreatmentPhasesByTreatmentID(ctx context.Context, treatmentID pgtype.Int8) ([]TreatmentPhase, error)
 	GetAllUsers(ctx context.Context) ([]User, error)
+	// -- name: UpdateRoomStatus :exec
+	// UPDATE rooms
+	// SET status = $2,
+	//     current_appointment_id = $3,
+	//     available_at = $4
+	// WHERE id = $1;
+	GetAppointmentByState(ctx context.Context, state string) ([]GetAppointmentByStateRow, error)
 	GetAppointmentByStateId(ctx context.Context, stateID pgtype.Int4) ([]Appointment, error)
 	GetAppointmentDetail(ctx context.Context, arg GetAppointmentDetailParams) (GetAppointmentDetailRow, error)
 	GetAppointmentDetailByAppointmentID(ctx context.Context, appointmentID int64) (GetAppointmentDetailByAppointmentIDRow, error)
@@ -226,6 +234,7 @@ type Querier interface {
 	GetUser(ctx context.Context, username string) (GetUserRow, error)
 	GetUserByEmail(ctx context.Context, email string) (User, error)
 	GetUserByID(ctx context.Context, id int64) (GetUserByIDRow, error)
+	GetUserByRole(ctx context.Context, role pgtype.Text) ([]User, error)
 	GetVaccinationByID(ctx context.Context, vaccinationid int64) (Vaccination, error)
 	InsertDeviceToken(ctx context.Context, arg InsertDeviceTokenParams) (DeviceToken, error)
 	InsertDoctor(ctx context.Context, arg InsertDoctorParams) (Doctor, error)

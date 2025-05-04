@@ -136,6 +136,7 @@ func (r *RoboflowClient) InferFromBytes(imageData []byte, modelID, breed string)
 
 		// Transfer the data to our generic result
 		result.Predictions = tempResult.Predictions
+
 		result.Time = tempResult.Time
 	} else {
 		// If no specific breed is provided, just decode the raw JSON

@@ -1,6 +1,7 @@
 package appointment
 
 import (
+	"sync"
 	"time"
 
 	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
@@ -8,14 +9,37 @@ import (
 	"github.com/quanganh247-qa/go-blog-be/app/service/worker"
 )
 
+// NotificationManager xử lý việc lưu trữ và phân phối thông báo
+type NotificationManager struct {
+	notifications       map[string][]AppointmentNotification // map[username][]Notification
+	pendingClients      map[string]chan AppointmentNotification
+	userRoles           map[string]string                    // map[username]role
+	missedNotifications map[string][]AppointmentNotification // Lưu trữ thông báo khi client không online
+	notificationMutex   sync.RWMutex
+	clientMutex         sync.RWMutex
+	roleMutex           sync.RWMutex
+	missedMutex         sync.RWMutex
+}
+
+// NewNotificationManager tạo một đối tượng quản lý thông báo mới
+func NewNotificationManager() *NotificationManager {
+	return &NotificationManager{
+		notifications:       make(map[string][]AppointmentNotification),
+		pendingClients:      make(map[string]chan AppointmentNotification),
+		userRoles:           make(map[string]string),
+		missedNotifications: make(map[string][]AppointmentNotification),
+	}
+}
+
 type AppointmentController struct {
 	service AppointmentServiceInterface
 }
 
 type AppointmentService struct {
-	storeDB         db.Store
-	taskDistributor worker.TaskDistributor
-	ws              *websocket.WSClientManager
+	storeDB             db.Store
+	taskDistributor     worker.TaskDistributor
+	ws                  *websocket.WSClientManager
+	notificationManager *NotificationManager
 }
 
 type AppointmentApi struct {
@@ -271,4 +295,18 @@ type AppointmentNotification struct {
 	Date          string   `json:"date"`
 	TimeSlot      timeslot `json:"time_slot"`
 	ServiceName   string   `json:"service_name"`
+}
+
+// DatabaseNotification đại diện cho thông báo được lưu trong cơ sở dữ liệu
+type DatabaseNotification struct {
+	ID          int64     `json:"id"`
+	Username    string    `json:"username"`
+	Title       string    `json:"title"`
+	Content     string    `json:"content"`
+	NotifyType  string    `json:"notify_type"`
+	RelatedID   int64     `json:"related_id"`
+	RelatedType string    `json:"related_type"`
+	IsRead      bool      `json:"is_read"`
+	CreatedAt   time.Time `json:"created_at"`
+	UpdatedAt   time.Time `json:"updated_at"`
 }

@@ -20,6 +20,6 @@ func Routes(routerGroup middleware.RouterGroup, chatHandler *handlers.ChatHandle
 		authRoute.GET("conversations", chatHandler.ListConversations)
 		authRoute.GET("conversations/:conversation_id", chatHandler.GetConversation)
 		authRoute.DELETE("conversations/:conversation_id", chatHandler.DeleteConversation)
-		authRoute.GET("follow-up/:drug_name", chatHandler.GetDrugFollowUpQuestions)
+
 	}
 }

@@ -170,8 +170,6 @@ func (s *PaymentService) GenerateQRService(c *gin.Context, qrRequest QRRequest) 
 	return &result, nil
 }
 
-// Add this to the existing payment.service.go file
-
 // GetRevenueLastSevenDays retrieves revenue data for the last 7 days
 func (s *PaymentService) GetRevenueLastSevenDays(ctx context.Context) (*RevenueResponse, error) {
 	revenueData, err := s.storeDB.GetRevenueLastSevenDays(ctx)
@@ -222,10 +220,11 @@ func (s *PaymentService) UpdatePaymentAfterSuccess(ctx context.Context, paymentI
 
 		// Update order status if this is a product order
 		if payment.OrderID.Valid {
-			_, err = q.UpdateOrderPaymentStatus(ctx, int64(payment.OrderID.Int32))
+			result, err := q.UpdateOrderPaymentStatus(ctx, int64(payment.OrderID.Int32))
 			if err != nil {
 				return fmt.Errorf("failed to update order payment status: %w", err)
 			}
+			_ = result // Use the result if needed
 		}
 
 		// Update test order status if this is a test order
@@ -251,6 +250,59 @@ func (s *PaymentService) UpdatePaymentAfterSuccess(ctx context.Context, paymentI
 
 		return nil
 	})
+}
+
+// Helper method to update order payment status
+func (s *PaymentService) updateOrderPaymentStatus(ctx context.Context, orderID int64) error {
+	err := s.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
+		result, err := q.UpdateOrderPaymentStatus(ctx, orderID)
+		if err != nil {
+			return err
+		}
+		_ = result // Use the result if needed
+		return nil
+	})
+
+	if err != nil {
+		log.Printf("Failed to update order payment status: %v", err)
+	}
+
+	return err
+}
+
+// Helper method to create payment record for order or test order
+func (s *PaymentService) createPaymentRecordForOrder(ctx context.Context,
+	amount float64,
+	paymentMethod string,
+	orderID int64,
+	testOrderID int64,
+	appointmentID int64,
+	details []byte) (*db.Payment, error) {
+
+	// Create payment params
+	paymentParams := db.CreatePaymentParams{
+		Amount:         amount,
+		PaymentMethod:  paymentMethod,
+		PaymentStatus:  "pending",
+		PaymentDetails: details,
+	}
+
+	// Set order ID or test order ID or appointment ID
+	if orderID != 0 {
+		paymentParams.OrderID = pgtype.Int4{Int32: int32(orderID), Valid: true}
+	} else if testOrderID != 0 {
+		paymentParams.TestOrderID = pgtype.Int4{Int32: int32(testOrderID), Valid: true}
+	} else if appointmentID != 0 {
+		paymentParams.AppointmentID = pgtype.Int8{Int64: appointmentID, Valid: true}
+	}
+
+	// Create payment record
+	payment, err := s.CreatePaymentRecord(ctx, paymentParams)
+	if err != nil {
+		log.Printf("Failed to create payment record: %v", err)
+	}
+
+	return payment, err
 }
 
 // GenerateQuickLink creates a VietQR Quick Link based on the provided parameters
@@ -335,23 +387,6 @@ func (s *PaymentService) GenerateQuickLink(c *gin.Context, request QuickLinkRequ
 
 	// Create payment record in database if order ID is provided
 	if request.OrderID != 0 || request.TestOrderID != 0 || request.AppointmentID != 0 {
-
-		// Create payment params
-		paymentParams := db.CreatePaymentParams{
-			Amount:        float64(amount),
-			PaymentMethod: "vietqr_quicklink",
-			PaymentStatus: "pending",
-		}
-
-		// Set order ID or test order ID
-		if request.OrderID != 0 {
-			paymentParams.OrderID = pgtype.Int4{Int32: int32(request.OrderID), Valid: true}
-		} else if request.TestOrderID != 0 {
-			paymentParams.TestOrderID = pgtype.Int4{Int32: int32(request.TestOrderID), Valid: true}
-		} else if request.AppointmentID != 0 {
-			paymentParams.AppointmentID = pgtype.Int8{Int64: request.AppointmentID, Valid: true}
-		}
-
 		// Add payment details
 		paymentDetails, _ := json.Marshal(map[string]interface{}{
 			"bankID":      request.BankID,
@@ -363,26 +398,21 @@ func (s *PaymentService) GenerateQuickLink(c *gin.Context, request QuickLinkRequ
 			"imageURL":    imageURL,
 		})
 
-		// Set payment details
-		paymentParams.PaymentDetails = paymentDetails
+		_, err := s.createPaymentRecordForOrder(c,
+			amount,
+			"vietqr_quicklink",
+			request.OrderID,
+			request.TestOrderID,
+			request.AppointmentID,
+			paymentDetails)
 
-		// Create payment record
-		_, err := s.CreatePaymentRecord(c, paymentParams)
 		if err != nil {
-			log.Printf("Failed to create payment record: %v", err)
-			// Continue even if record creation fails
+			log.Printf("Error creating payment record: %v", err)
 		}
 
 		// Update order payment status if it's a product order
 		if request.OrderID != 0 {
-			err = s.storeDB.ExecWithTransaction(c, func(q *db.Queries) error {
-				_, err := q.UpdateOrderPaymentStatus(c, int64(request.OrderID))
-				return err
-			})
-			if err != nil {
-				log.Printf("Failed to update order payment status: %v", err)
-				// Continue even if status update fails
-			}
+			s.updateOrderPaymentStatus(c, int64(request.OrderID))
 		}
 	}
 

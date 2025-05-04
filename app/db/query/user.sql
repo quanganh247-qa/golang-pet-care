@@ -65,3 +65,8 @@ INSERT INTO Doctors (
 
 -- name: GetAllRole :many
 SELECT distinct (role) FROM users;
+
+
+-- name: GetUserByRole :many
+SELECT * FROM users
+WHERE role = $1;

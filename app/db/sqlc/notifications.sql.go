@@ -19,9 +19,10 @@ INSERT INTO notifications (
     notify_type,
     related_id,
     related_type,
-    is_read
+    is_read,
+    datetime
 ) VALUES (
-    $1, $2, $3, $4, $5, $6, false
+    $1, $2, $3, $4, $5, $6, false, NOW()
 ) RETURNING id, username, title, content, is_read, related_id, related_type, datetime, notify_type
 `
 
