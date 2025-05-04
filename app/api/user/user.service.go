@@ -216,10 +216,7 @@ func (service *UserService) loginUserService(ctx *gin.Context, req loginUserRequ
 	}, nil
 }
 
-func (service *UserService) logoutUsersService(ctx *gin.Context, username string, token string) error {
-	host, secure := util.SetCookieSameSite(ctx)
-	ctx.SetCookie("refresh_token", "", -1, "/", host, secure, true)
-	fmt.Println(username, token)
+func (service *UserService) logoutUsersService(ctx *gin.Context, username, token string) error {
 	err := service.storeDB.DeleteDeviceToken(ctx, db.DeleteDeviceTokenParams{
 		Username: username,
 		Token:    token,
@@ -227,7 +224,7 @@ func (service *UserService) logoutUsersService(ctx *gin.Context, username string
 	if err != nil {
 		return fmt.Errorf("failed to delete token: %w", err)
 	}
-	service.redis.RemoveUserInfoCache(username)
+	go service.redis.RemoveUserInfoCache(username)
 	return nil
 }
 

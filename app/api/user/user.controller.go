@@ -119,7 +119,13 @@ func (controller *UserController) loginUser(ctx *gin.Context) {
 }
 
 func (controller *UserController) logoutUser(ctx *gin.Context) {
-	token := ctx.Query("token")
+	// token := ctx.Query("token")
+
+	var req LogoutRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, util.ErrorValidator(err))
+		return
+	}
 
 	authPayload, err := middleware.GetAuthorizationPayload(ctx)
 	if err != nil {
@@ -127,7 +133,7 @@ func (controller *UserController) logoutUser(ctx *gin.Context) {
 		return
 	}
 
-	err = controller.service.logoutUsersService(ctx, authPayload.Username, token)
+	err = controller.service.logoutUsersService(ctx, authPayload.Username, req.Token)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
 		return

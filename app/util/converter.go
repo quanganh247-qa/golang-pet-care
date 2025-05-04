@@ -233,3 +233,17 @@ func MapStructs(source interface{}, destination interface{}) error {
 
 	return nil
 }
+
+// StringToInt64 safely converts a string to int64
+func StringToInt64(s string) (int64, error) {
+	if s == "" {
+		return 0, fmt.Errorf("empty string cannot be converted to int64")
+	}
+
+	i, err := strconv.ParseInt(s, 10, 64)
+	if err != nil {
+		return 0, fmt.Errorf("failed to convert string to int64: %w", err)
+	}
+
+	return i, nil
+}

@@ -26,6 +26,10 @@ type UserApi struct {
 	controller UserControllerInterface
 }
 
+type LogoutRequest struct {
+	Token string `json:"token" binding:"required"`
+}
+
 type createUserRequest struct {
 	Username        string `json:"username" binding:"required,alphanum"`
 	Password        string `json:"password" binding:"required,min=6,max=25"`
