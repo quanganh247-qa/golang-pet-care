@@ -59,12 +59,13 @@ func (s *ConversationService) ListActiveConversations(userID string) ([]models.C
 	// This is inefficient and just for demonstration
 	keys := s.cache.CacheKeys()
 
-	var conversations []models.ConversationState
+	conversations := make([]models.ConversationState, 0)
 	for _, key := range keys {
 		if len(key) > 13 && key[:13] == "conversation:" {
 			var state models.ConversationState
 			if s.cache.GetJSON(key, &state) {
 				if state.UserID == userID {
+
 					conversations = append(conversations, state)
 				}
 			}

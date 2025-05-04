@@ -76,14 +76,27 @@ func (q *Queries) CreatePetSchedule(ctx context.Context, arg CreatePetSchedulePa
 	return i, err
 }
 
-const deletePetSchedule = `-- name: DeletePetSchedule :exec
+const deletePetSchedule = `-- name: DeletePetSchedule :one
 DELETE FROM pet_schedule
-WHERE id = $1
+WHERE id = $1 RETURNING id, pet_id, title, reminder_datetime, event_repeat, end_type, end_date, notes, is_active, created_at
 `
 
-func (q *Queries) DeletePetSchedule(ctx context.Context, id int64) error {
-	_, err := q.db.Exec(ctx, deletePetSchedule, id)
-	return err
+func (q *Queries) DeletePetSchedule(ctx context.Context, id int64) (PetSchedule, error) {
+	row := q.db.QueryRow(ctx, deletePetSchedule, id)
+	var i PetSchedule
+	err := row.Scan(
+		&i.ID,
+		&i.PetID,
+		&i.Title,
+		&i.ReminderDatetime,
+		&i.EventRepeat,
+		&i.EndType,
+		&i.EndDate,
+		&i.Notes,
+		&i.IsActive,
+		&i.CreatedAt,
+	)
+	return i, err
 }
 
 const getAllSchedulesByPet = `-- name: GetAllSchedulesByPet :many

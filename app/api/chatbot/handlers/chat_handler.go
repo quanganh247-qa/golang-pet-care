@@ -12,6 +12,7 @@ import (
 	"github.com/quanganh247-qa/go-blog-be/app/api/chatbot/services"
 	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
 	"github.com/quanganh247-qa/go-blog-be/app/middleware"
+	"github.com/quanganh247-qa/go-blog-be/app/util"
 )
 
 // ErrorResponse represents an error response
@@ -97,8 +98,6 @@ func (h *ChatHandler) HandleChatRequest(c *gin.Context) {
 		}
 		request.ConversationID = conversationID
 
-		// convert into string
-
 		// Create new conversation state
 		conversationState = &models.ConversationState{
 			ConversationID: conversationID,
@@ -107,6 +106,7 @@ func (h *ChatHandler) HandleChatRequest(c *gin.Context) {
 			LastActivity:   time.Now().Unix(),
 			CurrentContext: models.ContextGeneral,
 		}
+
 	} else {
 		// Load existing conversation state
 		var err error
@@ -207,15 +207,24 @@ func (h *ChatHandler) ListConversations(c *gin.Context) {
 		return
 	}
 
-	// Get limit parameter, default to 10
-	limitStr := c.DefaultQuery("limit", "10")
-	limit, err := strconv.Atoi(limitStr)
-	if err != nil || limit < 1 {
-		limit = 10
+	pagination, err := util.GetPageInQuery(c.Request.URL.Query())
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid pagination parameters", "details": err.Error()})
+		return
 	}
 
+	limit := pagination.PageSize
+
+	user, err := db.StoreDB.GetUser(c, authPayload.Username)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch user", "details": err.Error()})
+		return
+	}
+
+	idStr := strconv.Itoa(int(user.ID))
+
 	// Get conversations for this user
-	conversations, err := h.conversationService.GetRecentConversations(authPayload.Username, limit)
+	conversations, err := h.conversationService.GetRecentConversations(idStr, int(limit))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch conversations", "details": err.Error()})
 		return
@@ -247,8 +256,14 @@ func (h *ChatHandler) GetConversation(c *gin.Context) {
 		return
 	}
 
+	user, err := db.StoreDB.GetUser(c, authPayload.Username)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch user", "details": err.Error()})
+		return
+	}
+
 	// Verify user owns this conversation
-	if conversation.UserID != "" && conversation.UserID != authPayload.Username {
+	if conversation.UserID != "" && conversation.UserID != strconv.Itoa(int(user.ID)) {
 		c.JSON(http.StatusForbidden, gin.H{"error": "You do not have permission to access this conversation"})
 		return
 	}

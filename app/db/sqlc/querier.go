@@ -82,7 +82,7 @@ type Querier interface {
 	DeletePet(ctx context.Context, petid int64) error
 	DeletePetAllergy(ctx context.Context, id int64) error
 	DeletePetLog(ctx context.Context, logID int64) error
-	DeletePetSchedule(ctx context.Context, id int64) error
+	DeletePetSchedule(ctx context.Context, id int64) (PetSchedule, error)
 	DeletePrescription(ctx context.Context, id int64) error
 	DeletePrescriptionMedication(ctx context.Context, id int64) error
 	DeleteRoom(ctx context.Context, id int64) error

@@ -39,9 +39,9 @@ UPDATE pet_schedule
 SET is_active = $2
 WHERE id = $1;
 
--- name: DeletePetSchedule :exec
+-- name: DeletePetSchedule :one
 DELETE FROM pet_schedule
-WHERE id = $1;
+WHERE id = $1 RETURNING *;
 
 -- name: UpdatePetSchedule :exec
 UPDATE pet_schedule

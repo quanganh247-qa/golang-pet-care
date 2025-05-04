@@ -54,6 +54,7 @@ func (s *PetScheduleService) CreatePetScheduleService(ctx *gin.Context, req PetS
 		schedule, err := q.CreatePetSchedule(ctx, db.CreatePetScheduleParams{
 			PetID:            pgtype.Int8{Int64: petID, Valid: true},
 			Title:            pgtype.Text{String: req.Title, Valid: true},
+			EndType:          pgtype.Bool{Bool: req.EndType, Valid: true},
 			ReminderDatetime: pgtype.Timestamp{Time: reminderTime, Valid: true},
 			EventRepeat:      pgtype.Text{String: req.EventRepeat, Valid: true},
 			EndDate:          endDate,
@@ -235,8 +236,10 @@ func (s *PetScheduleService) ActivePetScheduleService(ctx *gin.Context, schedule
 
 // Delete Pet Schedule
 func (s *PetScheduleService) DeletePetScheduleService(ctx *gin.Context, scheduleID int64) error {
-	err := s.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
-		err := q.DeletePetSchedule(ctx, scheduleID)
+	var schedule db.PetSchedule
+	var err error
+	err = s.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
+		schedule, err = q.DeletePetSchedule(ctx, scheduleID)
 
 		if err != nil {
 			return fmt.Errorf("error deleting reminder: ", err)
@@ -246,7 +249,7 @@ func (s *PetScheduleService) DeletePetScheduleService(ctx *gin.Context, schedule
 	if err != nil {
 		return fmt.Errorf("error deleting reminder: ", err)
 	}
-	s.redis.RemovePetScheduleCache(scheduleID)
+	s.redis.ClearPetSchedulesByPetCache(schedule.PetID.Int64)
 	return nil
 }
 

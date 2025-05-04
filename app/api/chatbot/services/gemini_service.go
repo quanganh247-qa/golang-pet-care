@@ -116,6 +116,9 @@ func (s *GeminiService) ProcessChatRequest(request models.ChatRequest) (models.C
 		return response, err
 	}
 
+	// Remove Markdown formatting like ** from the response text
+	responseText = removeMarkdownFormatting(responseText)
+
 	// Prepare response
 	response = models.ChatResponse{
 		Message:        responseText,
@@ -243,10 +246,47 @@ func parseQuestions(text string) []string {
 		line = strings.TrimPrefix(line, "- ")
 		line = strings.TrimPrefix(line, "* ")
 
+		// Format the question properly for UI display
 		if line != "" {
+			// Ensure the question ends with a question mark
+			if !strings.HasSuffix(line, "?") {
+				line += "?"
+			}
+
+			// Capitalize first letter if not already
+			if len(line) > 0 {
+				firstChar := string(line[0])
+				if firstChar == strings.ToLower(firstChar) {
+					line = strings.ToUpper(firstChar) + line[1:]
+				}
+			}
+
 			questions = append(questions, line)
 		}
 	}
 
-	return questions
+	// Filter out non-question text or directives that might have been included
+	var filteredQuestions []string
+	for _, q := range questions {
+		// Skip any lines that appear to be instructions rather than questions
+		if strings.Contains(strings.ToLower(q), "câu hỏi") &&
+			(strings.Contains(strings.ToLower(q), "đề xuất") ||
+				strings.Contains(strings.ToLower(q), "gợi ý")) {
+			continue
+		}
+		filteredQuestions = append(filteredQuestions, q)
+	}
+
+	return filteredQuestions
+}
+
+// removeMarkdownFormatting removes markdown formatting characters from text
+func removeMarkdownFormatting(text string) string {
+	// Remove bold markdown (**text**)
+	text = strings.ReplaceAll(text, "**", "")
+
+	// Có thể thêm các trường hợp loại bỏ định dạng Markdown khác ở đây nếu cần
+	// Ví dụ: loại bỏ dấu gạch nghiêng (*text*), dấu gạch ngang (~text~), v.v.
+
+	return text
 }
