@@ -142,18 +142,63 @@ func (q *Queries) GetAllPetLogsByUsername(ctx context.Context, arg GetAllPetLogs
 	return items, nil
 }
 
+const getDetailsPetLogByID = `-- name: GetDetailsPetLogByID :one
+SELECT 
+    pl.log_id,
+    pl.petid,
+    p.name AS pet_name,
+    p.type AS pet_type,
+    p.breed AS pet_breed,
+    pl.datetime,
+    pl.title,
+    pl.notes
+FROM
+    pet_logs pl
+JOIN
+    pets p ON pl.petid = p.petid
+WHERE 
+    pl.log_id = $1 AND p.username = $2
+`
+
+type GetDetailsPetLogByIDParams struct {
+	LogID    int64  `json:"log_id"`
+	Username string `json:"username"`
+}
+
+type GetDetailsPetLogByIDRow struct {
+	LogID    int64            `json:"log_id"`
+	Petid    int64            `json:"petid"`
+	PetName  string           `json:"pet_name"`
+	PetType  string           `json:"pet_type"`
+	PetBreed pgtype.Text      `json:"pet_breed"`
+	Datetime pgtype.Timestamp `json:"datetime"`
+	Title    pgtype.Text      `json:"title"`
+	Notes    pgtype.Text      `json:"notes"`
+}
+
+func (q *Queries) GetDetailsPetLogByID(ctx context.Context, arg GetDetailsPetLogByIDParams) (GetDetailsPetLogByIDRow, error) {
+	row := q.db.QueryRow(ctx, getDetailsPetLogByID, arg.LogID, arg.Username)
+	var i GetDetailsPetLogByIDRow
+	err := row.Scan(
+		&i.LogID,
+		&i.Petid,
+		&i.PetName,
+		&i.PetType,
+		&i.PetBreed,
+		&i.Datetime,
+		&i.Title,
+		&i.Notes,
+	)
+	return i, err
+}
+
 const getPetLogByID = `-- name: GetPetLogByID :one
 SELECT pet_logs.log_id, pet_logs.petid, pet_logs.datetime, pet_logs.title, pet_logs.notes, pets.name, pets.type, pets.breed
 FROM pet_logs
 LEFT JOIN pets ON pet_logs.petid = pets.petid
-WHERE pet_logs.petid = $1 AND pet_logs.log_id = $2 AND pets.is_active = true 
+WHERE pet_logs.log_id = $1 AND pets.is_active = true 
 ORDER BY pet_logs.datetime DESC
 `
-
-type GetPetLogByIDParams struct {
-	Petid int64 `json:"petid"`
-	LogID int64 `json:"log_id"`
-}
 
 type GetPetLogByIDRow struct {
 	LogID    int64            `json:"log_id"`
@@ -166,8 +211,8 @@ type GetPetLogByIDRow struct {
 	Breed    pgtype.Text      `json:"breed"`
 }
 
-func (q *Queries) GetPetLogByID(ctx context.Context, arg GetPetLogByIDParams) (GetPetLogByIDRow, error) {
-	row := q.db.QueryRow(ctx, getPetLogByID, arg.Petid, arg.LogID)
+func (q *Queries) GetPetLogByID(ctx context.Context, logID int64) (GetPetLogByIDRow, error) {
+	row := q.db.QueryRow(ctx, getPetLogByID, logID)
 	var i GetPetLogByIDRow
 	err := row.Scan(
 		&i.LogID,
@@ -240,17 +285,24 @@ const updatePetLog = `-- name: UpdatePetLog :exec
 UPDATE pet_logs
 SET 
     title = $2,
-    notes = $3
+    notes = $3,
+    datetime = $4
 WHERE log_id = $1
 `
 
 type UpdatePetLogParams struct {
-	LogID int64       `json:"log_id"`
-	Title pgtype.Text `json:"title"`
-	Notes pgtype.Text `json:"notes"`
+	LogID    int64            `json:"log_id"`
+	Title    pgtype.Text      `json:"title"`
+	Notes    pgtype.Text      `json:"notes"`
+	Datetime pgtype.Timestamp `json:"datetime"`
 }
 
 func (q *Queries) UpdatePetLog(ctx context.Context, arg UpdatePetLogParams) error {
-	_, err := q.db.Exec(ctx, updatePetLog, arg.LogID, arg.Title, arg.Notes)
+	_, err := q.db.Exec(ctx, updatePetLog,
+		arg.LogID,
+		arg.Title,
+		arg.Notes,
+		arg.Datetime,
+	)
 	return err
 }

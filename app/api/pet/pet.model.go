@@ -69,6 +69,12 @@ type PetLogWithPetInfo struct {
 	Notes    string `json:"notes"`
 }
 
+type UpdatePetLogRequeststruct struct {
+	DateTime string `json:"date_time"`
+	Title    string `json:"title"`
+	Notes    string `json:"notes"`
+}
+
 type updatePetRequest struct {
 	Name  string `json:"name"`
 	Type  string `json:"type"`

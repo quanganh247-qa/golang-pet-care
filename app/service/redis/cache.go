@@ -277,9 +277,7 @@ func (c *ClientType) PetLogLoadCache(logID int64) (*PetLogInfo, error) {
 	err := c.GetWithBackground(logKey, &petLogInfo)
 	if err != nil {
 		// Cache miss, get from database
-		log, err := db.StoreDB.GetPetLogByID(ctxRedis, db.GetPetLogByIDParams{
-			LogID: logID,
-		})
+		log, err := db.StoreDB.GetPetLogByID(ctxRedis, logID)
 		if err != nil {
 			if err == pgx.ErrNoRows {
 				return nil, err

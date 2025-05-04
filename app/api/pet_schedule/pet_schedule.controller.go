@@ -139,7 +139,7 @@ func (s *PetScheduleController) updatePetScheduleService(ctx *gin.Context) {
 		return
 	}
 
-	var req PetScheduleRequest
+	var req UpdatePetScheduleRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, util.ErrorValidator(err))
 		return

@@ -23,14 +23,15 @@ WHERE  log_id = $1;
 UPDATE pet_logs
 SET 
     title = $2,
-    notes = $3
+    notes = $3,
+    datetime = $4
 WHERE log_id = $1;
 
 -- name: GetPetLogByID :one
 SELECT pet_logs.log_id, pet_logs.petid, pet_logs.datetime, pet_logs.title, pet_logs.notes, pets.name, pets.type, pets.breed
 FROM pet_logs
 LEFT JOIN pets ON pet_logs.petid = pets.petid
-WHERE pet_logs.petid = $1 AND pet_logs.log_id = $2 AND pets.is_active = true 
+WHERE pet_logs.log_id = $1 AND pets.is_active = true 
 ORDER BY pet_logs.datetime DESC;
 
 
@@ -64,3 +65,20 @@ JOIN
     pets p ON pl.petid = p.petid
 WHERE 
     p.username = $1;
+
+-- name: GetDetailsPetLogByID :one
+SELECT 
+    pl.log_id,
+    pl.petid,
+    p.name AS pet_name,
+    p.type AS pet_type,
+    p.breed AS pet_breed,
+    pl.datetime,
+    pl.title,
+    pl.notes
+FROM
+    pet_logs pl
+JOIN
+    pets p ON pl.petid = p.petid
+WHERE 
+    pl.log_id = $1 AND p.username = $2;

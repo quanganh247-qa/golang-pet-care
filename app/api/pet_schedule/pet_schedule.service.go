@@ -3,7 +3,6 @@ package petschedule
 import (
 	"fmt"
 	"net/http"
-	"strconv"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -20,7 +19,7 @@ type PetScheduleServiceInterface interface {
 	ListPetSchedulesByUsernameService(ctx *gin.Context, username string) ([]PetSchedules, error)
 	ActivePetScheduleService(ctx *gin.Context, scheduleID int64, req ActiceRemider) error
 	DeletePetScheduleService(ctx *gin.Context, scheduleID int64) error
-	UpdatePetScheduleService(ctx *gin.Context, scheduleID int64, req PetScheduleRequest) error
+	UpdatePetScheduleService(ctx *gin.Context, scheduleID int64, req UpdatePetScheduleRequest) error
 	ProcessSuggestionGemini(ctx *gin.Context, description string) (*llm.BaseResponse, error)
 }
 
@@ -39,7 +38,8 @@ func (s *PetScheduleService) CreatePetScheduleService(ctx *gin.Context, req PetS
 
 	var endDate pgtype.Date
 	if req.EndDate != "" {
-		parsedEndDate, err := time.Parse("2006-01-02", req.EndDate)
+		// Try ISO 8601 format first (with time part)
+		parsedEndDate, err := time.Parse(time.RFC3339, req.EndDate)
 		if err != nil {
 			return fmt.Errorf("invalid end date format: %v", err)
 		}
@@ -232,7 +232,7 @@ func (s *PetScheduleService) DeletePetScheduleService(ctx *gin.Context, schedule
 }
 
 // Update Pet Schedule
-func (s *PetScheduleService) UpdatePetScheduleService(ctx *gin.Context, scheduleID int64, req PetScheduleRequest) error {
+func (s *PetScheduleService) UpdatePetScheduleService(ctx *gin.Context, scheduleID int64, req UpdatePetScheduleRequest) error {
 
 	var r db.UpdatePetScheduleParams
 
@@ -264,20 +264,30 @@ func (s *PetScheduleService) UpdatePetScheduleService(ctx *gin.Context, schedule
 		r.EventRepeat = pgtype.Text{String: req.EventRepeat, Valid: true}
 	}
 
-	if req.EndType == "" {
-		r.EndType = schedule.EndType
-	} else {
-		endType, err := strconv.ParseBool(req.EndType)
-		if err != nil {
-			return fmt.Errorf("invalid end type format: %v", err)
-		}
-		r.EndType = pgtype.Bool{Bool: endType, Valid: true}
-	}
+	// No need for empty string check for boolean values
+	r.EndType = pgtype.Bool{Bool: req.EndType, Valid: true}
 
 	if req.Notes == "" {
 		r.Notes = schedule.Notes
 	} else {
 		r.Notes = pgtype.Text{String: req.Notes, Valid: true}
+	}
+
+	r.ID = scheduleID
+	r.IsActive = pgtype.Bool{Bool: schedule.IsActive.Bool, Valid: true}
+	if req.EndDate == "" {
+		r.EndDate = schedule.EndDate
+	} else {
+		// Try ISO 8601 format first (with time part)
+		parsedEndDate, err := time.Parse(time.RFC3339, req.EndDate)
+		if err != nil {
+			// If that fails, try simple date format
+			parsedEndDate, err = time.Parse("2006-01-02", req.EndDate)
+			if err != nil {
+				return fmt.Errorf("invalid end date format: %v", err)
+			}
+		}
+		r.EndDate = pgtype.Date{Time: parsedEndDate, Valid: true}
 	}
 
 	err = s.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {

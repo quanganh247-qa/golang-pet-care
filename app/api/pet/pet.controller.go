@@ -24,6 +24,7 @@ type PetControllerInterface interface {
 	UpdatePetAvatar(ctx *gin.Context)
 	GetAllPetLogsByUsername(ctx *gin.Context)
 	GetPetOwnerByPetID(ctx *gin.Context)
+	GetDetailsPetLog(ctx *gin.Context)
 }
 
 func (c *PetController) CreatePet(ctx *gin.Context) {
@@ -221,7 +222,7 @@ func (c *PetController) DeletePetLog(ctx *gin.Context) {
 }
 
 func (c *PetController) UpdatePetLog(ctx *gin.Context) {
-	var req PetLogWithPetInfo
+	var req UpdatePetLogRequeststruct
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(400, gin.H{"error": err.Error()})
 		return
@@ -307,5 +308,22 @@ func (c *PetController) GetPetOwnerByPetID(ctx *gin.Context) {
 		ctx.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
+	ctx.JSON(200, res)
+}
+
+func (c *PetController) GetDetailsPetLog(ctx *gin.Context) {
+	logidStr := ctx.Param("log_id")
+	logid, err := strconv.ParseInt(logidStr, 10, 64)
+	if err != nil {
+		ctx.JSON(400, gin.H{"error": "Invalid log ID"})
+		return
+	}
+
+	res, err := c.service.GetDetailsPetLogService(ctx, logid)
+	if err != nil {
+		ctx.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+
 	ctx.JSON(200, res)
 }

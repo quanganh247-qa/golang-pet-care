@@ -137,6 +137,7 @@ type Querier interface {
 	GetClinicInfo(ctx context.Context, id int64) (GetClinicInfoRow, error)
 	GetCompleteMedicalHistory(ctx context.Context, pPetID int64) ([]byte, error)
 	GetDefaultSMTPConfig(ctx context.Context) (SmtpConfig, error)
+	GetDetailsPetLogByID(ctx context.Context, arg GetDetailsPetLogByIDParams) (GetDetailsPetLogByIDRow, error)
 	GetDeviceTokenByUsername(ctx context.Context, username string) ([]DeviceToken, error)
 	// 1. Query cơ bản để lấy thông tin bệnh và thuốc điều trị
 	GetDiceaseAndMedicinesInfo(ctx context.Context, lower string) ([]GetDiceaseAndMedicinesInfoRow, error)
@@ -190,7 +191,7 @@ type Querier interface {
 	GetPetAllergy(ctx context.Context, id int64) (PetAllergy, error)
 	GetPetByID(ctx context.Context, petid int64) (Pet, error)
 	GetPetDetailByUserID(ctx context.Context, arg GetPetDetailByUserIDParams) (GetPetDetailByUserIDRow, error)
-	GetPetLogByID(ctx context.Context, arg GetPetLogByIDParams) (GetPetLogByIDRow, error)
+	GetPetLogByID(ctx context.Context, logID int64) (GetPetLogByIDRow, error)
 	GetPetLogsByPetID(ctx context.Context, arg GetPetLogsByPetIDParams) ([]GetPetLogsByPetIDRow, error)
 	GetPetProfileSummary(ctx context.Context, petid int64) ([]GetPetProfileSummaryRow, error)
 	GetPetScheduleById(ctx context.Context, id int64) (PetSchedule, error)

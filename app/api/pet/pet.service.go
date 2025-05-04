@@ -25,10 +25,11 @@ type PetServiceInterface interface {
 	GetPetLogsByPetIDService(ctx *gin.Context, pet_id int64, pagination *util.Pagination) ([]PetLogWithPetInfo, error)
 	InsertPetLogService(ctx context.Context, req PetLogWithPetInfo) error
 	DeletePetLogService(ctx context.Context, logID int64) error
-	UpdatePetLogService(ctx context.Context, req PetLogWithPetInfo, log_id int64) error
+	UpdatePetLogService(ctx context.Context, req UpdatePetLogRequeststruct, log_id int64) error
 	UpdatePetAvatar(ctx *gin.Context, petid int64, req updatePetAvatarRequest) error
 	GetAllPetLogsByUsername(ctx *gin.Context, username string, pagination *util.Pagination) (*util.PaginationResponse[PetLogWithPetInfo], error)
 	GetPetOwnerByPetID(ctx *gin.Context, petID int64) (*user.UserResponse, error)
+	GetDetailsPetLogService(ctx context.Context, log_id int64) (*PetLogWithPetInfo, error)
 }
 
 func (s *PetService) CreatePet(ctx *gin.Context, username string, req createPetRequest) (*CreatePetResponse, error) {
@@ -446,11 +447,8 @@ func (s *PetService) DeletePetLogService(ctx context.Context, logID int64) error
 	// Get the log first to know which pet it belongs to
 	var petID int64
 	if s.redis != nil {
-		// Try to get the log info from the database to determine the pet ID
-		logParams := db.GetPetLogByIDParams{
-			LogID: logID,
-		}
-		if log, err := s.storeDB.GetPetLogByID(ctx, logParams); err == nil {
+
+		if log, err := s.storeDB.GetPetLogByID(ctx, logID); err == nil {
 			petID = log.Petid
 		}
 	}
@@ -474,56 +472,52 @@ func (s *PetService) DeletePetLogService(ctx context.Context, logID int64) error
 }
 
 // UpdatePetLogService update log for pet
-func (s *PetService) UpdatePetLogService(ctx context.Context, req PetLogWithPetInfo, log_id int64) error {
+func (s *PetService) UpdatePetLogService(ctx context.Context, req UpdatePetLogRequeststruct, log_id int64) error {
 
-	err := s.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
-		getLogParams := db.GetPetLogByIDParams{
-			LogID: log_id,
+	log, err := s.storeDB.GetPetLogByID(ctx, log_id)
+	if err != nil {
+		if err == pgx.ErrNoRows {
+			return fmt.Errorf("pet log not found: %d", log_id)
 		}
-		_, err := q.GetPetLogByID(ctx, getLogParams)
-		if err != nil {
-			if err == pgx.ErrNoRows {
-				return fmt.Errorf("pet log not found: %d", log_id)
-			}
-			return fmt.Errorf("failed to get pet log: %w", err)
-		}
+		return fmt.Errorf("failed to get pet log: %w", err)
+	}
+	err = s.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
 
 		// Check if the pet exists
-		existingPet, err := q.GetPetByID(ctx, req.PetID)
+		_, err := q.GetPetByID(ctx, log.Petid)
 		if err != nil {
 			if err == pgx.ErrNoRows {
-				return fmt.Errorf("pet not found: %d", req.PetID)
+				return fmt.Errorf("pet not found: %d", log.Petid)
 			}
 			return fmt.Errorf("failed to get pet: %w", err)
-		}
-
-		// Check if user has permission to update the log
-		getPetLogsPetIDParams := db.GetPetLogsByPetIDParams{
-			Petid: existingPet.Petid,
-		}
-		logs, err := q.GetPetLogsByPetID(ctx, getPetLogsPetIDParams)
-
-		if err != nil {
-			return fmt.Errorf("failed to get pet logs: %w", err)
-		}
-		petHasLog := false
-		for _, log := range logs {
-			if log.LogID == log_id {
-				petHasLog = true
-				break
-			}
-		}
-
-		if !petHasLog {
-			return fmt.Errorf("you don't have permission to update this log")
 		}
 
 		// Finally, update the log
 		updateParams := db.UpdatePetLogParams{
 			LogID: log_id,
-			Title: pgtype.Text{String: req.Title, Valid: true},
-			Notes: pgtype.Text{String: req.Notes, Valid: true},
 		}
+
+		if req.Title != "" {
+			updateParams.Title = pgtype.Text{String: req.Title, Valid: true}
+		} else {
+			updateParams.Title = log.Title
+		}
+		if req.Notes != "" {
+			updateParams.Notes = pgtype.Text{String: req.Notes, Valid: true}
+		} else {
+			updateParams.Notes = log.Notes
+		}
+		if req.DateTime != "" {
+			dateTime, err := time.Parse(time.RFC3339, req.DateTime)
+			if err != nil {
+				return fmt.Errorf("invalid date format: %w", err)
+			}
+			updateParams.Datetime = pgtype.Timestamp{Time: dateTime, Valid: true}
+		} else {
+			updateParams.Datetime = log.Datetime
+
+		}
+
 		err = q.UpdatePetLog(ctx, updateParams)
 		if err != nil {
 			return fmt.Errorf("failed to update pet log: %w", err)
@@ -536,10 +530,34 @@ func (s *PetService) UpdatePetLogService(ctx context.Context, req PetLogWithPetI
 	}
 
 	// Invalidate cache for the pet logs
-	s.redis.ClearPetLogsByPetCache(req.PetID)
+	s.redis.ClearPetLogsByPetCache(log.Petid)
 	middleware.InvalidateCache("pet_logs")
 
 	return nil
+}
+
+// GetDetailsPetLogService get log for pet
+func (s *PetService) GetDetailsPetLogService(ctx context.Context, log_id int64) (*PetLogWithPetInfo, error) {
+	log, err := s.storeDB.GetPetLogByID(ctx, log_id)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get pet log: %w", err)
+	}
+
+	pet, err := s.storeDB.GetPetByID(ctx, log.Petid)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get pet: %w", err)
+	}
+
+	return &PetLogWithPetInfo{
+		PetID:    pet.Petid,
+		PetName:  pet.Name,
+		PetType:  pet.Type,
+		PetBreed: pet.Breed.String,
+		LogID:    log.LogID,
+		DateTime: log.Datetime.Time.Format(time.RFC3339),
+		Title:    log.Title.String,
+		Notes:    log.Notes.String,
+	}, nil
 }
 
 // Add this method to your PetService implementation
