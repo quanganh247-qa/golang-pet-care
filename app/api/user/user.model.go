@@ -44,6 +44,7 @@ type createUserRequest struct {
 }
 
 type UserResponse struct {
+	UserID        int64     `json:"user_id"`
 	Username      string    `json:"username"`
 	FullName      string    `json:"full_name"`
 	Email         string    `json:"email"`

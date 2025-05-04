@@ -228,6 +228,7 @@ func (s *PetScheduleService) DeletePetScheduleService(ctx *gin.Context, schedule
 	if err != nil {
 		return fmt.Errorf("error deleting reminder: ", err)
 	}
+	s.redis.RemovePetScheduleCache(scheduleID)
 	return nil
 }
 
@@ -300,6 +301,8 @@ func (s *PetScheduleService) UpdatePetScheduleService(ctx *gin.Context, schedule
 	if err != nil {
 		return fmt.Errorf("error updating reminder: ", err)
 	}
+
+	s.redis.ClearPetSchedulesCache()
 	return nil
 }
 

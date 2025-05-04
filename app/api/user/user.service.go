@@ -207,6 +207,7 @@ func (service *UserService) loginUserService(ctx *gin.Context, req loginUserRequ
 
 	return &loginUSerResponse{
 		User: UserResponse{
+			UserID:    user.ID,
 			Username:  user.Username,
 			FullName:  user.FullName,
 			Email:     user.Email,
