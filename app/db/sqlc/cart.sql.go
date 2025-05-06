@@ -327,9 +327,7 @@ func (q *Queries) GetCartTotal(ctx context.Context, cartID int64) (float64, erro
 }
 
 const getOrderById = `-- name: GetOrderById :one
-SELECT id, user_id, order_date, total_amount, payment_status, cart_items, shipping_address, notes
-FROM Orders
-WHERE id = $1
+SELECT  id, user_id, order_date, total_amount, payment_status, cart_items, shipping_address, notes  FROM Orders o WHERE o.id = $1
 `
 
 func (q *Queries) GetOrderById(ctx context.Context, id int64) (Order, error) {
@@ -346,6 +344,42 @@ func (q *Queries) GetOrderById(ctx context.Context, id int64) (Order, error) {
 		&i.Notes,
 	)
 	return i, err
+}
+
+const getOrderHistory = `-- name: GetOrderHistory :many
+SELECT id, user_id, order_date, total_amount, payment_status, cart_items, shipping_address, notes
+FROM Orders
+WHERE user_id = $1
+ORDER BY order_date DESC
+`
+
+func (q *Queries) GetOrderHistory(ctx context.Context, userID int64) ([]Order, error) {
+	rows, err := q.db.Query(ctx, getOrderHistory, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []Order{}
+	for rows.Next() {
+		var i Order
+		if err := rows.Scan(
+			&i.ID,
+			&i.UserID,
+			&i.OrderDate,
+			&i.TotalAmount,
+			&i.PaymentStatus,
+			&i.CartItems,
+			&i.ShippingAddress,
+			&i.Notes,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
 const getOrdersByUserId = `-- name: GetOrdersByUserId :many
@@ -402,9 +436,7 @@ func (q *Queries) RemoveItemFromCart(ctx context.Context, arg RemoveItemFromCart
 
 const updateCartItemQuantity = `-- name: UpdateCartItemQuantity :exec
 UPDATE cart_items 
-SET 
-    quantity = $3,
-    updated_at = CURRENT_TIMESTAMP
+SET quantity = $3
 WHERE cart_id = $1 AND product_id = $2
 `
 

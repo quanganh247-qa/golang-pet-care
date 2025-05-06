@@ -19,6 +19,10 @@ type CartServiceInterface interface {
 	GetOrderByIdService(c *gin.Context, username string, orderID int64) (*Order, error)
 	DeleteItemFromCartService(c *gin.Context, username string, itemID int64) error
 	GetAllOrdersService(c *gin.Context, pagination *util.Pagination, status string) ([]OrderResponse, error)
+	GetOrderHistoryService(c *gin.Context, username string) ([]DetailedOrderHistoryResponse, error)
+	DecreaseItemQuantityService(c *gin.Context, username string, itemID int64, quantity int32) error
+	// IncreaseItemQuantityService(c *gin.Context, username string, itemID int64, quantity int32) error
+	// UpdateItemQuantityService(c *gin.Context, username string, itemID int64, quantity int32) error
 }
 
 func (s *CartService) AddToCartService(c *gin.Context, req CartItemRequest, username string) (*CartItem, error) {
@@ -73,9 +77,61 @@ func (s *CartService) AddToCartService(c *gin.Context, req CartItemRequest, user
 		cartID = newCart.ID
 	} else {
 		cartID = carts[0].ID
+
+		// Check if product already exists in cart
+		existingItems, err := s.storeDB.GetCartItems(c, cartID)
+		if err != nil {
+			return nil, fmt.Errorf("failed to get cart items: %w", err)
+		}
+
+		for _, item := range existingItems {
+			if item.ProductID == req.ProductID {
+				// Product already exists in cart, update the quantity
+				newQuantity := item.Quantity.Int32 + int32(req.Quantity)
+
+				// Update the cart item with new quantity
+				err = s.storeDB.UpdateCartItemQuantity(c, db.UpdateCartItemQuantityParams{
+					CartID:    cartID,
+					ProductID: req.ProductID,
+					Quantity:  pgtype.Int4{Int32: newQuantity, Valid: true},
+				})
+				if err != nil {
+					return nil, fmt.Errorf("failed to update cart item quantity: %w", err)
+				}
+
+				// Get the updated cart item
+				updatedItems, err := s.storeDB.GetCartItems(c, cartID)
+				if err != nil {
+					return nil, fmt.Errorf("failed to get updated cart items: %w", err)
+				}
+
+				// Find the updated item
+				var updatedQuantity int32
+				var updatedTotalPrice float64
+				var updatedID int64
+
+				for _, updatedItem := range updatedItems {
+					if updatedItem.ProductID == req.ProductID {
+						updatedQuantity = updatedItem.Quantity.Int32
+						updatedTotalPrice = updatedItem.TotalPrice.Float64
+						updatedID = updatedItem.ID
+						break
+					}
+				}
+
+				return &CartItem{
+					ID:         updatedID,
+					CartID:     cartID,
+					ProductID:  req.ProductID,
+					Quantity:   int(updatedQuantity),
+					UnitPrice:  product.Price,
+					TotalPrice: updatedTotalPrice,
+				}, nil
+			}
+		}
 	}
 
-	// Now use the product information
+	// If product doesn't exist in cart, add it as a new item
 	cartItem, err := s.storeDB.AddItemToCart(c, db.AddItemToCartParams{
 		CartID:    cartID,
 		ProductID: req.ProductID,
@@ -154,8 +210,13 @@ func (s *CartService) CreateOrderService(c *gin.Context, username string, arg Pl
 		return nil, err
 	}
 
+	cartItems, err := s.storeDB.GetCartItems(c, carts[0].ID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get cart items: %w", err)
+	}
+
 	// Convert cartItems slice to JSON
-	jsonData, err := json.Marshal(carts)
+	jsonData, err := json.Marshal(cartItems)
 	if err != nil {
 		return nil, fmt.Errorf("failed to convert cart items to JSON: %w", err)
 	}
@@ -308,3 +369,149 @@ func (s *CartService) GetAllOrdersService(c *gin.Context, pagination *util.Pagin
 	return orderResponses, nil
 
 }
+
+// GetOrderHistoryService retrieves detailed order history for a user including cart items and product details
+func (s *CartService) GetOrderHistoryService(c *gin.Context, username string) ([]DetailedOrderHistoryResponse, error) {
+	user, err := s.redis.UserInfoLoadCache(username)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get user info: %w", err)
+	}
+
+	// Get all orders for the user
+	orders, err := s.storeDB.GetOrderHistory(c, user.UserID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get orders by user id: %w", err)
+	}
+
+	var detailedOrders []DetailedOrderHistoryResponse
+
+	// Process each order to include cart items and product details
+	for _, order := range orders {
+		// Get detailed order by ID to include cart items
+		detailedOrder, err := s.storeDB.GetOrderById(c, order.ID)
+		if err != nil {
+			return nil, fmt.Errorf("failed to get order details for order %d: %w", order.ID, err)
+		}
+
+		// Parse cart items from JSON
+		var cartItems []CartItemResponse
+		err = json.Unmarshal(detailedOrder.CartItems, &cartItems)
+		if err != nil {
+			return nil, fmt.Errorf("failed to unmarshal cart items for order %d: %w", order.ID, err)
+		}
+
+		// Enrich cart items with product details
+		for i := range cartItems {
+			product, err := s.storeDB.GetProductByID(c, cartItems[i].ProductID)
+			if err != nil {
+				continue // Skip if product not found
+			}
+			cartItems[i].ProductName = product.Name
+		}
+
+		// Create detailed order response
+		detailedOrderResponse := DetailedOrderHistoryResponse{
+			OrderID:         detailedOrder.ID,
+			OrderDate:       detailedOrder.OrderDate.Time.Format("2006-01-02"),
+			TotalAmount:     detailedOrder.TotalAmount,
+			PaymentStatus:   detailedOrder.PaymentStatus.String,
+			ShippingAddress: detailedOrder.ShippingAddress.String,
+			Notes:           detailedOrder.Notes.String,
+			CartItems:       cartItems,
+		}
+
+		detailedOrders = append(detailedOrders, detailedOrderResponse)
+	}
+
+	return detailedOrders, nil
+}
+
+func (s *CartService) DecreaseItemQuantityService(c *gin.Context, username string, itemID int64, quantity int32) error {
+	user, err := s.redis.UserInfoLoadCache(username)
+	if err != nil {
+		return fmt.Errorf("failed to get user info: %w", err)
+	}
+
+	cart, err := s.storeDB.GetCartByUserId(c, user.UserID)
+	if err != nil {
+		return fmt.Errorf("failed to get cart by user id: %w", err)
+	}
+
+	err = s.storeDB.ExecWithTransaction(c, func(q *db.Queries) error {
+		err := q.DecreaseItemQuantity(c, db.DecreaseItemQuantityParams{
+			CartID:    cart[0].ID,
+			ProductID: itemID,
+			Quantity:  pgtype.Int4{Int32: quantity, Valid: true},
+		})
+		if err != nil {
+			return err
+		}
+
+		return nil
+	})
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// func (s *CartService) IncreaseItemQuantityService(c *gin.Context, username string, itemID int64, quantity int32) error {
+// 	user, err := s.redis.UserInfoLoadCache(username)
+// 	if err != nil {
+// 		return fmt.Errorf("failed to get user info: %w", err)
+// 	}
+
+// 	cart, err := s.storeDB.GetCartByUserId(c, user.UserID)
+// 	if err != nil {
+// 		return fmt.Errorf("failed to get cart by user id: %w", err)
+// 	}
+
+// 	err = s.storeDB.ExecWithTransaction(c, func(q *db.Queries) error {
+// 		err := q.IncreaseItemQuantity(c, db.IncreaseItemQuantityParams{
+// 			CartID:    cart[0].ID,
+// 			ProductID: itemID,
+// 			Quantity:  pgtype.Int4{Int32: quantity, Valid: true},
+// 		})
+// 		if err != nil {
+// 			return err
+// 		}
+
+// 		return nil
+// 	})
+// 	if err != nil {
+// 		return err
+// 	}
+
+// 	return nil
+// }
+
+// func (s *CartService) UpdateItemQuantityService(c *gin.Context, username string, itemID int64, quantity int32) error {
+// 	user, err := s.redis.UserInfoLoadCache(username)
+// 	if err != nil {
+// 		return fmt.Errorf("failed to get user info: %w", err)
+// 	}
+
+// 	cart, err := s.storeDB.GetCartByUserId(c, user.UserID)
+// 	if err != nil {
+// 		return fmt.Errorf("failed to get cart by user id: %w", err)
+// 	}
+
+// 	err = s.storeDB.ExecWithTransaction(c, func(q *db.Queries) error {
+// 		err := q.UpdateCartItemQuantity(c, db.UpdateCartItemQuantityParams{
+// 			CartID:    cart[0].ID,
+// 			ProductID: itemID,
+// 			Quantity:  pgtype.Int4{Int32: quantity, Valid: true},
+// 		})
+// 		if err != nil {
+// 			return err
+// 		}
+
+// 		return nil
+// 	})
+// 	if err != nil {
+// 		return err
+// 	}
+
+// 	return nil
+// }

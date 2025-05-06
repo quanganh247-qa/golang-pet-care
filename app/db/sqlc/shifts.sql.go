@@ -90,6 +90,16 @@ func (q *Queries) CreateShift(ctx context.Context, arg CreateShiftParams) (Creat
 	return i, err
 }
 
+const deleteShift = `-- name: DeleteShift :exec
+DELETE FROM shifts
+WHERE id = $1
+`
+
+func (q *Queries) DeleteShift(ctx context.Context, id int64) error {
+	_, err := q.db.Exec(ctx, deleteShift, id)
+	return err
+}
+
 const deleteShiftsByDate = `-- name: DeleteShiftsByDate :exec
 DELETE FROM shifts
 WHERE start_time >= $1 AND end_time <= $2

@@ -19,6 +19,7 @@ type DoctorControllerInterface interface {
 	createShift(ctx *gin.Context)
 	getShiftByDoctorId(ctx *gin.Context)
 	getDoctorById(ctx *gin.Context)
+	deleteShift(ctx *gin.Context)
 }
 
 func (c *DoctorController) loginDoctor(ctx *gin.Context) {
@@ -139,4 +140,23 @@ func (c *DoctorController) getDoctorById(ctx *gin.Context) {
 		return
 	}
 	ctx.JSON(http.StatusOK, util.SuccessResponse("Success", res))
+}
+
+func (c *DoctorController) deleteShift(ctx *gin.Context) {
+	id := ctx.Param("shift_id")
+	if id == "" {
+		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(errors.New("id is required")))
+		return
+	}
+	shiftId, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
+		return
+	}
+	err = c.service.DeleteShift(ctx, shiftId)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
+		return
+	}
+	ctx.JSON(http.StatusOK, util.SuccessResponse("Success", nil))
 }

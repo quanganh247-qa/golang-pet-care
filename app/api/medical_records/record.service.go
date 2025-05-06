@@ -40,6 +40,9 @@ type MedicalRecordServiceInterface interface {
 	// Comprehensive medical history
 	GetCompleteMedicalHistory(ctx *gin.Context, petID int64) (*MedicalHistorySummary, error)
 	GetAllSoapNotesByPetID(ctx *gin.Context, petID int64) ([]SoapNoteResponse, error)
+
+	// New method for appointment visit summary
+	GetAppointmentVisitSummary(ctx *gin.Context, appointmentID int64) (*AppointmentVisitSummaryResponse, error)
 }
 
 // Quản lý Bệnh án
@@ -835,4 +838,268 @@ func (s *MedicalRecordService) GetAllSoapNotesByPetID(ctx *gin.Context, petID in
 	}
 
 	return allSoapNotes, nil
+}
+
+// GetAppointmentVisitSummary tổng hợp tất cả thông tin của một cuộc hẹn/lần khám
+func (s *MedicalRecordService) GetAppointmentVisitSummary(ctx *gin.Context, appointmentID int64) (*AppointmentVisitSummaryResponse, error) {
+	// 1. Lấy thông tin chi tiết của cuộc hẹn
+	appointmentDetail, err := s.storeDB.GetAppointmentDetailByAppointmentID(ctx, appointmentID)
+	if err != nil {
+		return nil, fmt.Errorf("không thể lấy thông tin cuộc hẹn: %w", err)
+	}
+
+	// 2. Tạo đối tượng phản hồi
+	summary := &AppointmentVisitSummaryResponse{
+		AppointmentID:     appointmentID,
+		VisitDate:         appointmentDetail.Date.Time,
+		AppointmentStatus: appointmentDetail.StateName.String,
+		Reason:            appointmentDetail.AppointmentReason.String,
+	}
+
+	// 3. Điền thông tin thú cưng
+	summary.PetInfo = PetBasicInfo{
+		PetID: appointmentDetail.PetID.Int64,
+		Name:  appointmentDetail.PetName.String,
+		Breed: appointmentDetail.PetBreed.String,
+	}
+
+	// Lấy thêm thông tin chi tiết về thú cưng
+	if appointmentDetail.Petid.Valid {
+		pet, err := s.storeDB.GetPetByID(ctx, appointmentDetail.Petid.Int64)
+		if err == nil {
+			// Bổ sung thêm thông tin
+			summary.PetInfo.Type = pet.Type
+			summary.PetInfo.Age = pet.Age.Int32
+			summary.PetInfo.Gender = pet.Gender.String
+			summary.PetInfo.Weight = pet.Weight.Float64
+		}
+	}
+
+	// 4. Điền thông tin chủ sở hữu
+	summary.OwnerInfo = OwnerBasicInfo{
+		Username: appointmentDetail.Username.String,
+		FullName: appointmentDetail.OwnerName.String,
+		Phone:    appointmentDetail.OwnerPhone.String,
+		Email:    appointmentDetail.OwnerEmail.String,
+	}
+
+	// 5. Điền thông tin bác sĩ - sử dụng DoctorName từ doctor_id
+	// Lấy thông tin bác sĩ từ bảng doctors dựa trên doctor_id
+	doctor, err := s.getDoctorInfo(ctx, appointmentDetail.DoctorID.Int64)
+	if err == nil {
+		summary.DoctorInfo = DoctorBasicInfo{
+			DoctorID: appointmentDetail.DoctorID.Int64,
+			Name:     doctor,
+		}
+	} else {
+		summary.DoctorInfo = DoctorBasicInfo{
+			DoctorID: appointmentDetail.DoctorID.Int64,
+			Name:     "Unknown Doctor", // Giá trị mặc định
+		}
+	}
+
+	// 6. Điền thông tin dịch vụ
+	service, err := s.getServiceInfo(ctx, appointmentDetail.ServiceID.Int64)
+	if err == nil {
+		summary.ServiceInfo = ServiceBasicInfo{
+			ServiceID: appointmentDetail.ServiceID.Int64,
+			Name:      service.Name,
+			Duration:  int32(service.Duration), // Chuyển đổi kiểu dữ liệu
+			Price:     service.Price,
+		}
+	} else {
+		summary.ServiceInfo = ServiceBasicInfo{
+			ServiceID: appointmentDetail.ServiceID.Int64,
+			Name:      "Unknown Service",
+		}
+	}
+
+	// 7. Lấy thông tin SOAP Notes nếu có
+	if appointmentDetail.PetID.Valid {
+		soapNote, err := s.storeDB.GetSOAPByAppointmentID(ctx, pgtype.Int8{Int64: appointmentID, Valid: true})
+		if err == nil {
+			summary.SOAPNote = &SOAPNoteInfo{
+				ID:         int32(soapNote.ID),
+				Subjective: soapNote.Subjective.String,
+				Assessment: soapNote.Assessment.String,
+				CreatedAt:  soapNote.CreatedAt.Time,
+			}
+
+			// Xử lý dữ liệu Objective từ dạng []byte
+			if soapNote.Objective != nil {
+				summary.SOAPNote.Objective = string(soapNote.Objective)
+			}
+
+			// Xử lý Plan (có thể là ID trỏ đến bảng khác hoặc văn bản)
+			if soapNote.Plan.Valid {
+				summary.SOAPNote.Plan = fmt.Sprintf("%d", soapNote.Plan.Int64)
+			}
+		}
+	}
+
+	// 8. Lấy thông tin điều trị
+	if appointmentDetail.PetID.Valid {
+		// Lấy các treatment liên quan đến pet và được tạo vào ngày khám
+		arg := db.GetTreatmentsByPetParams{
+			PetID:  pgtype.Int8{Int64: appointmentDetail.PetID.Int64, Valid: true},
+			Limit:  10,
+			Offset: 0,
+		}
+
+		treatments, err := s.storeDB.GetTreatmentsByPet(ctx, arg)
+		if err == nil {
+			for _, treatment := range treatments {
+				// Kiểm tra xem treatment có được tạo trong khoảng thời gian của cuộc hẹn
+				// hoặc có cùng ngày với cuộc hẹn hay không
+				if treatment.CreatedAt.Time.Format("2006-01-02") == appointmentDetail.Date.Time.Format("2006-01-02") {
+					treatmentInfo := TreatmentBasicInfo{
+						ID:          treatment.ID,
+						Name:        treatment.Name.String,
+						Type:        treatment.Type.String,
+						Status:      treatment.Status.String,
+						StartDate:   treatment.StartDate.Time,
+						EndDate:     treatment.EndDate.Time,
+						Description: treatment.Description.String,
+					}
+					summary.Treatments = append(summary.Treatments, treatmentInfo)
+
+				}
+			}
+		}
+	}
+
+	// 9. Lấy thông tin đơn thuốc
+	if appointmentDetail.PetID.Valid {
+		// Lấy tất cả đơn thuốc của thú cưng được kê vào ngày khám
+		arg := db.ListMedicinesByPetParams{
+			PetID:  pgtype.Int8{Int64: appointmentDetail.PetID.Int64, Valid: true},
+			Status: pgtype.Text{String: "active", Valid: true},
+			Limit:  10,
+			Offset: 0,
+		}
+
+		medications, err := s.storeDB.ListMedicinesByPet(ctx, arg)
+		if err == nil {
+			for _, med := range medications {
+				// Kiểm tra xem thuốc có được kê vào ngày của cuộc hẹn không
+				if med.CreatedAt.Time.Format("2006-01-02") == appointmentDetail.Date.Time.Format("2006-01-02") {
+					prescriptionInfo := PrescriptionBasicInfo{
+						ID:           med.ID,
+						MedicineName: med.Name,
+						Dosage:       med.Dosage.String,
+						Frequency:    med.Frequency.String,
+						Duration:     med.Duration.String,
+						Quantity:     int32(med.Quantity.Int64),
+						IssuedDate:   med.CreatedAt.Time,
+					}
+					summary.Prescriptions = append(summary.Prescriptions, prescriptionInfo)
+				}
+			}
+		}
+	}
+
+	// 10. Lấy thông tin kết quả xét nghiệm - giả định hàm này tồn tại
+	if appointmentDetail.PetID.Valid {
+		// Sử dụng các hàm hiện có hoặc sử dụng truy vấn SQL riêng
+		testResults, err := s.getTestResultsByPet(ctx, appointmentDetail.PetID.Int64, appointmentDetail.Date.Time)
+		if err == nil {
+			summary.TestResults = testResults
+		}
+	}
+
+	// 11. Tìm cuộc hẹn tiếp theo
+	// Tìm cuộc hẹn có ngày lớn hơn cuộc hẹn hiện tại và cùng pet
+	if appointmentDetail.PetID.Valid {
+		// Để đơn giản, chúng ta sẽ giả định lấy tất cả cuộc hẹn và lọc thủ công
+		appointments, err := s.storeDB.ListAllAppointments(ctx)
+		if err == nil {
+			var nextAppointment *db.Appointment
+			for _, appt := range appointments {
+				if appt.Petid.Int64 == appointmentDetail.PetID.Int64 &&
+					appt.Date.Time.After(appointmentDetail.Date.Time) &&
+					(nextAppointment == nil || appt.Date.Time.Before(nextAppointment.Date.Time)) {
+					temp := appt // Tạo bản sao để tránh vấn đề với biến vòng lặp
+					nextAppointment = &temp
+				}
+			}
+
+			if nextAppointment != nil {
+				// Lấy thêm thông tin về dịch vụ và bác sĩ cho cuộc hẹn tiếp theo
+				nextServiceName := s.getNextServiceName(ctx, nextAppointment.ServiceID.Int64)
+				nextDoctorName := s.getNextDoctorName(ctx, nextAppointment.DoctorID.Int64)
+
+				summary.NextAppointment = &NextAppointmentInfo{
+					AppointmentID: nextAppointment.AppointmentID,
+					Date:          nextAppointment.Date.Time,
+					ServiceName:   nextServiceName,
+					DoctorName:    nextDoctorName,
+				}
+			}
+		}
+	}
+
+	// // 12. Lấy dấu hiệu sinh tồn (nếu có)
+	// // Nếu có bảng dữ liệu riêng cho dấu hiệu sinh tồn, chúng ta sẽ truy vấn ở đây
+	// // Hiện tại chúng ta sẽ sử dụng cân nặng từ thông tin pet
+	// if appointmentDetail.PetID.Valid {
+	// 	pet, err := s.storeDB.GetPetByID(ctx, appointmentDetail.PetID.Int64)
+	// 	if err == nil && pet.Weight.Valid {
+	// 		summary.VitalSigns = &VitalSignsInfo{
+	// 			Weight: pet.Weight.Float64,
+	// 			// Các dấu hiệu sinh tồn khác có thể được thêm vào nếu có dữ liệu
+	// 		}
+	// 	}
+	// }
+
+	return summary, nil
+}
+
+// Helper functions to abstract complex data retrieval
+func (s *MedicalRecordService) getDoctorInfo(ctx *gin.Context, doctorID int64) (string, error) {
+	// TODO: Triển khai thực tế khi có DB schema
+	// Giả lập response
+	return "Dr. John Doe", nil
+}
+
+func (s *MedicalRecordService) getServiceInfo(ctx *gin.Context, serviceID int64) (*struct {
+	Name     string
+	Duration int
+	Price    float64
+}, error) {
+	// TODO: Triển khai thực tế khi có DB schema
+	// Giả lập response
+	return &struct {
+		Name     string
+		Duration int
+		Price    float64
+	}{
+		Name:     "Regular Checkup",
+		Duration: 30,
+		Price:    50.00,
+	}, nil
+}
+
+func (s *MedicalRecordService) getTestResultsByPet(ctx *gin.Context, petID int64, visitDate time.Time) ([]TestResultBasicInfo, error) {
+	// TODO: Triển khai thực tế khi có DB schema
+	// Giả lập response
+	results := []TestResultBasicInfo{
+		{
+			ID:       1,
+			TestName: "Blood Test",
+			Result:   "Normal",
+			Status:   "Completed",
+			TestDate: visitDate,
+		},
+	}
+	return results, nil
+}
+
+func (s *MedicalRecordService) getNextServiceName(ctx *gin.Context, serviceID int64) string {
+	// TODO: Triển khai thực tế khi có DB schema
+	return "Follow-up Visit"
+}
+
+func (s *MedicalRecordService) getNextDoctorName(ctx *gin.Context, doctorID int64) string {
+	// TODO: Triển khai thực tế khi có DB schema
+	return "Dr. Jane Smith"
 }

@@ -53,6 +53,17 @@ type OrderResponse struct {
 	PaymentStatus string  `json:"payment_status"`
 }
 
+// DetailedOrderHistoryResponse represents a comprehensive order history with product details
+type DetailedOrderHistoryResponse struct {
+	OrderID         int64              `json:"order_id"`
+	OrderDate       string             `json:"order_date"`
+	TotalAmount     float64            `json:"total_amount"`
+	PaymentStatus   string             `json:"payment_status"`
+	ShippingAddress string             `json:"shipping_address"`
+	Notes           string             `json:"notes"`
+	CartItems       []CartItemResponse `json:"cart_items"`
+}
+
 type CartApi struct {
 	controller CartControllerInterface
 }
@@ -64,4 +75,9 @@ type CartController struct {
 type CartService struct {
 	storeDB db.Store
 	redis   *redis.ClientType
+}
+
+type UpdateItemQuantityRequest struct {
+	ItemID   int64 `json:"item_id"`
+	Quantity int32 `json:"quantity"`
 }

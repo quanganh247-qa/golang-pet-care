@@ -22,6 +22,7 @@ type DoctorServiceInterface interface {
 	CreateShift(ctx *gin.Context, req CreateShiftRequest) (*Shift, error)
 	GetShiftByDoctorId(ctx *gin.Context, doctorId int64) ([]ShiftResponse, error)
 	GetDoctorById(ctx *gin.Context, doctorId int64) (DoctorDetail, error)
+	DeleteShift(ctx *gin.Context, shiftId int64) error
 }
 
 func (service *DoctorService) LoginDoctorService(ctx *gin.Context, req loginDoctorRequest) (*loginDoctorResponse, error) {
@@ -284,4 +285,11 @@ func (service *DoctorService) GetDoctorById(ctx *gin.Context, doctorId int64) (D
 		Certificate:    doctor.CertificateNumber.String,
 		Bio:            doctor.Bio.String,
 	}, nil
+}
+
+// Delete shift
+func (service *DoctorService) DeleteShift(ctx *gin.Context, shiftId int64) error {
+	return service.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
+		return q.DeleteShift(ctx, shiftId)
+	})
 }

@@ -31,6 +31,7 @@ func Routes(routerGroup middleware.RouterGroup) {
 		perRoute([]perms.Permission{perms.ManageDoctor}).GET("/doctor/shifts", doctorApi.controller.getShifts)
 		perRoute([]perms.Permission{perms.ManageDoctor}).POST("/doctor/shifts", doctorApi.controller.createShift)
 		perRoute([]perms.Permission{perms.ManageDoctor}).GET("/doctor/:doctor_id/shifts", doctorApi.controller.getShiftByDoctorId)
+		perRoute([]perms.Permission{perms.ManageDoctor}).DELETE("/doctor/shifts/:shift_id", doctorApi.controller.deleteShift)
 
 	}
 }

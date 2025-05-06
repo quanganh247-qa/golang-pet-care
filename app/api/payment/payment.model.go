@@ -246,3 +246,29 @@ type QuickLinkResponse struct {
 	QuickLink string `json:"quick_link"` // URL của Quick Link
 	ImageURL  string `json:"image_url"`  // URL của ảnh QR code
 }
+
+// CashPaymentRequest represents the request to create a cash payment
+type CashPaymentRequest struct {
+	Amount        float64 `json:"amount" binding:"required"`        // Số tiền thanh toán
+	Description   string  `json:"description,omitempty"`            // Mô tả thanh toán
+	OrderID       int64   `json:"order_id,omitempty"`               // ID đơn hàng nếu thanh toán cho đơn hàng
+	TestOrderID   int64   `json:"test_order_id,omitempty"`          // ID đơn xét nghiệm nếu thanh toán cho xét nghiệm
+	AppointmentID int64   `json:"appointment_id,omitempty"`         // ID lịch hẹn nếu thanh toán cho lịch hẹn
+	ReceivedBy    string  `json:"received_by" binding:"required"`   // Người nhận tiền
+	CashReceived  float64 `json:"cash_received" binding:"required"` // Số tiền nhận được
+	CashChange    float64 `json:"cash_change" binding:"omitempty"`  // Số tiền thối lại
+}
+
+// CashPaymentResponse represents the response after creating a cash payment
+type CashPaymentResponse struct {
+	PaymentID     int32   `json:"payment_id"`               // ID của thanh toán
+	Amount        float64 `json:"amount"`                   // Số tiền thanh toán
+	PaymentMethod string  `json:"payment_method"`           // Phương thức thanh toán (Cash)
+	PaymentStatus string  `json:"payment_status"`           // Trạng thái thanh toán
+	OrderID       int64   `json:"order_id,omitempty"`       // ID đơn hàng (nếu có)
+	TestOrderID   int64   `json:"test_order_id,omitempty"`  // ID đơn xét nghiệm (nếu có)
+	AppointmentID int64   `json:"appointment_id,omitempty"` // ID lịch hẹn (nếu có)
+	ReceivedBy    string  `json:"received_by"`              // Người nhận tiền
+	CreatedAt     string  `json:"created_at"`               // Thời gian tạo
+	Description   string  `json:"description,omitempty"`    // Mô tả
+}

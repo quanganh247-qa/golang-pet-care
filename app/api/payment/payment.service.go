@@ -29,6 +29,9 @@ type PaymentServiceInterface interface {
 
 	// Add this new method
 	GenerateQuickLink(c *gin.Context, request QuickLinkRequest) (*QuickLinkResponse, error)
+
+	// Add cash payment method
+	CreateCashPayment(ctx *gin.Context, request CashPaymentRequest) (*CashPaymentResponse, error)
 }
 
 func (s *PaymentService) GetToken(c *gin.Context) (*TokenResponse, error) {
@@ -463,6 +466,113 @@ func (s *PaymentService) GetPatientTrends(ctx *gin.Context) (*PatientTrendRespon
 			Month:    monthStr,
 			Patients: int(count),
 		}
+	}
+
+	return response, nil
+}
+
+// CreateCashPayment handles cash payment processing and recording
+func (s *PaymentService) CreateCashPayment(ctx *gin.Context, request CashPaymentRequest) (*CashPaymentResponse, error) {
+	// Tạo payment params
+	paymentParams := db.CreatePaymentParams{
+		Amount:        request.Amount,
+		PaymentMethod: "cash",
+		PaymentStatus: "completed", // Cash payments are completed immediately
+	}
+
+	// Set payment target (order, test order, or appointment)
+	if request.OrderID != 0 {
+		paymentParams.OrderID = pgtype.Int4{Int32: int32(request.OrderID), Valid: true}
+	} else if request.TestOrderID != 0 {
+		paymentParams.TestOrderID = pgtype.Int4{Int32: int32(request.TestOrderID), Valid: true}
+	} else if request.AppointmentID != 0 {
+		paymentParams.AppointmentID = pgtype.Int8{Int64: request.AppointmentID, Valid: true}
+	}
+
+	// Add payment details
+	paymentDetails, _ := json.Marshal(map[string]interface{}{
+		"receivedBy":   request.ReceivedBy,
+		"cashReceived": request.CashReceived,
+		"cashChange":   request.CashChange,
+		"description":  request.Description,
+	})
+
+	paymentParams.PaymentDetails = paymentDetails
+
+	var payment *db.Payment
+	var err error
+
+	// Tạo payment record và cập nhật trạng thái với transaction
+	err = s.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
+		// Create payment record
+		paymentRecord, createErr := q.CreatePayment(ctx, paymentParams)
+		if createErr != nil {
+			return fmt.Errorf("lỗi khi tạo bản ghi thanh toán: %w", createErr)
+		}
+
+		payment = &paymentRecord
+
+		// Update order status if this is a product order
+		if request.OrderID != 0 {
+			_, updateErr := q.UpdateOrderPaymentStatus(ctx, request.OrderID)
+			if updateErr != nil {
+				return fmt.Errorf("lỗi khi cập nhật trạng thái đơn hàng: %w", updateErr)
+			}
+		}
+
+		// Update test order status if this is a test order
+		if request.TestOrderID != 0 {
+			updateErr := q.UpdateTestOrderStatus(ctx, db.UpdateTestOrderStatusParams{
+				OrderID: int32(request.TestOrderID),
+				Status:  pgtype.Text{String: "paid", Valid: true},
+			})
+			if updateErr != nil {
+				return fmt.Errorf("lỗi khi cập nhật trạng thái đơn xét nghiệm: %w", updateErr)
+			}
+		}
+
+		// Update appointment status if this is an appointment payment
+		if request.AppointmentID != 0 {
+			updateErr := q.UpdateAppointmentStatus(ctx, db.UpdateAppointmentStatusParams{
+				AppointmentID: request.AppointmentID,
+				StateID:       pgtype.Int4{Int32: 2, Valid: true}, // Assuming 2 is the ID for "Paid" state
+			})
+			if updateErr != nil {
+				return fmt.Errorf("lỗi khi cập nhật trạng thái lịch hẹn: %w", updateErr)
+			}
+		}
+
+		return nil
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	if payment == nil {
+		return nil, fmt.Errorf("lỗi không xác định khi tạo thanh toán")
+	}
+
+	// Tạo response
+	response := &CashPaymentResponse{
+		PaymentID:     payment.ID,
+		Amount:        payment.Amount,
+		PaymentMethod: payment.PaymentMethod,
+		PaymentStatus: payment.PaymentStatus,
+		ReceivedBy:    request.ReceivedBy,
+		Description:   request.Description,
+		CreatedAt:     payment.CreatedAt.Time.Format("2006-01-02 15:04:05"),
+	}
+
+	// Set order information if available
+	if payment.OrderID.Valid {
+		response.OrderID = int64(payment.OrderID.Int32)
+	}
+	if payment.TestOrderID.Valid {
+		response.TestOrderID = int64(payment.TestOrderID.Int32)
+	}
+	if payment.AppointmentID.Valid {
+		response.AppointmentID = payment.AppointmentID.Int64
 	}
 
 	return response, nil

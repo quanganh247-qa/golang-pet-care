@@ -17,6 +17,10 @@ type CartControllerInterface interface {
 	GetOrderByID(c *gin.Context)
 	RemoveItemFromCart(c *gin.Context)
 	GetAllOrders(c *gin.Context)
+	GetOrderHistory(c *gin.Context)
+	// IncreaseItemQuantity(c *gin.Context)
+	// DecreaseItemQuantity(c *gin.Context)
+	// UpdateItemQuantity(c *gin.Context)
 }
 
 func (c *CartController) AddToCart(ctx *gin.Context) {
@@ -144,3 +148,79 @@ func (c *CartController) GetAllOrders(ctx *gin.Context) {
 	}
 	ctx.JSON(http.StatusOK, util.SuccessResponse("Orders fetched successfully", res))
 }
+
+func (c *CartController) GetOrderHistory(ctx *gin.Context) {
+	authPayload, err := middleware.GetAuthorizationPayload(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	res, err := c.service.GetOrderHistoryService(ctx, authPayload.Username)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, util.SuccessResponse("Order history fetched successfully", res))
+}
+
+// func (c *CartController) IncreaseItemQuantity(ctx *gin.Context) {
+// 	var req UpdateItemQuantityRequest
+// 	if err := ctx.ShouldBindBodyWithJSON(&req); err != nil {
+// 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+// 		return
+// 	}
+// 	authPayload, err := middleware.GetAuthorizationPayload(ctx)
+// 	if err != nil {
+// 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+// 		return
+// 	}
+
+// 	err = c.service.IncreaseItemQuantityService(ctx, authPayload.Username, req.ItemID, req.Quantity)
+// 	if err != nil {
+// 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+// 		return
+// 	}
+// 	ctx.JSON(http.StatusOK, util.SuccessResponse("Item quantity increased successfully", nil))
+// }
+
+// func (c *CartController) DecreaseItemQuantity(ctx *gin.Context) {
+// 	var req UpdateItemQuantityRequest
+// 	if err := ctx.ShouldBindBodyWithJSON(&req); err != nil {
+// 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+// 		return
+// 	}
+// 	authPayload, err := middleware.GetAuthorizationPayload(ctx)
+// 	if err != nil {
+// 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+// 		return
+// 	}
+
+// 	err = c.service.DecreaseItemQuantityService(ctx, authPayload.Username, req.ItemID, req.Quantity)
+// 	if err != nil {
+// 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+// 		return
+// 	}
+// 	ctx.JSON(http.StatusOK, util.SuccessResponse("Item quantity decreased successfully", nil))
+// }
+
+// func (c *CartController) UpdateItemQuantity(ctx *gin.Context) {
+// 	var req UpdateItemQuantityRequest
+// 	if err := ctx.ShouldBindBodyWithJSON(&req); err != nil {
+// 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+// 		return
+// 	}
+// 	authPayload, err := middleware.GetAuthorizationPayload(ctx)
+// 	if err != nil {
+// 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+// 		return
+// 	}
+
+// 	err = c.service.UpdateItemQuantityService(ctx, authPayload.Username, req.ItemID, req.Quantity)
+// 	if err != nil {
+// 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+// 		return
+// 	}
+// 	ctx.JSON(http.StatusOK, util.SuccessResponse("Item quantity updated successfully", nil))
+// }

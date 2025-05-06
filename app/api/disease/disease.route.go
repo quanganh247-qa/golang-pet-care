@@ -42,7 +42,7 @@ func Routes(routerGroup middleware.RouterGroup) {
 	}
 	{
 		authRoute.GET("/pet/:pet_id/allergies", diseaseApi.controller.GetAllergiesByPetID)
-		authRoute.POST("/pet/:pet_id/allerg", diseaseApi.controller.CreateAllergy)
+		authRoute.POST("/pet/:pet_id/allergy", diseaseApi.controller.CreateAllergy)
 	}
 	{
 		perRoute([]perms.Permission{perms.ManageDisease, perms.ManageTreatment}).POST("/treatment", diseaseApi.controller.CreateTreatment)

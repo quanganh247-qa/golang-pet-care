@@ -32,6 +32,7 @@ func Routes(routerGroup middleware.RouterGroup) {
 		authRoute.GET("/order", cartApi.controller.GetOrders)
 		authRoute.GET("/order/:order_id", cartApi.controller.GetOrderByID)
 		authRoute.GET("/orders", cartApi.controller.GetAllOrders)
+		authRoute.GET("/order-history", cartApi.controller.GetOrderHistory)
 	}
 
 }

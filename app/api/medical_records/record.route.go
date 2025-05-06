@@ -55,5 +55,8 @@ func Routes(routerGroup middleware.RouterGroup) {
 
 		// SOAP Notes routes
 		authRoute.GET("/pets/:pet_id/soap-notes", MedicalRecordApi.controller.GetAllSoapNotes)
+
+		// New appointment visit summary route
+		authRoute.GET("/appointments/:appointment_id/visit-summary", MedicalRecordApi.controller.GetAppointmentVisitSummary)
 	}
 }

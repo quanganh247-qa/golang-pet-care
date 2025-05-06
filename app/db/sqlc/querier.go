@@ -88,6 +88,7 @@ type Querier interface {
 	DeleteRoom(ctx context.Context, id int64) error
 	DeleteSMTPConfig(ctx context.Context, id int64) error
 	DeleteService(ctx context.Context, id int64) error
+	DeleteShift(ctx context.Context, id int64) error
 	DeleteShiftsByDate(ctx context.Context, arg DeleteShiftsByDateParams) error
 	DeleteSupplier(ctx context.Context, id int64) error
 	DeleteTestResult(ctx context.Context, id int64) error
@@ -171,6 +172,7 @@ type Querier interface {
 	GetMedicineTransactionsByDate(ctx context.Context, arg GetMedicineTransactionsByDateParams) ([]GetMedicineTransactionsByDateRow, error)
 	GetMedicineTransactionsByMedicineID(ctx context.Context, arg GetMedicineTransactionsByMedicineIDParams) ([]GetMedicineTransactionsByMedicineIDRow, error)
 	GetOrderById(ctx context.Context, id int64) (Order, error)
+	GetOrderHistory(ctx context.Context, userID int64) ([]Order, error)
 	// -- name: AddTestResult :one
 	// INSERT INTO test_results (
 	//     ordered_test_id,

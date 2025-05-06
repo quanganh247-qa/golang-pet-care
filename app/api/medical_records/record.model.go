@@ -191,3 +191,112 @@ type SoapNoteResponse struct {
 	CreatedAt        string `json:"created_at"`
 	UpdatedAt        string `json:"updated_at"`
 }
+
+// AppointmentVisitSummaryResponse là cấu trúc trả về kết quả tổng hợp của một lần khám bệnh
+type AppointmentVisitSummaryResponse struct {
+	AppointmentID     int64                   `json:"appointment_id"`
+	VisitDate         time.Time               `json:"visit_date"`
+	PetInfo           PetBasicInfo            `json:"pet_info"`
+	OwnerInfo         OwnerBasicInfo          `json:"owner_info"`
+	DoctorInfo        DoctorBasicInfo         `json:"doctor_info"`
+	ServiceInfo       ServiceBasicInfo        `json:"service_info"`
+	AppointmentStatus string                  `json:"appointment_status"`
+	Reason            string                  `json:"appointment_reason"`
+	SOAPNote          *SOAPNoteInfo           `json:"soap_note"`
+	Treatments        []TreatmentBasicInfo    `json:"treatments"`
+	Prescriptions     []PrescriptionBasicInfo `json:"prescriptions"`
+	TestResults       []TestResultBasicInfo   `json:"test_results"`
+	NextAppointment   *NextAppointmentInfo    `json:"next_appointment"`
+}
+
+// PetBasicInfo chứa thông tin cơ bản về thú cưng
+type PetBasicInfo struct {
+	PetID  int64   `json:"pet_id"`
+	Name   string  `json:"name"`
+	Type   string  `json:"type"`
+	Breed  string  `json:"breed"`
+	Age    int32   `json:"age,omitempty"`
+	Gender string  `json:"gender,omitempty"`
+	Weight float64 `json:"weight,omitempty"`
+}
+
+// OwnerBasicInfo chứa thông tin cơ bản về chủ sở hữu
+type OwnerBasicInfo struct {
+	Username string `json:"username"`
+	FullName string `json:"full_name"`
+	Phone    string `json:"phone,omitempty"`
+	Email    string `json:"email,omitempty"`
+}
+
+// DoctorBasicInfo chứa thông tin cơ bản về bác sĩ
+type DoctorBasicInfo struct {
+	DoctorID int64  `json:"doctor_id"`
+	Name     string `json:"name"`
+}
+
+// ServiceBasicInfo chứa thông tin cơ bản về dịch vụ
+type ServiceBasicInfo struct {
+	ServiceID int64   `json:"service_id"`
+	Name      string  `json:"name"`
+	Duration  int32   `json:"duration,omitempty"`
+	Price     float64 `json:"price,omitempty"`
+}
+
+// SOAPNoteInfo chứa thông tin SOAP note
+type SOAPNoteInfo struct {
+	ID         int32     `json:"id,omitempty"`
+	Subjective string    `json:"subjective,omitempty"`
+	Objective  string    `json:"objective,omitempty"`
+	Assessment string    `json:"assessment,omitempty"`
+	Plan       string    `json:"plan,omitempty"`
+	CreatedAt  time.Time `json:"created_at,omitempty"`
+}
+
+// VitalSignsInfo chứa thông tin dấu hiệu sinh tồn
+type VitalSignsInfo struct {
+	Temperature     float64 `json:"temperature,omitempty"`
+	HeartRate       int32   `json:"heart_rate,omitempty"`
+	RespirationRate int32   `json:"respiration_rate,omitempty"`
+	Weight          float64 `json:"weight,omitempty"`
+}
+
+// TreatmentBasicInfo chứa thông tin cơ bản về điều trị
+type TreatmentBasicInfo struct {
+	ID          int64     `json:"id"`
+	Name        string    `json:"name"`
+	Type        string    `json:"type,omitempty"`
+	Status      string    `json:"status"`
+	StartDate   time.Time `json:"start_date,omitempty"`
+	EndDate     time.Time `json:"end_date,omitempty"`
+	Description string    `json:"description,omitempty"`
+}
+
+// PrescriptionBasicInfo chứa thông tin cơ bản về đơn thuốc
+type PrescriptionBasicInfo struct {
+	ID           int64     `json:"id"`
+	MedicineName string    `json:"medicine_name"`
+	Dosage       string    `json:"dosage,omitempty"`
+	Frequency    string    `json:"frequency,omitempty"`
+	Duration     string    `json:"duration,omitempty"`
+	Quantity     int32     `json:"quantity,omitempty"`
+	Instructions string    `json:"instructions,omitempty"`
+	IssuedDate   time.Time `json:"issued_date,omitempty"`
+}
+
+// TestResultBasicInfo chứa thông tin cơ bản về kết quả xét nghiệm
+type TestResultBasicInfo struct {
+	ID          int64     `json:"id"`
+	TestName    string    `json:"test_name"`
+	Result      string    `json:"result,omitempty"`
+	NormalRange string    `json:"normal_range,omitempty"`
+	Status      string    `json:"status,omitempty"`
+	TestDate    time.Time `json:"test_date,omitempty"`
+}
+
+// NextAppointmentInfo chứa thông tin về lịch hẹn tiếp theo
+type NextAppointmentInfo struct {
+	AppointmentID int64     `json:"appointment_id"`
+	Date          time.Time `json:"date"`
+	ServiceName   string    `json:"service_name,omitempty"`
+	DoctorName    string    `json:"doctor_name,omitempty"`
+}

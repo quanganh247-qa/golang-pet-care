@@ -69,9 +69,7 @@ FROM Orders
 WHERE user_id = $1 and payment_status = 'pending';
 
 -- name: GetOrderById :one
-SELECT *
-FROM Orders
-WHERE id = $1;
+SELECT  *  FROM Orders o WHERE o.id = $1;
 
 -- name: UpdateOrderPaymentStatus :one
 UPDATE Orders
@@ -90,9 +88,7 @@ RETURNING *;
 
 -- name: UpdateCartItemQuantity :exec
 UPDATE cart_items 
-SET 
-    quantity = $3,
-    updated_at = CURRENT_TIMESTAMP
+SET quantity = $3
 WHERE cart_id = $1 AND product_id = $2;
 
 -- name: GetAllOrders :many
@@ -101,3 +97,10 @@ FROM Orders
 WHERE payment_status = $1
 ORDER BY order_date DESC
 LIMIT $2 OFFSET $3;
+
+
+-- name: GetOrderHistory :many
+SELECT *
+FROM Orders
+WHERE user_id = $1
+ORDER BY order_date DESC;

@@ -17,6 +17,9 @@ type PaymentControllerInterface interface {
 	// Add this new method
 	GenerateQuickLink(c *gin.Context)
 	GetPatientTrends(ctx *gin.Context)
+
+	// Add cash payment method
+	CreateCashPayment(c *gin.Context)
 }
 
 func (c *PaymentController) GetToken(ctx *gin.Context) {
@@ -94,4 +97,33 @@ func (c *PaymentController) GetPatientTrends(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, trends)
+}
+
+// CreateCashPayment handles the request to create a payment using cash method
+func (c *PaymentController) CreateCashPayment(ctx *gin.Context) {
+	var request CashPaymentRequest
+	if err := ctx.ShouldBindJSON(&request); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	// Kiểm tra nếu tiền nhận phải >= số tiền thanh toán
+	if request.CashReceived < request.Amount {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Tiền nhận phải lớn hơn hoặc bằng số tiền thanh toán"})
+		return
+	}
+
+	// Tính toán tiền thối lại nếu không được cung cấp
+	if request.CashChange == 0 {
+		request.CashChange = request.CashReceived - request.Amount
+	}
+
+	// Gọi service để xử lý thanh toán
+	result, err := c.service.CreateCashPayment(ctx, request)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, result)
 }
