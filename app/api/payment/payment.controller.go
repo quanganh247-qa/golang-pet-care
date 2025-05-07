@@ -20,6 +20,9 @@ type PaymentControllerInterface interface {
 
 	// Add cash payment method
 	CreateCashPayment(c *gin.Context)
+
+	// Add payment confirmation method
+	ConfirmPayment(c *gin.Context)
 }
 
 func (c *PaymentController) GetToken(ctx *gin.Context) {
@@ -120,6 +123,29 @@ func (c *PaymentController) CreateCashPayment(ctx *gin.Context) {
 
 	// Gọi service để xử lý thanh toán
 	result, err := c.service.CreateCashPayment(ctx, request)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, result)
+}
+
+// ConfirmPayment handles the request to confirm a payment and update its status
+func (c *PaymentController) ConfirmPayment(ctx *gin.Context) {
+	var request PaymentConfirmationRequest
+	if err := ctx.ShouldBindJSON(&request); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	// Validate payment status
+	if request.PaymentStatus != "successful" && request.PaymentStatus != "failed" {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Payment status must be 'successful' or 'failed'"})
+		return
+	}
+
+	result, err := c.service.ConfirmPaymentService(ctx, request)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

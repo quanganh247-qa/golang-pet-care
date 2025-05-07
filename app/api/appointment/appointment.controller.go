@@ -25,7 +25,7 @@ type AppointmentControllerInterface interface {
 	getQueue(ctx *gin.Context)
 	updateQueueItemStatus(ctx *gin.Context)
 	getHistoryAppointmentsByPetID(ctx *gin.Context)
-
+	getCompletedAppointments(ctx *gin.Context)
 	//time slot
 	getAvailableTimeSlots(ctx *gin.Context)
 
@@ -725,4 +725,20 @@ func (c *AppointmentController) markAllNotificationsAsRead(ctx *gin.Context) {
 	service.notificationManager.ClearMissedNotifications(authPayload.Username)
 
 	ctx.JSON(http.StatusOK, gin.H{"message": "Đã đánh dấu tất cả thông báo đã đọc"})
+}
+
+func (c *AppointmentController) getCompletedAppointments(ctx *gin.Context) {
+	authPayload, err := middleware.GetAuthorizationPayload(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
+	}
+
+	appointments, err := c.service.GetCompletedAppointments(ctx, authPayload.Username)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get completed appointments"})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, appointments)
 }

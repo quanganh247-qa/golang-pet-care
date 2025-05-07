@@ -43,7 +43,7 @@ WHERE id = $1;
 DELETE FROM pet_schedule
 WHERE id = $1 RETURNING *;
 
--- name: UpdatePetSchedule :exec
+-- name: UpdatePetSchedule :one
 UPDATE pet_schedule
 SET title = $2,
     reminder_datetime = $3,
@@ -52,7 +52,7 @@ SET title = $2,
     end_date = $6,
     notes = $7,
     is_active = $8
-WHERE id = $1;
+WHERE id = $1 RETURNING *;
 
 -- name: GetPetScheduleById :one
 SELECT * FROM pet_schedule

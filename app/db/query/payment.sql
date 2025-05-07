@@ -55,3 +55,7 @@ WHERE
     AND created_at <= $2
 GROUP BY payment_method
 ORDER BY total_revenue DESC;
+
+-- name: GetPaymentByID :one
+SELECT * FROM payments
+WHERE id = $1;

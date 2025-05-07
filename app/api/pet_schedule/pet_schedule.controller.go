@@ -145,7 +145,7 @@ func (s *PetScheduleController) updatePetScheduleService(ctx *gin.Context) {
 		return
 	}
 
-	err = s.service.UpdatePetScheduleService(ctx, scheduleID, req)
+	res, err := s.service.UpdatePetScheduleService(ctx, scheduleID, req)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, util.ErrorValidator(err))
 		return
@@ -154,7 +154,7 @@ func (s *PetScheduleController) updatePetScheduleService(ctx *gin.Context) {
 	// Invalidate cache after updating a schedule
 	middleware.InvalidateCache("pet_schedules")
 
-	ctx.JSON(http.StatusOK, util.SuccessResponse("Update reminder", "Success"))
+	ctx.JSON(http.StatusOK, util.SuccessResponse("Update reminder", res))
 }
 
 func (s *PetScheduleController) generateScheduleSuggestion(ctx *gin.Context) {

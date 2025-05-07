@@ -371,3 +371,5 @@ LEFT JOIN time_slots ts ON a.time_slot_id = ts.id
 LEFT JOIN states st ON a.state_id = st.id
 WHERE st.state = $1
 ORDER BY a.created_at DESC;
+
+

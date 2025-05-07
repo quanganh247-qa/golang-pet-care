@@ -243,6 +243,7 @@ type QuickLinkRequest struct {
 
 // QuickLinkResponse represents the response from generating a VietQR Quick Link
 type QuickLinkResponse struct {
+	PaymentID int64  `json:"payment_id"` // ID của thanh toán
 	QuickLink string `json:"quick_link"` // URL của Quick Link
 	ImageURL  string `json:"image_url"`  // URL của ảnh QR code
 }
@@ -271,4 +272,25 @@ type CashPaymentResponse struct {
 	ReceivedBy    string  `json:"received_by"`              // Người nhận tiền
 	CreatedAt     string  `json:"created_at"`               // Thời gian tạo
 	Description   string  `json:"description,omitempty"`    // Mô tả
+}
+
+// PaymentConfirmationRequest represents the request to confirm a payment
+type PaymentConfirmationRequest struct {
+	AppointmentID int64  `json:"appointment_id,omitempty"`          // ID of the appointment to confirm
+	PaymentID     int64  `json:"payment_id" binding:"required"`     // ID of the payment to confirm
+	PaymentStatus string `json:"payment_status" binding:"required"` // New payment status (successful, failed)
+	Notes         string `json:"notes,omitempty"`                   // Optional notes about the confirmation
+}
+
+// PaymentConfirmationResponse represents the response after confirming a payment
+type PaymentConfirmationResponse struct {
+	PaymentID     int64   `json:"payment_id"`               // ID of the confirmed payment
+	OrderID       int64   `json:"order_id,omitempty"`       // Associated order ID, if any
+	TestOrderID   int64   `json:"test_order_id,omitempty"`  // Associated test order ID, if any
+	AppointmentID int64   `json:"appointment_id,omitempty"` // Associated appointment ID, if any
+	Amount        float64 `json:"amount"`                   // Payment amount
+	PaymentMethod string  `json:"payment_method"`           // Payment method used
+	PaymentStatus string  `json:"payment_status"`           // Updated payment status
+	TransactionID string  `json:"transaction_id"`           // Transaction ID
+	ConfirmedAt   string  `json:"confirmed_at"`             // Time of confirmation
 }

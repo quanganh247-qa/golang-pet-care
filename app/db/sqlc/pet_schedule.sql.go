@@ -273,7 +273,7 @@ func (q *Queries) ListPetSchedulesByUsername(ctx context.Context, username strin
 	return items, nil
 }
 
-const updatePetSchedule = `-- name: UpdatePetSchedule :exec
+const updatePetSchedule = `-- name: UpdatePetSchedule :one
 UPDATE pet_schedule
 SET title = $2,
     reminder_datetime = $3,
@@ -282,7 +282,7 @@ SET title = $2,
     end_date = $6,
     notes = $7,
     is_active = $8
-WHERE id = $1
+WHERE id = $1 RETURNING id, pet_id, title, reminder_datetime, event_repeat, end_type, end_date, notes, is_active, created_at
 `
 
 type UpdatePetScheduleParams struct {
@@ -296,8 +296,8 @@ type UpdatePetScheduleParams struct {
 	IsActive         pgtype.Bool      `json:"is_active"`
 }
 
-func (q *Queries) UpdatePetSchedule(ctx context.Context, arg UpdatePetScheduleParams) error {
-	_, err := q.db.Exec(ctx, updatePetSchedule,
+func (q *Queries) UpdatePetSchedule(ctx context.Context, arg UpdatePetScheduleParams) (PetSchedule, error) {
+	row := q.db.QueryRow(ctx, updatePetSchedule,
 		arg.ID,
 		arg.Title,
 		arg.ReminderDatetime,
@@ -307,5 +307,18 @@ func (q *Queries) UpdatePetSchedule(ctx context.Context, arg UpdatePetSchedulePa
 		arg.Notes,
 		arg.IsActive,
 	)
-	return err
+	var i PetSchedule
+	err := row.Scan(
+		&i.ID,
+		&i.PetID,
+		&i.Title,
+		&i.ReminderDatetime,
+		&i.EventRepeat,
+		&i.EndType,
+		&i.EndDate,
+		&i.Notes,
+		&i.IsActive,
+		&i.CreatedAt,
+	)
+	return i, err
 }

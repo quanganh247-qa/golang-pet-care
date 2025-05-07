@@ -188,6 +188,7 @@ type Querier interface {
 	GetOrderedTestsByOrderID(ctx context.Context, orderID pgtype.Int4) ([]GetOrderedTestsByOrderIDRow, error)
 	// Returning fields you may want to use
 	GetOrdersByUserId(ctx context.Context, userID int64) ([]Order, error)
+	GetPaymentByID(ctx context.Context, id int32) (Payment, error)
 	GetPaymentByOrderID(ctx context.Context, orderID pgtype.Int4) (Payment, error)
 	GetPaymentByTestOrderID(ctx context.Context, testOrderID pgtype.Int4) (Payment, error)
 	GetPetAllergy(ctx context.Context, id int64) (PetAllergy, error)
@@ -290,7 +291,7 @@ type Querier interface {
 	UpdatePetAllergy(ctx context.Context, arg UpdatePetAllergyParams) (PetAllergy, error)
 	UpdatePetAvatar(ctx context.Context, arg UpdatePetAvatarParams) error
 	UpdatePetLog(ctx context.Context, arg UpdatePetLogParams) error
-	UpdatePetSchedule(ctx context.Context, arg UpdatePetScheduleParams) error
+	UpdatePetSchedule(ctx context.Context, arg UpdatePetScheduleParams) (PetSchedule, error)
 	UpdatePrescription(ctx context.Context, arg UpdatePrescriptionParams) (Prescription, error)
 	UpdatePrescriptionMedication(ctx context.Context, arg UpdatePrescriptionMedicationParams) (PrescriptionMedication, error)
 	UpdateProductStock(ctx context.Context, arg UpdateProductStockParams) (Product, error)

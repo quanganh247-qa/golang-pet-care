@@ -143,6 +143,7 @@ func (s *DiseaseService) AssignMedicinesToTreatmentPhase(ctx *gin.Context, treat
 			medicine, err = q.AssignMedicationToTreatmentPhase(ctx, db.AssignMedicationToTreatmentPhaseParams{
 				PhaseID:    phaseID,
 				MedicineID: phase.MedicineID,
+				Quantity:   pgtype.Int4{Int32: int32(phase.Quantity), Valid: true},
 				Dosage:     pgtype.Text{String: phase.Dosage, Valid: true},
 				Frequency:  pgtype.Text{String: phase.Frequency, Valid: true},
 				Duration:   pgtype.Text{String: phase.Duration, Valid: true},
@@ -152,6 +153,26 @@ func (s *DiseaseService) AssignMedicinesToTreatmentPhase(ctx *gin.Context, treat
 				log.Println("error while creating treatment medicines: ", err)
 				return fmt.Errorf("error while creating treatment medicines: %w", err)
 			}
+
+			// // create export medicine
+			// _, err = q.CreateMedicineTransaction(ctx, db.CreateMedicineTransactionParams{
+			// 	MedicineID:      phase.MedicineID,
+			// 	Quantity:        int64(phase.Quantity),
+			// 	TransactionType: "export",
+			// 	Notes:           pgtype.Text{String: phase.Notes, Valid: true},
+			// 	UnitPrice:       pgtype.Float8{Float64: 0, Valid: true},
+			// 	TotalAmount:     pgtype.Float8{Float64: 0, Valid: true},
+			// 	SupplierID:      pgtype.Int8{Int64: 0, Valid: true},
+			// 	ExpirationDate:  pgtype.Date{Time: time.Now(), Valid: true},
+			// 	PrescriptionID:  pgtype.Int8{Int64: 0, Valid: true},
+			// 	AppointmentID:   pgtype.Int8{Int64: 0, Valid: true},
+			// 	CreatedBy:       pgtype.Text{String: "system", Valid: true},
+			// })
+			// if err != nil {
+			// 	log.Println("error while creating export medicine: ", err)
+			// 	return fmt.Errorf("error while creating export medicine: %w", err)
+			// }
+
 		}
 		return nil
 

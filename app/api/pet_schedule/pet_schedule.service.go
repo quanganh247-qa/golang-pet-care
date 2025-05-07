@@ -19,7 +19,7 @@ type PetScheduleServiceInterface interface {
 	ListPetSchedulesByUsernameService(ctx *gin.Context, username string) ([]PetSchedules, error)
 	ActivePetScheduleService(ctx *gin.Context, scheduleID int64, req ActiceRemider) error
 	DeletePetScheduleService(ctx *gin.Context, scheduleID int64) error
-	UpdatePetScheduleService(ctx *gin.Context, scheduleID int64, req UpdatePetScheduleRequest) error
+	UpdatePetScheduleService(ctx *gin.Context, scheduleID int64, req UpdatePetScheduleRequest) (*PetScheduleResponse, error)
 	ProcessSuggestionGemini(ctx *gin.Context, description string) (*llm.BaseResponse, error)
 }
 
@@ -254,13 +254,13 @@ func (s *PetScheduleService) DeletePetScheduleService(ctx *gin.Context, schedule
 }
 
 // Update Pet Schedule
-func (s *PetScheduleService) UpdatePetScheduleService(ctx *gin.Context, scheduleID int64, req UpdatePetScheduleRequest) error {
+func (s *PetScheduleService) UpdatePetScheduleService(ctx *gin.Context, scheduleID int64, req UpdatePetScheduleRequest) (*PetScheduleResponse, error) {
 
 	var r db.UpdatePetScheduleParams
 
 	schedule, err := s.storeDB.GetPetScheduleById(ctx, scheduleID)
 	if err != nil {
-		return fmt.Errorf("error getting reminder: ", err)
+		return nil, fmt.Errorf("error getting reminder: ", err)
 	}
 
 	// validate req data
@@ -275,7 +275,7 @@ func (s *PetScheduleService) UpdatePetScheduleService(ctx *gin.Context, schedule
 	} else {
 		reminderTime, err := time.Parse("2006-01-02T15:04:05Z", req.ReminderDateTime)
 		if err != nil {
-			return fmt.Errorf("invalid reminder date time format: %v", err)
+			return nil, fmt.Errorf("invalid reminder date time format: %v", err)
 		}
 		r.ReminderDatetime = pgtype.Timestamp{Time: reminderTime, Valid: true}
 	}
@@ -306,25 +306,44 @@ func (s *PetScheduleService) UpdatePetScheduleService(ctx *gin.Context, schedule
 			// If that fails, try simple date format
 			parsedEndDate, err = time.Parse("2006-01-02", req.EndDate)
 			if err != nil {
-				return fmt.Errorf("invalid end date format: %v", err)
+				return nil, fmt.Errorf("invalid end date format: %v", err)
 			}
 		}
 		r.EndDate = pgtype.Date{Time: parsedEndDate, Valid: true}
 	}
 
+	var res *PetScheduleResponse
 	err = s.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
-		err := q.UpdatePetSchedule(ctx, r)
+		_, err := q.UpdatePetSchedule(ctx, r)
 		if err != nil {
 			return fmt.Errorf("error updating reminder: ", err)
 		}
 		return nil
 	})
 	if err != nil {
-		return fmt.Errorf("error updating reminder: ", err)
+		return nil, fmt.Errorf("error updating reminder: ", err)
 	}
 
+	s.redis.ClearPetSchedulesByPetCache(schedule.PetID.Int64)
 	s.redis.ClearPetSchedulesCache()
-	return nil
+
+	updateSchedule, err := s.storeDB.GetPetScheduleById(ctx, scheduleID)
+	if err != nil {
+		return nil, fmt.Errorf("error getting reminder: ", err)
+	}
+
+	res = &PetScheduleResponse{
+		ID:               updateSchedule.ID,
+		PetID:            updateSchedule.PetID.Int64,
+		Title:            updateSchedule.Title.String,
+		ReminderDateTime: updateSchedule.ReminderDatetime.Time.Format(time.RFC3339),
+		EventRepeat:      updateSchedule.EventRepeat.String,
+		EndType:          updateSchedule.EndType.Bool,
+		EndDate:          updateSchedule.EndDate.Time.Format(time.RFC3339),
+		Notes:            updateSchedule.Notes.String,
+		IsActive:         updateSchedule.IsActive.Bool,
+	}
+	return res, nil
 }
 
 func (s *PetScheduleService) ProcessSuggestionGemini(ctx *gin.Context, description string) (*llm.BaseResponse, error) {

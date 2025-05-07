@@ -112,6 +112,7 @@ type AssignMedicineRequest struct {
 	Dosage     string `json:"dosage"`
 	Frequency  string `json:"frequency"`
 	Duration   string `json:"duration"`
+	Quantity   int64  `json:"quantity"`
 	Notes      string `json:"notes"`
 }
 

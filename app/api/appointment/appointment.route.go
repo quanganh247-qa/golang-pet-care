@@ -51,6 +51,8 @@ func Routes(routerGroup middleware.RouterGroup, taskDistributor worker.TaskDistr
 
 		authRoute.GET("appointments/pet/:pet_id/history", appointmentApi.controller.getHistoryAppointmentsByPetID)
 
+		authRoute.GET("appointments/history", appointmentApi.controller.getCompletedAppointments)
+
 		authRoute.GET("appointments/queue", appointmentApi.controller.getQueue)
 
 		authRoute.PUT("appointments/queue/:id/status", appointmentApi.controller.updateQueueItemStatus)

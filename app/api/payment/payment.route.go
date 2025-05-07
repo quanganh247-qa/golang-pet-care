@@ -34,6 +34,7 @@ func Routes(routerGroup middleware.RouterGroup, config *util.Config) {
 		authRoute.POST("/payment/generate-qr", paymentApi.controller.GenerateQRCode)
 		authRoute.POST("/payment/quick-link", paymentApi.controller.GenerateQuickLink)
 		authRoute.POST("/payment/cash", paymentApi.controller.CreateCashPayment)
+		authRoute.POST("/payment/confirm", paymentApi.controller.ConfirmPayment)
 	}
 	{
 		// Add this route to your existing routes

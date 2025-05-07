@@ -37,6 +37,7 @@ type AppointmentServiceInterface interface {
 	GetAppointmentDistributionByService(ctx *gin.Context, startDate, endDate string) ([]AppointmentDistribution, error)
 	HandleWebSocket(ctx *gin.Context)
 	GetAppointmentByState(ctx *gin.Context, stateID string) ([]Appointment, error)
+	GetCompletedAppointments(ctx *gin.Context, username string) ([]Appointment, error)
 }
 
 func (s *AppointmentService) CreateAppointment(ctx *gin.Context, req createAppointmentRequest, username string) (*createAppointmentResponse, error) {
@@ -1351,6 +1352,44 @@ func (s *AppointmentService) GetAppointmentByState(ctx *gin.Context, stateID str
 				EndTime:   time.UnixMicro(appointment.EndTime.Microseconds).UTC().Format("15:04:05"),
 			},
 			Reason: appointment.AppointmentReason.String,
+		})
+	}
+	return a, nil
+}
+
+func (s *AppointmentService) GetCompletedAppointments(ctx *gin.Context, username string) ([]Appointment, error) {
+	appointments, err := s.storeDB.GetAppointmentByState(ctx, "Completed")
+	if err != nil {
+		return nil, fmt.Errorf("failed to get completed appointments: %w", err)
+	}
+
+	var a []Appointment
+	for _, appointment := range appointments {
+		doc, err := s.storeDB.GetDoctor(ctx, appointment.DoctorID.Int64)
+		if err != nil {
+			return nil, fmt.Errorf("failed to get doctor: %w", err)
+		}
+		a = append(a, Appointment{
+			ID: appointment.AppointmentID,
+			Pet: Pet{
+				PetName: appointment.PetName.String,
+			},
+			Serivce: Serivce{
+				ServiceName: appointment.ServiceName.String,
+			},
+			Doctor: Doctor{
+				DoctorID:   appointment.DoctorID.Int64,
+				DoctorName: doc.Name,
+			},
+			Date: appointment.Date.Time.Format("2006-01-02"),
+			TimeSlot: timeslot{
+				StartTime: time.UnixMicro(appointment.StartTime.Microseconds).UTC().Format("15:04:05"),
+				EndTime:   time.UnixMicro(appointment.EndTime.Microseconds).UTC().Format("15:04:05"),
+			},
+			Reason:       appointment.AppointmentReason.String,
+			State:        appointment.StateName.String,
+			CreatedAt:    appointment.CreatedAt.Time.Format("2006-01-02 15:04:05"),
+			ReminderSend: appointment.ReminderSend.Bool,
 		})
 	}
 	return a, nil
