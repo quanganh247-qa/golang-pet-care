@@ -95,35 +95,13 @@ func (c *TestController) CreateOrder(ctx *gin.Context) {
 		return
 	}
 
-	err := c.service.CreateOrder(ctx, req)
+	order, err := c.service.CreateOrder(ctx, req)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	ctx.JSON(http.StatusCreated, gin.H{"message": "Order created successfully"})
-}
-
-// CreateTestOrder is for backward compatibility
-func (c *TestController) CreateTestOrder(ctx *gin.Context) {
-	var req TestOrderRequest
-	if err := ctx.ShouldBindJSON(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	// Set default type to test if not provided
-	// if req.ItemType == "" {
-	// 	req.ItemType = TypeTest
-	// }
-
-	err := c.service.CreateOrder(ctx, req)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	ctx.JSON(http.StatusCreated, gin.H{"message": "Test order created successfully"})
+	ctx.JSON(http.StatusCreated, gin.H{"message": "Order created successfully", "data": order})
 }
 
 // GetItemByID gets a test or vaccine by ID

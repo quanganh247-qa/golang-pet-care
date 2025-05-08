@@ -168,6 +168,10 @@ type Invoice struct {
 	Description   pgtype.Text      `json:"description"`
 	CustomerName  pgtype.Text      `json:"customer_name"`
 	CreatedAt     pgtype.Timestamp `json:"created_at"`
+	Type          pgtype.Text      `json:"type"`
+	AppointmentID pgtype.Int8      `json:"appointment_id"`
+	TestOrderID   pgtype.Int8      `json:"test_order_id"`
+	OrderID       pgtype.Int8      `json:"order_id"`
 }
 
 type InvoiceItem struct {
@@ -556,6 +560,7 @@ type TreatmentPhase struct {
 	Status      pgtype.Text        `json:"status"`
 	StartDate   pgtype.Date        `json:"start_date"`
 	CreatedAt   pgtype.Timestamptz `json:"created_at"`
+	UpdatedAt   pgtype.Timestamptz `json:"updated_at"`
 }
 
 type User struct {

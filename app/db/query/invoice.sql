@@ -6,9 +6,13 @@ INSERT INTO invoices (
     due_date,
     status,
     description,
-    customer_name
+    customer_name,
+    type,
+    appointment_id,
+    test_order_id,
+    order_id    
 ) VALUES (
-    $1, $2, $3, $4, $5, $6, $7
+    $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11
 ) RETURNING *;
 
 -- name: CreateInvoiceItem :one

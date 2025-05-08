@@ -30,10 +30,14 @@ INSERT INTO invoices (
     due_date,
     status,
     description,
-    customer_name
+    customer_name,
+    type,
+    appointment_id,
+    test_order_id,
+    order_id    
 ) VALUES (
-    $1, $2, $3, $4, $5, $6, $7
-) RETURNING id, invoice_number, amount, date, due_date, status, description, customer_name, created_at
+    $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11
+) RETURNING id, invoice_number, amount, date, due_date, status, description, customer_name, created_at, type, appointment_id, test_order_id, order_id
 `
 
 type CreateInvoiceParams struct {
@@ -44,6 +48,10 @@ type CreateInvoiceParams struct {
 	Status        string      `json:"status"`
 	Description   pgtype.Text `json:"description"`
 	CustomerName  pgtype.Text `json:"customer_name"`
+	Type          pgtype.Text `json:"type"`
+	AppointmentID pgtype.Int8 `json:"appointment_id"`
+	TestOrderID   pgtype.Int8 `json:"test_order_id"`
+	OrderID       pgtype.Int8 `json:"order_id"`
 }
 
 func (q *Queries) CreateInvoice(ctx context.Context, arg CreateInvoiceParams) (Invoice, error) {
@@ -55,6 +63,10 @@ func (q *Queries) CreateInvoice(ctx context.Context, arg CreateInvoiceParams) (I
 		arg.Status,
 		arg.Description,
 		arg.CustomerName,
+		arg.Type,
+		arg.AppointmentID,
+		arg.TestOrderID,
+		arg.OrderID,
 	)
 	var i Invoice
 	err := row.Scan(
@@ -67,6 +79,10 @@ func (q *Queries) CreateInvoice(ctx context.Context, arg CreateInvoiceParams) (I
 		&i.Description,
 		&i.CustomerName,
 		&i.CreatedAt,
+		&i.Type,
+		&i.AppointmentID,
+		&i.TestOrderID,
+		&i.OrderID,
 	)
 	return i, err
 }
@@ -128,7 +144,7 @@ func (q *Queries) DeleteInvoiceItem(ctx context.Context, id int32) error {
 }
 
 const getInvoiceByID = `-- name: GetInvoiceByID :one
-SELECT id, invoice_number, amount, date, due_date, status, description, customer_name, created_at FROM invoices
+SELECT id, invoice_number, amount, date, due_date, status, description, customer_name, created_at, type, appointment_id, test_order_id, order_id FROM invoices
 WHERE id = $1 LIMIT 1
 `
 
@@ -145,12 +161,16 @@ func (q *Queries) GetInvoiceByID(ctx context.Context, id int32) (Invoice, error)
 		&i.Description,
 		&i.CustomerName,
 		&i.CreatedAt,
+		&i.Type,
+		&i.AppointmentID,
+		&i.TestOrderID,
+		&i.OrderID,
 	)
 	return i, err
 }
 
 const getInvoiceByNumber = `-- name: GetInvoiceByNumber :one
-SELECT id, invoice_number, amount, date, due_date, status, description, customer_name, created_at FROM invoices
+SELECT id, invoice_number, amount, date, due_date, status, description, customer_name, created_at, type, appointment_id, test_order_id, order_id FROM invoices
 WHERE invoice_number = $1 LIMIT 1
 `
 
@@ -167,6 +187,10 @@ func (q *Queries) GetInvoiceByNumber(ctx context.Context, invoiceNumber string) 
 		&i.Description,
 		&i.CustomerName,
 		&i.CreatedAt,
+		&i.Type,
+		&i.AppointmentID,
+		&i.TestOrderID,
+		&i.OrderID,
 	)
 	return i, err
 }
@@ -291,7 +315,7 @@ func (q *Queries) GetInvoiceWithItems(ctx context.Context, id int32) ([]GetInvoi
 }
 
 const listInvoices = `-- name: ListInvoices :many
-SELECT id, invoice_number, amount, date, due_date, status, description, customer_name, created_at FROM invoices
+SELECT id, invoice_number, amount, date, due_date, status, description, customer_name, created_at, type, appointment_id, test_order_id, order_id FROM invoices
 ORDER BY date DESC
 LIMIT $1
 OFFSET $2
@@ -321,6 +345,10 @@ func (q *Queries) ListInvoices(ctx context.Context, arg ListInvoicesParams) ([]I
 			&i.Description,
 			&i.CustomerName,
 			&i.CreatedAt,
+			&i.Type,
+			&i.AppointmentID,
+			&i.TestOrderID,
+			&i.OrderID,
 		); err != nil {
 			return nil, err
 		}

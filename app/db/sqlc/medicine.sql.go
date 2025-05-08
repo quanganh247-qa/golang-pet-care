@@ -242,7 +242,14 @@ SELECT
     ms.name as supplier_name
 FROM medicines
 JOIN medicine_suppliers ms ON medicines.supplier_id = ms.id
+ORDER BY medicines.created_at DESC
+LIMIT $1 OFFSET $2
 `
+
+type GetAllMedicinesParams struct {
+	Limit  int32 `json:"limit"`
+	Offset int32 `json:"offset"`
+}
 
 type GetAllMedicinesRow struct {
 	ID             int64              `json:"id"`
@@ -262,8 +269,8 @@ type GetAllMedicinesRow struct {
 	SupplierName   string             `json:"supplier_name"`
 }
 
-func (q *Queries) GetAllMedicines(ctx context.Context) ([]GetAllMedicinesRow, error) {
-	rows, err := q.db.Query(ctx, getAllMedicines)
+func (q *Queries) GetAllMedicines(ctx context.Context, arg GetAllMedicinesParams) ([]GetAllMedicinesRow, error) {
+	rows, err := q.db.Query(ctx, getAllMedicines, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}

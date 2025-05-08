@@ -77,7 +77,9 @@ SELECT
     medicines.reorder_level,
     ms.name as supplier_name
 FROM medicines
-JOIN medicine_suppliers ms ON medicines.supplier_id = ms.id;
+JOIN medicine_suppliers ms ON medicines.supplier_id = ms.id
+ORDER BY medicines.created_at DESC
+LIMIT $1 OFFSET $2;
 
 -- name: CountAllMedicines :one
 SELECT COUNT(*) FROM medicines;

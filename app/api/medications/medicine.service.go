@@ -18,7 +18,7 @@ type MedicineServiceInterface interface {
 	GetMedicineByID(ctx *gin.Context, medicineid int64) (*createMedicineResponse, error)
 	ListMedicines(ctx *gin.Context, pagination *util.Pagination, petID int64) ([]Medication, error)
 	UpdateMedicine(ctx *gin.Context, medicineid int64, req createMedicineRequest) error
-	GetAllMedicines(ctx *gin.Context) ([]Medication, error)
+	GetAllMedicines(ctx *gin.Context, pagination *util.Pagination) ([]Medication, error)
 
 	// Inventory management
 	CreateMedicineTransaction(ctx *gin.Context, username string, req MedicineTransactionRequest) (*MedicineTransactionResponse, error)
@@ -174,8 +174,13 @@ func (s *MedicineService) UpdateMedicine(ctx *gin.Context, medicineid int64, req
 	return nil
 }
 
-func (s *MedicineService) GetAllMedicines(ctx *gin.Context) ([]Medication, error) {
-	meds, err := s.storeDB.GetAllMedicines(ctx)
+func (s *MedicineService) GetAllMedicines(ctx *gin.Context, pagination *util.Pagination) ([]Medication, error) {
+	arg := db.GetAllMedicinesParams{
+		Limit:  int32(pagination.PageSize),
+		Offset: int32((pagination.Page - 1) * pagination.PageSize),
+	}
+
+	meds, err := s.storeDB.GetAllMedicines(ctx, arg)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get all medicines: %w", err)
 	}

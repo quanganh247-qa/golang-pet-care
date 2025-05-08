@@ -1,4 +1,3 @@
-
 -- name: CreateTreatment :one
 INSERT INTO pet_treatments (pet_id, diseases,doctor_id, name, type, start_date, end_date ,status, description, created_at)
 VALUES ($1, $2, $3, $4, $5, $6 ,$7 , $8, $9, now()) RETURNING *;
@@ -54,14 +53,14 @@ SELECT * FROM treatment_phases
 WHERE treatment_id = $1;
 
 -- name: GetMedicationsByPhase :many
-SELECT m.id, m.name, pm.dosage, pm.frequency, pm.duration, pm.notes ,pm.Created_at
+SELECT m.id, m.name, pm.dosage, pm.frequency, pm.duration, pm.notes, pm.quantity, pm.Created_at
 FROM medicines m
 JOIN phase_medicines pm ON m.id = pm.medicine_id
 WHERE pm.phase_id = $1;
 
 -- name: UpdateTreatmentPhaseStatus :exec
 UPDATE treatment_phases
-SET status = $2 and updated_at = now()
+SET status = $2, updated_at = now()
 WHERE id = $1;
 
 -- name: GetActiveTreatments :many
@@ -97,3 +96,8 @@ SELECT
 FROM clinics 
 WHERE id = $1; -- Assuming a single clinic for simplicity, adjust as needed
 
+
+-- name: UpdateTreatmentStatus :exec
+UPDATE pet_treatments
+SET status = $2
+WHERE id = $1;

@@ -46,6 +46,7 @@ func Routes(routerGroup middleware.RouterGroup) {
 	}
 	{
 		perRoute([]perms.Permission{perms.ManageDisease, perms.ManageTreatment}).POST("/treatment", diseaseApi.controller.CreateTreatment)
+		perRoute([]perms.Permission{perms.ManageTreatment}).PUT("/treatment/:treatment_id/status", diseaseApi.controller.UpdateTreatmentStatus)
 		perRoute([]perms.Permission{perms.ManageDisease, perms.ManageTreatment}).POST("/treatment/:treatment_id/phases", diseaseApi.controller.CreateTreatmentPhase)
 		perRoute([]perms.Permission{perms.ManageDisease, perms.ManageTreatment}).POST("/treatment/:treatment_id/phase/:phase_id/medicines", diseaseApi.controller.AssignMedicineToTreatmentPhase)
 		perRoute([]perms.Permission{perms.ManageTreatment}).PUT("/treatment/:treatment_id/phase/:phase_id", diseaseApi.controller.UpdateTreatmentPhaseStatus)

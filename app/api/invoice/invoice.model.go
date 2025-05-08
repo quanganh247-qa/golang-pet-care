@@ -41,6 +41,10 @@ type CreateInvoiceRequest struct {
 	Status        string        `json:"status"`
 	Description   string        `json:"description"`
 	CustomerName  string        `json:"customer_name" binding:"required"`
+	Type          string        `json:"type"`
+	AppointmentID int64         `json:"appointment_id"`
+	TestOrderID   int64         `json:"test_order_id"`
+	OrderID       int64         `json:"order_id"`
 	Items         []InvoiceItem `json:"items" binding:"required"`
 }
 
@@ -79,6 +83,10 @@ type InvoiceWithItemsResponse struct {
 	Description   string                `json:"description"`
 	CustomerName  string                `json:"customer_name"`
 	CreatedAt     time.Time             `json:"created_at"`
+	AppointmentID int64                 `json:"appointment_id"`
+	TestOrderID   int64                 `json:"test_order_id"`
+	OrderID       int64                 `json:"order_id"`
+	Type          string                `json:"type"`
 	Items         []InvoiceItemResponse `json:"items"`
 }
 

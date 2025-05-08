@@ -20,6 +20,7 @@ type ProductServiceInterface interface {
 	ImportStock(ctx context.Context, productID int64, req ImportStockRequest) (*ProductStockMovementResponse, error)
 	ExportStock(ctx context.Context, productID int64, req ExportStockRequest) (*ProductStockMovementResponse, error)
 	GetProductStockMovements(ctx context.Context, productID int64, pagination *util.Pagination) ([]ProductStockMovementResponse, error)
+	GetAllProductStockMovements(ctx context.Context, pagination *util.Pagination) ([]ProductStockMovementResponse, error)
 }
 
 // get all products
@@ -329,7 +330,47 @@ func (s *ProductService) GetProductStockMovements(ctx context.Context, productID
 			Quantity:     int64(m.Quantity),
 			Reason:       m.Reason.String,
 			MovementDate: m.MovementDate,
-			Price:        movementPriceFloat, // Use the converted float64 price
+			Price:        movementPriceFloat,
+		})
+	}
+
+	return response, nil
+}
+
+func (s *ProductService) GetAllProductStockMovements(ctx context.Context, pagination *util.Pagination) ([]ProductStockMovementResponse, error) {
+	arg := db.GetAllProductStockMovementsParams{
+		Limit:  int32(pagination.PageSize),
+		Offset: int32((pagination.Page - 1) * pagination.PageSize),
+	}
+
+	movements, err := s.storeDB.GetAllProductStockMovements(ctx, arg)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get stock movements: %w", err)
+	}
+
+	var response []ProductStockMovementResponse
+	for _, m := range movements {
+
+		// Convert movement price back to float64 for response
+		var movementPriceFloat float64
+		if m.Price.Valid {
+			bf := new(big.Float)
+			_, err := fmt.Sscan(m.Price.Int.String(), bf)
+			if err == nil {
+				bf.SetInt(m.Price.Int)
+				bf.Quo(bf, big.NewFloat(0).SetInt(new(big.Int).Exp(big.NewInt(10), big.NewInt(int64(m.Price.Exp)), nil)))
+				movementPriceFloat, _ = bf.Float64()
+			}
+		}
+
+		response = append(response, ProductStockMovementResponse{
+			ID:           m.MovementID,
+			ProductID:    m.ProductID,
+			MovementType: string(m.MovementType),
+			Quantity:     int64(m.Quantity),
+			Reason:       m.Reason.String,
+			MovementDate: m.MovementDate,
+			Price:        movementPriceFloat,
 		})
 	}
 

@@ -108,12 +108,13 @@ type CreateTreatmentPhaseRequest struct {
 
 // Assign Medicines to Treatment Phases
 type AssignMedicineRequest struct {
-	MedicineID int64  `json:"medicine_id"`
-	Dosage     string `json:"dosage"`
-	Frequency  string `json:"frequency"`
-	Duration   string `json:"duration"`
-	Quantity   int64  `json:"quantity"`
-	Notes      string `json:"notes"`
+	MedicineID    int64  `json:"medicine_id"`
+	Dosage        string `json:"dosage"`
+	Frequency     string `json:"frequency"`
+	Duration      string `json:"duration"`
+	Quantity      int64  `json:"quantity"`
+	Notes         string `json:"notes"`
+	AppointmentID int64  `json:"appointment_id"`
 }
 
 type TreatmentPhase struct {
@@ -134,11 +135,16 @@ type PhaseMedicine struct {
 	Dosage       string `json:"dosage"`
 	Frequency    string `json:"frequency"`
 	Duration     string `json:"duration"`
+	Quantity     int64  `json:"quantity"`
 	Notes        string `json:"notes"`
 	CreatedAt    string `json:"created_at"`
 }
 
 type UpdateTreatmentPhaseStatusRequest struct {
+	Status string `json:"status" validate:"required,oneof=pending active completed"`
+}
+
+type UpdateTreatmentStatusRequest struct {
 	Status string `json:"status" validate:"required,oneof=pending active completed"`
 }
 

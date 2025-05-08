@@ -26,6 +26,7 @@ type DiseaseServiceInterface interface {
 	UpdateTreatmentPhaseStatus(ctx *gin.Context, phaseID int64, req UpdateTreatmentPhaseStatusRequest) error
 	GetActiveTreatments(ctx *gin.Context, petID int64, pagination *util.Pagination) ([]Treatment, error)
 	GetTreatmentProgress(ctx *gin.Context, id int64) ([]TreatmentProgressDetail, error)
+	UpdateTreatmentStatus(ctx *gin.Context, treatmentID int64, status string) error
 
 	CreateDisease(ctx context.Context, arg CreateDiseaseRequest) (*db.Disease, error)
 	GenerateMedicineOnlyPrescriptionPDF(ctx context.Context, treatmentID int64, outputFile string) (*PrescriptionResponse, error)
@@ -154,25 +155,39 @@ func (s *DiseaseService) AssignMedicinesToTreatmentPhase(ctx *gin.Context, treat
 				return fmt.Errorf("error while creating treatment medicines: %w", err)
 			}
 
-			// // create export medicine
-			// _, err = q.CreateMedicineTransaction(ctx, db.CreateMedicineTransactionParams{
-			// 	MedicineID:      phase.MedicineID,
-			// 	Quantity:        int64(phase.Quantity),
-			// 	TransactionType: "export",
-			// 	Notes:           pgtype.Text{String: phase.Notes, Valid: true},
-			// 	UnitPrice:       pgtype.Float8{Float64: 0, Valid: true},
-			// 	TotalAmount:     pgtype.Float8{Float64: 0, Valid: true},
-			// 	SupplierID:      pgtype.Int8{Int64: 0, Valid: true},
-			// 	ExpirationDate:  pgtype.Date{Time: time.Now(), Valid: true},
-			// 	PrescriptionID:  pgtype.Int8{Int64: 0, Valid: true},
-			// 	AppointmentID:   pgtype.Int8{Int64: 0, Valid: true},
-			// 	CreatedBy:       pgtype.Text{String: "system", Valid: true},
-			// })
-			// if err != nil {
-			// 	log.Println("error while creating export medicine: ", err)
-			// 	return fmt.Errorf("error while creating export medicine: %w", err)
-			// }
+			medicineDetail, err := q.GetMedicineByID(ctx, phase.MedicineID)
+			if err != nil {
+				return fmt.Errorf("error while getting medicine: %w", err)
+			}
 
+			totalAmount := medicineDetail.UnitPrice.Float64 * float64(phase.Quantity)
+
+			// Create export medicine transaction to track inventory
+			_, err = q.CreateMedicineTransaction(ctx, db.CreateMedicineTransactionParams{
+				MedicineID:      phase.MedicineID,
+				Quantity:        phase.Quantity,
+				TransactionType: "export",
+				Notes:           pgtype.Text{String: fmt.Sprintf("Assigned to treatment phase ID: %d", phaseID), Valid: true},
+				UnitPrice:       pgtype.Float8{Float64: medicineDetail.UnitPrice.Float64, Valid: true},
+				TotalAmount:     pgtype.Float8{Float64: totalAmount, Valid: true},
+				SupplierID:      pgtype.Int8{Int64: medicineDetail.SupplierID.Int64, Valid: true},
+				ExpirationDate:  pgtype.Date{Time: medicineDetail.ExpirationDate.Time, Valid: true},
+				// PrescriptionID:  pgtype.Int8{Int64: phase.AppointmentID, Valid: true},
+				AppointmentID: pgtype.Int8{Int64: phase.AppointmentID, Valid: true},
+			})
+			if err != nil {
+				return fmt.Errorf("error while creating export medicine transaction: %w", err)
+			}
+
+			// Update medicine quantity in inventory
+			err = q.UpdateMedicineQuantity(ctx, db.UpdateMedicineQuantityParams{
+				ID:       phase.MedicineID,
+				Quantity: pgtype.Int8{Int64: medicineDetail.Quantity.Int64 - phase.Quantity, Valid: true},
+			})
+			if err != nil {
+				log.Println("error while updating medicine quantity: ", err)
+				return fmt.Errorf("error while updating medicine quantity: %w", err)
+			}
 		}
 		return nil
 
@@ -182,7 +197,6 @@ func (s *DiseaseService) AssignMedicinesToTreatmentPhase(ctx *gin.Context, treat
 		return nil, fmt.Errorf("error while creating treatment medicines: %w", err)
 	}
 	return &[]db.PhaseMedicine{medicine}, nil
-
 }
 
 // Get All Treatments for a Pet
@@ -350,6 +364,7 @@ func (s *DiseaseService) GetMedicinesByPhase(ctx *gin.Context, phaseID int64, pa
 			Dosage:       medicine.Dosage.String,
 			Frequency:    medicine.Frequency.String,
 			Duration:     medicine.Duration.String,
+			Quantity:     int64(medicine.Quantity.Int32),
 			Notes:        medicine.Notes.String,
 			CreatedAt:    medicine.CreatedAt.Time.Format("2006-01-02 15:04:05"),
 		})
@@ -603,4 +618,17 @@ func (s *DiseaseService) GetAllergiesByPetID(ctx *gin.Context, petID int64, pagi
 		})
 	}
 	return &res, nil
+}
+
+func (s *DiseaseService) UpdateTreatmentStatus(ctx *gin.Context, treatmentID int64, status string) error {
+	return s.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
+		err := q.UpdateTreatmentStatus(ctx, db.UpdateTreatmentStatusParams{
+			ID:     treatmentID,
+			Status: pgtype.Text{String: status, Valid: true},
+		})
+		if err != nil {
+			return fmt.Errorf("error while updating treatment status: %w", err)
+		}
+		return nil
+	})
 }

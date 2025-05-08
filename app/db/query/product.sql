@@ -17,3 +17,4 @@ SET stock_quantity = $2,
     updated_at = CURRENT_TIMESTAMP
 WHERE product_id = $1
 RETURNING *;
+

@@ -54,6 +54,45 @@ func (q *Queries) CreateProductStockMovement(ctx context.Context, arg CreateProd
 	return i, err
 }
 
+const getAllProductStockMovements = `-- name: GetAllProductStockMovements :many
+SELECT movement_id, product_id, movement_type, quantity, reason, movement_date, price FROM product_stock_movements
+ORDER BY movement_date DESC
+LIMIT $1 OFFSET $2
+`
+
+type GetAllProductStockMovementsParams struct {
+	Limit  int32 `json:"limit"`
+	Offset int32 `json:"offset"`
+}
+
+func (q *Queries) GetAllProductStockMovements(ctx context.Context, arg GetAllProductStockMovementsParams) ([]ProductStockMovement, error) {
+	rows, err := q.db.Query(ctx, getAllProductStockMovements, arg.Limit, arg.Offset)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []ProductStockMovement{}
+	for rows.Next() {
+		var i ProductStockMovement
+		if err := rows.Scan(
+			&i.MovementID,
+			&i.ProductID,
+			&i.MovementType,
+			&i.Quantity,
+			&i.Reason,
+			&i.MovementDate,
+			&i.Price,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getProductStockMovementsByProductID = `-- name: GetProductStockMovementsByProductID :many
 SELECT
     movement_id,

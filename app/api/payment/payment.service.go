@@ -579,7 +579,6 @@ func (s *PaymentService) ConfirmPaymentService(ctx *gin.Context, request Payment
 	// Begin transaction
 	var response PaymentConfirmationResponse
 
-	// .. get paymen
 	// Attempt to get the payment first
 	payment, err := s.storeDB.GetPaymentByID(ctx, int32(request.PaymentID))
 	if err != nil {

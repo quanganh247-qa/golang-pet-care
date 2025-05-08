@@ -21,6 +21,7 @@ type DiseaseControllerInterface interface {
 	UpdateTreatmentPhaseStatus(ctx *gin.Context)
 	GetActiveTreatments(ctx *gin.Context)
 	GetTreatmentProgress(ctx *gin.Context)
+	UpdateTreatmentStatus(ctx *gin.Context)
 	GenerateMedicineOnlyPrescription(ctx *gin.Context)
 
 	CreateAllergy(ctx *gin.Context)
@@ -554,4 +555,41 @@ func (h *DiseaseController) AnalyzeSymptoms(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, treatmentPlan)
+}
+
+func (c *DiseaseController) UpdateTreatmentStatus(ctx *gin.Context) {
+	treatmentID := ctx.Param("treatment_id")
+	id, err := strconv.ParseInt(treatmentID, 10, 64)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"success": false,
+			"message": "Invalid treatment ID",
+			"error":   err.Error(),
+		})
+		return
+	}
+
+	var req UpdateTreatmentStatusRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"success": false,
+			"message": "Invalid status update data",
+			"error":   err.Error(),
+		})
+		return
+	}
+
+	err = c.service.UpdateTreatmentStatus(ctx, id, req.Status)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"success": false,
+			"message": "Failed to update treatment status",
+			"error":   err.Error(),
+		})
+		return
+	}
+	ctx.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"message": "Treatment status updated successfully",
+	})
 }

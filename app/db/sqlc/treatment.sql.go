@@ -126,7 +126,7 @@ func (q *Queries) CreateTreatment(ctx context.Context, arg CreateTreatmentParams
 
 const createTreatmentPhase = `-- name: CreateTreatmentPhase :one
 INSERT INTO treatment_phases (treatment_id, phase_name, description, start_date, status, created_at)
-VALUES ($1, $2, $3, $4, $5, now()) RETURNING id, treatment_id, phase_name, description, status, start_date, created_at
+VALUES ($1, $2, $3, $4, $5, now()) RETURNING id, treatment_id, phase_name, description, status, start_date, created_at, updated_at
 `
 
 type CreateTreatmentPhaseParams struct {
@@ -154,6 +154,7 @@ func (q *Queries) CreateTreatmentPhase(ctx context.Context, arg CreateTreatmentP
 		&i.Status,
 		&i.StartDate,
 		&i.CreatedAt,
+		&i.UpdatedAt,
 	)
 	return i, err
 }
@@ -229,7 +230,7 @@ func (q *Queries) GetActiveTreatments(ctx context.Context, arg GetActiveTreatmen
 }
 
 const getAllTreatmentPhasesByTreatmentID = `-- name: GetAllTreatmentPhasesByTreatmentID :many
-SELECT id, treatment_id, phase_name, description, status, start_date, created_at FROM treatment_phases
+SELECT id, treatment_id, phase_name, description, status, start_date, created_at, updated_at FROM treatment_phases
 WHERE treatment_id = $1
 `
 
@@ -250,6 +251,7 @@ func (q *Queries) GetAllTreatmentPhasesByTreatmentID(ctx context.Context, treatm
 			&i.Status,
 			&i.StartDate,
 			&i.CreatedAt,
+			&i.UpdatedAt,
 		); err != nil {
 			return nil, err
 		}
@@ -284,7 +286,7 @@ func (q *Queries) GetClinicInfo(ctx context.Context, id int64) (GetClinicInfoRow
 }
 
 const getMedicationsByPhase = `-- name: GetMedicationsByPhase :many
-SELECT m.id, m.name, pm.dosage, pm.frequency, pm.duration, pm.notes ,pm.Created_at
+SELECT m.id, m.name, pm.dosage, pm.frequency, pm.duration, pm.notes, pm.quantity, pm.Created_at
 FROM medicines m
 JOIN phase_medicines pm ON m.id = pm.medicine_id
 WHERE pm.phase_id = $1
@@ -297,6 +299,7 @@ type GetMedicationsByPhaseRow struct {
 	Frequency pgtype.Text        `json:"frequency"`
 	Duration  pgtype.Text        `json:"duration"`
 	Notes     pgtype.Text        `json:"notes"`
+	Quantity  pgtype.Int4        `json:"quantity"`
 	CreatedAt pgtype.Timestamptz `json:"created_at"`
 }
 
@@ -316,6 +319,7 @@ func (q *Queries) GetMedicationsByPhase(ctx context.Context, phaseID int64) ([]G
 			&i.Frequency,
 			&i.Duration,
 			&i.Notes,
+			&i.Quantity,
 			&i.CreatedAt,
 		); err != nil {
 			return nil, err
@@ -398,7 +402,7 @@ func (q *Queries) GetTreatment(ctx context.Context, id int64) (PetTreatment, err
 }
 
 const getTreatmentPhase = `-- name: GetTreatmentPhase :one
-SELECT id, treatment_id, phase_name, description, status, start_date, created_at FROM treatment_phases
+SELECT id, treatment_id, phase_name, description, status, start_date, created_at, updated_at FROM treatment_phases
 WHERE id = $1 LIMIT 1
 `
 
@@ -413,12 +417,13 @@ func (q *Queries) GetTreatmentPhase(ctx context.Context, id int64) (TreatmentPha
 		&i.Status,
 		&i.StartDate,
 		&i.CreatedAt,
+		&i.UpdatedAt,
 	)
 	return i, err
 }
 
 const getTreatmentPhasesByTreatment = `-- name: GetTreatmentPhasesByTreatment :many
-SELECT tp.id, treatment_id, phase_name, tp.description, tp.status, tp.start_date, tp.created_at, t.id, pet_id, diseases, t.start_date, end_date, t.status, name, type, t.description, t.created_at, doctor_id  FROM treatment_phases as tp
+SELECT tp.id, treatment_id, phase_name, tp.description, tp.status, tp.start_date, tp.created_at, updated_at, t.id, pet_id, diseases, t.start_date, end_date, t.status, name, type, t.description, t.created_at, doctor_id  FROM treatment_phases as tp
 JOIN pet_treatments t ON t.id = tp.treatment_id
 WHERE t.id = $1 LIMIT $2 OFFSET $3
 `
@@ -437,6 +442,7 @@ type GetTreatmentPhasesByTreatmentRow struct {
 	Status        pgtype.Text        `json:"status"`
 	StartDate     pgtype.Date        `json:"start_date"`
 	CreatedAt     pgtype.Timestamptz `json:"created_at"`
+	UpdatedAt     pgtype.Timestamptz `json:"updated_at"`
 	ID_2          int64              `json:"id_2"`
 	PetID         pgtype.Int8        `json:"pet_id"`
 	Diseases      pgtype.Text        `json:"diseases"`
@@ -467,6 +473,7 @@ func (q *Queries) GetTreatmentPhasesByTreatment(ctx context.Context, arg GetTrea
 			&i.Status,
 			&i.StartDate,
 			&i.CreatedAt,
+			&i.UpdatedAt,
 			&i.ID_2,
 			&i.PetID,
 			&i.Diseases,
@@ -647,7 +654,7 @@ func (q *Queries) UpdateTreatment(ctx context.Context, arg UpdateTreatmentParams
 
 const updateTreatmentPhaseStatus = `-- name: UpdateTreatmentPhaseStatus :exec
 UPDATE treatment_phases
-SET status = $2 and updated_at = now()
+SET status = $2, updated_at = now()
 WHERE id = $1
 `
 
@@ -658,5 +665,24 @@ type UpdateTreatmentPhaseStatusParams struct {
 
 func (q *Queries) UpdateTreatmentPhaseStatus(ctx context.Context, arg UpdateTreatmentPhaseStatusParams) error {
 	_, err := q.db.Exec(ctx, updateTreatmentPhaseStatus, arg.ID, arg.Status)
+	return err
+}
+
+const updateTreatmentStatus = `-- name: UpdateTreatmentStatus :exec
+
+
+UPDATE pet_treatments
+SET status = $2
+WHERE id = $1
+`
+
+type UpdateTreatmentStatusParams struct {
+	ID     int64       `json:"id"`
+	Status pgtype.Text `json:"status"`
+}
+
+// Assuming a single clinic for simplicity, adjust as needed
+func (q *Queries) UpdateTreatmentStatus(ctx context.Context, arg UpdateTreatmentStatusParams) error {
+	_, err := q.db.Exec(ctx, updateTreatmentStatus, arg.ID, arg.Status)
 	return err
 }

@@ -18,14 +18,11 @@ func NewInvoiceService(store db.Store) *InvoiceService {
 
 func (s *InvoiceService) CreateInvoice(ctx *gin.Context, req CreateInvoiceRequest) (*InvoiceResponse, error) {
 	var invoice db.Invoice
-	var err error
-
-	// Use transaction to ensure all operations succeed or fail together
-	err = s.storeDB.ExecWithTransaction(ctx, func(queries *db.Queries) error {
+	err := s.storeDB.ExecWithTransaction(ctx, func(queries *db.Queries) error {
 		// Set default date if not provided
 		date := req.Date
 		if date == "" {
-			date = time.Now().Format("2006-01-02")
+			date = time.Now().Format(time.RFC3339)
 		}
 
 		// Set default status if not provided
@@ -37,12 +34,12 @@ func (s *InvoiceService) CreateInvoice(ctx *gin.Context, req CreateInvoiceReques
 		dateStr := date
 		dueDateStr := req.DueDate
 
-		parsedDate, err := time.Parse("2006-01-02", dateStr)
+		parsedDate, err := time.Parse(time.RFC3339, dateStr)
 		if err != nil {
 			return fmt.Errorf("failed to parse date: %w", err)
 		}
 
-		parsedDueDate, err := time.Parse("2006-01-02", dueDateStr)
+		parsedDueDate, err := time.Parse(time.RFC3339, dueDateStr)
 		if err != nil {
 			return fmt.Errorf("failed to parse due date: %w", err)
 		}
@@ -56,6 +53,10 @@ func (s *InvoiceService) CreateInvoice(ctx *gin.Context, req CreateInvoiceReques
 			Status:        status,
 			Description:   pgtype.Text{String: req.Description, Valid: req.Description != ""},
 			CustomerName:  pgtype.Text{String: req.CustomerName, Valid: req.CustomerName != ""},
+			Type:          pgtype.Text{String: req.Type, Valid: req.Type != ""},
+			AppointmentID: pgtype.Int8{Int64: req.AppointmentID, Valid: true},
+			TestOrderID:   pgtype.Int8{Int64: req.TestOrderID, Valid: true},
+			OrderID:       pgtype.Int8{Int64: req.OrderID, Valid: true},
 		})
 		if err != nil {
 			return fmt.Errorf("failed to create invoice: %w", err)
@@ -223,7 +224,11 @@ func (s *InvoiceService) ListInvoices(ctx *gin.Context, pagination *util.Paginat
 			Description:   invoice.Description.String,
 			CustomerName:  invoice.CustomerName.String,
 			CreatedAt:     invoice.CreatedAt.Time,
+			Type:          invoice.Type.String,
 			Items:         itemResponses,
+			AppointmentID: invoice.AppointmentID.Int64,
+			TestOrderID:   invoice.TestOrderID.Int64,
+			OrderID:       invoice.OrderID.Int64,
 		})
 	}
 

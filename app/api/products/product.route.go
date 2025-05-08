@@ -33,6 +33,7 @@ func Routes(routerGroup middleware.RouterGroup) {
 		authRoute.POST("/:product_id/import", petApi.controller.ImportStock)
 		authRoute.POST("/:product_id/export", petApi.controller.ExportStock)
 		authRoute.GET("/:product_id/movements", petApi.controller.GetProductStockMovements)
+		authRoute.GET("/movements", petApi.controller.GetAllProductStockMovements)
 
 	}
 

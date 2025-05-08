@@ -148,8 +148,13 @@ func (c *MedicineController) UpdateMedicine(ctx *gin.Context) {
 // }
 
 func (c *MedicineController) GetAllMedicines(ctx *gin.Context) {
+	pagination, err := util.GetPageInQuery(ctx.Request.URL.Query())
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
+		return
+	}
 
-	Medicines, err := c.service.GetAllMedicines(ctx)
+	Medicines, err := c.service.GetAllMedicines(ctx, pagination)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

@@ -19,6 +19,7 @@ type ProductControllerInterface interface {
 	ImportStock(c *gin.Context)
 	ExportStock(c *gin.Context)
 	GetProductStockMovements(c *gin.Context)
+	GetAllProductStockMovements(c *gin.Context)
 }
 
 func (controller *ProductController) CreateProduct(ctx *gin.Context) {
@@ -159,4 +160,19 @@ func (controller *ProductController) GetProductStockMovements(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, util.SuccessResponse("Stock movements retrieved successfully", movements))
+}
+
+func (controller *ProductController) GetAllProductStockMovements(c *gin.Context) {
+	pagination, err := util.GetPageInQuery(c.Request.URL.Query())
+	if err != nil {
+		c.JSON(http.StatusBadRequest, util.ErrorResponse(err))
+		return
+	}
+
+	movements, err := controller.service.GetAllProductStockMovements(c.Request.Context(), pagination)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, util.ErrorResponse(err))
+		return
+	}
+	c.JSON(http.StatusOK, util.SuccessResponse("All stock movements retrieved successfully", movements))
 }

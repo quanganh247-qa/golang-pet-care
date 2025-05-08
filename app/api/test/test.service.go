@@ -15,7 +15,7 @@ import (
 type TestServiceInterface interface {
 	// Updated methods for combined test/vaccine functionality
 	ListItems(ctx *gin.Context, itemType ItemType) (*[]TestCategoryResponse, error)
-	CreateOrder(ctx *gin.Context, req TestOrderRequest) error
+	CreateOrder(ctx *gin.Context, req TestOrderRequest) (*db.TestOrder, error)
 	GetItemByID(ctx *gin.Context, id int32) (*TestItem, error)
 	UpdateItem(ctx *gin.Context, req UpdateTestRequest) (*TestItem, error)
 	SoftDeleteItem(ctx *gin.Context, itemID string) error
@@ -24,7 +24,6 @@ type TestServiceInterface interface {
 	GetTestByAppointment(ctx *gin.Context, appointmentID int64) (*[]TestByAppointment, error)
 	// Legacy methods for backward compatibility
 	ListTests(ctx *gin.Context) (*[]TestCategoryResponse, error)
-	CreateTestOrder(ctx *gin.Context, req TestOrderRequest) error
 	GetTestByID(ctx *gin.Context, id int32) (*Test, error)
 	UpdateTest(ctx *gin.Context, req UpdateTestRequest) (*Test, error)
 	SoftDeleteTest(ctx *gin.Context, testID string) error
@@ -50,8 +49,8 @@ func (s *TestService) ListItems(ctx *gin.Context, itemType ItemType) (*[]TestCat
 	categoriesMap := make(map[string]*TestCategoryResponse)
 
 	for _, r := range res {
-		// If itemType filter is provided, skip items that don't match
-		if itemType != "" {
+		// Skip type filtering if itemType is "all"
+		if itemType != "" && itemType != "all" {
 			if ItemType(r.Type.String) != itemType && r.Type.String != "" {
 				continue
 			}
@@ -108,19 +107,21 @@ func (s *TestService) ListTests(ctx *gin.Context) (*[]TestCategoryResponse, erro
 }
 
 // CreateOrder creates a new order for tests or vaccines
-func (s *TestService) CreateOrder(ctx *gin.Context, req TestOrderRequest) error {
+func (s *TestService) CreateOrder(ctx *gin.Context, req TestOrderRequest) (*db.TestOrder, error) {
 	// Calculate total amount
 	var totalAmount float64
 	for _, itemID := range req.ItemIDs {
 		item, err := s.storeDB.GetTestByID(ctx, int32(itemID))
 		if err != nil {
-			return fmt.Errorf("failed to get item by ID: %w", err)
+			return nil, fmt.Errorf("failed to get item by ID: %w", err)
 		}
 		totalAmount += item.Price
 	}
 
-	err := s.storeDB.ExecWithTransaction(ctx, func(queries *db.Queries) error {
-		order, err := queries.CreateTestOrder(ctx, db.CreateTestOrderParams{
+	var order db.TestOrder
+	var err error
+	err = s.storeDB.ExecWithTransaction(ctx, func(queries *db.Queries) error {
+		order, err = queries.CreateTestOrder(ctx, db.CreateTestOrderParams{
 			AppointmentID: pgtype.Int4{Int32: int32(req.AppointmentID), Valid: true},
 			TotalAmount:   pgtype.Float8{Float64: totalAmount, Valid: true},
 			Notes:         pgtype.Text{String: req.Notes, Valid: req.Notes != ""},
@@ -146,12 +147,7 @@ func (s *TestService) CreateOrder(ctx *gin.Context, req TestOrderRequest) error 
 		return nil
 	})
 
-	return err
-}
-
-// For backward compatibility
-func (s *TestService) CreateTestOrder(ctx *gin.Context, req TestOrderRequest) error {
-	return s.CreateOrder(ctx, req)
+	return &order, err
 }
 
 func (s *TestService) GetOrderedTestsByAppointment(ctx *gin.Context, appointmentID int64) (*[]OrderedTestDetail, error) {

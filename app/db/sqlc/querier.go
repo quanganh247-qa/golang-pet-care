@@ -101,10 +101,11 @@ type Querier interface {
 	GetAllAppointmentsByDate(ctx context.Context, arg GetAllAppointmentsByDateParams) ([]GetAllAppointmentsByDateRow, error)
 	GetAllAppointmentsWithDateOption(ctx context.Context, arg GetAllAppointmentsWithDateOptionParams) ([]GetAllAppointmentsWithDateOptionRow, error)
 	GetAllAppointmentsWithOrders(ctx context.Context) ([]GetAllAppointmentsWithOrdersRow, error)
-	GetAllMedicines(ctx context.Context) ([]GetAllMedicinesRow, error)
+	GetAllMedicines(ctx context.Context, arg GetAllMedicinesParams) ([]GetAllMedicinesRow, error)
 	GetAllOrders(ctx context.Context, arg GetAllOrdersParams) ([]Order, error)
 	GetAllPetLogsByUsername(ctx context.Context, arg GetAllPetLogsByUsernameParams) ([]GetAllPetLogsByUsernameRow, error)
 	GetAllPets(ctx context.Context) ([]Pet, error)
+	GetAllProductStockMovements(ctx context.Context, arg GetAllProductStockMovementsParams) ([]ProductStockMovement, error)
 	GetAllProducts(ctx context.Context, arg GetAllProductsParams) ([]Product, error)
 	GetAllRole(ctx context.Context) ([]pgtype.Text, error)
 	GetAllSchedulesByPet(ctx context.Context, arg GetAllSchedulesByPetParams) ([]PetSchedule, error)
@@ -307,6 +308,8 @@ type Querier interface {
 	UpdateTimeSlotBookedPatients(ctx context.Context, id int64) error
 	UpdateTreatment(ctx context.Context, arg UpdateTreatmentParams) error
 	UpdateTreatmentPhaseStatus(ctx context.Context, arg UpdateTreatmentPhaseStatusParams) error
+	// Assuming a single clinic for simplicity, adjust as needed
+	UpdateTreatmentStatus(ctx context.Context, arg UpdateTreatmentStatusParams) error
 	UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error)
 	UpdateUserPassword(ctx context.Context, arg UpdateUserPasswordParams) (User, error)
 	UpdateVaccination(ctx context.Context, arg UpdateVaccinationParams) error

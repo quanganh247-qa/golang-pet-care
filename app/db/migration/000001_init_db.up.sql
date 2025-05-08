@@ -459,6 +459,7 @@ CREATE TABLE public.treatment_phases (
 	status varchar(50) NULL,
 	start_date date NOT NULL,
 	created_at timestamptz DEFAULT CURRENT_TIMESTAMP NULL,
+	updated_at timestamptz NULL,
 	CONSTRAINT treatment_phases_pkey PRIMARY KEY (id),
 	CONSTRAINT treatment_phases_treatment_id_fkey FOREIGN KEY (treatment_id) REFERENCES public.pet_treatments(id)
 );
@@ -718,6 +719,10 @@ CREATE TABLE public.invoices (
 	description text NULL,
 	customer_name varchar(100) NULL,
 	created_at timestamp DEFAULT now() NOT NULL,
+	"type" varchar NULL,
+	appointment_id int8 NULL,
+	test_order_id int8 NULL,
+	order_id int8 NULL,
 	CONSTRAINT invoices_invoice_number_key UNIQUE (invoice_number),
 	CONSTRAINT invoices_pkey PRIMARY KEY (id)
 );

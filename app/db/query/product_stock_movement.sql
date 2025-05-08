@@ -34,3 +34,8 @@ SELECT
 FROM product_stock_movements
 WHERE product_id = $1
 GROUP BY product_id;
+
+-- name: GetAllProductStockMovements :many
+SELECT * FROM product_stock_movements
+ORDER BY movement_date DESC
+LIMIT $1 OFFSET $2;
