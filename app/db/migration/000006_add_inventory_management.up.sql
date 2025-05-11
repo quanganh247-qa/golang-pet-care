@@ -1,0 +1,123 @@
+-- +migrate Up
+
+-- Create a new enum for tracking inventory item types
+CREATE TYPE inventory_item_type_enum AS ENUM ('medicine', 'vaccine');
+
+-- Create inventory_items table to track both medicines and vaccines
+CREATE TABLE inventory_items (
+    id BIGSERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    item_type inventory_item_type_enum NOT NULL,
+    description TEXT,
+    usage_instructions TEXT,
+    dosage TEXT,
+    frequency TEXT,
+    duration TEXT,
+    side_effects TEXT,
+    expiration_date DATE,
+    quantity INT NOT NULL DEFAULT 0,
+    unit_price NUMERIC(10, 2) NOT NULL DEFAULT 0.00,
+    reorder_level INT NOT NULL DEFAULT 10,
+    supplier_id BIGINT,
+    for_species VARCHAR(100), -- For which species (dogs, cats, etc.) the item is intended
+    requires_prescription BOOLEAN DEFAULT FALSE,
+    storage_condition VARCHAR(100), -- e.g., refrigeration requirements
+    batch_number VARCHAR(100),
+    manufacturer VARCHAR(255),
+    is_active BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_inventory_items_supplier FOREIGN KEY (supplier_id) REFERENCES medicine_suppliers(id)
+);
+
+-- Create inventory_transactions table to track inventory movement for both medicines and vaccines
+CREATE TABLE inventory_transactions (
+    id BIGSERIAL PRIMARY KEY,
+    inventory_item_id BIGINT NOT NULL,
+    transaction_type VARCHAR(20) NOT NULL, -- 'import', 'export', 'adjustment'
+    quantity INT NOT NULL,
+    unit_price NUMERIC(10, 2),
+    total_amount NUMERIC(10, 2),
+    transaction_date TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+    supplier_id BIGINT,
+    expiration_date DATE,
+    batch_number VARCHAR(100),
+    reference_id BIGINT, -- Can refer to appointment_id, order_id, etc.
+    reference_type VARCHAR(50), -- 'appointment', 'order', 'adjustment', etc.
+    notes TEXT,
+    created_by VARCHAR(255), -- User who created this transaction
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_inventory_trans_item FOREIGN KEY (inventory_item_id) REFERENCES inventory_items(id),
+    CONSTRAINT fk_inventory_trans_supplier FOREIGN KEY (supplier_id) REFERENCES medicine_suppliers(id),
+    CONSTRAINT check_transaction_type CHECK (transaction_type IN ('import', 'export', 'adjustment'))
+);
+
+-- Create indexes for better performance
+CREATE INDEX idx_inventory_items_name ON inventory_items(name);
+CREATE INDEX idx_inventory_items_type ON inventory_items(item_type);
+CREATE INDEX idx_inventory_items_expiration ON inventory_items(expiration_date);
+CREATE INDEX idx_inventory_items_quantity ON inventory_items(quantity);
+CREATE INDEX idx_inventory_items_supplier ON inventory_items(supplier_id);
+
+CREATE INDEX idx_inventory_transactions_item_id ON inventory_transactions(inventory_item_id);
+CREATE INDEX idx_inventory_transactions_type ON inventory_transactions(transaction_type);
+CREATE INDEX idx_inventory_transactions_date ON inventory_transactions(transaction_date);
+CREATE INDEX idx_inventory_transactions_reference ON inventory_transactions(reference_id, reference_type);
+
+-- Create view to simplify inventory status queries
+CREATE OR REPLACE VIEW inventory_status AS
+SELECT 
+    i.id,
+    i.name,
+    i.item_type,
+    i.quantity,
+    i.unit_price,
+    i.expiration_date,
+    i.reorder_level,
+    i.supplier_id,
+    s.name AS supplier_name,
+    CASE 
+        WHEN i.quantity <= i.reorder_level THEN true
+        ELSE false
+    END AS needs_reorder,
+    CASE
+        WHEN i.expiration_date IS NOT NULL AND i.expiration_date < CURRENT_DATE THEN true
+        ELSE false
+    END AS is_expired,
+    i.is_active
+FROM 
+    inventory_items i
+LEFT JOIN
+    medicine_suppliers s ON i.supplier_id = s.id;
+
+-- Create functions to help manage inventory
+CREATE OR REPLACE FUNCTION update_inventory_quantity()
+RETURNS TRIGGER AS $$
+BEGIN
+    -- Update the inventory item quantity after a transaction
+    IF NEW.transaction_type = 'import' THEN
+        UPDATE inventory_items
+        SET quantity = quantity + NEW.quantity,
+            updated_at = CURRENT_TIMESTAMP
+        WHERE id = NEW.inventory_item_id;
+    ELSIF NEW.transaction_type = 'export' THEN
+        UPDATE inventory_items
+        SET quantity = quantity - NEW.quantity,
+            updated_at = CURRENT_TIMESTAMP
+        WHERE id = NEW.inventory_item_id;
+    ELSIF NEW.transaction_type = 'adjustment' THEN
+        UPDATE inventory_items
+        SET quantity = NEW.quantity,
+            updated_at = CURRENT_TIMESTAMP
+        WHERE id = NEW.inventory_item_id;
+    END IF;
+    
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Create trigger to automatically update inventory quantities
+CREATE TRIGGER after_inventory_transaction
+AFTER INSERT ON inventory_transactions
+FOR EACH ROW
+EXECUTE FUNCTION update_inventory_quantity(); 

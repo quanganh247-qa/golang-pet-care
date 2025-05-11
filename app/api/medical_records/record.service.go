@@ -826,9 +826,9 @@ func (s *MedicalRecordService) GetAllSoapNotesByPetID(ctx *gin.Context, petID in
 		allSoapNotes = append(allSoapNotes, SoapNoteResponse{
 			ID:               int64(history.ID),
 			PetID:            history.PetID.Int64,
-			Subjective:       history.Subjective.String,
+			Subjective:       string(history.Subjective),
 			Objective:        string(history.Objective), // Convert []byte to string
-			Assessment:       history.Assessment.String,
+			Assessment:       string(history.Assessment),
 			Plan:             fmt.Sprint(history.Plan.Int64), // Convert int64 to string
 			DoctorID:         history.DoctorID,
 			DoctorName:       history.DoctorName,
@@ -920,8 +920,8 @@ func (s *MedicalRecordService) GetAppointmentVisitSummary(ctx *gin.Context, appo
 		if err == nil {
 			summary.SOAPNote = &SOAPNoteInfo{
 				ID:         int32(soapNote.ID),
-				Subjective: soapNote.Subjective.String,
-				Assessment: soapNote.Assessment.String,
+				Subjective: string(soapNote.Subjective),
+				Assessment: string(soapNote.Assessment),
 				CreatedAt:  soapNote.CreatedAt.Time,
 			}
 

@@ -712,3 +712,302 @@ func (client *ClientType) ClearPetLogSummaryCache(petID int64) {
 	pattern := fmt.Sprintf("%s:summary:%d:*", PET_LOG_KEY, petID)
 	client.RemoveCacheBySubString(pattern)
 }
+
+// DoctorInfo represents cached doctor data
+type DoctorInfo struct {
+	DoctorID       int64  `json:"doctor_id"`
+	Username       string `json:"username"`
+	FullName       string `json:"full_name"`
+	DoctorName     string `json:"doctor_name"`
+	Email          string `json:"email"`
+	Role           string `json:"role"`
+	Address        string `json:"address"`
+	PhoneNumber    string `json:"phone_number"`
+	Specialization string `json:"specialization"`
+	YearsOfExp     int32  `json:"years_of_exp"`
+	Education      string `json:"education"`
+	Certificate    string `json:"certificate"`
+	Bio            string `json:"bio"`
+	DataImage      []byte `json:"data_image"`
+}
+
+// ShiftInfo represents cached doctor shift data
+type ShiftInfo struct {
+	ID               int64     `json:"id"`
+	DoctorID         int64     `json:"doctor_id"`
+	StartTime        time.Time `json:"start_time"`
+	EndTime          time.Time `json:"end_time"`
+	AssignedPatients int32     `json:"assigned_patients"`
+	CreatedAt        time.Time `json:"created_at"`
+	DoctorName       string    `json:"doctor_name,omitempty"`
+}
+
+// Load a single doctor from cache or DB
+func (c *ClientType) DoctorLoadCache(doctorID int64) (*DoctorInfo, error) {
+	doctorKey := fmt.Sprintf("%s:%d", DOCTOR_INFO_KEY, doctorID)
+	doctorInfo := DoctorInfo{}
+	err := c.GetWithBackground(doctorKey, &doctorInfo)
+	if err != nil {
+		// Cache miss, get from database
+		doctor, err := db.StoreDB.GetDoctor(ctxRedis, doctorID)
+		if err != nil {
+			if err == pgx.ErrNoRows {
+				return nil, err
+			}
+			return nil, err
+		}
+
+		// Get user details for the doctor
+		user, err := db.StoreDB.GetUserByID(ctxRedis, doctor.UserID)
+		if err != nil {
+			return nil, err
+		}
+
+		// Convert database result to cache structure
+		doctorData := DoctorInfo{
+			DoctorID:       doctor.ID,
+			Username:       user.Username,
+			FullName:       user.FullName,
+			DoctorName:     user.FullName,
+			Email:          user.Email,
+			Role:           user.Role.String,
+			Address:        user.Address.String,
+			PhoneNumber:    user.PhoneNumber.String,
+			Specialization: doctor.Specialization.String,
+			YearsOfExp:     doctor.YearsOfExperience.Int32,
+			Education:      doctor.Education.String,
+			Certificate:    doctor.CertificateNumber.String,
+			Bio:            doctor.Bio.String,
+			DataImage:      []byte(user.DataImage),
+		}
+
+		// Cache for 6 hours
+		err = c.SetWithBackground(doctorKey, &doctorData, time.Hour*6)
+		if err != nil {
+			log.Printf("Error when set cache for key %s: %v", doctorKey, err)
+		}
+		return &doctorData, nil
+	}
+	return &doctorInfo, nil
+}
+
+// Load doctor by username from cache or DB
+func (c *ClientType) DoctorByUsernameLoadCache(username string) (*DoctorInfo, error) {
+	usernameKey := fmt.Sprintf("%s:username:%s", DOCTOR_INFO_KEY, username)
+	doctorInfo := DoctorInfo{}
+	err := c.GetWithBackground(usernameKey, &doctorInfo)
+	if err != nil {
+		// Cache miss, get from database
+		user, err := db.StoreDB.GetUser(ctxRedis, username)
+		if err != nil {
+			return nil, err
+		}
+
+		doctor, err := db.StoreDB.GetDoctorByUserId(ctxRedis, user.ID)
+		if err != nil {
+			return nil, err
+		}
+
+		// Convert database result to cache structure
+		doctorData := DoctorInfo{
+			DoctorID:       doctor.ID,
+			Username:       user.Username,
+			FullName:       user.FullName,
+			DoctorName:     user.FullName,
+			Email:          user.Email,
+			Role:           user.Role.String,
+			Address:        user.Address.String,
+			PhoneNumber:    user.PhoneNumber.String,
+			Specialization: doctor.Specialization.String,
+			YearsOfExp:     doctor.YearsOfExperience.Int32,
+			Education:      doctor.Education.String,
+			Certificate:    doctor.CertificateNumber.String,
+			Bio:            doctor.Bio.String,
+			DataImage:      []byte(user.DataImage),
+		}
+
+		// Cache for 6 hours
+		err = c.SetWithBackground(usernameKey, &doctorData, time.Hour*6)
+		if err != nil {
+			log.Printf("Error when set cache for key %s: %v", usernameKey, err)
+		}
+		return &doctorData, nil
+	}
+	return &doctorInfo, nil
+}
+
+// Get all doctors with cache
+func (c *ClientType) DoctorsListLoadCache() ([]DoctorInfo, error) {
+	listKey := fmt.Sprintf("%s:list", DOCTOR_INFO_KEY)
+
+	var doctorsList []DoctorInfo
+	err := c.GetWithBackground(listKey, &doctorsList)
+	if err != nil {
+		// Cache miss, get from database
+		doctors, err := db.StoreDB.ListDoctors(ctxRedis)
+		if err != nil {
+			return nil, err
+		}
+
+		// Transform to our cache format
+		for _, doc := range doctors {
+			doctorsList = append(doctorsList, DoctorInfo{
+				DoctorID:       doc.DoctorID,
+				Username:       doc.Username,
+				FullName:       doc.FullName,
+				DoctorName:     doc.FullName,
+				Email:          doc.Email,
+				Role:           doc.Role.String,
+				Specialization: doc.Specialization.String,
+				YearsOfExp:     doc.YearsOfExperience.Int32,
+				Education:      doc.Education.String,
+				Certificate:    doc.CertificateNumber.String,
+				Bio:            doc.Bio.String,
+				DataImage:      doc.DataImage,
+			})
+		}
+
+		// Cache for 1 hour
+		err = c.SetWithBackground(listKey, &doctorsList, time.Hour*1)
+		if err != nil {
+			log.Printf("Error when set cache for key %s: %v", listKey, err)
+		}
+	}
+
+	return doctorsList, nil
+}
+
+// Get shifts for a doctor with cache
+func (c *ClientType) DoctorShiftsLoadCache(doctorID int64) ([]ShiftInfo, error) {
+	shiftsKey := fmt.Sprintf("%s:%d:shifts", DOCTOR_INFO_KEY, doctorID)
+
+	var shifts []ShiftInfo
+	err := c.GetWithBackground(shiftsKey, &shifts)
+	if err != nil {
+		// Cache miss, get from database
+		dbShifts, err := db.StoreDB.GetShiftByDoctorId(ctxRedis, doctorID)
+		if err != nil {
+			return nil, err
+		}
+
+		// Transform to our cache format
+		for _, shift := range dbShifts {
+			// Get doctor name for each shift
+			doctor, err := db.StoreDB.GetDoctor(ctxRedis, shift.DoctorID)
+			if err != nil {
+				// Continue even if we can't get doctor name
+				shifts = append(shifts, ShiftInfo{
+					ID:               shift.ID,
+					DoctorID:         shift.DoctorID,
+					StartTime:        shift.StartTime.Time,
+					EndTime:          shift.EndTime.Time,
+					AssignedPatients: shift.AssignedPatients.Int32,
+					CreatedAt:        shift.CreatedAt.Time,
+				})
+				continue
+			}
+
+			shifts = append(shifts, ShiftInfo{
+				ID:               shift.ID,
+				DoctorID:         shift.DoctorID,
+				StartTime:        shift.StartTime.Time,
+				EndTime:          shift.EndTime.Time,
+				AssignedPatients: shift.AssignedPatients.Int32,
+				CreatedAt:        shift.CreatedAt.Time,
+				DoctorName:       doctor.Name,
+			})
+		}
+
+		// Cache for 30 minutes
+		err = c.SetWithBackground(shiftsKey, &shifts, time.Minute*30)
+		if err != nil {
+			log.Printf("Error when set cache for key %s: %v", shiftsKey, err)
+		}
+	}
+
+	return shifts, nil
+}
+
+// Get all shifts with cache
+func (c *ClientType) AllShiftsLoadCache() ([]ShiftInfo, error) {
+	shiftsKey := fmt.Sprintf("%s:all-shifts", DOCTOR_INFO_KEY)
+
+	var shifts []ShiftInfo
+	err := c.GetWithBackground(shiftsKey, &shifts)
+	if err != nil {
+		// Cache miss, get from database
+		dbShifts, err := db.StoreDB.GetShifts(ctxRedis)
+		if err != nil {
+			return nil, err
+		}
+
+		// Transform to our cache format
+		for _, shift := range dbShifts {
+			// Try to get doctor name for the shift
+			doctor, err := db.StoreDB.GetDoctor(ctxRedis, shift.DoctorID)
+			if err != nil {
+				// Continue even if we can't get doctor name
+				shifts = append(shifts, ShiftInfo{
+					ID:               shift.ID,
+					DoctorID:         shift.DoctorID,
+					StartTime:        shift.StartTime.Time,
+					EndTime:          shift.EndTime.Time,
+					AssignedPatients: shift.AssignedPatients.Int32,
+					CreatedAt:        shift.CreatedAt.Time,
+				})
+				continue
+			}
+
+			shifts = append(shifts, ShiftInfo{
+				ID:               shift.ID,
+				DoctorID:         shift.DoctorID,
+				StartTime:        shift.StartTime.Time,
+				EndTime:          shift.EndTime.Time,
+				AssignedPatients: shift.AssignedPatients.Int32,
+				CreatedAt:        shift.CreatedAt.Time,
+				DoctorName:       doctor.Name,
+			})
+		}
+
+		// Cache for 30 minutes
+		err = c.SetWithBackground(shiftsKey, &shifts, time.Minute*30)
+		if err != nil {
+			log.Printf("Error when set cache for key %s: %v", shiftsKey, err)
+		}
+	}
+
+	return shifts, nil
+}
+
+// Remove a doctor from cache
+func (client *ClientType) RemoveDoctorCache(doctorID int64) {
+	doctorKey := fmt.Sprintf("%s:%d", DOCTOR_INFO_KEY, doctorID)
+	client.RemoveCacheByKey(doctorKey)
+}
+
+// Remove a doctor by username from cache
+func (client *ClientType) RemoveDoctorByUsernameCache(username string) {
+	usernameKey := fmt.Sprintf("%s:username:%s", DOCTOR_INFO_KEY, username)
+	client.RemoveCacheByKey(usernameKey)
+}
+
+// Clear all doctor shift caches
+func (client *ClientType) ClearDoctorShiftsCache(doctorID int64) {
+	shiftsKey := fmt.Sprintf("%s:%d:shifts", DOCTOR_INFO_KEY, doctorID)
+	client.RemoveCacheByKey(shiftsKey)
+
+	// Also clear the all shifts cache
+	allShiftsKey := fmt.Sprintf("%s:all-shifts", DOCTOR_INFO_KEY)
+	client.RemoveCacheByKey(allShiftsKey)
+}
+
+// Clear all doctor caches
+func (client *ClientType) ClearAllDoctorCache() {
+	iter := client.RedisClient.Scan(ctxRedis, 0, fmt.Sprintf("%s*", DOCTOR_INFO_KEY), 0).Iterator()
+	for iter.Next(ctxRedis) {
+		er := client.RemoveCacheByKey(iter.Val())
+		if er != nil {
+			log.Printf("Error when remove cache for key %s: %v", iter.Val(), er)
+		}
+	}
+}

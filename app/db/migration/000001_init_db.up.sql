@@ -244,13 +244,13 @@ CREATE TABLE public.doctors (
 CREATE TABLE public.files (
 	id bigserial NOT NULL,
 	file_name varchar(255) NOT NULL,
-	file_path varchar(255) NOT NULL,
+	file_path text NOT NULL,
 	file_size int8 NOT NULL,
 	file_type varchar(50) NOT NULL,
 	uploaded_at timestamp DEFAULT CURRENT_TIMESTAMP NULL,
-	user_id int8 NULL,
+	pet_id int8 NULL,
 	CONSTRAINT files_pkey PRIMARY KEY (id),
-	CONSTRAINT files_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE SET NULL
+	CONSTRAINT files_pet_id_fkey FOREIGN KEY (pet_id) REFERENCES public.pets(petid) ON DELETE SET NULL
 );
 
 
@@ -372,9 +372,9 @@ CREATE TABLE public.cart_items (
 CREATE TABLE public.consultations (
 	id serial4 NOT NULL,
 	appointment_id int8 NULL,
-	subjective text NULL,
+	subjective jsonb NULL,
 	objective jsonb NULL,
-	assessment text NULL,
+	assessment jsonb NULL,
 	plan int8 NULL,
 	created_at timestamp DEFAULT now() NULL,
 	CONSTRAINT consultations_pkey PRIMARY KEY (id),
@@ -831,7 +831,7 @@ CREATE INDEX idx_doctors_user_id ON public.doctors (user_id);
 CREATE INDEX idx_doctors_specialization ON public.doctors (specialization);
 
 -- Indexing for public.files
-CREATE INDEX idx_files_user_id ON public.files (user_id);
+CREATE INDEX idx_files_pet_id ON public.files (pet_id);
 CREATE INDEX idx_files_uploaded_at ON public.files (uploaded_at);
 
 -- Indexing for public.notifications

@@ -12,6 +12,48 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+type InventoryItemTypeEnum string
+
+const (
+	InventoryItemTypeEnumMedicine InventoryItemTypeEnum = "medicine"
+	InventoryItemTypeEnumVaccine  InventoryItemTypeEnum = "vaccine"
+)
+
+func (e *InventoryItemTypeEnum) Scan(src interface{}) error {
+	switch s := src.(type) {
+	case []byte:
+		*e = InventoryItemTypeEnum(s)
+	case string:
+		*e = InventoryItemTypeEnum(s)
+	default:
+		return fmt.Errorf("unsupported scan type for InventoryItemTypeEnum: %T", src)
+	}
+	return nil
+}
+
+type NullInventoryItemTypeEnum struct {
+	InventoryItemTypeEnum InventoryItemTypeEnum `json:"inventory_item_type_enum"`
+	Valid                 bool                  `json:"valid"` // Valid is true if InventoryItemTypeEnum is not NULL
+}
+
+// Scan implements the Scanner interface.
+func (ns *NullInventoryItemTypeEnum) Scan(value interface{}) error {
+	if value == nil {
+		ns.InventoryItemTypeEnum, ns.Valid = "", false
+		return nil
+	}
+	ns.Valid = true
+	return ns.InventoryItemTypeEnum.Scan(value)
+}
+
+// Value implements the driver Valuer interface.
+func (ns NullInventoryItemTypeEnum) Value() (driver.Value, error) {
+	if !ns.Valid {
+		return nil, nil
+	}
+	return string(ns.InventoryItemTypeEnum), nil
+}
+
 type MovementTypeEnum string
 
 const (
@@ -100,9 +142,9 @@ type Clinic struct {
 type Consultation struct {
 	ID            int32            `json:"id"`
 	AppointmentID pgtype.Int8      `json:"appointment_id"`
-	Subjective    pgtype.Text      `json:"subjective"`
+	Subjective    []byte           `json:"subjective"`
 	Objective     []byte           `json:"objective"`
-	Assessment    pgtype.Text      `json:"assessment"`
+	Assessment    []byte           `json:"assessment"`
 	Plan          pgtype.Int8      `json:"plan"`
 	CreatedAt     pgtype.Timestamp `json:"created_at"`
 }
@@ -155,7 +197,65 @@ type File struct {
 	FileSize   int64            `json:"file_size"`
 	FileType   string           `json:"file_type"`
 	UploadedAt pgtype.Timestamp `json:"uploaded_at"`
-	UserID     pgtype.Int8      `json:"user_id"`
+	PetID      pgtype.Int8      `json:"pet_id"`
+}
+
+type InventoryItem struct {
+	ID                   int64                 `json:"id"`
+	Name                 string                `json:"name"`
+	ItemType             InventoryItemTypeEnum `json:"item_type"`
+	Description          pgtype.Text           `json:"description"`
+	UsageInstructions    pgtype.Text           `json:"usage_instructions"`
+	Dosage               pgtype.Text           `json:"dosage"`
+	Frequency            pgtype.Text           `json:"frequency"`
+	Duration             pgtype.Text           `json:"duration"`
+	SideEffects          pgtype.Text           `json:"side_effects"`
+	ExpirationDate       pgtype.Date           `json:"expiration_date"`
+	Quantity             int32                 `json:"quantity"`
+	UnitPrice            pgtype.Numeric        `json:"unit_price"`
+	ReorderLevel         int32                 `json:"reorder_level"`
+	SupplierID           pgtype.Int8           `json:"supplier_id"`
+	ForSpecies           pgtype.Text           `json:"for_species"`
+	RequiresPrescription pgtype.Bool           `json:"requires_prescription"`
+	StorageCondition     pgtype.Text           `json:"storage_condition"`
+	BatchNumber          pgtype.Text           `json:"batch_number"`
+	Manufacturer         pgtype.Text           `json:"manufacturer"`
+	IsActive             pgtype.Bool           `json:"is_active"`
+	CreatedAt            pgtype.Timestamptz    `json:"created_at"`
+	UpdatedAt            pgtype.Timestamptz    `json:"updated_at"`
+}
+
+type InventoryStatus struct {
+	ID             int64                 `json:"id"`
+	Name           string                `json:"name"`
+	ItemType       InventoryItemTypeEnum `json:"item_type"`
+	Quantity       int32                 `json:"quantity"`
+	UnitPrice      pgtype.Numeric        `json:"unit_price"`
+	ExpirationDate pgtype.Date           `json:"expiration_date"`
+	ReorderLevel   int32                 `json:"reorder_level"`
+	SupplierID     pgtype.Int8           `json:"supplier_id"`
+	SupplierName   pgtype.Text           `json:"supplier_name"`
+	NeedsReorder   bool                  `json:"needs_reorder"`
+	IsExpired      bool                  `json:"is_expired"`
+	IsActive       pgtype.Bool           `json:"is_active"`
+}
+
+type InventoryTransaction struct {
+	ID              int64              `json:"id"`
+	InventoryItemID int64              `json:"inventory_item_id"`
+	TransactionType string             `json:"transaction_type"`
+	Quantity        int32              `json:"quantity"`
+	UnitPrice       pgtype.Numeric     `json:"unit_price"`
+	TotalAmount     pgtype.Numeric     `json:"total_amount"`
+	TransactionDate pgtype.Timestamptz `json:"transaction_date"`
+	SupplierID      pgtype.Int8        `json:"supplier_id"`
+	ExpirationDate  pgtype.Date        `json:"expiration_date"`
+	BatchNumber     pgtype.Text        `json:"batch_number"`
+	ReferenceID     pgtype.Int8        `json:"reference_id"`
+	ReferenceType   pgtype.Text        `json:"reference_type"`
+	Notes           pgtype.Text        `json:"notes"`
+	CreatedBy       pgtype.Text        `json:"created_by"`
+	CreatedAt       pgtype.Timestamptz `json:"created_at"`
 }
 
 type Invoice struct {

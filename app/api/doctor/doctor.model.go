@@ -4,6 +4,7 @@ import (
 	"time"
 
 	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
+	redis "github.com/quanganh247-qa/go-blog-be/app/service/redis"
 )
 
 type DoctorController struct {
@@ -12,11 +13,12 @@ type DoctorController struct {
 
 type DoctorService struct {
 	storeDB db.Store
+	redis   *redis.ClientType
 }
 
 // API structure
 type DoctorApi struct {
-	controller DoctorControllerInterface
+	controller *DoctorController
 }
 
 // Request and response structures

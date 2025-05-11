@@ -983,10 +983,15 @@ func (s *AppointmentService) CreateSOAPService(ctx *gin.Context, soap CreateSOAP
 	var consultation db.Consultation
 	var soapResponse SOAPResponse
 
+	subjectiveJSON, err := json.Marshal(soap.Subjective)
+	if err != nil {
+		return nil, fmt.Errorf("failed to marshal subjective data: %w", err)
+	}
+
 	err = s.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
 		consultation, err = q.CreateSOAP(ctx, db.CreateSOAPParams{
 			AppointmentID: pgtype.Int8{Int64: appointmentID, Valid: true},
-			Subjective:    pgtype.Text{String: soap.Subjective, Valid: true},
+			Subjective:    subjectiveJSON,
 		})
 		if err != nil {
 			return fmt.Errorf("Cannot create SOAP")
@@ -1000,9 +1005,8 @@ func (s *AppointmentService) CreateSOAPService(ctx *gin.Context, soap CreateSOAP
 	return &SOAPResponse{
 		ConsultationID: int64(consultation.ID),
 		AppointmentID:  consultation.AppointmentID.Int64,
-		Subjective:     consultation.Subjective.String,
+		Subjective:     soap.Subjective,
 		Objective:      soapResponse.Objective,
-		Assessment:     consultation.Assessment.String,
 	}, nil
 }
 
@@ -1020,21 +1024,14 @@ func (s *AppointmentService) UpdateSOAPService(ctx *gin.Context, soap UpdateSOAP
 	soapRequest.AppointmentID = pgtype.Int8{Int64: appointmentID, Valid: true}
 
 	// Handle Subjective field
-	soapRequest.Subjective = pgtype.Text{
-		String: soap.Subjective,
-		Valid:  soap.Subjective != "",
-	}
-	if !soapRequest.Subjective.Valid {
+	if soap.Subjective != nil {
+		subjectiveJSON, err := json.Marshal(soap.Subjective)
+		if err != nil {
+			return nil, fmt.Errorf("failed to marshal subjective data: %w", err)
+		}
+		soapRequest.Subjective = subjectiveJSON
+	} else {
 		soapRequest.Subjective = existingConsultation.Subjective
-	}
-
-	// Handle Assessment field
-	soapRequest.Assessment = pgtype.Text{
-		String: soap.Assessment,
-		Valid:  soap.Assessment != "",
-	}
-	if !soapRequest.Assessment.Valid {
-		soapRequest.Assessment = existingConsultation.Assessment
 	}
 
 	// Handle Objective field - check if it's empty using a type-specific check
@@ -1048,6 +1045,14 @@ func (s *AppointmentService) UpdateSOAPService(ctx *gin.Context, soap UpdateSOAP
 		soapRequest.Objective = existingConsultation.Objective
 	}
 
+	if soap.Assessment != nil {
+		assessmentJSON, err := json.Marshal(soap.Assessment)
+		if err != nil {
+			return nil, fmt.Errorf("failed to marshal assessment data: %w", err)
+		}
+		soapRequest.Assessment = assessmentJSON
+	}
+
 	err = s.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
 		consultation, err = q.UpdateSOAP(ctx, soapRequest)
 		if err != nil {
@@ -1059,16 +1064,32 @@ func (s *AppointmentService) UpdateSOAPService(ctx *gin.Context, soap UpdateSOAP
 		return nil, err
 	}
 
-	if err := json.Unmarshal(consultation.Objective, &soapResponse.Objective); err != nil {
-		return nil, fmt.Errorf("failed to unmarshal objective data: %w", err)
+	if consultation.Objective != nil {
+		// Unmarshal objective data
+		if err := json.Unmarshal(consultation.Objective, &soapResponse.Objective); err != nil {
+			return nil, fmt.Errorf("failed to unmarshal objective data: %w", err)
+		}
+	}
+
+	if consultation.Subjective != nil {
+		// Unmarshal subjective data
+		if err := json.Unmarshal(consultation.Subjective, &soapResponse.Subjective); err != nil {
+			return nil, fmt.Errorf("failed to unmarshal subjective data: %w", err)
+		}
+	}
+
+	if consultation.Assessment != nil {
+		if err := json.Unmarshal(consultation.Assessment, &soapResponse.Assessment); err != nil {
+			return nil, fmt.Errorf("failed to unmarshal assessment data: %w", err)
+		}
 	}
 
 	return &SOAPResponse{
 		ConsultationID: int64(consultation.ID),
 		AppointmentID:  consultation.AppointmentID.Int64,
-		Subjective:     consultation.Subjective.String,
+		Subjective:     soapResponse.Subjective,
 		Objective:      soapResponse.Objective,
-		Assessment:     consultation.Assessment.String,
+		Assessment:     soapResponse.Assessment,
 	}, nil
 }
 
@@ -1226,16 +1247,33 @@ func (s *AppointmentService) GetSOAPByAppointmentID(ctx *gin.Context, appointmen
 	}
 
 	var soapResponse SOAPResponse
-	if err := json.Unmarshal(soap.Objective, &soapResponse.Objective); err != nil {
-		return nil, fmt.Errorf("failed to unmarshal objective data: %w", err)
+
+	if soap.Objective != nil {
+		// Unmarshal objective data
+		if err := json.Unmarshal(soap.Objective, &soapResponse.Objective); err != nil {
+			return nil, fmt.Errorf("failed to unmarshal objective data: %w", err)
+		}
+	}
+
+	if soap.Subjective != nil {
+		// Unmarshal subjective data
+		if err := json.Unmarshal(soap.Subjective, &soapResponse.Subjective); err != nil {
+			return nil, fmt.Errorf("failed to unmarshal subjective data: %w", err)
+		}
+	}
+
+	if soap.Assessment != nil {
+		if err := json.Unmarshal(soap.Assessment, &soapResponse.Assessment); err != nil {
+			return nil, fmt.Errorf("failed to unmarshal assessment data: %w", err)
+		}
 	}
 
 	return &SOAPResponse{
 		ConsultationID: int64(soap.ID),
 		AppointmentID:  soap.AppointmentID.Int64,
-		Subjective:     soap.Subjective.String,
+		Subjective:     soapResponse.Subjective,
 		Objective:      soapResponse.Objective,
-		Assessment:     soap.Assessment.String,
+		Assessment:     soapResponse.Assessment,
 	}, nil
 }
 

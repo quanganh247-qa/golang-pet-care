@@ -16,7 +16,7 @@ import (
 
 // FetchPreSignedURLByProjectFileID fetches the pre-signed URL for a file based on the given ProjectFileID.
 // It returns the pre-signed URL or an error if not found or failed to generate the URL.
-func FetchPreSignedURLByProjectFileID(c *gin.Context, id int64, username string) (string, error) {
+func FetchPreSignedURL(c *gin.Context, id int64) (string, error) {
 	// Step 1: Fetch the ProjectFile record from the database based on the given file ID
 	mcclient, err := GetMinIOClient()
 	if err != nil {
@@ -35,17 +35,34 @@ func FetchPreSignedURLByProjectFileID(c *gin.Context, id int64, username string)
 		return "", errors.New("File path is empty")
 	}
 
-	expiry := time.Hour * 3 // URL validity: 15 minutes (adjust as needed)
+	expiry := time.Hour * 3 // URL validity: 3 hours
+
+	// // Split the FilePath to get the bucket name (first part) and the object name (rest)
+	// parts := strings.Split(file.FilePath, "/")
+	// if len(parts) < 1 {
+	// 	log.Println(color.RedString("Invalid file path format: %s", file.FilePath))
+	// 	return "", errors.New("Invalid file path format")
+	// }
+
+	// // The first part is the bucket name
+	// bucketName := parts[0]
+
+	pet, err := db.StoreDB.GetPetByID(c, file.PetID.Int64)
+	if err != nil {
+		return "", fmt.Errorf("error getting pet: %v", err)
+	}
+
+	bucketName := sanitizeBucketName(pet.Name)
 
 	// Generate pre-signed URL
-	url, err := mcclient.GetPresignedURL(c, file.FilePath, file.FileName, expiry)
+	url, err := mcclient.GetPresignedURL(c, bucketName, file.FileName, expiry)
 	if err != nil {
 		// Log failure to generate pre-signed URL and return error
 		log.Println(color.RedString("Failed to generate pre-signed URL for file path: %s", file.FilePath))
 		return "", errors.New("Failed to generate pre-signed URL")
 	}
 
-	// Step 4: Return the pre-signed URL
+	// Return the pre-signed URL
 	return url, nil
 }
 
@@ -199,19 +216,19 @@ func UpdateCoverFileUpload(c *gin.Context, email, username string, coverID int64
 }
 
 // HandleFileUpload handles file uploads and returns the URL of the uploaded file
-func HandleFileUpload(c *gin.Context, folderName string) (string, error) {
+func HandleFileUpload(c *gin.Context, bucketName string) (string, error) {
 	mcclient, err := GetMinIOClient()
 	if err != nil {
 		return "", fmt.Errorf("error getting MinIO client: %v", err)
 	}
 
 	//check if bucket exists
-	exists, err := mcclient.Client.BucketExists(c, folderName)
+	exists, err := mcclient.Client.BucketExists(c, bucketName)
 	if err != nil {
-		return "", fmt.Errorf("failed to check bucket %s: %v", folderName, err)
+		return "", fmt.Errorf("failed to check bucket %s: %v", bucketName, err)
 	}
 	if !exists {
-		mcclient.CreateBucket(c, folderName)
+		mcclient.CreateBucket(c, bucketName)
 	}
 
 	file, fileHeader, err := c.Request.FormFile("file")
@@ -229,24 +246,15 @@ func HandleFileUpload(c *gin.Context, folderName string) (string, error) {
 		return "", fmt.Errorf("failed to read file content for %s: %v", fileName, err)
 	}
 
-	err = mcclient.UploadFile(c, folderName, fileName, fileContent)
+	err = mcclient.UploadFile(c, bucketName, fileName, fileContent)
 	if err != nil {
 		return "", fmt.Errorf("failed to upload file %s to MinIO: %v", fileName, err)
 	}
 
-	url, err := mcclient.GetPresignedURL(c, folderName, fileName, time.Duration(24)*time.Hour)
+	url, err := mcclient.GetPresignedURL(c, bucketName, fileName, time.Duration(24)*time.Hour)
 	if err != nil {
 		return "", fmt.Errorf("failed to get presigned URL for file %s: %v", fileName, err)
 	}
 
-	// newFile, err := db.StoreDB.CreateFile(c, db.CreateFileParams{
-	// 	FileName: fileName,
-	// 	FilePath: url,
-	// 	FileSize: fileSize,
-	// 	FileType: fileType,
-	// })
-	// if err != nil {
-	// 	return "", 0, fmt.Errorf("failed to create file: %v", err)
-	// }
 	return url, nil
 }

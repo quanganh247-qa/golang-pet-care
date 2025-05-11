@@ -6,9 +6,11 @@ import (
 	"log"
 	"time"
 
+	"github.com/fatih/color"
 	"github.com/hibiken/asynq"
 	"github.com/jackc/pgx/v5/pgxpool"
 	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
+	"github.com/quanganh247-qa/go-blog-be/app/service/minio"
 	"github.com/quanganh247-qa/go-blog-be/app/service/redis"
 	"github.com/quanganh247-qa/go-blog-be/app/service/token"
 	"github.com/quanganh247-qa/go-blog-be/app/service/worker"
@@ -54,11 +56,11 @@ func Init(config util.Config) (*Connection, error) {
 	// Initialize Redis with debug mode
 	go redis.InitRedis(config)
 	go runTaskProcessor(&config, asynq.RedisClientOpt{
-		Addr:     config.RedisAddress,
-		Username: config.RedisUsername,
-		Password: config.RedisPassword,
+		Addr: config.RedisAddress,
+		// Username: config.RedisUsername,
+		// Password: config.RedisPassword,
 	}, store)
-	// go initMinio(&config)
+	go initMinio(&config)
 
 	conn := &Connection{
 		Close: func() {
@@ -84,19 +86,19 @@ func runTaskProcessor(config *util.Config, redisOpt asynq.RedisClientOpt, store 
 	}
 }
 
-// func initMinio(config *util.Config) {
-// 	client, err := minio.NewMinIOClient(
-// 		config.MinIOEndpoint,
-// 		config.MinIOAccessKey,
-// 		config.MinIOSecretKey,
-// 		config.MinIOSSL,
-// 	)
-// 	if err != nil {
-// 		log.Println(color.RedString("Failed to initialize MinIO client: %v", err))
-// 	}
+func initMinio(config *util.Config) {
+	client, err := minio.NewMinIOClient(
+		config.MinIOEndpoint,
+		config.MinIOAccessKey,
+		config.MinIOSecretKey,
+		config.MinIOSSL,
+	)
+	if err != nil {
+		log.Println(color.RedString("Failed to initialize MinIO client: %v", err))
+	}
 
-// 	if err := client.CheckConnection(context.Background()); err != nil {
-// 		log.Println(color.RedString("Failed to check connection: %v", err))
-// 	}
+	if err := client.CheckConnection(context.Background()); err != nil {
+		log.Println(color.RedString("Failed to check connection: %v", err))
+	}
 
-// }
+}

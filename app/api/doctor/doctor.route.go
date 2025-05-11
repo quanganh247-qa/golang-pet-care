@@ -3,6 +3,7 @@ package doctor
 import (
 	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
 	"github.com/quanganh247-qa/go-blog-be/app/middleware"
+	redis "github.com/quanganh247-qa/go-blog-be/app/service/redis"
 	"github.com/quanganh247-qa/go-blog-be/app/util/perms"
 )
 
@@ -16,6 +17,7 @@ func Routes(routerGroup middleware.RouterGroup) {
 		controller: &DoctorController{
 			service: &DoctorService{
 				storeDB: db.StoreDB,
+				redis:   redis.Client,
 			},
 		},
 	}

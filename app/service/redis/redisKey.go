@@ -11,6 +11,7 @@ const (
 	PET_LOG_KEY          redisKey = "PET_LOG"
 	PET_SCHEDULE_KEY     redisKey = "PET_SCHEDULE"
 	APPOINTMENT_INFO_KEY redisKey = "APPOINTMENT_INFO"
+	DOCTOR_INFO_KEY      redisKey = "DOCTOR_INFO"
 )
 
 // type keyType struct {

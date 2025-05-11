@@ -493,9 +493,6 @@ func (q *Queries) GetAllAppointmentsWithDateOption(ctx context.Context, arg GetA
 }
 
 const getAppointmentByState = `-- name: GetAppointmentByState :many
-
-
-
 SELECT 
     a.appointment_id,
     a.date,
@@ -537,14 +534,6 @@ type GetAppointmentByStateRow struct {
 	StateID           pgtype.Int8      `json:"state_id"`
 }
 
-// -- name: UpdateRoomStatus :exec
-// UPDATE rooms
-// SET status = $2,
-//
-//	current_appointment_id = $3,
-//	available_at = $4
-//
-// WHERE id = $1;
 func (q *Queries) GetAppointmentByState(ctx context.Context, state string) ([]GetAppointmentByStateRow, error) {
 	rows, err := q.db.Query(ctx, getAppointmentByState, state)
 	if err != nil {

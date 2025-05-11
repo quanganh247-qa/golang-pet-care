@@ -136,10 +136,46 @@ func (service *DoctorService) EditDoctorProfileService(ctx *gin.Context, usernam
 	if err != nil {
 		return fmt.Errorf("failed to update doctor profile: %v", err)
 	}
+
+	// Invalidate cache
+	if service.redis != nil {
+		// Clear doctor by ID cache
+		service.redis.RemoveDoctorCache(doctor.ID)
+		// Clear doctor by username cache
+		service.redis.RemoveDoctorByUsernameCache(username)
+		// Clear all doctors list cache
+		service.redis.ClearAllDoctorCache()
+	}
+
 	return nil
 }
 
 func (service *DoctorService) GetDoctorProfile(ctx *gin.Context, username string) (*DoctorDetail, error) {
+	// Try to get from cache first
+	if service.redis != nil {
+		doctorInfo, err := service.redis.DoctorByUsernameLoadCache(username)
+		if err == nil {
+			// Found in cache
+			return &DoctorDetail{
+				DoctorID:       doctorInfo.DoctorID,
+				Username:       doctorInfo.Username,
+				FullName:       doctorInfo.FullName,
+				Address:        doctorInfo.Address,
+				PhoneNumber:    doctorInfo.PhoneNumber,
+				Email:          doctorInfo.Email,
+				Role:           doctorInfo.Role,
+				DoctorName:     doctorInfo.DoctorName,
+				Specialization: doctorInfo.Specialization,
+				YearsOfExp:     doctorInfo.YearsOfExp,
+				Education:      doctorInfo.Education,
+				Certificate:    doctorInfo.Certificate,
+				Bio:            doctorInfo.Bio,
+				DataImage:      doctorInfo.DataImage,
+			}, nil
+		}
+	}
+
+	// Cache miss, get from database
 	// Get user details
 	user, err := service.storeDB.GetUser(ctx, username)
 	if err != nil {
@@ -152,7 +188,7 @@ func (service *DoctorService) GetDoctorProfile(ctx *gin.Context, username string
 		return nil, fmt.Errorf("failed to get doctor profile: %v", err)
 	}
 
-	return &DoctorDetail{
+	doctorDetail := &DoctorDetail{
 		DoctorID:       doctor.ID,
 		Username:       user.Username,
 		FullName:       user.FullName,
@@ -167,10 +203,38 @@ func (service *DoctorService) GetDoctorProfile(ctx *gin.Context, username string
 		Certificate:    doctor.CertificateNumber.String,
 		Bio:            doctor.Bio.String,
 		DataImage:      []byte(user.DataImage),
-	}, nil
+	}
+
+	return doctorDetail, nil
 }
 
 func (service *DoctorService) GetAllDoctorService(ctx *gin.Context) ([]DoctorDetail, error) {
+	// Try to get from cache first
+	if service.redis != nil {
+		doctorList, err := service.redis.DoctorsListLoadCache()
+		if err == nil {
+			// Found in cache
+			result := make([]DoctorDetail, len(doctorList))
+			for i, doc := range doctorList {
+				result[i] = DoctorDetail{
+					DoctorID:       doc.DoctorID,
+					Username:       doc.Username,
+					DoctorName:     doc.DoctorName,
+					Email:          doc.Email,
+					Role:           doc.Role,
+					Specialization: doc.Specialization,
+					YearsOfExp:     doc.YearsOfExp,
+					Education:      doc.Education,
+					Certificate:    doc.Certificate,
+					Bio:            doc.Bio,
+					DataImage:      doc.DataImage,
+				}
+			}
+			return result, nil
+		}
+	}
+
+	// Cache miss, get from database
 	doctor, err := service.storeDB.ListDoctors(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get all doctor: %w", err)
@@ -188,7 +252,7 @@ func (service *DoctorService) GetAllDoctorService(ctx *gin.Context) ([]DoctorDet
 			Education:      d.Education.String,
 			Certificate:    d.CertificateNumber.String,
 			Bio:            d.Bio.String,
-			DataImage:      []byte(d.DataImage),
+			DataImage:      d.DataImage,
 		})
 	}
 	return doctorList, nil
@@ -196,13 +260,34 @@ func (service *DoctorService) GetAllDoctorService(ctx *gin.Context) ([]DoctorDet
 
 // Get shifts
 func (service *DoctorService) GetShifts(ctx *gin.Context) ([]Shift, error) {
+	// Try to get from cache first
+	if service.redis != nil {
+		shiftInfos, err := service.redis.AllShiftsLoadCache()
+		if err == nil {
+			// Found in cache
+			result := make([]Shift, len(shiftInfos))
+			for i, s := range shiftInfos {
+				result[i] = Shift{
+					ID:               s.ID,
+					DoctorID:         s.DoctorID,
+					StartTime:        s.StartTime,
+					EndTime:          s.EndTime,
+					AssignedPatients: s.AssignedPatients,
+					CreatedAt:        s.CreatedAt,
+					DoctorName:       s.DoctorName,
+				}
+			}
+			return result, nil
+		}
+	}
+
+	// Cache miss, get from database
 	shifts, err := service.storeDB.GetShifts(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get shifts: %w", err)
 	}
 	shiftList := make([]Shift, 0)
 	for _, s := range shifts {
-
 		parsedTime, err := time.Parse("2006-01-02 15:04:05", s.StartTime.Time.Format("2006-01-02 15:04:05"))
 		if err != nil {
 			fmt.Println("Error parsing time:", err)
@@ -236,6 +321,13 @@ func (service *DoctorService) CreateShift(ctx *gin.Context, req CreateShiftReque
 	if err != nil {
 		return nil, fmt.Errorf("failed to create shift: %w", err)
 	}
+
+	// Invalidate cache
+	if service.redis != nil {
+		// Clear doctor shifts cache
+		service.redis.ClearDoctorShiftsCache(req.DoctorID)
+	}
+
 	return &Shift{
 		ID:               shift.ID,
 		StartTime:        shift.StartTime.Time,
@@ -248,6 +340,27 @@ func (service *DoctorService) CreateShift(ctx *gin.Context, req CreateShiftReque
 
 // Get shift by doctor id
 func (service *DoctorService) GetShiftByDoctorId(ctx *gin.Context, doctorId int64) ([]ShiftResponse, error) {
+	// Try to get from cache first
+	if service.redis != nil {
+		shiftInfos, err := service.redis.DoctorShiftsLoadCache(doctorId)
+		if err == nil {
+			// Found in cache
+			result := make([]ShiftResponse, len(shiftInfos))
+			for i, s := range shiftInfos {
+				result[i] = ShiftResponse{
+					ID:               s.ID,
+					DoctorID:         s.DoctorID,
+					StartTime:        s.StartTime.Format("2006-01-02 15:04:05"),
+					EndTime:          s.EndTime.Format("2006-01-02 15:04:05"),
+					AssignedPatients: s.AssignedPatients,
+					DoctorName:       s.DoctorName,
+				}
+			}
+			return result, nil
+		}
+	}
+
+	// Cache miss, get from database
 	shifts, err := service.storeDB.GetShiftByDoctorId(ctx, doctorId)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get shifts: %w", err)
@@ -271,6 +384,28 @@ func (service *DoctorService) GetShiftByDoctorId(ctx *gin.Context, doctorId int6
 }
 
 func (service *DoctorService) GetDoctorById(ctx *gin.Context, doctorId int64) (DoctorDetail, error) {
+	// Try to get from cache first
+	if service.redis != nil {
+		doctorInfo, err := service.redis.DoctorLoadCache(doctorId)
+		if err == nil {
+			// Found in cache
+			return DoctorDetail{
+				DoctorID:       doctorInfo.DoctorID,
+				Username:       doctorInfo.Username,
+				DoctorName:     doctorInfo.DoctorName,
+				Email:          doctorInfo.Email,
+				Role:           doctorInfo.Role,
+				Specialization: doctorInfo.Specialization,
+				YearsOfExp:     doctorInfo.YearsOfExp,
+				Education:      doctorInfo.Education,
+				Certificate:    doctorInfo.Certificate,
+				Bio:            doctorInfo.Bio,
+				DataImage:      doctorInfo.DataImage,
+			}, nil
+		}
+	}
+
+	// Cache miss, get from database
 	doctor, err := service.storeDB.GetDoctor(ctx, doctorId)
 	if err != nil {
 		return DoctorDetail{}, fmt.Errorf("failed to get doctor: %w", err)
@@ -289,7 +424,39 @@ func (service *DoctorService) GetDoctorById(ctx *gin.Context, doctorId int64) (D
 
 // Delete shift
 func (service *DoctorService) DeleteShift(ctx *gin.Context, shiftId int64) error {
-	return service.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
+	// Get the shift to determine the doctor ID before deleting
+	var doctorID int64
+	if service.redis != nil {
+		// Try to get all shifts from cache
+		shiftInfos, err := service.redis.AllShiftsLoadCache()
+		if err == nil {
+			// Found in cache, find the shift with the given ID
+			for _, s := range shiftInfos {
+				if s.ID == shiftId {
+					doctorID = s.DoctorID
+					break
+				}
+			}
+		}
+	}
+
+	// If we couldn't get the doctor ID from cache, execute the transaction as normal
+	err := service.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
+		// If we didn't get the doctor ID from cache, just delete the shift
+		// We'll clear all shifts in cache afterward
 		return q.DeleteShift(ctx, shiftId)
 	})
+
+	// Invalidate cache
+	if service.redis != nil && err == nil {
+		// If we have the doctor ID, clear that doctor's shifts
+		if doctorID != 0 {
+			service.redis.ClearDoctorShiftsCache(doctorID)
+		} else {
+			// Otherwise clear all shifts caches
+			service.redis.ClearAllDoctorCache()
+		}
+	}
+
+	return err
 }

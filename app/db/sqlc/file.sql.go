@@ -7,6 +7,8 @@ package db
 
 import (
 	"context"
+
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 const createFile = `-- name: CreateFile :one
@@ -14,17 +16,19 @@ INSERT INTO files (
     file_name,
     file_path,
     file_size,
-    file_type
+    file_type,
+    pet_id
 ) VALUES (
-    $1, $2, $3, $4
-) RETURNING id, file_name, file_path, file_size, file_type, uploaded_at, user_id
+    $1, $2, $3, $4, $5
+) RETURNING id, file_name, file_path, file_size, file_type, uploaded_at, pet_id
 `
 
 type CreateFileParams struct {
-	FileName string `json:"file_name"`
-	FilePath string `json:"file_path"`
-	FileSize int64  `json:"file_size"`
-	FileType string `json:"file_type"`
+	FileName string      `json:"file_name"`
+	FilePath string      `json:"file_path"`
+	FileSize int64       `json:"file_size"`
+	FileType string      `json:"file_type"`
+	PetID    pgtype.Int8 `json:"pet_id"`
 }
 
 func (q *Queries) CreateFile(ctx context.Context, arg CreateFileParams) (File, error) {
@@ -33,6 +37,7 @@ func (q *Queries) CreateFile(ctx context.Context, arg CreateFileParams) (File, e
 		arg.FilePath,
 		arg.FileSize,
 		arg.FileType,
+		arg.PetID,
 	)
 	var i File
 	err := row.Scan(
@@ -42,13 +47,13 @@ func (q *Queries) CreateFile(ctx context.Context, arg CreateFileParams) (File, e
 		&i.FileSize,
 		&i.FileType,
 		&i.UploadedAt,
-		&i.UserID,
+		&i.PetID,
 	)
 	return i, err
 }
 
 const getFileByID = `-- name: GetFileByID :one
-SELECT id, file_name, file_path, file_size, file_type, uploaded_at, user_id FROM files WHERE id = $1
+SELECT id, file_name, file_path, file_size, file_type, uploaded_at, pet_id FROM files WHERE id = $1
 `
 
 func (q *Queries) GetFileByID(ctx context.Context, id int64) (File, error) {
@@ -61,9 +66,41 @@ func (q *Queries) GetFileByID(ctx context.Context, id int64) (File, error) {
 		&i.FileSize,
 		&i.FileType,
 		&i.UploadedAt,
-		&i.UserID,
+		&i.PetID,
 	)
 	return i, err
+}
+
+const getFiles = `-- name: GetFiles :many
+SELECT id, file_name, file_path, file_size, file_type, uploaded_at, pet_id FROM files WHERE pet_id = $1
+`
+
+func (q *Queries) GetFiles(ctx context.Context, petID pgtype.Int8) ([]File, error) {
+	rows, err := q.db.Query(ctx, getFiles, petID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []File{}
+	for rows.Next() {
+		var i File
+		if err := rows.Scan(
+			&i.ID,
+			&i.FileName,
+			&i.FilePath,
+			&i.FileSize,
+			&i.FileType,
+			&i.UploadedAt,
+			&i.PetID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
 const updateFile = `-- name: UpdateFile :one
@@ -71,16 +108,18 @@ UPDATE files SET
     file_name = $2,
     file_path = $3,
     file_size = $4,
-    file_type = $5
-WHERE id = $1 RETURNING id, file_name, file_path, file_size, file_type, uploaded_at, user_id
+    file_type = $5,
+    pet_id = $6
+WHERE id = $1 RETURNING id, file_name, file_path, file_size, file_type, uploaded_at, pet_id
 `
 
 type UpdateFileParams struct {
-	ID       int64  `json:"id"`
-	FileName string `json:"file_name"`
-	FilePath string `json:"file_path"`
-	FileSize int64  `json:"file_size"`
-	FileType string `json:"file_type"`
+	ID       int64       `json:"id"`
+	FileName string      `json:"file_name"`
+	FilePath string      `json:"file_path"`
+	FileSize int64       `json:"file_size"`
+	FileType string      `json:"file_type"`
+	PetID    pgtype.Int8 `json:"pet_id"`
 }
 
 func (q *Queries) UpdateFile(ctx context.Context, arg UpdateFileParams) (File, error) {
@@ -90,6 +129,7 @@ func (q *Queries) UpdateFile(ctx context.Context, arg UpdateFileParams) (File, e
 		arg.FilePath,
 		arg.FileSize,
 		arg.FileType,
+		arg.PetID,
 	)
 	var i File
 	err := row.Scan(
@@ -99,7 +139,7 @@ func (q *Queries) UpdateFile(ctx context.Context, arg UpdateFileParams) (File, e
 		&i.FileSize,
 		&i.FileType,
 		&i.UploadedAt,
-		&i.UserID,
+		&i.PetID,
 	)
 	return i, err
 }

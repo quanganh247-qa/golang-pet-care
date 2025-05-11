@@ -53,6 +53,11 @@ type Config struct {
 	VietQRClientKey string `mapstructure:"VIETQR_CLIENT_KEY"`
 
 	RoboflowAPIKey string `mapstructure:"ROBOFLOW_API_KEY"`
+
+	MinIOEndpoint  string `mapstructure:"MINIO_ENPOINT"`
+	MinIOAccessKey string `mapstructure:"MINIO_USERNAME"`
+	MinIOSecretKey string `mapstructure:"MINIO_PASSWORD"`
+	MinIOSSL       bool   `mapstructure:"MINIO_SSL"`
 }
 
 var Configs = Config{}

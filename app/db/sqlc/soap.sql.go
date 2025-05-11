@@ -19,7 +19,7 @@ RETURNING id, appointment_id, subjective, objective, assessment, plan, created_a
 
 type CreateSOAPParams struct {
 	AppointmentID pgtype.Int8 `json:"appointment_id"`
-	Subjective    pgtype.Text `json:"subjective"`
+	Subjective    []byte      `json:"subjective"`
 }
 
 func (q *Queries) CreateSOAP(ctx context.Context, arg CreateSOAPParams) (Consultation, error) {
@@ -73,9 +73,9 @@ WHERE c.id = $1
 type GetSOAPNoteRow struct {
 	ID               int32            `json:"id"`
 	AppointmentID    pgtype.Int8      `json:"appointment_id"`
-	Subjective       pgtype.Text      `json:"subjective"`
+	Subjective       []byte           `json:"subjective"`
 	Objective        []byte           `json:"objective"`
-	Assessment       pgtype.Text      `json:"assessment"`
+	Assessment       []byte           `json:"assessment"`
 	Plan             pgtype.Int8      `json:"plan"`
 	CreatedAt        pgtype.Timestamp `json:"created_at"`
 	DoctorID         int64            `json:"doctor_id"`
@@ -121,9 +121,9 @@ ORDER BY c.created_at DESC
 type ListSOAPNotesRow struct {
 	ID               int32            `json:"id"`
 	AppointmentID    pgtype.Int8      `json:"appointment_id"`
-	Subjective       pgtype.Text      `json:"subjective"`
+	Subjective       []byte           `json:"subjective"`
 	Objective        []byte           `json:"objective"`
-	Assessment       pgtype.Text      `json:"assessment"`
+	Assessment       []byte           `json:"assessment"`
 	Plan             pgtype.Int8      `json:"plan"`
 	CreatedAt        pgtype.Timestamp `json:"created_at"`
 	DoctorID         int64            `json:"doctor_id"`
@@ -171,9 +171,9 @@ WHERE appointment_id = $1 RETURNING id, appointment_id, subjective, objective, a
 
 type UpdateSOAPParams struct {
 	AppointmentID pgtype.Int8 `json:"appointment_id"`
-	Subjective    pgtype.Text `json:"subjective"`
+	Subjective    []byte      `json:"subjective"`
 	Objective     []byte      `json:"objective"`
-	Assessment    pgtype.Text `json:"assessment"`
+	Assessment    []byte      `json:"assessment"`
 }
 
 func (q *Queries) UpdateSOAP(ctx context.Context, arg UpdateSOAPParams) (Consultation, error) {

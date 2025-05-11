@@ -146,31 +146,41 @@ type updateAppointmentRequest struct {
 }
 
 type CreateSOAPRequest struct {
-	DoctorID   int64  `json:"doctor_id"`
-	Subjective string `json:"subjective"`
+	Subjective []SubjectiveData `json:"subjective"`
 }
 
 type UpdateSOAPRequest struct {
-	Subjective string        `json:"subjective"`
-	Objective  ObjectiveData `json:"objective"`
-	Assessment string        `json:"assessment"`
-	Plan       int8          `json:"plan"`
+	Subjective []SubjectiveData `json:"subjective"`
+	Objective  ObjectiveData    `json:"objective"`
+	Assessment *AssessmentData  `json:"assessment"`
+	Plan       int8             `json:"plan"`
 }
 
 type SOAPResponse struct {
-	ConsultationID int64         `json:"consultation_id"`
-	AppointmentID  int64         `json:"appointment_id"`
-	Subjective     string        `json:"subjective"`
-	Objective      ObjectiveData `json:"objective"`
-	Assessment     string        `json:"assessment"`
-	// Plan           string `json:"plan"`
-	Notes string `json:"notes"`
+	ConsultationID int64            `json:"consultation_id"`
+	AppointmentID  int64            `json:"appointment_id"`
+	Subjective     []SubjectiveData `json:"subjective"`
+	Objective      ObjectiveData    `json:"objective"`
+	Assessment     AssessmentData   `json:"assessment"`
+	Notes          string           `json:"notes"`
 }
 
 // ObjectiveData đại diện cho dữ liệu trong phần Objective
 type ObjectiveData struct {
 	VitalSigns VitalSignsData `json:"vital_signs"` // Dấu hiệu sinh tồn
 	Systems    SystemsData    `json:"systems"`     // Hệ thống cơ thể
+}
+
+type SubjectiveData struct {
+	ID    string `json:"id"`
+	Key   string `json:"key"`
+	Value string `json:"value"`
+}
+
+type AssessmentData struct {
+	Primary       string   `json:"primary"`
+	Differentials []string `json:"differentials"`
+	Notes         string   `json:"notes"`
 }
 
 // VitalSignsData chứa các dấu hiệu sinh tồn

@@ -26,6 +26,7 @@ import (
 	"github.com/quanganh247-qa/go-blog-be/app/api/vaccination"
 	"github.com/quanganh247-qa/go-blog-be/app/middleware"
 	"github.com/quanganh247-qa/go-blog-be/app/service/inference"
+	"github.com/quanganh247-qa/go-blog-be/app/service/minio"
 	"github.com/quanganh247-qa/go-blog-be/app/service/websocket"
 	"github.com/quanganh247-qa/go-blog-be/app/service/worker"
 	"github.com/quanganh247-qa/go-blog-be/app/util"
@@ -84,5 +85,7 @@ func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor, config
 	// Register SMTP configuration routes
 	smtp.RegisterRoutes(router, config, server.store)
 
+	minioHandler := minio.NewMinioHandler(routerDefault)
+	minio.Routes(routerGroup, minioHandler)
 	server.Router = routerDefault
 }
