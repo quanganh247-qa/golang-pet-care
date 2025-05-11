@@ -126,6 +126,26 @@ func (q *Queries) DecreaseItemQuantity(ctx context.Context, arg DecreaseItemQuan
 	return err
 }
 
+const deleteCart = `-- name: DeleteCart :exec
+DELETE FROM cart_items
+WHERE cart_id = $1
+`
+
+func (q *Queries) DeleteCart(ctx context.Context, cartID int64) error {
+	_, err := q.db.Exec(ctx, deleteCart, cartID)
+	return err
+}
+
+const deleteCartItems = `-- name: DeleteCartItems :exec
+DELETE FROM cart_items
+WHERE cart_id = $1
+`
+
+func (q *Queries) DeleteCartItems(ctx context.Context, cartID int64) error {
+	_, err := q.db.Exec(ctx, deleteCartItems, cartID)
+	return err
+}
+
 const getAllOrders = `-- name: GetAllOrders :many
 SELECT id, user_id, order_date, total_amount, payment_status, cart_items, shipping_address, notes
 FROM Orders 
@@ -167,6 +187,22 @@ func (q *Queries) GetAllOrders(ctx context.Context, arg GetAllOrdersParams) ([]O
 		return nil, err
 	}
 	return items, nil
+}
+
+const getCartByCartId = `-- name: GetCartByCartId :one
+SELECT id, user_id, created_at, updated_at FROM carts WHERE id = $1
+`
+
+func (q *Queries) GetCartByCartId(ctx context.Context, id int64) (Cart, error) {
+	row := q.db.QueryRow(ctx, getCartByCartId, id)
+	var i Cart
+	err := row.Scan(
+		&i.ID,
+		&i.UserID,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
 }
 
 const getCartByUserId = `-- name: GetCartByUserId :many

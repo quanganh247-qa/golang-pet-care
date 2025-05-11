@@ -18,6 +18,7 @@ type CartControllerInterface interface {
 	RemoveItemFromCart(c *gin.Context)
 	GetAllOrders(c *gin.Context)
 	GetOrderHistory(c *gin.Context)
+	DeleteCart(c *gin.Context)
 	// IncreaseItemQuantity(c *gin.Context)
 	// DecreaseItemQuantity(c *gin.Context)
 	// UpdateItemQuantity(c *gin.Context)
@@ -224,3 +225,14 @@ func (c *CartController) GetOrderHistory(ctx *gin.Context) {
 // 	}
 // 	ctx.JSON(http.StatusOK, util.SuccessResponse("Item quantity updated successfully", nil))
 // }
+
+func (c *CartController) DeleteCart(ctx *gin.Context) {
+	cartID := ctx.Param("cart_id")
+	idInt, _ := strconv.ParseInt(cartID, 10, 64)
+	err := c.service.DeleteCartService(ctx, idInt)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	ctx.JSON(http.StatusOK, util.SuccessResponse("Cart deleted successfully", nil))
+}

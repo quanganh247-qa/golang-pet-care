@@ -21,6 +21,7 @@ type CartServiceInterface interface {
 	GetAllOrdersService(c *gin.Context, pagination *util.Pagination, status string) ([]OrderResponse, error)
 	GetOrderHistoryService(c *gin.Context, username string) ([]DetailedOrderHistoryResponse, error)
 	DecreaseItemQuantityService(c *gin.Context, username string, itemID int64, quantity int32) error
+	DeleteCartService(c *gin.Context, cartID int64) error
 	// IncreaseItemQuantityService(c *gin.Context, username string, itemID int64, quantity int32) error
 	// UpdateItemQuantityService(c *gin.Context, username string, itemID int64, quantity int32) error
 }
@@ -240,6 +241,11 @@ func (s *CartService) CreateOrderService(c *gin.Context, username string, arg Pl
 			OrderDate:     order.OrderDate.Time.Format("2006-01-02"),
 			TotalAmount:   order.TotalAmount,
 			PaymentStatus: order.PaymentStatus.String,
+		}
+
+		err = q.DeleteCartItems(c, carts[0].ID)
+		if err != nil {
+			return err
 		}
 
 		return nil
@@ -515,3 +521,25 @@ func (s *CartService) DecreaseItemQuantityService(c *gin.Context, username strin
 
 // 	return nil
 // }
+
+func (s *CartService) DeleteCartService(c *gin.Context, cartID int64) error {
+
+	cart, err := s.storeDB.GetCartByCartId(c, cartID)
+	if err != nil {
+		return fmt.Errorf("failed to get cart by user id: %w", err)
+	}
+
+	err = s.storeDB.ExecWithTransaction(c, func(q *db.Queries) error {
+		err := q.DeleteCart(c, cart.ID)
+		if err != nil {
+			return err
+		}
+
+		return nil
+	})
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

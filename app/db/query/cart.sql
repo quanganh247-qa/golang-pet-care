@@ -104,3 +104,15 @@ SELECT *
 FROM Orders
 WHERE user_id = $1
 ORDER BY order_date DESC;
+
+-- name: DeleteCart :exec
+DELETE FROM cart_items
+WHERE cart_id = $1;
+
+
+-- name: GetCartByCartId :one
+SELECT * FROM carts WHERE id = $1;
+
+-- name: DeleteCartItems :exec
+DELETE FROM cart_items
+WHERE cart_id = $1;

@@ -25,7 +25,7 @@ func Routes(routerGroup middleware.RouterGroup) {
 		authRoute.POST("/cart", cartApi.controller.AddToCart)
 		authRoute.GET("/cart", cartApi.controller.GetCartItems)
 		authRoute.DELETE("/cart/product/:product_id", cartApi.controller.RemoveItemFromCart)
-
+		authRoute.DELETE("/cart/:cart_id", cartApi.controller.DeleteCart)
 	}
 	{
 		authRoute.POST("/order", cartApi.controller.CreateOrder)
