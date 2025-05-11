@@ -456,6 +456,15 @@ type PetTreatment struct {
 	DoctorID    pgtype.Int4        `json:"doctor_id"`
 }
 
+type PetWeightHistory struct {
+	ID         int64            `json:"id"`
+	PetID      int64            `json:"pet_id"`
+	WeightKg   float64          `json:"weight_kg"`
+	RecordedAt pgtype.Timestamp `json:"recorded_at"`
+	Notes      pgtype.Text      `json:"notes"`
+	CreatedAt  pgtype.Timestamp `json:"created_at"`
+}
+
 type PhaseMedicine struct {
 	PhaseID    int64              `json:"phase_id"`
 	MedicineID int64              `json:"medicine_id"`

@@ -25,6 +25,10 @@ type PetControllerInterface interface {
 	GetAllPetLogsByUsername(ctx *gin.Context)
 	GetPetOwnerByPetID(ctx *gin.Context)
 	GetDetailsPetLog(ctx *gin.Context)
+
+	// Weight tracking methods
+	GetWeightHistory(ctx *gin.Context)
+	DeleteWeightRecord(ctx *gin.Context)
 }
 
 func (c *PetController) CreatePet(ctx *gin.Context) {
@@ -326,4 +330,84 @@ func (c *PetController) GetDetailsPetLog(ctx *gin.Context) {
 	}
 
 	ctx.JSON(200, res)
+}
+
+// GetWeightHistory gets the weight history for a pet
+// @Summary Get weight history
+// @Description Get the weight history for a pet
+// @Tags pets
+// @Produce json
+// @Param pet_id path int true "Pet ID"
+// @Param page query int false "Page number (default: 1)"
+// @Param page_size query int false "Page size (default: 10)"
+// @Param unit_type query string false "Unit type (kg or lb, default: kg)"
+// @Success 200 {object} PetWeightHistoryResponse
+// @Failure 400 {object} map[string]interface{}
+// @Failure 500 {object} map[string]interface{}
+// @Router /pets/{pet_id}/weight [get]
+func (c *PetController) GetWeightHistory(ctx *gin.Context) {
+	// Get pet ID from path parameter
+	petIDStr := ctx.Param("pet_id")
+	petID, err := strconv.ParseInt(petIDStr, 10, 64)
+	if err != nil || petID <= 0 {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid pet ID"})
+		return
+	}
+
+	pagination, err := util.GetPageInQuery(ctx.Request.URL.Query())
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
+		return
+	}
+	unitType := ctx.DefaultQuery("unit_type", "kg")
+
+	// Validate unit type
+	if unitType != "kg" && unitType != "lb" {
+		unitType = "kg" // Default to kg
+	}
+
+	response, err := c.service.GetWeightHistory(ctx, petID, pagination, unitType)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, response)
+}
+
+// DeleteWeightRecord deletes a weight record for a pet
+// @Summary Delete weight record
+// @Description Delete a weight record for a pet
+// @Tags pets
+// @Produce json
+// @Param record_id path int true "Record ID"
+// @Param pet_id path int true "Pet ID"
+// @Success 200 {object} map[string]interface{}
+// @Failure 400 {object} map[string]interface{}
+// @Failure 500 {object} map[string]interface{}
+// @Router /pets/{pet_id}/weight/{record_id} [delete]
+func (c *PetController) DeleteWeightRecord(ctx *gin.Context) {
+	// Get record ID from path parameter
+	recordIDStr := ctx.Param("record_id")
+	recordID, err := strconv.ParseInt(recordIDStr, 10, 64)
+	if err != nil || recordID <= 0 {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid record ID"})
+		return
+	}
+
+	// Get pet ID from path parameter
+	petIDStr := ctx.Param("pet_id")
+	petID, err := strconv.ParseInt(petIDStr, 10, 64)
+	if err != nil || petID <= 0 {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid pet ID"})
+		return
+	}
+
+	err = c.service.DeleteWeightRecord(ctx, recordID, petID)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"message": "Weight record deleted successfully"})
 }

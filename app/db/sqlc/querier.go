@@ -14,6 +14,7 @@ type Querier interface {
 	ActiveReminder(ctx context.Context, arg ActiveReminderParams) error
 	AddItemToCart(ctx context.Context, arg AddItemToCartParams) (CartItem, error)
 	AddOrderedTest(ctx context.Context, arg AddOrderedTestParams) (OrderedTest, error)
+	AddPetWeightRecord(ctx context.Context, arg AddPetWeightRecordParams) (PetWeightHistory, error)
 	AddTestCategory(ctx context.Context, arg AddTestCategoryParams) error
 	// Assign Carprofen to the Initial Phase
 	AssignCarprofenToInitialPhase(ctx context.Context, arg AssignCarprofenToInitialPhaseParams) error
@@ -30,6 +31,7 @@ type Querier interface {
 	CountInventoryTransactions(ctx context.Context, arg CountInventoryTransactionsParams) (int64, error)
 	CountInvoices(ctx context.Context) (int64, error)
 	CountPatientsInMonth(ctx context.Context, arg CountPatientsInMonthParams) (int64, error)
+	CountPetWeightRecords(ctx context.Context, petID int64) (int64, error)
 	CountPets(ctx context.Context) (int64, error)
 	CountShiftsByDoctorAndDate(ctx context.Context, arg CountShiftsByDoctorAndDateParams) (int64, error)
 	CreateAppointment(ctx context.Context, arg CreateAppointmentParams) (Appointment, error)
@@ -91,6 +93,7 @@ type Querier interface {
 	DeletePetAllergy(ctx context.Context, id int64) error
 	DeletePetLog(ctx context.Context, logID int64) error
 	DeletePetSchedule(ctx context.Context, id int64) (PetSchedule, error)
+	DeletePetWeightRecord(ctx context.Context, arg DeletePetWeightRecordParams) error
 	DeletePrescription(ctx context.Context, id int64) error
 	DeletePrescriptionMedication(ctx context.Context, id int64) error
 	DeleteRoom(ctx context.Context, id int64) error
@@ -169,6 +172,7 @@ type Querier interface {
 	GetInvoiceItemByID(ctx context.Context, id int32) (InvoiceItem, error)
 	GetInvoiceItems(ctx context.Context, invoiceID int32) ([]InvoiceItem, error)
 	GetInvoiceWithItems(ctx context.Context, id int32) ([]GetInvoiceWithItemsRow, error)
+	GetLatestPetWeight(ctx context.Context, petID int64) (PetWeightHistory, error)
 	GetLowStockItems(ctx context.Context, arg GetLowStockItemsParams) ([]GetLowStockItemsRow, error)
 	GetLowStockMedicines(ctx context.Context) ([]GetLowStockMedicinesRow, error)
 	GetMedicalHistory(ctx context.Context, arg GetMedicalHistoryParams) ([]MedicalHistory, error)
@@ -211,6 +215,7 @@ type Querier interface {
 	GetPetLogsByPetID(ctx context.Context, arg GetPetLogsByPetIDParams) ([]GetPetLogsByPetIDRow, error)
 	GetPetProfileSummary(ctx context.Context, petid int64) ([]GetPetProfileSummaryRow, error)
 	GetPetScheduleById(ctx context.Context, id int64) (PetSchedule, error)
+	GetPetWeightHistory(ctx context.Context, arg GetPetWeightHistoryParams) ([]PetWeightHistory, error)
 	GetPrescriptionByID(ctx context.Context, id int64) (Prescription, error)
 	GetProductByID(ctx context.Context, productID int64) (Product, error)
 	GetProductByIDForUpdate(ctx context.Context, productID int64) (Product, error)
@@ -306,6 +311,7 @@ type Querier interface {
 	UpdatePet(ctx context.Context, arg UpdatePetParams) error
 	UpdatePetAllergy(ctx context.Context, arg UpdatePetAllergyParams) (PetAllergy, error)
 	UpdatePetAvatar(ctx context.Context, arg UpdatePetAvatarParams) error
+	UpdatePetCurrentWeight(ctx context.Context, arg UpdatePetCurrentWeightParams) error
 	UpdatePetLog(ctx context.Context, arg UpdatePetLogParams) error
 	UpdatePetSchedule(ctx context.Context, arg UpdatePetScheduleParams) (PetSchedule, error)
 	UpdatePrescription(ctx context.Context, arg UpdatePrescriptionParams) (Prescription, error)

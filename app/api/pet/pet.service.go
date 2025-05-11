@@ -30,6 +30,8 @@ type PetServiceInterface interface {
 	GetAllPetLogsByUsername(ctx *gin.Context, username string, pagination *util.Pagination) (*util.PaginationResponse[PetLogWithPetInfo], error)
 	GetPetOwnerByPetID(ctx *gin.Context, petID int64) (*user.UserResponse, error)
 	GetDetailsPetLogService(ctx context.Context, log_id int64) (*PetLogWithPetInfo, error)
+	GetWeightHistory(ctx *gin.Context, petID int64, pagination *util.Pagination, unitType string) (*PetWeightHistoryResponse, error)
+	DeleteWeightRecord(ctx *gin.Context, recordID, petID int64) error
 }
 
 func (s *PetService) CreatePet(ctx *gin.Context, username string, req createPetRequest) (*CreatePetResponse, error) {
@@ -213,14 +215,17 @@ func (s *PetService) UpdatePet(ctx *gin.Context, petid int64, req updatePetReque
 		params.Breed = pet.Breed
 	}
 
-	// if req.Age != 0 {
-	// 	params.Age = pgtype.Int4{Int32: int32(req.Age), Valid: true}
-	// } else {
-	// 	params.Age = pet.Age
-	// }
+	var weightParams db.AddPetWeightRecordParams
 
 	if req.Weight != 0 {
 		params.Weight = pgtype.Float8{Float64: req.Weight, Valid: true}
+
+		// Add weight record
+		weightParams = db.AddPetWeightRecordParams{
+			PetID:    petid,
+			WeightKg: req.Weight,
+		}
+
 	} else {
 		params.Weight = pet.Weight
 	}
@@ -237,6 +242,13 @@ func (s *PetService) UpdatePet(ctx *gin.Context, petid int64, req updatePetReque
 		err := q.UpdatePet(ctx, params)
 		if err != nil {
 			return fmt.Errorf("failed to update pet: %w", err)
+		}
+
+		if weightParams.WeightKg != 0 {
+			_, err = s.storeDB.AddPetWeightRecord(ctx, weightParams)
+			if err != nil {
+				return fmt.Errorf("failed to add weight record: %w", err)
+			}
 		}
 		return nil
 	})
@@ -623,4 +635,117 @@ func (s *PetService) GetPetOwnerByPetID(ctx *gin.Context, petID int64) (*user.Us
 		FullName:    owner.FullName,
 		Address:     owner.Address.String,
 	}, nil
+}
+
+// Get weight history for a pet
+func (s *PetService) GetWeightHistory(ctx *gin.Context, petID int64, pagination *util.Pagination, unitType string) (*PetWeightHistoryResponse, error) {
+	// First, check if the pet exists and get its name
+	pet, err := s.storeDB.GetPetByID(ctx, petID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to find pet: %w", err)
+	}
+
+	// Limit:  int32(pagination.PageSize),
+	// 	Offset: int32((pagination.Page - 1) * pagination.PageSize),
+
+	// Get total records count
+	totalRecords, err := s.storeDB.CountPetWeightRecords(ctx, petID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to count weight records: %w", err)
+	}
+
+	// Get weight history
+	weightRecords, err := s.storeDB.GetPetWeightHistory(ctx, db.GetPetWeightHistoryParams{
+		PetID:  petID,
+		Limit:  int32(pagination.PageSize),
+		Offset: int32((pagination.Page - 1) * pagination.PageSize),
+	})
+	if err != nil {
+		return nil, fmt.Errorf("failed to get weight history: %w", err)
+	}
+
+	// Get latest weight record
+	var currentWeight WeightRecordResponse
+	latestWeight, err := s.storeDB.GetLatestPetWeight(ctx, petID)
+	if err != nil {
+		// If no weight records, use the pet's current weight
+		currentWeight = WeightRecordResponse{
+			PetID:      petID,
+			WeightKg:   pet.Weight.Float64,
+			WeightLb:   KgToLb(pet.Weight.Float64),
+			RecordedAt: time.Now(),
+		}
+	} else {
+		currentWeight = WeightRecordResponse{
+			ID:         latestWeight.ID,
+			PetID:      latestWeight.PetID,
+			WeightKg:   latestWeight.WeightKg,
+			WeightLb:   KgToLb(latestWeight.WeightKg),
+			RecordedAt: latestWeight.RecordedAt.Time,
+			Notes:      latestWeight.Notes.String,
+			CreatedAt:  latestWeight.CreatedAt.Time,
+		}
+	}
+
+	// Map weight records to response
+	var weightHistory []WeightRecordResponse
+	for _, record := range weightRecords {
+		weightHistory = append(weightHistory, WeightRecordResponse{
+			ID:         record.ID,
+			PetID:      record.PetID,
+			WeightKg:   record.WeightKg,
+			WeightLb:   KgToLb(record.WeightKg),
+			RecordedAt: record.RecordedAt.Time,
+			Notes:      record.Notes.String,
+			CreatedAt:  record.CreatedAt.Time,
+		})
+	}
+
+	// Set default unit type if not provided
+	if unitType == "" {
+		unitType = "kg" // Default to metric
+	}
+
+	// Create response
+	response := &PetWeightHistoryResponse{
+		PetID:           petID,
+		PetName:         pet.Name,
+		CurrentWeight:   currentWeight,
+		WeightHistory:   weightHistory,
+		TotalRecords:    totalRecords,
+		DefaultUnitType: unitType,
+	}
+
+	return response, nil
+}
+
+// Delete a weight record
+func (s *PetService) DeleteWeightRecord(ctx *gin.Context, recordID, petID int64) error {
+	err := s.storeDB.DeletePetWeightRecord(ctx, db.DeletePetWeightRecordParams{
+		ID:    recordID,
+		PetID: petID,
+	})
+	if err != nil {
+		return fmt.Errorf("failed to delete weight record: %w", err)
+	}
+
+	// After deleting, get the latest record to update the pet's current weight
+	latestWeight, err := s.storeDB.GetLatestPetWeight(ctx, petID)
+	if err == nil {
+		// Update the pet's current weight with the latest record
+		err = s.storeDB.UpdatePetCurrentWeight(ctx, db.UpdatePetCurrentWeightParams{
+			Petid:  petID,
+			Weight: pgtype.Float8{Float64: latestWeight.WeightKg, Valid: true},
+		})
+		if err != nil {
+			return fmt.Errorf("failed to update pet's current weight: %w", err)
+		}
+
+		// Clear the pet info cache
+		if s.redis != nil {
+			s.redis.RemovePetInfoCache(petID)
+		}
+	}
+
+	return nil
 }

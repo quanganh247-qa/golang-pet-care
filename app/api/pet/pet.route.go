@@ -46,5 +46,8 @@ func Routes(routerGroup middleware.RouterGroup) {
 		authRoute.GET("/pet/logs", petApi.controller.GetAllPetLogsByUsername)
 		authRoute.GET("/pet/log/:log_id/details", petApi.controller.GetDetailsPetLog) // Changed from /pet/logs/:log_id/details
 
+		// Pet weight tracking
+		authRoute.GET("/pet/:pet_id/weights", petApi.controller.GetWeightHistory)
+		authRoute.DELETE("/pet/:pet_id/weights/:record_id", petApi.controller.DeleteWeightRecord)
 	}
 }

@@ -1,8 +1,12 @@
 package pet
 
 import (
+	"time"
+
 	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
 	"github.com/quanganh247-qa/go-blog-be/app/service/redis"
+
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 type PetApi struct {
@@ -94,4 +98,61 @@ type updatePetAvatarRequest struct {
 
 type PetProfileSummary struct {
 	Summary string `json:"summary"`
+}
+
+// Weight tracking models
+// Weight record as stored in database
+type PetWeightRecord struct {
+	ID         int64            `json:"id"`
+	PetID      int64            `json:"pet_id"`
+	WeightKg   float64          `json:"weight_kg"`
+	RecordedAt pgtype.Timestamp `json:"recorded_at"`
+	Notes      pgtype.Text      `json:"notes"`
+	CreatedAt  pgtype.Timestamp `json:"created_at"`
+}
+
+// Request to add a new weight record
+type AddWeightRecordRequest struct {
+	PetID    int64   `json:"pet_id"`
+	WeightKg float64 `json:"weight_kg"`
+	WeightLb float64 `json:"weight_lb,omitempty"`
+	Notes    string  `json:"notes,omitempty"`
+	UnitType string  `json:"unit_type"` // "kg" or "lb"
+}
+
+// Response for weight record
+type WeightRecordResponse struct {
+	ID         int64     `json:"id"`
+	PetID      int64     `json:"pet_id"`
+	WeightKg   float64   `json:"weight_kg"`
+	WeightLb   float64   `json:"weight_lb"`
+	RecordedAt time.Time `json:"recorded_at"`
+	Notes      string    `json:"notes,omitempty"`
+	CreatedAt  time.Time `json:"created_at"`
+}
+
+// Response for weight history
+type PetWeightHistoryResponse struct {
+	PetID           int64                  `json:"pet_id"`
+	PetName         string                 `json:"pet_name"`
+	CurrentWeight   WeightRecordResponse   `json:"current_weight"`
+	WeightHistory   []WeightRecordResponse `json:"weight_history"`
+	TotalRecords    int64                  `json:"total_records"`
+	DefaultUnitType string                 `json:"default_unit_type"` // "kg" or "lb"
+}
+
+// Constants for unit conversion
+const (
+	KgToLbRatio = 2.20462
+	LbToKgRatio = 0.453592
+)
+
+// Helper function to convert kg to lb
+func KgToLb(kg float64) float64 {
+	return kg * KgToLbRatio
+}
+
+// Helper function to convert lb to kg
+func LbToKg(lb float64) float64 {
+	return lb * LbToKgRatio
 }
