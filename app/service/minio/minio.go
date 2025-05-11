@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"net/url"
 	"os"
 	"path/filepath"
 	"sync"
@@ -209,11 +210,17 @@ func (mc *Client) DownloadFile(ctx context.Context, bucketName, objectName, down
 
 // GetPresignedURL generates a presigned URL for an object in the specified bucket
 func (mc *Client) GetPresignedURL(ctx context.Context, bucketName, objectName string, expires time.Duration) (string, error) {
-	presignedURL, err := mc.Client.PresignedGetObject(ctx, bucketName, objectName, expires, nil)
+	// Create request parameters
+	reqParams := make(url.Values)
+	reqParams.Set("response-content-disposition", "inline")
+
+	// Generate presigned URL with inline content disposition
+	presignedURL, err := mc.Client.PresignedGetObject(ctx, bucketName, objectName, expires, reqParams)
 	if err != nil {
 		log.Println(color.RedString("failed to generate presigned URL for object %s: %v", objectName, err))
 		return "", fmt.Errorf("failed to generate presigned URL for object %s: %v", objectName, err)
 	}
+
 	return presignedURL.String(), nil
 }
 
