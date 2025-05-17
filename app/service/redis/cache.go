@@ -157,6 +157,8 @@ func (client *ClientType) ClearPetInfoCache() {
 
 type ProductInfo struct {
 	ProductID     int64   `json:"product_id"`
+	Description   string  `json:"description"`
+	IsAvailable   bool    `json:"is_available"`
 	Name          string  `json:"name"`
 	Price         float64 `json:"price"`
 	Stock         int32   `json:"stock"`
@@ -181,6 +183,8 @@ func (c *ClientType) ProductInfoLoadCache(productID int64) (*ProductInfo, error)
 		product := ProductInfo{
 			ProductID:     res.ProductID,
 			Name:          res.Name,
+			Description:   res.Description.String,
+			IsAvailable:   res.IsAvailable.Bool,
 			Price:         res.Price,
 			Stock:         res.StockQuantity.Int32,
 			Category:      res.Category.String,
@@ -896,22 +900,48 @@ func (c *ClientType) DoctorShiftsLoadCache(doctorID int64) ([]ShiftInfo, error) 
 			doctor, err := db.StoreDB.GetDoctor(ctxRedis, shift.DoctorID)
 			if err != nil {
 				// Continue even if we can't get doctor name
+				// Type assertion for StartTime and EndTime
+				var startTime, endTime time.Time
+
+				// Without doctor name, just set default start/end times
+				startTime = time.Date(2000, 1, 1, 0, 0, 0, 0, time.UTC)
+				endTime = time.Date(2000, 1, 1, 0, 0, 0, 0, time.UTC)
+
 				shifts = append(shifts, ShiftInfo{
 					ID:               shift.ID,
 					DoctorID:         shift.DoctorID,
-					StartTime:        shift.StartTime.Time,
-					EndTime:          shift.EndTime.Time,
+					StartTime:        startTime,
+					EndTime:          endTime,
 					AssignedPatients: shift.AssignedPatients.Int32,
 					CreatedAt:        shift.CreatedAt.Time,
 				})
 				continue
 			}
 
+			// Declare time variables
+			var startTime, endTime time.Time
+
+			// Parse time from pgtype.Time
+			// Convert microseconds from pgtype.Time to hours, minutes, seconds
+			if shift.StartTime.Valid {
+				startTime = time.Date(2000, 1, 1,
+					int(shift.StartTime.Microseconds/1000000/3600),            // Hour
+					int((shift.StartTime.Microseconds/1000000%3600)/60),       // Minute
+					int(shift.StartTime.Microseconds/1000000%60), 0, time.UTC) // Second
+			}
+
+			if shift.EndTime.Valid {
+				endTime = time.Date(2000, 1, 1,
+					int(shift.EndTime.Microseconds/1000000/3600),            // Hour
+					int((shift.EndTime.Microseconds/1000000%3600)/60),       // Minute
+					int(shift.EndTime.Microseconds/1000000%60), 0, time.UTC) // Second
+			}
+
 			shifts = append(shifts, ShiftInfo{
 				ID:               shift.ID,
 				DoctorID:         shift.DoctorID,
-				StartTime:        shift.StartTime.Time,
-				EndTime:          shift.EndTime.Time,
+				StartTime:        startTime,
+				EndTime:          endTime,
 				AssignedPatients: shift.AssignedPatients.Int32,
 				CreatedAt:        shift.CreatedAt.Time,
 				DoctorName:       doctor.Name,
@@ -947,22 +977,66 @@ func (c *ClientType) AllShiftsLoadCache() ([]ShiftInfo, error) {
 			doctor, err := db.StoreDB.GetDoctor(ctxRedis, shift.DoctorID)
 			if err != nil {
 				// Continue even if we can't get doctor name
+				// Since GetShiftsRow doesn't include time info, we need to get time slots
+				timeSlots, err := db.StoreDB.GetTimeSlotsByShiftID(ctxRedis, shift.ID)
+				var startTime, endTime time.Time
+
+				// Use default times if we can't get time slots
+				if err == nil && len(timeSlots) > 0 {
+					// Use the first and last time slot
+					firstSlot := timeSlots[0]
+					lastSlot := timeSlots[len(timeSlots)-1]
+
+					// Convert from microseconds to datetime
+					startTime = time.Date(2000, 1, 1,
+						int(firstSlot.StartTime.Microseconds/1000000/3600),
+						int((firstSlot.StartTime.Microseconds/1000000%3600)/60),
+						int(firstSlot.StartTime.Microseconds/1000000%60), 0, time.UTC)
+
+					endTime = time.Date(2000, 1, 1,
+						int(lastSlot.EndTime.Microseconds/1000000/3600),
+						int((lastSlot.EndTime.Microseconds/1000000%3600)/60),
+						int(lastSlot.EndTime.Microseconds/1000000%60), 0, time.UTC)
+				}
+
 				shifts = append(shifts, ShiftInfo{
 					ID:               shift.ID,
 					DoctorID:         shift.DoctorID,
-					StartTime:        shift.StartTime.Time,
-					EndTime:          shift.EndTime.Time,
+					StartTime:        startTime,
+					EndTime:          endTime,
 					AssignedPatients: shift.AssignedPatients.Int32,
 					CreatedAt:        shift.CreatedAt.Time,
 				})
 				continue
 			}
 
+			// Get time slots for this shift
+			timeSlots, err := db.StoreDB.GetTimeSlotsByShiftID(ctxRedis, shift.ID)
+			var startTime, endTime time.Time
+
+			// Use default times if we can't get time slots
+			if err == nil && len(timeSlots) > 0 {
+				// Use the first and last time slot
+				firstSlot := timeSlots[0]
+				lastSlot := timeSlots[len(timeSlots)-1]
+
+				// Convert from microseconds to datetime
+				startTime = time.Date(2000, 1, 1,
+					int(firstSlot.StartTime.Microseconds/1000000/3600),
+					int((firstSlot.StartTime.Microseconds/1000000%3600)/60),
+					int(firstSlot.StartTime.Microseconds/1000000%60), 0, time.UTC)
+
+				endTime = time.Date(2000, 1, 1,
+					int(lastSlot.EndTime.Microseconds/1000000/3600),
+					int((lastSlot.EndTime.Microseconds/1000000%3600)/60),
+					int(lastSlot.EndTime.Microseconds/1000000%60), 0, time.UTC)
+			}
+
 			shifts = append(shifts, ShiftInfo{
 				ID:               shift.ID,
 				DoctorID:         shift.DoctorID,
-				StartTime:        shift.StartTime.Time,
-				EndTime:          shift.EndTime.Time,
+				StartTime:        startTime,
+				EndTime:          endTime,
 				AssignedPatients: shift.AssignedPatients.Int32,
 				CreatedAt:        shift.CreatedAt.Time,
 				DoctorName:       doctor.Name,
