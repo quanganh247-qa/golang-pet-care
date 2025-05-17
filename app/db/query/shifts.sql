@@ -21,26 +21,27 @@ WHERE a.time_slot_id = $1;
 -- name: CountShiftsByDoctorAndDate :one
 SELECT COUNT(*) as count
 FROM shifts
-WHERE doctor_id = $1 AND start_time >= $2 AND end_time <= $3;
+WHERE doctor_id = $1;
 
 -- name: DeleteShiftsByDate :exec
 DELETE FROM shifts
-WHERE start_time >= $1 AND end_time <= $2;
+WHERE doctor_id = $1;
 
 -- name: CreateShift :one
-INSERT INTO shifts (doctor_id, start_time, end_time, assigned_patients)
-VALUES ($1, $2, $3, $4)
-RETURNING id, doctor_id, start_time, end_time, assigned_patients, created_at;
+INSERT INTO shifts (doctor_id, assigned_patients)
+VALUES ($1, $2)
+RETURNING id, doctor_id, assigned_patients, created_at;
 
 -- name: GetShifts :many
-SELECT id, doctor_id, start_time, end_time, assigned_patients, created_at
+SELECT id, doctor_id, assigned_patients, created_at
 FROM shifts
-ORDER BY start_time;
+ORDER BY created_at;
 
 -- name: GetShiftByDoctorId :many
-SELECT id, doctor_id, start_time, end_time, assigned_patients, created_at
-FROM shifts
-WHERE doctor_id = $1;
+SELECT s.id, s.doctor_id, s.assigned_patients, s.created_at, t.start_time, t.end_time
+FROM shifts s
+LEFT JOIN time_slots t ON s.id = t.shift_id
+WHERE s.doctor_id = $1;
 
 
 -- name: DeleteShift :exec

@@ -1,6 +1,7 @@
 package cart
 
 import (
+	"database/sql"
 	"encoding/json"
 	"fmt"
 	"sync"
@@ -246,6 +247,57 @@ func (s *CartService) CreateOrderService(c *gin.Context, username string, arg Pl
 		err = q.DeleteCartItems(c, carts[0].ID)
 		if err != nil {
 			return err
+		}
+
+		for _, item := range cartItems {
+			// Get product for update to lock the row
+			product, err := q.GetProductByIDForUpdate(c, item.ProductID)
+			if err != nil {
+				if err == sql.ErrNoRows {
+					return fmt.Errorf("product with ID %d not found", item.ProductID)
+				}
+				return fmt.Errorf("failed to get product for update: %w", err)
+			}
+
+			// Check for sufficient stock
+			if product.StockQuantity.Int32 < item.Quantity.Int32 {
+				return fmt.Errorf("insufficient stock for product ID %d: available %d, requested %d", item.ProductID, product.StockQuantity.Int32, item.Quantity)
+			}
+
+			// Calculate total price if unit price is provided
+			totalPriceNumeric := pgtype.Numeric{}
+			if item.UnitPrice > 0 { // Only calculate and set if unit price is provided and positive
+				totalPrice := item.UnitPrice * float64(item.Quantity.Int32)
+				err = totalPriceNumeric.Scan(fmt.Sprintf("%f", totalPrice))
+				if err != nil {
+					return fmt.Errorf("failed to convert total export price to numeric: %w", err)
+				}
+			} else {
+				totalPriceNumeric.Valid = false // Mark as NULL if unit price is not provided or not positive
+			}
+
+			// Create stock movement record
+			movementArg := db.CreateProductStockMovementParams{
+				ProductID:    item.ProductID,
+				MovementType: "export",
+				Quantity:     item.Quantity.Int32,
+				Price:        totalPriceNumeric, // Use the calculated total price (or NULL)
+			}
+			_, err = q.CreateProductStockMovement(c, movementArg)
+			if err != nil {
+				return fmt.Errorf("failed to create stock movement record: %w", err)
+			}
+
+			// Update product stock quantity
+			newStock := product.StockQuantity.Int32 - item.Quantity.Int32 // req.Quantity is int, needs cast to int32 for calculation
+			updateArg := db.UpdateProductStockParams{
+				ProductID:     item.ProductID,
+				StockQuantity: pgtype.Int4{Int32: newStock, Valid: true},
+			}
+			_, err = q.UpdateProductStock(c, updateArg)
+			if err != nil {
+				return fmt.Errorf("failed to update product stock: %w", err)
+			}
 		}
 
 		return nil

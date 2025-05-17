@@ -33,7 +33,7 @@ type Querier interface {
 	CountPatientsInMonth(ctx context.Context, arg CountPatientsInMonthParams) (int64, error)
 	CountPetWeightRecords(ctx context.Context, petID int64) (int64, error)
 	CountPets(ctx context.Context) (int64, error)
-	CountShiftsByDoctorAndDate(ctx context.Context, arg CountShiftsByDoctorAndDateParams) (int64, error)
+	CountShiftsByDoctorAndDate(ctx context.Context, doctorID int64) (int64, error)
 	CreateAppointment(ctx context.Context, arg CreateAppointmentParams) (Appointment, error)
 	CreateCartForUser(ctx context.Context, userID int64) (Cart, error)
 	CreateDisease(ctx context.Context, arg CreateDiseaseParams) (Disease, error)
@@ -100,7 +100,7 @@ type Querier interface {
 	DeleteSMTPConfig(ctx context.Context, id int64) error
 	DeleteService(ctx context.Context, id int64) error
 	DeleteShift(ctx context.Context, id int64) error
-	DeleteShiftsByDate(ctx context.Context, arg DeleteShiftsByDateParams) error
+	DeleteShiftsByDate(ctx context.Context, doctorID int64) error
 	DeleteSupplier(ctx context.Context, id int64) error
 	DeleteTestResult(ctx context.Context, id int64) error
 	DeleteTreatment(ctx context.Context, id int64) error
@@ -245,6 +245,7 @@ type Querier interface {
 	GetTimeSlotById(ctx context.Context, id int64) (TimeSlot, error)
 	GetTimeSlotForUpdate(ctx context.Context, id int64) (GetTimeSlotForUpdateRow, error)
 	GetTimeSlotsByDoctorAndDate(ctx context.Context, arg GetTimeSlotsByDoctorAndDateParams) ([]GetTimeSlotsByDoctorAndDateRow, error)
+	GetTimeSlotsByShiftID(ctx context.Context, shiftID int64) ([]TimeSlot, error)
 	GetTotalStockMovementsByProductID(ctx context.Context, productID int64) (GetTotalStockMovementsByProductIDRow, error)
 	GetTreatment(ctx context.Context, id int64) (PetTreatment, error)
 	GetTreatmentByDiseaseId(ctx context.Context, arg GetTreatmentByDiseaseIdParams) ([]GetTreatmentByDiseaseIdRow, error)

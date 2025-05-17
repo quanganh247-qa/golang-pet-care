@@ -65,6 +65,7 @@ func (s *ProductService) GetProductByID(c *gin.Context, productID int64) (*Produ
 			ProductID:     cachedProduct.ProductID,
 			Name:          cachedProduct.Name,
 			Price:         cachedProduct.Price,
+			Description:   cachedProduct.Description,
 			Stock:         cachedProduct.Stock,
 			Category:      cachedProduct.Category,
 			DataImage:     cachedProduct.DataImage,
@@ -80,6 +81,8 @@ func (s *ProductService) GetProductByID(c *gin.Context, productID int64) (*Produ
 
 	productResponse := ProductResponse{
 		ProductID:     product.ProductID,
+		Description:   product.Description.String,
+		IsAvailable:   &product.IsAvailable.Bool,
 		Name:          product.Name,
 		Price:         product.Price,
 		Stock:         product.StockQuantity.Int32,

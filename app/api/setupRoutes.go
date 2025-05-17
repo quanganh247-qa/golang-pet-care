@@ -39,8 +39,15 @@ func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor, config
 	routerDefault := gin.New()
 	routerDefault.SetTrustedProxies(nil)
 	routerDefault.Static("/static", "app/static")
-	routerDefault.Use(middleware.CORSMiddleware())
+
+	// Apply global security middlewares
 	routerDefault.Use(middleware.LoggingMiddleware())
+	routerDefault.Use(middleware.CORSMiddleware())
+	routerDefault.Use(middleware.SecurityMiddleware())
+	routerDefault.Use(middleware.RateLimitMiddleware())
+	routerDefault.Use(middleware.SQLInjectionProtection())
+	routerDefault.Use(middleware.XSSProtectionMiddleware())
+	routerDefault.Use(middleware.GenerateCSRFToken()) // Generate CSRF token for all GET requests
 
 	// Setup route handlers
 	chatHandler := handlers.NewChatHandler(config.GoogleAPIKey)

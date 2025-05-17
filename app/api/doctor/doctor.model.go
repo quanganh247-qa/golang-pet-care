@@ -95,13 +95,13 @@ type DoctorDetail struct {
 }
 
 type Shift struct {
-	ID               int64     `json:"id"`
-	StartTime        time.Time `json:"start_time"`
-	EndTime          time.Time `json:"end_time"`
-	AssignedPatients int32     `json:"assigned_patients"`
-	CreatedAt        time.Time `json:"created_at"`
-	DoctorID         int64     `json:"doctor_id"`
-	DoctorName       string    `json:"doctor_name"`
+	ID               int64  `json:"id"`
+	StartTime        string `json:"start_time"`
+	EndTime          string `json:"end_time"`
+	AssignedPatients int32  `json:"assigned_patients"`
+	CreatedAt        string `json:"created_at"`
+	DoctorID         int64  `json:"doctor_id"`
+	DoctorName       string `json:"doctor_name"`
 }
 
 type ShiftResponse struct {
@@ -114,9 +114,9 @@ type ShiftResponse struct {
 }
 
 type CreateShiftRequest struct {
-	StartTime time.Time `json:"start_time"`
-	EndTime   time.Time `json:"end_time"`
-	DoctorID  int64     `json:"doctor_id"`
+	StartTime string `json:"start_time"`
+	EndTime   string `json:"end_time"`
+	DoctorID  int64  `json:"doctor_id"`
 }
 
 type LeaveRequest struct {

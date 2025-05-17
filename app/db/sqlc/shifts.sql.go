@@ -33,57 +33,40 @@ func (q *Queries) CountAppointmentsByDoctorAndDate(ctx context.Context, arg Coun
 const countShiftsByDoctorAndDate = `-- name: CountShiftsByDoctorAndDate :one
 SELECT COUNT(*) as count
 FROM shifts
-WHERE doctor_id = $1 AND start_time >= $2 AND end_time <= $3
+WHERE doctor_id = $1
 `
 
-type CountShiftsByDoctorAndDateParams struct {
-	DoctorID  int64            `json:"doctor_id"`
-	StartTime pgtype.Timestamp `json:"start_time"`
-	EndTime   pgtype.Timestamp `json:"end_time"`
-}
-
-func (q *Queries) CountShiftsByDoctorAndDate(ctx context.Context, arg CountShiftsByDoctorAndDateParams) (int64, error) {
-	row := q.db.QueryRow(ctx, countShiftsByDoctorAndDate, arg.DoctorID, arg.StartTime, arg.EndTime)
+func (q *Queries) CountShiftsByDoctorAndDate(ctx context.Context, doctorID int64) (int64, error) {
+	row := q.db.QueryRow(ctx, countShiftsByDoctorAndDate, doctorID)
 	var count int64
 	err := row.Scan(&count)
 	return count, err
 }
 
 const createShift = `-- name: CreateShift :one
-INSERT INTO shifts (doctor_id, start_time, end_time, assigned_patients)
-VALUES ($1, $2, $3, $4)
-RETURNING id, doctor_id, start_time, end_time, assigned_patients, created_at
+INSERT INTO shifts (doctor_id, assigned_patients)
+VALUES ($1, $2)
+RETURNING id, doctor_id, assigned_patients, created_at
 `
 
 type CreateShiftParams struct {
-	DoctorID         int64            `json:"doctor_id"`
-	StartTime        pgtype.Timestamp `json:"start_time"`
-	EndTime          pgtype.Timestamp `json:"end_time"`
-	AssignedPatients pgtype.Int4      `json:"assigned_patients"`
+	DoctorID         int64       `json:"doctor_id"`
+	AssignedPatients pgtype.Int4 `json:"assigned_patients"`
 }
 
 type CreateShiftRow struct {
 	ID               int64            `json:"id"`
 	DoctorID         int64            `json:"doctor_id"`
-	StartTime        pgtype.Timestamp `json:"start_time"`
-	EndTime          pgtype.Timestamp `json:"end_time"`
 	AssignedPatients pgtype.Int4      `json:"assigned_patients"`
 	CreatedAt        pgtype.Timestamp `json:"created_at"`
 }
 
 func (q *Queries) CreateShift(ctx context.Context, arg CreateShiftParams) (CreateShiftRow, error) {
-	row := q.db.QueryRow(ctx, createShift,
-		arg.DoctorID,
-		arg.StartTime,
-		arg.EndTime,
-		arg.AssignedPatients,
-	)
+	row := q.db.QueryRow(ctx, createShift, arg.DoctorID, arg.AssignedPatients)
 	var i CreateShiftRow
 	err := row.Scan(
 		&i.ID,
 		&i.DoctorID,
-		&i.StartTime,
-		&i.EndTime,
 		&i.AssignedPatients,
 		&i.CreatedAt,
 	)
@@ -102,16 +85,11 @@ func (q *Queries) DeleteShift(ctx context.Context, id int64) error {
 
 const deleteShiftsByDate = `-- name: DeleteShiftsByDate :exec
 DELETE FROM shifts
-WHERE start_time >= $1 AND end_time <= $2
+WHERE doctor_id = $1
 `
 
-type DeleteShiftsByDateParams struct {
-	StartTime pgtype.Timestamp `json:"start_time"`
-	EndTime   pgtype.Timestamp `json:"end_time"`
-}
-
-func (q *Queries) DeleteShiftsByDate(ctx context.Context, arg DeleteShiftsByDateParams) error {
-	_, err := q.db.Exec(ctx, deleteShiftsByDate, arg.StartTime, arg.EndTime)
+func (q *Queries) DeleteShiftsByDate(ctx context.Context, doctorID int64) error {
+	_, err := q.db.Exec(ctx, deleteShiftsByDate, doctorID)
 	return err
 }
 
@@ -187,18 +165,19 @@ func (q *Queries) GetDoctors(ctx context.Context) ([]GetDoctorsRow, error) {
 }
 
 const getShiftByDoctorId = `-- name: GetShiftByDoctorId :many
-SELECT id, doctor_id, start_time, end_time, assigned_patients, created_at
-FROM shifts
-WHERE doctor_id = $1
+SELECT s.id, s.doctor_id, s.assigned_patients, s.created_at, t.start_time, t.end_time
+FROM shifts s
+LEFT JOIN time_slots t ON s.id = t.shift_id
+WHERE s.doctor_id = $1
 `
 
 type GetShiftByDoctorIdRow struct {
 	ID               int64            `json:"id"`
 	DoctorID         int64            `json:"doctor_id"`
-	StartTime        pgtype.Timestamp `json:"start_time"`
-	EndTime          pgtype.Timestamp `json:"end_time"`
 	AssignedPatients pgtype.Int4      `json:"assigned_patients"`
 	CreatedAt        pgtype.Timestamp `json:"created_at"`
+	StartTime        pgtype.Time      `json:"start_time"`
+	EndTime          pgtype.Time      `json:"end_time"`
 }
 
 func (q *Queries) GetShiftByDoctorId(ctx context.Context, doctorID int64) ([]GetShiftByDoctorIdRow, error) {
@@ -213,10 +192,10 @@ func (q *Queries) GetShiftByDoctorId(ctx context.Context, doctorID int64) ([]Get
 		if err := rows.Scan(
 			&i.ID,
 			&i.DoctorID,
-			&i.StartTime,
-			&i.EndTime,
 			&i.AssignedPatients,
 			&i.CreatedAt,
+			&i.StartTime,
+			&i.EndTime,
 		); err != nil {
 			return nil, err
 		}
@@ -229,16 +208,14 @@ func (q *Queries) GetShiftByDoctorId(ctx context.Context, doctorID int64) ([]Get
 }
 
 const getShifts = `-- name: GetShifts :many
-SELECT id, doctor_id, start_time, end_time, assigned_patients, created_at
+SELECT id, doctor_id, assigned_patients, created_at
 FROM shifts
-ORDER BY start_time
+ORDER BY created_at
 `
 
 type GetShiftsRow struct {
 	ID               int64            `json:"id"`
 	DoctorID         int64            `json:"doctor_id"`
-	StartTime        pgtype.Timestamp `json:"start_time"`
-	EndTime          pgtype.Timestamp `json:"end_time"`
 	AssignedPatients pgtype.Int4      `json:"assigned_patients"`
 	CreatedAt        pgtype.Timestamp `json:"created_at"`
 }
@@ -255,8 +232,6 @@ func (q *Queries) GetShifts(ctx context.Context) ([]GetShiftsRow, error) {
 		if err := rows.Scan(
 			&i.ID,
 			&i.DoctorID,
-			&i.StartTime,
-			&i.EndTime,
 			&i.AssignedPatients,
 			&i.CreatedAt,
 		); err != nil {

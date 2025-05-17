@@ -13,14 +13,15 @@ import (
 
 const createTimeSlot = `-- name: CreateTimeSlot :one
 INSERT INTO time_slots 
-(doctor_id, "date", start_time, end_time, max_patients, booked_patients, created_at, updated_at)
+(doctor_id, shift_id, "date", start_time, end_time, max_patients, booked_patients, created_at, updated_at)
 VALUES (
-   $1, $2, $3, $4, $5, $6, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
+   $1, $2, $3, $4, $5, $6, $7, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
 ) RETURNING id, doctor_id, date, start_time, end_time, max_patients, booked_patients, created_at, updated_at, shift_id
 `
 
 type CreateTimeSlotParams struct {
 	DoctorID       int32       `json:"doctor_id"`
+	ShiftID        int64       `json:"shift_id"`
 	Date           pgtype.Date `json:"date"`
 	StartTime      pgtype.Time `json:"start_time"`
 	EndTime        pgtype.Time `json:"end_time"`
@@ -31,6 +32,7 @@ type CreateTimeSlotParams struct {
 func (q *Queries) CreateTimeSlot(ctx context.Context, arg CreateTimeSlotParams) (TimeSlot, error) {
 	row := q.db.QueryRow(ctx, createTimeSlot,
 		arg.DoctorID,
+		arg.ShiftID,
 		arg.Date,
 		arg.StartTime,
 		arg.EndTime,
@@ -182,4 +184,41 @@ func (q *Queries) GetTimeSlotForUpdate(ctx context.Context, id int64) (GetTimeSl
 		&i.EndTime,
 	)
 	return i, err
+}
+
+const getTimeSlotsByShiftID = `-- name: GetTimeSlotsByShiftID :many
+SELECT id, doctor_id, date, start_time, end_time, max_patients, booked_patients, created_at, updated_at, shift_id FROM time_slots
+WHERE shift_id = $1
+ORDER BY start_time
+`
+
+func (q *Queries) GetTimeSlotsByShiftID(ctx context.Context, shiftID int64) ([]TimeSlot, error) {
+	rows, err := q.db.Query(ctx, getTimeSlotsByShiftID, shiftID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []TimeSlot{}
+	for rows.Next() {
+		var i TimeSlot
+		if err := rows.Scan(
+			&i.ID,
+			&i.DoctorID,
+			&i.Date,
+			&i.StartTime,
+			&i.EndTime,
+			&i.MaxPatients,
+			&i.BookedPatients,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.ShiftID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }

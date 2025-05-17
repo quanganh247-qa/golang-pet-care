@@ -6,9 +6,10 @@ type (
 
 // Define roles
 const (
-	RoleAdmin  = "admin"
-	RoleUser   = "user"
-	RoleDoctor = "doctor"
+	RoleAdmin        = "admin"
+	RoleUser         = "user"
+	RoleDoctor       = "doctor"
+	RoleReceptionist = "receptionist"
 )
 
 // Define permissions
@@ -65,6 +66,13 @@ var RolePermissions = map[string][]Permission{
 		ManageTest, ManageDisease, ManageTreatment,
 		ManagePets, ReadPet, CreatePet, UpdatePet, DeletePet,
 		ManageDoctor, ManageSystem},
+	RoleReceptionist: {CreateAppointment, ReadAppointment, UpdateAppointment,
+		DeleteAppointment, ManageUsers, ManageDoctors,
+		ReadMedicalRecord, ReadService, ReadPet, ReadTest,
+		ViewReports, ManageServices, ManageMedicalRecords,
+		ManageTreatment, ManageDisease, ManageDoctor,
+		ManageTest,
+	},
 	RoleDoctor: {CreateAppointment, ReadAppointment, UpdateAppointment,
 		DeleteAppointment, ManageUsers, ManageDoctors,
 		ReadMedicalRecord, ReadService, ReadPet, ReadTest,

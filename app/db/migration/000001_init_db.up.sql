@@ -510,13 +510,11 @@ CREATE TABLE public.clinics (
 CREATE TABLE public.shifts (
     id bigserial NOT NULL,
     doctor_id int8 NOT NULL,
-    start_time timestamp NOT NULL,
-    end_time timestamp NOT NULL,
 	max_patients int4 DEFAULT 10 NULL,
     assigned_patients int4 DEFAULT 0 NULL,
     created_at timestamp DEFAULT CURRENT_TIMESTAMP NULL,
     CONSTRAINT shifts_pkey PRIMARY KEY (id),
-    CONSTRAINT shifts_doctor_id_fkey FOREIGN KEY (doctor_id) REFERENCES public.doctors(id)
+   CONSTRAINT shifts_doctor_id_fkey FOREIGN KEY (doctor_id) REFERENCES public.doctors(id) ON DELETE CASCADE
 );
 -- public.time_slots definition
 
@@ -536,14 +534,10 @@ CREATE TABLE public.time_slots (
 	updated_at timestamp DEFAULT CURRENT_TIMESTAMP NULL,
 	shift_id bigserial NOT NULL,
 	CONSTRAINT time_slots_pkey PRIMARY KEY (id),
-	CONSTRAINT unique_slot UNIQUE (doctor_id, date, start_time)
+	CONSTRAINT unique_slot UNIQUE (doctor_id, date, start_time),
+	CONSTRAINT time_slots_doctor_id_fkey FOREIGN KEY (doctor_id) REFERENCES public.doctors(id) ON DELETE CASCADE,
+	CONSTRAINT time_slots_shift_id_fkey FOREIGN KEY (shift_id) REFERENCES public.shifts(id) ON DELETE CASCADE
 );
-
-
--- public.time_slots foreign keys
-
-ALTER TABLE public.time_slots ADD CONSTRAINT time_slots_doctor_id_fkey FOREIGN KEY (doctor_id) REFERENCES public.doctors(id);
-ALTER TABLE public.time_slots ADD CONSTRAINT time_slots_shift_id_fkey FOREIGN KEY (shift_id) REFERENCES public.shifts(id);
 
 
 -- -- public.appointments definition
@@ -899,9 +893,6 @@ CREATE INDEX idx_clinics_name ON public.clinics (name);
 
 -- Indexing for public.shifts
 CREATE INDEX idx_shifts_doctor_id ON public.shifts (doctor_id);
-CREATE INDEX idx_shifts_start_time ON public.shifts (start_time);
-CREATE INDEX idx_shifts_end_time ON public.shifts (end_time);
-
 -- Add this near the end of your migration file
 CREATE OR REPLACE FUNCTION public.get_appointment_distribution_by_service(
     p_start_date date,

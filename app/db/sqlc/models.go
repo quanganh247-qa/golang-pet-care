@@ -569,8 +569,6 @@ type Service struct {
 type Shift struct {
 	ID               int64            `json:"id"`
 	DoctorID         int64            `json:"doctor_id"`
-	StartTime        pgtype.Timestamp `json:"start_time"`
-	EndTime          pgtype.Timestamp `json:"end_time"`
 	MaxPatients      pgtype.Int4      `json:"max_patients"`
 	AssignedPatients pgtype.Int4      `json:"assigned_patients"`
 	CreatedAt        pgtype.Timestamp `json:"created_at"`
