@@ -126,7 +126,7 @@ func (q *Queries) CreateTreatment(ctx context.Context, arg CreateTreatmentParams
 
 const createTreatmentPhase = `-- name: CreateTreatmentPhase :one
 INSERT INTO treatment_phases (treatment_id, phase_name, description, start_date, status, created_at)
-VALUES ($1, $2, $3, $4, $5, now()) RETURNING id, treatment_id, phase_name, description, status, start_date, created_at, updated_at
+VALUES ($1, $2, $3, $4, $5, now()) RETURNING id, treatment_id, phase_name, description, status, start_date, is_locked, created_at, updated_at
 `
 
 type CreateTreatmentPhaseParams struct {
@@ -153,6 +153,7 @@ func (q *Queries) CreateTreatmentPhase(ctx context.Context, arg CreateTreatmentP
 		&i.Description,
 		&i.Status,
 		&i.StartDate,
+		&i.IsLocked,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
@@ -230,7 +231,7 @@ func (q *Queries) GetActiveTreatments(ctx context.Context, arg GetActiveTreatmen
 }
 
 const getAllTreatmentPhasesByTreatmentID = `-- name: GetAllTreatmentPhasesByTreatmentID :many
-SELECT id, treatment_id, phase_name, description, status, start_date, created_at, updated_at FROM treatment_phases
+SELECT id, treatment_id, phase_name, description, status, start_date, is_locked, created_at, updated_at FROM treatment_phases
 WHERE treatment_id = $1
 `
 
@@ -250,6 +251,7 @@ func (q *Queries) GetAllTreatmentPhasesByTreatmentID(ctx context.Context, treatm
 			&i.Description,
 			&i.Status,
 			&i.StartDate,
+			&i.IsLocked,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 		); err != nil {
@@ -402,7 +404,7 @@ func (q *Queries) GetTreatment(ctx context.Context, id int64) (PetTreatment, err
 }
 
 const getTreatmentPhase = `-- name: GetTreatmentPhase :one
-SELECT id, treatment_id, phase_name, description, status, start_date, created_at, updated_at FROM treatment_phases
+SELECT id, treatment_id, phase_name, description, status, start_date, is_locked, created_at, updated_at FROM treatment_phases
 WHERE id = $1 LIMIT 1
 `
 
@@ -416,6 +418,7 @@ func (q *Queries) GetTreatmentPhase(ctx context.Context, id int64) (TreatmentPha
 		&i.Description,
 		&i.Status,
 		&i.StartDate,
+		&i.IsLocked,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
@@ -423,7 +426,7 @@ func (q *Queries) GetTreatmentPhase(ctx context.Context, id int64) (TreatmentPha
 }
 
 const getTreatmentPhasesByTreatment = `-- name: GetTreatmentPhasesByTreatment :many
-SELECT tp.id, treatment_id, phase_name, tp.description, tp.status, tp.start_date, tp.created_at, updated_at, t.id, pet_id, diseases, t.start_date, end_date, t.status, name, type, t.description, t.created_at, doctor_id  FROM treatment_phases as tp
+SELECT tp.id, treatment_id, phase_name, tp.description, tp.status, tp.start_date, is_locked, tp.created_at, updated_at, t.id, pet_id, diseases, t.start_date, end_date, t.status, name, type, t.description, t.created_at, doctor_id  FROM treatment_phases as tp
 JOIN pet_treatments t ON t.id = tp.treatment_id
 WHERE t.id = $1 LIMIT $2 OFFSET $3
 `
@@ -441,6 +444,7 @@ type GetTreatmentPhasesByTreatmentRow struct {
 	Description   pgtype.Text        `json:"description"`
 	Status        pgtype.Text        `json:"status"`
 	StartDate     pgtype.Date        `json:"start_date"`
+	IsLocked      pgtype.Bool        `json:"is_locked"`
 	CreatedAt     pgtype.Timestamptz `json:"created_at"`
 	UpdatedAt     pgtype.Timestamptz `json:"updated_at"`
 	ID_2          int64              `json:"id_2"`
@@ -472,6 +476,7 @@ func (q *Queries) GetTreatmentPhasesByTreatment(ctx context.Context, arg GetTrea
 			&i.Description,
 			&i.Status,
 			&i.StartDate,
+			&i.IsLocked,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 			&i.ID_2,

@@ -458,6 +458,7 @@ CREATE TABLE public.treatment_phases (
 	description text NULL,
 	status varchar(50) NULL,
 	start_date date NOT NULL,
+	is_locked bool DEFAULT false NULL,
 	created_at timestamptz DEFAULT CURRENT_TIMESTAMP NULL,
 	updated_at timestamptz NULL,
 	CONSTRAINT treatment_phases_pkey PRIMARY KEY (id),

@@ -275,13 +275,14 @@ type AppointmentResponse struct {
 }
 
 type createWalkInAppointmentRequest struct {
-	PetID     int64   `json:"pet_id"`
-	DoctorID  int64   `json:"doctor_id"`
-	ServiceID int64   `json:"service_id"`
-	Reason    string  `json:"reason"`
-	Priority  string  `json:"priority"`
-	Owner     *Owner  `json:"owner,omitempty"` // Optional owner information for new users
-	Pet       *NewPet `json:"pet,omitempty"`   // Optional pet information for new pets
+	PetID      int64   `json:"pet_id"`
+	DoctorID   int64   `json:"doctor_id"`
+	ServiceID  int64   `json:"service_id"`
+	TimeSlotID int64   `json:"time_slot_id"`
+	Reason     string  `json:"reason"`
+	Priority   string  `json:"priority"`
+	Owner      *Owner  `json:"owner,omitempty"` // Optional owner information for new users
+	Pet        *NewPet `json:"pet,omitempty"`   // Optional pet information for new pets
 }
 
 // NewPet represents the information needed to create a new pet

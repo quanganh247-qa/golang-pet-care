@@ -161,7 +161,7 @@ func (q *Queries) GetTimeSlotById(ctx context.Context, id int64) (TimeSlot, erro
 }
 
 const getTimeSlotForUpdate = `-- name: GetTimeSlotForUpdate :one
-SELECT booked_patients, max_patients, start_time, end_time
+SELECT booked_patients, max_patients, start_time, end_time, date
 FROM time_slots
 WHERE id = $1
 FOR UPDATE
@@ -172,6 +172,7 @@ type GetTimeSlotForUpdateRow struct {
 	MaxPatients    pgtype.Int4 `json:"max_patients"`
 	StartTime      pgtype.Time `json:"start_time"`
 	EndTime        pgtype.Time `json:"end_time"`
+	Date           pgtype.Date `json:"date"`
 }
 
 func (q *Queries) GetTimeSlotForUpdate(ctx context.Context, id int64) (GetTimeSlotForUpdateRow, error) {
@@ -182,6 +183,7 @@ func (q *Queries) GetTimeSlotForUpdate(ctx context.Context, id int64) (GetTimeSl
 		&i.MaxPatients,
 		&i.StartTime,
 		&i.EndTime,
+		&i.Date,
 	)
 	return i, err
 }

@@ -666,6 +666,7 @@ type TreatmentPhase struct {
 	Description pgtype.Text        `json:"description"`
 	Status      pgtype.Text        `json:"status"`
 	StartDate   pgtype.Date        `json:"start_date"`
+	IsLocked    pgtype.Bool        `json:"is_locked"`
 	CreatedAt   pgtype.Timestamptz `json:"created_at"`
 	UpdatedAt   pgtype.Timestamptz `json:"updated_at"`
 }

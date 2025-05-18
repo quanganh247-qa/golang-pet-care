@@ -25,7 +25,7 @@ AND booked_patients < max_patients
 ORDER BY start_time;
 
 -- name: GetTimeSlotForUpdate :one
-SELECT booked_patients, max_patients, start_time, end_time
+SELECT booked_patients, max_patients, start_time, end_time, date
 FROM time_slots
 WHERE id = $1
 FOR UPDATE;

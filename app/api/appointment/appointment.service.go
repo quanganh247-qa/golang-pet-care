@@ -280,8 +280,24 @@ func (s *AppointmentService) CreateWalkInAppointment(ctx *gin.Context, req creat
 		}
 	}
 
-	// Get current time
-	now := time.Now()
+	var dateStr time.Time
+
+	if req.TimeSlotID != 0 {
+		// Fetch and validate time slot
+		ts, err := s.storeDB.GetTimeSlotForUpdate(ctx, req.TimeSlotID)
+		if err != nil {
+			return nil, fmt.Errorf("failed to get time slot: %w", err)
+		}
+		if ts.BookedPatients.Int32 >= ts.MaxPatients.Int32 {
+			return nil, fmt.Errorf("time slot is fully booked")
+		}
+
+		dateStr, err = time.Parse("2006-01-02", ts.Date.Time.Format("2006-01-02"))
+		if err != nil {
+			return nil, fmt.Errorf("invalid date format: %w", err)
+		}
+
+	}
 
 	// Create the appointment within a transaction
 	var appointment db.Appointment
@@ -358,14 +374,26 @@ func (s *AppointmentService) CreateWalkInAppointment(ctx *gin.Context, req creat
 			Petid:             pgtype.Int8{Int64: petID, Valid: true},
 			ServiceID:         pgtype.Int8{Int64: service.ID, Valid: true},
 			AppointmentReason: pgtype.Text{String: req.Reason, Valid: true},
-			Date:              pgtype.Timestamp{Time: now, Valid: true},
-			TimeSlotID:        pgtype.Int8{Int64: 0, Valid: true}, // No time slot for walk-in
+			Date:              pgtype.Timestamp{Time: dateStr, Valid: true},
+			TimeSlotID:        pgtype.Int8{Int64: req.TimeSlotID, Valid: true}, // No time slot for walk-in
 			Username:          pgtype.Text{String: username, Valid: true},
 			Priority:          pgtype.Text{String: req.Priority, Valid: true},
-			ArrivalTime:       pgtype.Timestamp{Time: now, Valid: true},
+			ArrivalTime:       pgtype.Timestamp{Time: dateStr, Valid: true},
 		})
 		if err != nil {
 			return fmt.Errorf("failed to create appointment: %w", err)
+		}
+
+		// Prepare updates in a single transaction
+		if err = q.UpdateTimeSlotBookedPatients(ctx, appointment.TimeSlotID.Int64); err != nil {
+			return fmt.Errorf("failed to update time slot: %w", err)
+		}
+
+		if err = q.UpdateAppointmentStatus(ctx, db.UpdateAppointmentStatusParams{
+			AppointmentID: appointment.AppointmentID,
+			StateID:       pgtype.Int4{Int32: 2, Valid: true}, // Consider defining a constant for StateID
+		}); err != nil {
+			return fmt.Errorf("failed to update appointment status: %w", err)
 		}
 
 		return nil
@@ -381,16 +409,12 @@ func (s *AppointmentService) CreateWalkInAppointment(ctx *gin.Context, req creat
 
 	// Prepare the response
 	response := &createAppointmentResponse{
-		ID:          appointment.AppointmentID,
-		DoctorName:  doctor.Name,
-		PetName:     detail.PetName.String,
-		Reason:      detail.AppointmentReason.String,
-		Date:        appointment.Date.Time.Format(time.RFC3339),
-		ServiceName: detail.ServiceName.String,
-		TimeSlot: timeslot{
-			StartTime: now.Format("15:04:05"),
-			EndTime:   now.Add(time.Duration(service.Duration.Int16) * time.Minute).Format("15:04:05"),
-		},
+		ID:           appointment.AppointmentID,
+		DoctorName:   doctor.Name,
+		PetName:      detail.PetName.String,
+		Reason:       detail.AppointmentReason.String,
+		Date:         appointment.Date.Time.Format(time.RFC3339),
+		ServiceName:  detail.ServiceName.String,
 		State:        detail.StateName.String,
 		ReminderSend: appointment.ReminderSend.Bool,
 		CreatedAt:    appointment.CreatedAt.Time.Format("2006-01-02 15:04:05"),
