@@ -112,8 +112,6 @@ func (s *PetService) CreatePet(ctx *gin.Context, username string, req createPetR
 
 func (s *PetService) GetPetByID(ctx *gin.Context, petid int64) (*CreatePetResponse, error) {
 
-	// s.redis.ClearPetInfoCache()
-
 	// Try to get from cache
 	pet, err := s.redis.PetInfoLoadCache(petid)
 	if err != nil {
@@ -173,6 +171,7 @@ func (s *PetService) ListPets(ctx *gin.Context, req listPetsRequest, pagination 
 				Username:      r.Username,
 				Name:          r.Name,
 				Type:          r.Type,
+				BOD:           r.BirthDate.Time.Format("2006-01-02"),
 				Breed:         r.Breed.String,
 				Gender:        r.Gender.String,
 				Healthnotes:   r.Healthnotes.String,
