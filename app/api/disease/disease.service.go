@@ -318,6 +318,8 @@ func (s *DiseaseService) GetTreatmentPhasesByTreatmentID(ctx *gin.Context, treat
 				PhaseID:      phase.ID,
 				MedicineName: medicine.Name,
 				Dosage:       medicine.Dosage.String,
+				Quantity:     int64(medicine.Quantity.Int32),
+				MedicineID:   medicine.ID,
 				Frequency:    medicine.Frequency.String,
 				Duration:     medicine.Duration.String,
 				Notes:        medicine.Notes.String,
