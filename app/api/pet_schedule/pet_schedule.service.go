@@ -17,7 +17,7 @@ type PetScheduleServiceInterface interface {
 	CreatePetScheduleService(ctx *gin.Context, req PetScheduleRequest, petID int64) (*PetScheduleResponse, error)
 	GetAllSchedulesByPetService(ctx *gin.Context, petID int64, pagination *util.Pagination) ([]PetScheduleResponse, error)
 	ListPetSchedulesByUsernameService(ctx *gin.Context, username string) ([]PetSchedules, error)
-	ActivePetScheduleService(ctx *gin.Context, scheduleID int64, req ActiceRemider) error
+	ActivePetScheduleService(ctx *gin.Context, scheduleID int64, req ActiceRemider) (*PetScheduleResponse, error)
 	DeletePetScheduleService(ctx *gin.Context, scheduleID int64) error
 	UpdatePetScheduleService(ctx *gin.Context, scheduleID int64, req UpdatePetScheduleRequest) (*PetScheduleResponse, error)
 	ProcessSuggestionGemini(ctx *gin.Context, description string) (*llm.BaseResponse, error)
@@ -216,7 +216,7 @@ func (s *PetScheduleService) ListPetSchedulesByUsernameService(ctx *gin.Context,
 }
 
 // Active Pet Schedule
-func (s *PetScheduleService) ActivePetScheduleService(ctx *gin.Context, scheduleID int64, req ActiceRemider) error {
+func (s *PetScheduleService) ActivePetScheduleService(ctx *gin.Context, scheduleID int64, req ActiceRemider) (*PetScheduleResponse, error) {
 
 	err := s.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
 		err := q.ActiveReminder(ctx, db.ActiveReminderParams{
@@ -230,18 +230,29 @@ func (s *PetScheduleService) ActivePetScheduleService(ctx *gin.Context, schedule
 	})
 
 	if err != nil {
-		return fmt.Errorf("error activating reminder: ", err)
+		return nil, fmt.Errorf("Cannot activate reminder")
 	}
 
 	schedule, err := s.storeDB.GetPetScheduleById(ctx, scheduleID)
 	if err != nil {
-		return fmt.Errorf("error getting reminder: ", err)
+		return nil, fmt.Errorf("Cannot find reminder")
 	}
 
 	s.redis.ClearPetSchedulesByPetCache(schedule.PetID.Int64)
 	s.redis.ClearPetSchedulesCache()
 
-	return nil
+	return &PetScheduleResponse{
+			ID:               schedule.ID,
+			PetID:            schedule.PetID.Int64,
+			Notes:            schedule.Notes.String,
+			IsActive:         schedule.IsActive.Bool,
+			Title:            schedule.Title.String,
+			ReminderDateTime: schedule.ReminderDatetime.Time.Format(time.RFC3339),
+			EventRepeat:      schedule.EventRepeat.String,
+			EndType:          schedule.EndType.Bool,
+			EndDate:          schedule.EndDate.Time.Format(time.RFC3339),
+		},
+		nil
 }
 
 // Delete Pet Schedule

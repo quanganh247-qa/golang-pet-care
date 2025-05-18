@@ -99,16 +99,14 @@ func (s *PetScheduleController) activePetSchedule(ctx *gin.Context) {
 		return
 	}
 
-	err = s.service.ActivePetScheduleService(ctx, scheduleID, req)
+	res, err := s.service.ActivePetScheduleService(ctx, scheduleID, req)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, util.ErrorValidator(err))
 		return
 	}
-
-	// Invalidate cache after changing schedule active status
 	middleware.InvalidateCache("pet_schedules")
 
-	ctx.JSON(http.StatusOK, util.SuccessResponse("Active reminder", "Success"))
+	ctx.JSON(http.StatusOK, util.SuccessResponse("Active reminder", res))
 }
 
 func (s *PetScheduleController) deletePetSchedule(ctx *gin.Context) {
