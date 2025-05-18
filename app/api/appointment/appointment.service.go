@@ -5,10 +5,12 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"strings"
 	"sync"
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/jackc/pgx"
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/quanganh247-qa/go-blog-be/app/api/user"
 	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
@@ -296,18 +298,31 @@ func (s *AppointmentService) CreateWalkInAppointment(ctx *gin.Context, req creat
 				PhoneNumber: pgtype.Text{String: req.Owner.OwnerPhone, Valid: true},
 				Email:       req.Owner.OwnerEmail,
 				Address:     pgtype.Text{String: req.Owner.OwnerAddress, Valid: true},
-				Role:        pgtype.Text{String: "customer", Valid: true},
+				Role:        pgtype.Text{String: "user", Valid: true},
 			})
 			if err != nil {
+				if pgErr, ok := err.(*pgx.PgError); ok && pgErr.Code == "23505" && strings.Contains(pgErr.Message, "users_email_key") {
+					return fmt.Errorf("email already exists: %s", req.Owner.OwnerEmail)
+				}
+
+				if pgErr, ok := err.(*pgx.PgError); ok && pgErr.Code == "23505" && strings.Contains(pgErr.Message, "users_username_key") {
+					return fmt.Errorf("username or phone number already exists: %s", tempUsername)
+				}
+				// log.Printf("Failed to create user: %v", err)
 				return fmt.Errorf("failed to create user: %w", err)
 			}
 			username = tempUsername
 
 			// If pet info is provided, create a new pet
 			if req.Pet != nil {
-				birthDate, err := time.Parse("2006-01-02", req.Pet.BirthDate)
-				if err != nil {
-					return fmt.Errorf("invalid birth date format: %w", err)
+
+				var birthDate time.Time
+				if req.Pet.BirthDate != "" {
+					birthDate, err = time.Parse("2006-01-02", req.Pet.BirthDate)
+					if err != nil {
+						return fmt.Errorf("invalid birth date format: %w", err)
+					}
+
 				}
 
 				pet, err := q.CreatePet(ctx, db.CreatePetParams{

@@ -28,17 +28,17 @@ DELETE FROM shifts
 WHERE doctor_id = $1;
 
 -- name: CreateShift :one
-INSERT INTO shifts (doctor_id, assigned_patients)
+INSERT INTO shifts (doctor_id,date)
 VALUES ($1, $2)
-RETURNING id, doctor_id, assigned_patients, created_at;
+RETURNING id, doctor_id, date, created_at;
 
 -- name: GetShifts :many
-SELECT id, doctor_id, assigned_patients, created_at
+SELECT id, doctor_id, date, created_at
 FROM shifts
 ORDER BY created_at;
 
 -- name: GetShiftByDoctorId :many
-SELECT s.id, s.doctor_id, s.assigned_patients, s.created_at, t.start_time, t.end_time
+SELECT s.id, s.doctor_id, s.date, s.created_at, t.start_time, t.end_time
 FROM shifts s
 LEFT JOIN time_slots t ON s.id = t.shift_id
 WHERE s.doctor_id = $1;

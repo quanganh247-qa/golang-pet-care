@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -268,13 +269,13 @@ func (service *DoctorService) GetShifts(ctx *gin.Context) ([]Shift, error) {
 			result := make([]Shift, len(shiftInfos))
 			for i, s := range shiftInfos {
 				result[i] = Shift{
-					ID:               s.ID,
-					DoctorID:         s.DoctorID,
-					StartTime:        s.StartTime.Format("2006-01-02 15:04:05"),
-					EndTime:          s.EndTime.Format("2006-01-02 15:04:05"),
-					AssignedPatients: s.AssignedPatients,
-					CreatedAt:        s.CreatedAt.Format("2006-01-02 15:04:05"),
-					DoctorName:       s.DoctorName,
+					ID:         s.ID,
+					DoctorID:   s.DoctorID,
+					StartTime:  s.StartTime.Format("2006-01-02 15:04:05"),
+					EndTime:    s.EndTime.Format("2006-01-02 15:04:05"),
+					Date:       s.Date,
+					CreatedAt:  s.CreatedAt.Format("2006-01-02 15:04:05"),
+					DoctorName: s.DoctorName,
 				}
 			}
 			return result, nil
@@ -303,13 +304,13 @@ func (service *DoctorService) GetShifts(ctx *gin.Context) ([]Shift, error) {
 		if len(timeSlots) == 0 {
 			// Use created_at time if no time slots
 			shiftList = append(shiftList, Shift{
-				ID:               s.ID,
-				StartTime:        s.CreatedAt.Time.Format("2006-01-02 15:04:05"),
-				EndTime:          s.CreatedAt.Time.Add(time.Hour).Format("2006-01-02 15:04:05"),
-				AssignedPatients: s.AssignedPatients.Int32,
-				CreatedAt:        s.CreatedAt.Time.Format("2006-01-02 15:04:05"),
-				DoctorID:         s.DoctorID,
-				DoctorName:       doctor.Name,
+				ID:         s.ID,
+				StartTime:  s.CreatedAt.Time.Format("2006-01-02 15:04:05"),
+				EndTime:    s.CreatedAt.Time.Add(time.Hour).Format("2006-01-02 15:04:05"),
+				Date:       s.Date.Time.Format("2006-01-02"),
+				CreatedAt:  s.CreatedAt.Time.Format("2006-01-02 15:04:05"),
+				DoctorID:   s.DoctorID,
+				DoctorName: doctor.Name,
 			})
 			continue
 		}
@@ -331,13 +332,13 @@ func (service *DoctorService) GetShifts(ctx *gin.Context) ([]Shift, error) {
 		createdAtStr := s.CreatedAt.Time.Format("2006-01-02 15:04:05")
 
 		shiftList = append(shiftList, Shift{
-			ID:               s.ID,
-			StartTime:        startTimeStr,
-			EndTime:          endTimeStr,
-			AssignedPatients: s.AssignedPatients.Int32,
-			CreatedAt:        createdAtStr,
-			DoctorID:         s.DoctorID,
-			DoctorName:       doctor.Name,
+			ID:         s.ID,
+			StartTime:  startTimeStr,
+			EndTime:    endTimeStr,
+			Date:       s.Date.Time.Format("2006-01-02"),
+			CreatedAt:  createdAtStr,
+			DoctorID:   s.DoctorID,
+			DoctorName: doctor.Name,
 		})
 	}
 	return shiftList, nil
@@ -356,7 +357,15 @@ func (service *DoctorService) CreateShift(ctx *gin.Context, req CreateShiftReque
 		return nil, fmt.Errorf("invalid end time format: %w", err)
 	}
 
+	// Extract just the date portion from the start time string
+	dateStr := strings.Split(req.StartTime, " ")[0]
+	date, err := time.Parse("2006-01-02", dateStr)
+	if err != nil {
+		return nil, fmt.Errorf("invalid date format: %w", err)
+	}
+
 	shift, err := service.storeDB.CreateShift(ctx, db.CreateShiftParams{
+		Date:     pgtype.Date{Time: date, Valid: true},
 		DoctorID: req.DoctorID,
 	})
 	if err != nil {
@@ -382,10 +391,6 @@ func (service *DoctorService) CreateShift(ctx *gin.Context, req CreateShiftReque
 	// Get the location (timezone) from the input time
 	location := startTime.Location()
 
-	// Log for debugging
-	fmt.Printf("Creating time slots with time zone: %s\n", location.String())
-	fmt.Printf("Start time in local timezone: %s\n", req.StartTime)
-
 	// Create a time slot for each hour in the shift
 	currentSlotStart := startTime
 	for currentSlotStart.Before(endTime) {
@@ -396,30 +401,9 @@ func (service *DoctorService) CreateShift(ctx *gin.Context, req CreateShiftReque
 		if currentSlotEnd.After(endTime) {
 			currentSlotEnd = endTime
 		}
-
-		// Extract the date for this time slot - ensure we use the date from the location timezone
-		// to avoid date boundary issues
-		localDate := currentSlotStart.In(location)
-		date := pgtype.Date{
-			Time:  time.Date(localDate.Year(), localDate.Month(), localDate.Day(), 0, 0, 0, 0, location),
-			Valid: true,
-		}
-
 		// Extract the time components for start and end using the correct location
 		startLocalTime := currentSlotStart.In(location)
 		endLocalTime := currentSlotEnd.In(location)
-
-		// Format the time values in 24-hour format HH:MM:SS
-		startTimeStr := fmt.Sprintf("%02d:%02d:%02d",
-			startLocalTime.Hour(),
-			startLocalTime.Minute(),
-			startLocalTime.Second())
-
-		endTimeStr := fmt.Sprintf("%02d:%02d:%02d",
-			endLocalTime.Hour(),
-			endLocalTime.Minute(),
-			endLocalTime.Second())
-
 		// Parse these strings into pgtype.Time values
 		startTimeOnly := pgtype.Time{}
 		endTimeOnly := pgtype.Time{}
@@ -434,17 +418,11 @@ func (service *DoctorService) CreateShift(ctx *gin.Context, req CreateShiftReque
 		endTimeOnly.Microseconds = int64(endSeconds) * 1000000
 		endTimeOnly.Valid = true
 
-		// Log for debugging
-		fmt.Printf("Creating time slot: Date=%s, Start=%s, End=%s\n",
-			localDate.Format("2006-01-02"),
-			startTimeStr,
-			endTimeStr)
-
 		// Create the time slot
 		_, err = service.storeDB.CreateTimeSlot(ctx, db.CreateTimeSlotParams{
 			DoctorID:       doctorID32,
 			ShiftID:        shift.ID,
-			Date:           date,
+			Date:           pgtype.Date{Time: date, Valid: true},
 			StartTime:      startTimeOnly,
 			EndTime:        endTimeOnly,
 			MaxPatients:    pgtype.Int4{Int32: int32(slot), Valid: true},
@@ -461,12 +439,12 @@ func (service *DoctorService) CreateShift(ctx *gin.Context, req CreateShiftReque
 	}
 
 	return &Shift{
-		ID:               shift.ID,
-		StartTime:        startTime.Format("2006-01-02 15:04:05"),
-		EndTime:          endTime.Format("2006-01-02 15:04:05"),
-		AssignedPatients: shift.AssignedPatients.Int32,
-		CreatedAt:        shift.CreatedAt.Time.Format("2006-01-02 15:04:05"),
-		DoctorID:         shift.DoctorID,
+		ID:        shift.ID,
+		StartTime: startTime.Format("2006-01-02 15:04:05"),
+		EndTime:   endTime.Format("2006-01-02 15:04:05"),
+		Date:      shift.Date.Time.Format("2006-01-02"),
+		CreatedAt: shift.CreatedAt.Time.Format("2006-01-02 15:04:05"),
+		DoctorID:  shift.DoctorID,
 	}, nil
 }
 
@@ -480,12 +458,12 @@ func (service *DoctorService) GetShiftByDoctorId(ctx *gin.Context, doctorId int6
 			result := make([]ShiftResponse, len(shiftInfos))
 			for i, s := range shiftInfos {
 				result[i] = ShiftResponse{
-					ID:               s.ID,
-					DoctorID:         s.DoctorID,
-					StartTime:        s.StartTime.Format("2006-01-02 15:04:05"),
-					EndTime:          s.EndTime.Format("2006-01-02 15:04:05"),
-					AssignedPatients: s.AssignedPatients,
-					DoctorName:       s.DoctorName,
+					ID:         s.ID,
+					DoctorID:   s.DoctorID,
+					StartTime:  s.StartTime.Format("2006-01-02 15:04:05"),
+					EndTime:    s.EndTime.Format("2006-01-02 15:04:05"),
+					Date:       s.Date,
+					DoctorName: s.DoctorName,
 				}
 			}
 			return result, nil
@@ -518,12 +496,12 @@ func (service *DoctorService) GetShiftByDoctorId(ctx *gin.Context, doctorId int6
 		endTimeStr := fmt.Sprintf("%02d:%02d:%02d", endHours, endMins, endSecs)
 
 		shiftList = append(shiftList, ShiftResponse{
-			ID:               s.ID,
-			AssignedPatients: s.AssignedPatients.Int32,
-			StartTime:        startTimeStr,
-			EndTime:          endTimeStr,
-			DoctorID:         s.DoctorID,
-			DoctorName:       doctor.Name,
+			ID:         s.ID,
+			Date:       s.Date.Time.Format("2006-01-02"),
+			StartTime:  startTimeStr,
+			EndTime:    endTimeStr,
+			DoctorID:   s.DoctorID,
+			DoctorName: doctor.Name,
 		})
 	}
 	return shiftList, nil

@@ -737,13 +737,13 @@ type DoctorInfo struct {
 
 // ShiftInfo represents cached doctor shift data
 type ShiftInfo struct {
-	ID               int64     `json:"id"`
-	DoctorID         int64     `json:"doctor_id"`
-	StartTime        time.Time `json:"start_time"`
-	EndTime          time.Time `json:"end_time"`
-	AssignedPatients int32     `json:"assigned_patients"`
-	CreatedAt        time.Time `json:"created_at"`
-	DoctorName       string    `json:"doctor_name,omitempty"`
+	ID         int64     `json:"id"`
+	DoctorID   int64     `json:"doctor_id"`
+	StartTime  time.Time `json:"start_time"`
+	EndTime    time.Time `json:"end_time"`
+	Date       string    `json:"date"`
+	CreatedAt  time.Time `json:"created_at"`
+	DoctorName string    `json:"doctor_name,omitempty"`
 }
 
 // Load a single doctor from cache or DB
@@ -908,12 +908,12 @@ func (c *ClientType) DoctorShiftsLoadCache(doctorID int64) ([]ShiftInfo, error) 
 				endTime = time.Date(2000, 1, 1, 0, 0, 0, 0, time.UTC)
 
 				shifts = append(shifts, ShiftInfo{
-					ID:               shift.ID,
-					DoctorID:         shift.DoctorID,
-					StartTime:        startTime,
-					EndTime:          endTime,
-					AssignedPatients: shift.AssignedPatients.Int32,
-					CreatedAt:        shift.CreatedAt.Time,
+					ID:        shift.ID,
+					DoctorID:  shift.DoctorID,
+					StartTime: startTime,
+					EndTime:   endTime,
+					Date:      shift.Date.Time.Format("2006-01-02"),
+					CreatedAt: shift.CreatedAt.Time,
 				})
 				continue
 			}
@@ -938,13 +938,13 @@ func (c *ClientType) DoctorShiftsLoadCache(doctorID int64) ([]ShiftInfo, error) 
 			}
 
 			shifts = append(shifts, ShiftInfo{
-				ID:               shift.ID,
-				DoctorID:         shift.DoctorID,
-				StartTime:        startTime,
-				EndTime:          endTime,
-				AssignedPatients: shift.AssignedPatients.Int32,
-				CreatedAt:        shift.CreatedAt.Time,
-				DoctorName:       doctor.Name,
+				ID:         shift.ID,
+				DoctorID:   shift.DoctorID,
+				StartTime:  startTime,
+				EndTime:    endTime,
+				Date:       shift.Date.Time.Format("2006-01-02"),
+				CreatedAt:  shift.CreatedAt.Time,
+				DoctorName: doctor.Name,
 			})
 		}
 
@@ -1000,12 +1000,12 @@ func (c *ClientType) AllShiftsLoadCache() ([]ShiftInfo, error) {
 				}
 
 				shifts = append(shifts, ShiftInfo{
-					ID:               shift.ID,
-					DoctorID:         shift.DoctorID,
-					StartTime:        startTime,
-					EndTime:          endTime,
-					AssignedPatients: shift.AssignedPatients.Int32,
-					CreatedAt:        shift.CreatedAt.Time,
+					ID:        shift.ID,
+					DoctorID:  shift.DoctorID,
+					StartTime: startTime,
+					EndTime:   endTime,
+					Date:      shift.Date.Time.Format("2006-01-02"),
+					CreatedAt: shift.CreatedAt.Time,
 				})
 				continue
 			}
@@ -1033,13 +1033,13 @@ func (c *ClientType) AllShiftsLoadCache() ([]ShiftInfo, error) {
 			}
 
 			shifts = append(shifts, ShiftInfo{
-				ID:               shift.ID,
-				DoctorID:         shift.DoctorID,
-				StartTime:        startTime,
-				EndTime:          endTime,
-				AssignedPatients: shift.AssignedPatients.Int32,
-				CreatedAt:        shift.CreatedAt.Time,
-				DoctorName:       doctor.Name,
+				ID:         shift.ID,
+				DoctorID:   shift.DoctorID,
+				StartTime:  startTime,
+				EndTime:    endTime,
+				Date:       shift.Date.Time.Format("2006-01-02"),
+				CreatedAt:  shift.CreatedAt.Time,
+				DoctorName: doctor.Name,
 			})
 		}
 

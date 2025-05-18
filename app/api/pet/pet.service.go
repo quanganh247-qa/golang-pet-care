@@ -3,6 +3,7 @@ package pet
 import (
 	"context"
 	"fmt"
+	"log"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -37,11 +38,19 @@ type PetServiceInterface interface {
 func (s *PetService) CreatePet(ctx *gin.Context, username string, req createPetRequest) (*CreatePetResponse, error) {
 	var pet CreatePetResponse
 
-	bod, err := time.Parse("2006-01-02", req.BOD)
-	if err != nil {
-		return nil, fmt.Errorf("failed to parse BOD: %w", err)
-	}
-	err = s.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
+	err := s.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
+
+		var bod time.Time
+		var err error
+		if req.BOD != "" {
+			bod, err = time.Parse("2006-01-02", req.BOD)
+			if err != nil {
+				log.Printf("Error parsing BOD: %v", err)
+				return fmt.Errorf("Erorr in birth date format")
+			}
+			age := time.Since(bod).Hours() / 24 / 365
+			req.Age = int16(age)
+		}
 		res, err := q.CreatePet(ctx, db.CreatePetParams{
 			Username:        username,
 			Name:            req.Name,
@@ -69,6 +78,11 @@ func (s *PetService) CreatePet(ctx *gin.Context, username string, req createPetR
 			Username:        res.Username,
 			Name:            res.Name,
 			Type:            res.Type,
+			Age:             int16(res.Age.Int32),
+			Weight:          res.Weight.Float64,
+			BOD:             res.BirthDate.Time.Format("2006-01-02"),
+			Gender:          res.Gender.String,
+			Healthnotes:     res.Healthnotes.String,
 			Breed:           res.Breed.String,
 			DataImage:       pet.DataImage,
 			OriginalImage:   res.OriginalImage.String,
@@ -77,8 +91,21 @@ func (s *PetService) CreatePet(ctx *gin.Context, username string, req createPetR
 		return nil
 
 	})
+
+	if req.Weight != 0 {
+		_, err = s.storeDB.AddPetWeightRecord(ctx, db.AddPetWeightRecordParams{
+			PetID:    pet.Petid,
+			WeightKg: req.Weight,
+			Notes:    pgtype.Text{String: req.Healthnotes, Valid: true},
+		})
+		if err != nil {
+			log.Printf("failed to add weight record: %v", err)
+			return nil, fmt.Errorf("Cannot add weight record")
+		}
+	}
 	if err != nil {
-		return nil, fmt.Errorf("transaction failed: %w", err)
+		log.Printf("failed to create pet: %v", err)
+		return nil, fmt.Errorf("Cannot create pet")
 	}
 	return &pet, nil
 }

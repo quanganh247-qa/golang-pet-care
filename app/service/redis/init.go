@@ -153,3 +153,32 @@ func (client *ClientType) DeleteOTPFromRedis(userIdentifier string) error {
 	otpKey := fmt.Sprintf("OTP-%s", userIdentifier)
 	return client.RemoveCacheByKey(otpKey)
 }
+
+// ClearAllCache removes all keys from Redis cache
+func (client *ClientType) ClearAllCache() error {
+	// Get all keys using KEYS * pattern
+	keys, err := client.RedisClient.Keys(ctxRedis, "*").Result()
+	if err != nil {
+		return fmt.Errorf("failed to get all keys: %w", err)
+	}
+
+	// If there are keys to delete, use pipeline for better performance
+	if len(keys) > 0 {
+		pipeline := client.RedisClient.Pipeline()
+		for _, key := range keys {
+			pipeline.Del(ctxRedis, key)
+		}
+
+		// Execute the pipeline commands
+		_, err = pipeline.Exec(ctxRedis)
+		if err != nil {
+			return fmt.Errorf("failed to delete keys: %w", err)
+		}
+
+		if client.Debug {
+			log.Printf("Cleared %d keys from Redis cache", len(keys))
+		}
+	}
+
+	return nil
+}

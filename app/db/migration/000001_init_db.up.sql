@@ -511,7 +511,7 @@ CREATE TABLE public.shifts (
     id bigserial NOT NULL,
     doctor_id int8 NOT NULL,
 	max_patients int4 DEFAULT 10 NULL,
-    assigned_patients int4 DEFAULT 0 NULL,
+    date date NOT NULL,
     created_at timestamp DEFAULT CURRENT_TIMESTAMP NULL,
     CONSTRAINT shifts_pkey PRIMARY KEY (id),
    CONSTRAINT shifts_doctor_id_fkey FOREIGN KEY (doctor_id) REFERENCES public.doctors(id) ON DELETE CASCADE

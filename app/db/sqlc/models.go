@@ -567,11 +567,11 @@ type Service struct {
 }
 
 type Shift struct {
-	ID               int64            `json:"id"`
-	DoctorID         int64            `json:"doctor_id"`
-	MaxPatients      pgtype.Int4      `json:"max_patients"`
-	AssignedPatients pgtype.Int4      `json:"assigned_patients"`
-	CreatedAt        pgtype.Timestamp `json:"created_at"`
+	ID          int64            `json:"id"`
+	DoctorID    int64            `json:"doctor_id"`
+	MaxPatients pgtype.Int4      `json:"max_patients"`
+	Date        pgtype.Date      `json:"date"`
+	CreatedAt   pgtype.Timestamp `json:"created_at"`
 }
 
 type SmtpConfig struct {
