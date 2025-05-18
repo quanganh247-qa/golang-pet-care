@@ -228,9 +228,19 @@ func (s *PetScheduleService) ActivePetScheduleService(ctx *gin.Context, schedule
 		}
 		return nil
 	})
+
 	if err != nil {
 		return fmt.Errorf("error activating reminder: ", err)
 	}
+
+	schedule, err := s.storeDB.GetPetScheduleById(ctx, scheduleID)
+	if err != nil {
+		return fmt.Errorf("error getting reminder: ", err)
+	}
+
+	s.redis.ClearPetSchedulesByPetCache(schedule.PetID.Int64)
+	s.redis.ClearPetSchedulesCache()
+
 	return nil
 }
 
