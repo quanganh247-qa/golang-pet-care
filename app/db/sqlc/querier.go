@@ -114,6 +114,7 @@ type Querier interface {
 	GetAllAppointmentsWithOrders(ctx context.Context) ([]GetAllAppointmentsWithOrdersRow, error)
 	GetAllMedicines(ctx context.Context, arg GetAllMedicinesParams) ([]GetAllMedicinesRow, error)
 	GetAllOrders(ctx context.Context, arg GetAllOrdersParams) ([]Order, error)
+	GetAllPayments(ctx context.Context, arg GetAllPaymentsParams) ([]Payment, error)
 	GetAllPetLogsByUsername(ctx context.Context, arg GetAllPetLogsByUsernameParams) ([]GetAllPetLogsByUsernameRow, error)
 	GetAllPets(ctx context.Context) ([]Pet, error)
 	GetAllProductStockMovements(ctx context.Context, arg GetAllProductStockMovementsParams) ([]ProductStockMovement, error)

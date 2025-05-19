@@ -180,7 +180,8 @@ func (s *AppointmentService) CreateAppointment(ctx *gin.Context, req createAppoi
 	}
 
 	// Gửi thông báo đến bác sĩ được chỉ định
-	s.sendAppointmentNotification(ctx, notification, "admin")
+	s.sendAppointmentNotification(notification, "admin")
+	s.sendAppointmentNotification(notification, "receptionist")
 
 	// Prepare the response
 	response := &createAppointmentResponse{
@@ -210,7 +211,7 @@ func (s *AppointmentService) CreateAppointment(ctx *gin.Context, req createAppoi
 	return response, nil
 }
 
-func (s *AppointmentService) sendAppointmentNotification(ctx context.Context, notification AppointmentNotification, targetRole string) {
+func (s *AppointmentService) sendAppointmentNotification(notification AppointmentNotification, targetRole string) {
 	// Sử dụng NotificationManager cho Long polling dựa trên vai trò
 	if s.notificationManager != nil {
 		if targetRole != "" {
@@ -221,17 +222,6 @@ func (s *AppointmentService) sendAppointmentNotification(ctx context.Context, no
 			s.notificationManager.BroadcastNotificationToAll(notification)
 		}
 	}
-
-	// if s.notificationManager != nil {
-	// 	s.notificationManager.SaveNotificationToDB(ctx, username, notification)
-	// }
-
-	// // Vẫn giữ WebSocket để tương thích ngược - có thể loại bỏ sau này
-	// wsMessage := websocket.WebSocketMessage{
-	// 	Type: "appointment_alert",
-	// 	Data: notification,
-	// }
-	// s.ws.BroadcastToAll(wsMessage)
 }
 
 func (s *AppointmentService) CreateWalkInAppointment(ctx *gin.Context, req createWalkInAppointmentRequest) (*createAppointmentResponse, error) {
@@ -516,7 +506,7 @@ func (s *AppointmentService) CheckInAppoinment(ctx *gin.Context, id, roomID int6
 		req := db.UpdateAppointmentByIDParams{
 			AppointmentID:     appointment.AppointmentID,
 			StateID:           pgtype.Int4{Int32: 3, Valid: true},
-			ArrivalTime:       pgtype.Timestamp{Time: time.Now().UTC(), Valid: true},
+			ArrivalTime:       pgtype.Timestamp{Time: time.Now(), Valid: true},
 			RoomID:            pgtype.Int8{Int64: roomID, Valid: true},
 			AppointmentReason: appointment.AppointmentReason,
 			ReminderSend:      appointment.ReminderSend,
@@ -1206,7 +1196,7 @@ func (s *AppointmentService) GetQueueService(ctx *gin.Context, username string) 
 		return nil, fmt.Errorf("failed to get doctor: %v", err)
 	}
 
-	now := time.Now().Format("2006-01-02 15:04:05")
+	now := time.Now().UTC().Format("2006-01-02 15:04:05")
 	// dateTime := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, time.UTC)
 
 	appointments, err := s.storeDB.GetAppointmentsQueue(ctx, db.GetAppointmentsQueueParams{

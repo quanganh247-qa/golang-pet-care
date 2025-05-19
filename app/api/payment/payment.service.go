@@ -15,6 +15,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5/pgtype"
 	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
+	"github.com/quanganh247-qa/go-blog-be/app/util"
 )
 
 // Add this to the PaymentServiceInterface
@@ -35,6 +36,9 @@ type PaymentServiceInterface interface {
 
 	// Add payment confirmation method
 	ConfirmPaymentService(ctx *gin.Context, request PaymentConfirmationRequest) (*PaymentConfirmationResponse, error)
+
+	// Add this to the PaymentServiceInterface
+	ListPayments(ctx *gin.Context, pagination *util.Pagination) (ListPaymentsResponse, error)
 }
 
 func (s *PaymentService) GetToken(c *gin.Context) (*TokenResponse, error) {
@@ -636,4 +640,42 @@ func (s *PaymentService) ConfirmPaymentService(ctx *gin.Context, request Payment
 	response.ConfirmedAt = time.Now().Format("2006-01-02 15:04:05")
 
 	return &response, nil
+}
+
+// PaymentConfirmationRequest represents the request structure for confirming a payment
+
+func (s *PaymentService) ListPayments(ctx *gin.Context, pagination *util.Pagination) (ListPaymentsResponse, error) {
+	// Validate pagination
+	if pagination == nil {
+		return ListPaymentsResponse{}, fmt.Errorf("pagination cannot be nil")
+	}
+
+	// Get payments from the database
+	payments, err := s.storeDB.GetAllPayments(ctx, db.GetAllPaymentsParams{
+		Limit:  int32(pagination.PageSize),
+		Offset: int32((pagination.Page - 1) * pagination.PageSize),
+	})
+	if err != nil {
+		return ListPaymentsResponse{}, fmt.Errorf("failed to list payments: %w", err)
+	}
+
+	var response ListPaymentsResponse
+
+	// Prepare the response
+	for _, payment := range payments {
+		paymentDetails := make(map[string]interface{})
+		if err := json.Unmarshal(payment.PaymentDetails, &paymentDetails); err != nil {
+			return ListPaymentsResponse{}, fmt.Errorf("failed to unmarshal payment details: %w", err)
+		}
+
+		response.Payments = append(response.Payments, PaymentItem{
+			ID:             payment.ID,
+			Amount:         payment.Amount,
+			PaymentMethod:  payment.PaymentMethod,
+			PaymentStatus:  payment.PaymentStatus,
+			PaymentDetails: paymentDetails,
+		})
+
+	}
+	return response, nil
 }

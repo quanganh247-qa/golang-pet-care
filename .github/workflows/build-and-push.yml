@@ -68,6 +68,12 @@ jobs:
           REDIS_USERNAME=${{ secrets.REDIS_USERNAME }}
           REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }}
 
+          
+          MINIO_ENPOINT=${{ secrets.MINIO_ENPOINT }}
+          MINIO_USERNAME=${{ secrets.MINIO_USERNAME }}
+          MINIO_PASSWORD=${{ secrets.MINIO_PASSWORD }}
+          MINIO_SSL=true
+
           DEBUG_MODE=true
           EOF
 

@@ -9,13 +9,12 @@ import (
 )
 
 func Routes(routerGroup middleware.RouterGroup, config *util.Config) {
-	payment := routerGroup.RouterDefault.Group("/")
+	payment := routerGroup.RouterDefault.Group("/payment")
 	authRoute := routerGroup.RouterAuth(payment)
-	// Goong.Use(middleware.IPbasedRateLimitingMiddleware())
 
-	// Khoi tao api
+	// Initialize API
 	paymentApi := &PaymentApi{
-		&PaymentController{
+		controller: &PaymentController{
 			service: &PaymentService{
 				config: &PaymentConfig{
 					VietQRAPIKey:    config.VietQRAPIKey,
@@ -28,18 +27,14 @@ func Routes(routerGroup middleware.RouterGroup, config *util.Config) {
 		},
 	}
 
-	{
-		authRoute.GET("/payment/token", paymentApi.controller.GetToken)
-		authRoute.GET("/payment/banks", paymentApi.controller.GetBanks)
-		authRoute.POST("/payment/generate-qr", paymentApi.controller.GenerateQRCode)
-		authRoute.POST("/payment/quick-link", paymentApi.controller.GenerateQuickLink)
-		authRoute.POST("/payment/cash", paymentApi.controller.CreateCashPayment)
-		authRoute.POST("/payment/confirm", paymentApi.controller.ConfirmPayment)
-	}
-	{
-		// Add this route to your existing routes
-		authRoute.GET("/payment/revenue/last-seven-days", paymentApi.controller.GetRevenueLastSevenDays)
-		// Add the new patient trends endpoint
-		authRoute.GET("/patients/trends", paymentApi.controller.GetPatientTrends)
-	}
+	// Existing routes
+	authRoute.GET("/token", paymentApi.controller.GetToken)
+	authRoute.GET("/banks", paymentApi.controller.GetBanks)
+	authRoute.POST("/generate-qr", paymentApi.controller.GenerateQRCode)
+	authRoute.POST("/quick-link", paymentApi.controller.GenerateQuickLink)
+	authRoute.GET("/revenue/last-seven-days", paymentApi.controller.GetRevenueLastSevenDays)
+	authRoute.POST("/cash", paymentApi.controller.CreateCashPayment)
+	authRoute.POST("/confirm", paymentApi.controller.ConfirmPayment)
+	// Add new route for listing payments
+	authRoute.GET("/list", paymentApi.controller.ListPayments)
 }

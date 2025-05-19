@@ -294,3 +294,39 @@ type PaymentConfirmationResponse struct {
 	TransactionID string  `json:"transaction_id"`           // Transaction ID
 	ConfirmedAt   string  `json:"confirmed_at"`             // Time of confirmation
 }
+
+// PaymentItem represents a single payment in the list
+type PaymentItem struct {
+	ID             int32                  `json:"id"`
+	Amount         float64                `json:"amount"`
+	PaymentMethod  string                 `json:"payment_method"`
+	PaymentStatus  string                 `json:"payment_status"`
+	OrderID        *int32                 `json:"order_id,omitempty"`
+	TestOrderID    *int32                 `json:"test_order_id,omitempty"`
+	AppointmentID  *int64                 `json:"appointment_id,omitempty"`
+	TransactionID  string                 `json:"transaction_id,omitempty"`
+	PaymentDetails map[string]interface{} `json:"payment_details,omitempty"`
+	CreatedAt      time.Time              `json:"created_at"`
+	UpdatedAt      time.Time              `json:"updated_at"`
+}
+
+// ListPaymentsResponse represents the paginated response for listing payments
+type ListPaymentsResponse struct {
+	Payments []PaymentItem `json:"payments"`
+}
+
+type PaymentResponse struct {
+	PaymentID     int64   `json:"payment_id"`               // ID của thanh toán
+	Amount        float64 `json:"amount"`                   // Số tiền thanh toán
+	PaymentMethod string  `json:"payment_method"`           // Phương thức thanh toán
+	PaymentStatus string  `json:"payment_status"`           // Trạng thái thanh toán
+	OrderID       int64   `json:"order_id,omitempty"`       // ID đơn hàng (nếu có)
+	TestOrderID   int64   `json:"test_order_id,omitempty"`  // ID đơn xét nghiệm (nếu có)
+	AppointmentID int64   `json:"appointment_id,omitempty"` // ID lịch hẹn (nếu có)
+	ReceivedBy    string  `json:"received_by"`              // Người nhận tiền
+	CreatedAt     string  `json:"created_at"`               // Thời gian tạo
+	Description   string  `json:"description,omitempty"`    // Mô tả
+	TransactionID string  `json:"transaction_id"`           // ID giao dịch
+	ConfirmedAt   string  `json:"confirmed_at"`             // Thời gian xác nhận
+	Notes         string  `json:"notes,omitempty"`          // Ghi chú xác nhận
+}

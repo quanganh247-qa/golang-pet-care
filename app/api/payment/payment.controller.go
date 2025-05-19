@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/quanganh247-qa/go-blog-be/app/util"
 )
 
 // Add this to the PaymentControllerInterface
@@ -23,6 +24,9 @@ type PaymentControllerInterface interface {
 
 	// Add payment confirmation method
 	ConfirmPayment(c *gin.Context)
+
+	// Add method to list payments
+	ListPayments(c *gin.Context)
 }
 
 func (c *PaymentController) GetToken(ctx *gin.Context) {
@@ -152,4 +156,26 @@ func (c *PaymentController) ConfirmPayment(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, result)
+}
+
+// ListPayments handles the request to list all payments with pagination
+func (c *PaymentController) ListPayments(ctx *gin.Context) {
+
+	pagination, err := util.GetPageInQuery(ctx.Request.URL.Query())
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	results, err := c.service.ListPayments(ctx, pagination)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, results)
 }

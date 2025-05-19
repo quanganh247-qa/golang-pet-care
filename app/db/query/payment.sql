@@ -59,3 +59,9 @@ ORDER BY total_revenue DESC;
 -- name: GetPaymentByID :one
 SELECT * FROM payments
 WHERE id = $1;
+
+
+
+-- name: GetAllPayments :many
+SELECT * FROM payments
+ORDER BY created_at DESC LIMIT $1 OFFSET $2;

@@ -344,10 +344,10 @@ func (nm *NotificationManager) WaitForNotification(username string, timeout time
 func (nm *NotificationManager) ConvertToDBNotification(username string, notification AppointmentNotification) db.CreatetNotificationParams {
 	var content string
 	if notification.Reason != "" {
-		content = fmt.Sprintf("Lịch hẹn cho %s với bác sĩ %s ngày %s. Lý do: %s",
+		content = fmt.Sprintf("Appointment for %s with doctor %s on %s. Reason: %s",
 			notification.Pet.PetName, notification.Doctor.DoctorName, notification.Date, notification.Reason)
 	} else {
-		content = fmt.Sprintf("Lịch hẹn cho %s với bác sĩ %s ngày %s",
+		content = fmt.Sprintf("Appointment for %s with doctor %s on %s",
 			notification.Pet.PetName, notification.Doctor.DoctorName, notification.Date)
 	}
 

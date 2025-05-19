@@ -65,6 +65,48 @@ func (q *Queries) CreatePayment(ctx context.Context, arg CreatePaymentParams) (P
 	return i, err
 }
 
+const getAllPayments = `-- name: GetAllPayments :many
+SELECT id, amount, payment_method, payment_status, order_id, test_order_id, appointment_id, transaction_id, payment_details, created_at, updated_at FROM payments
+ORDER BY created_at DESC LIMIT $1 OFFSET $2
+`
+
+type GetAllPaymentsParams struct {
+	Limit  int32 `json:"limit"`
+	Offset int32 `json:"offset"`
+}
+
+func (q *Queries) GetAllPayments(ctx context.Context, arg GetAllPaymentsParams) ([]Payment, error) {
+	rows, err := q.db.Query(ctx, getAllPayments, arg.Limit, arg.Offset)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []Payment{}
+	for rows.Next() {
+		var i Payment
+		if err := rows.Scan(
+			&i.ID,
+			&i.Amount,
+			&i.PaymentMethod,
+			&i.PaymentStatus,
+			&i.OrderID,
+			&i.TestOrderID,
+			&i.AppointmentID,
+			&i.TransactionID,
+			&i.PaymentDetails,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getPaymentByID = `-- name: GetPaymentByID :one
 SELECT id, amount, payment_method, payment_status, order_id, test_order_id, appointment_id, transaction_id, payment_details, created_at, updated_at FROM payments
 WHERE id = $1
