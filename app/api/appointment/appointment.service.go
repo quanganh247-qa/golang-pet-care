@@ -48,6 +48,7 @@ func (s *AppointmentService) CreateAppointment(ctx *gin.Context, req createAppoi
 	var doctor user.DoctorResponse
 	var service db.Service
 	var wg sync.WaitGroup
+	var petOwner db.GetUserRow
 
 	// Generate a lock key for this time slot to prevent concurrent booking
 	lockKey := fmt.Sprintf("timeslot:%d", req.TimeSlotID)
@@ -61,8 +62,8 @@ func (s *AppointmentService) CreateAppointment(ctx *gin.Context, req createAppoi
 	// Make sure the lock is released when we're done
 	defer ReleaseLock(lockKey)
 
-	errChan := make(chan error, 3)
-	wg.Add(3)
+	errChan := make(chan error, 4)
+	wg.Add(4)
 
 	go func() {
 		defer wg.Done()
@@ -94,6 +95,15 @@ func (s *AppointmentService) CreateAppointment(ctx *gin.Context, req createAppoi
 			EndTime:        ts.EndTime,
 			MaxPatients:    ts.MaxPatients,
 			BookedPatients: ts.BookedPatients,
+		}
+	}()
+
+	go func() {
+		defer wg.Done()
+		petOwner, err = s.storeDB.GetUser(ctx, username)
+		if err != nil {
+			errChan <- fmt.Errorf("failed to get service: %w", err)
+			return
 		}
 	}()
 
@@ -170,6 +180,10 @@ func (s *AppointmentService) CreateAppointment(ctx *gin.Context, req createAppoi
 		Pet: Pet{
 			PetID:   detail.PetID.Int64,
 			PetName: detail.PetName.String,
+		},
+		PetOwner: Owner{
+			OwnerID:   petOwner.ID,
+			OwnerName: petOwner.FullName,
 		},
 		Reason: detail.AppointmentReason.String,
 		Date:   appointment.Date.Time.Format("2006-01-02"),

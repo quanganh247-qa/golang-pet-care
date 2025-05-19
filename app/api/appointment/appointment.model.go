@@ -53,6 +53,7 @@ type Pet struct {
 }
 
 type Owner struct {
+	OwnerID      int64  `json:"owner_id"`
 	OwnerName    string `json:"owner_name"`
 	OwnerPhone   string `json:"owner_number"`
 	OwnerEmail   string `json:"owner_email"`
@@ -302,6 +303,7 @@ type AppointmentNotification struct {
 	AppointmentID int64    `json:"appointment_id"`
 	Pet           Pet      `json:"pet"`
 	Doctor        Doctor   `json:"doctor"`
+	PetOwner      Owner    `json:"pet_owner"`
 	Reason        string   `json:"reason"`
 	Date          string   `json:"date"`
 	TimeSlot      timeslot `json:"time_slot"`
