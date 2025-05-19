@@ -370,28 +370,35 @@ func (nm *NotificationManager) SaveNotificationToDB(ctx context.Context, usernam
 
 // GetNotificationsFromDB lấy danh sách thông báo từ cơ sở dữ liệu
 func (nm *NotificationManager) GetNotificationsFromDB(ctx context.Context, username string, limit int32, offset int32) ([]DatabaseNotification, error) {
-	dbNotifications, err := db.StoreDB.ListNotificationsByUsername(ctx, db.ListNotificationsByUsernameParams{
-		Username: username,
-		Limit:    limit,
-		Offset:   offset,
+	dbNotifications, err := db.StoreDB.ListNotification(ctx, db.ListNotificationParams{
+		Limit:  limit,
+		Offset: offset,
 	})
 	if err != nil {
 		return nil, err
 	}
 
-	notifications := make([]DatabaseNotification, len(dbNotifications))
-	for i, n := range dbNotifications {
-		notifications[i] = DatabaseNotification{
-			ID:          n.ID,
-			Username:    n.Username,
-			Title:       n.Title,
-			Content:     n.Content.String,
-			NotifyType:  n.NotifyType.String,
-			RelatedID:   int64(n.RelatedID.Int32),
-			RelatedType: n.RelatedType.String,
-			IsRead:      n.IsRead.Bool,
-			CreatedAt:   n.Datetime.Time,
+	var notifications []DatabaseNotification
+	for _, n := range dbNotifications {
+
+		app, err := db.StoreDB.GetAppointmentByID(ctx, int64(n.RelatedID.Int32))
+		if err != nil {
+			return nil, err
 		}
+		if app.StateID.Int32 == 1 {
+			notifications = append(notifications, DatabaseNotification{
+				ID:          n.ID,
+				Username:    n.Username,
+				Title:       n.Title,
+				Content:     n.Content.String,
+				NotifyType:  n.NotifyType.String,
+				RelatedID:   int64(n.RelatedID.Int32),
+				RelatedType: n.RelatedType.String,
+				CreatedAt:   n.Datetime.Time,
+				IsRead:      n.IsRead.Bool,
+			})
+		}
+
 	}
 
 	return notifications, nil

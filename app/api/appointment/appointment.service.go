@@ -194,7 +194,7 @@ func (s *AppointmentService) CreateAppointment(ctx *gin.Context, req createAppoi
 	}
 
 	// Gửi thông báo đến bác sĩ được chỉ định
-	s.sendAppointmentNotification(notification, "admin")
+	// s.sendAppointmentNotification(notification, "admin")
 	s.sendAppointmentNotification(notification, "receptionist")
 
 	// Prepare the response
@@ -590,6 +590,7 @@ func (s *AppointmentService) GetAppointmentByID(ctx *gin.Context, id int64) (*Ap
 			PetBreed: detail.PetBreed.String,
 		},
 		Owner: Owner{
+			OwnerID:      detail.OwnerID.Int64,
 			OwnerName:    detail.OwnerName.String,
 			OwnerPhone:   detail.OwnerPhone.String,
 			OwnerEmail:   detail.OwnerEmail.String,

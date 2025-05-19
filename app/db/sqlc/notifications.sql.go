@@ -69,20 +69,17 @@ func (q *Queries) DeleteNotificationsByUsername(ctx context.Context, username st
 	return err
 }
 
-const listNotificationsByUsername = `-- name: ListNotificationsByUsername :many
-SELECT id, username, title, content, is_read, related_id, related_type, datetime, notify_type FROM notifications
-WHERE username = $1
-LIMIT $2 OFFSET $3
+const listNotification = `-- name: ListNotification :many
+SELECT id, username, title, content, is_read, related_id, related_type, datetime, notify_type FROM notifications LIMIT $1 OFFSET $2
 `
 
-type ListNotificationsByUsernameParams struct {
-	Username string `json:"username"`
-	Limit    int32  `json:"limit"`
-	Offset   int32  `json:"offset"`
+type ListNotificationParams struct {
+	Limit  int32 `json:"limit"`
+	Offset int32 `json:"offset"`
 }
 
-func (q *Queries) ListNotificationsByUsername(ctx context.Context, arg ListNotificationsByUsernameParams) ([]Notification, error) {
-	rows, err := q.db.Query(ctx, listNotificationsByUsername, arg.Username, arg.Limit, arg.Offset)
+func (q *Queries) ListNotification(ctx context.Context, arg ListNotificationParams) ([]Notification, error) {
+	rows, err := q.db.Query(ctx, listNotification, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}

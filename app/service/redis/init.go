@@ -23,9 +23,9 @@ var (
 
 func InitRedis(config util.Config) {
 	options := &redis.Options{
-		Addr:         config.RedisAddress,
-		Username:     config.RedisUsername,
-		Password:     config.RedisPassword,
+		Addr: config.RedisAddress,
+		// Username:     config.RedisUsername,
+		// Password:     config.RedisPassword,
 		PoolSize:     10, // Số kết nối tối đa trong pool
 		MinIdleConns: 1,  // Số kết nối nhàn rỗi tối thiểu
 	}

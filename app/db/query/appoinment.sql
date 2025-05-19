@@ -244,6 +244,7 @@ SELECT
     ts.start_time, ts.end_time, ts.id AS time_slot_id,
     st.state AS state_name,
     st.id AS state_id,
+    u.id AS owner_id,
     u.full_name AS owner_name,
     u.phone_number AS owner_phone,
     u.email AS owner_email,
@@ -365,40 +366,5 @@ LEFT JOIN states st ON a.state_id = st.id
 WHERE st.state = $1
 ORDER BY a.created_at DESC;
 
-
-
-
--- -- name: GetAllAppointmentsByDate :many
--- SELECT 
---     a.appointment_id,
---     a.date ,
---     a.reminder_send,
---     a.created_at,
---     a.appointment_reason,
---     a.priority,
---     a.arrival_time,
---     a.notes,
---     p.petid as pet_id,
---     p.name AS pet_name,
---     p.breed AS pet_breed,
---     d.id AS doctor_id,
---     s.name AS service_name,
---     s.duration AS service_duration,
---     ts.start_time, ts.end_time, ts.id AS time_slot_id,
---     st.state AS state_name,
---     st.id AS state_id,
---     u.full_name AS owner_name,
---     u.phone_number AS owner_phone,
---     u.email AS owner_email,
---     u.address AS owner_address,
---     r.name AS room_name
--- FROM appointments a
--- LEFT JOIN pets p ON a.petid = p.petid
--- LEFT JOIN services s ON a.service_id = s.id
--- LEFT JOIN time_slots ts ON a.time_slot_id = ts.id
--- LEFT JOIN doctors d ON a.doctor_id = d.id
--- LEFT JOIN users u ON a.username = u.username
--- LEFT JOIN states st ON a.state_id = st.id
--- LEFT JOIN rooms r ON a.room_id = r.id
--- WHERE DATE(a.arrival_time) = DATE($1) 
--- LIMIT $2 OFFSET $3 ;
+-- name: GetAppointmentByID :one
+SELECT * FROM appointments WHERE appointment_id = $1;

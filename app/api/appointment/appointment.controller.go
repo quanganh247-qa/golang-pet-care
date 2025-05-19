@@ -542,7 +542,7 @@ func (c *AppointmentController) waitForNotifications(ctx *gin.Context) {
 	service.notificationManager.MoveMissedToNotifications(authPayload.Username)
 
 	// Thời gian tối đa chờ đợi: 30 giây
-	timeout := 30 * time.Second
+	timeout := 10 * time.Second
 
 	// Chờ thông báo từ NotificationManager
 	notification, hasNotification := service.notificationManager.WaitForNotification(authPayload.Username, timeout)

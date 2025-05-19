@@ -12,10 +12,8 @@ INSERT INTO notifications (
     $1, $2, $3, $4, $5, $6, false, NOW()
 ) RETURNING *;
 
--- name: ListNotificationsByUsername :many
-SELECT * FROM notifications
-WHERE username = $1
-LIMIT $2 OFFSET $3;
+-- name: ListNotification :many
+SELECT * FROM notifications LIMIT $1 OFFSET $2;
 
 -- name: DeleteNotificationsByUsername :exec
 DELETE FROM notifications

@@ -492,6 +492,35 @@ func (q *Queries) GetAllAppointmentsWithDateOption(ctx context.Context, arg GetA
 	return items, nil
 }
 
+const getAppointmentByID = `-- name: GetAppointmentByID :one
+SELECT appointment_id, petid, username, doctor_id, service_id, date, reminder_send, time_slot_id, created_at, state_id, appointment_reason, priority, arrival_time, room_id, confirmation_sent, notes, updated_at FROM appointments WHERE appointment_id = $1
+`
+
+func (q *Queries) GetAppointmentByID(ctx context.Context, appointmentID int64) (Appointment, error) {
+	row := q.db.QueryRow(ctx, getAppointmentByID, appointmentID)
+	var i Appointment
+	err := row.Scan(
+		&i.AppointmentID,
+		&i.Petid,
+		&i.Username,
+		&i.DoctorID,
+		&i.ServiceID,
+		&i.Date,
+		&i.ReminderSend,
+		&i.TimeSlotID,
+		&i.CreatedAt,
+		&i.StateID,
+		&i.AppointmentReason,
+		&i.Priority,
+		&i.ArrivalTime,
+		&i.RoomID,
+		&i.ConfirmationSent,
+		&i.Notes,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
 const getAppointmentByState = `-- name: GetAppointmentByState :many
 SELECT 
     a.appointment_id,
@@ -651,6 +680,7 @@ SELECT
     ts.start_time, ts.end_time, ts.id AS time_slot_id,
     st.state AS state_name,
     st.id AS state_id,
+    u.id AS owner_id,
     u.full_name AS owner_name,
     u.phone_number AS owner_phone,
     u.email AS owner_email,
@@ -695,6 +725,7 @@ type GetAppointmentDetailByAppointmentIDRow struct {
 	TimeSlotID_2      pgtype.Int8      `json:"time_slot_id_2"`
 	StateName         pgtype.Text      `json:"state_name"`
 	StateID_2         pgtype.Int8      `json:"state_id_2"`
+	OwnerID           pgtype.Int8      `json:"owner_id"`
 	OwnerName         pgtype.Text      `json:"owner_name"`
 	OwnerPhone        pgtype.Text      `json:"owner_phone"`
 	OwnerEmail        pgtype.Text      `json:"owner_email"`
@@ -734,6 +765,7 @@ func (q *Queries) GetAppointmentDetailByAppointmentID(ctx context.Context, appoi
 		&i.TimeSlotID_2,
 		&i.StateName,
 		&i.StateID_2,
+		&i.OwnerID,
 		&i.OwnerName,
 		&i.OwnerPhone,
 		&i.OwnerEmail,
