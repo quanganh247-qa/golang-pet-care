@@ -1,5 +1,6 @@
 DB_URL=postgresql://postgres:12345678@localhost:5433/postgres?sslmode=disable
-SUPABASE_URL=postgresql://postgres.prmzavhkqqthcwdnrkgt:postgres@aws-0-ap-southeast-1.pooler.supabase.com:5432/postgres
+SUPABASE_URL=postgresql://postgres.otwonpzzntnfdypjkuqn:xespar-5gafco-xabgUx@aws-0-ap-southeast-1.pooler.supabase.com:5432/postgres
+
 mup:
 	migrate -path app/db/migration -database "$(DB_URL)" -verbose up
 	
