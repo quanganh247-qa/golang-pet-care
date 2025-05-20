@@ -40,10 +40,10 @@ func Routes(routerGroup middleware.RouterGroup) {
 		authRoute.GET("/treatment/:treatment_id/phases", diseaseApi.controller.GetTreatmentPhasesByTreatmentID)
 		authRoute.GET("/treatment/:treatment_id/phases/:phase_id/medicines", diseaseApi.controller.GetMedicinesByPhaseID)
 	}
-	{
-		authRoute.GET("/pet/:pet_id/allergies", diseaseApi.controller.GetAllergiesByPetID)
-		authRoute.POST("/pet/:pet_id/allergy", diseaseApi.controller.CreateAllergy)
-	}
+	// {
+	// 	authRoute.GET("/pet/:pet_id/allergies", diseaseApi.controller.GetAllergiesByPetID)
+	// 	authRoute.POST("/pet/:pet_id/allergy", diseaseApi.controller.CreateAllergy)
+	// }
 	{
 		perRoute([]perms.Permission{perms.ManageDisease, perms.ManageTreatment}).POST("/treatment", diseaseApi.controller.CreateTreatment)
 		perRoute([]perms.Permission{perms.ManageTreatment}).PUT("/treatment/:treatment_id/status", diseaseApi.controller.UpdateTreatmentStatus)

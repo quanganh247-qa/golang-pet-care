@@ -20,7 +20,7 @@ INSERT INTO doctors (
     certificate_number,
     bio) VALUES (
     $1, $2, $3, $4, $5, $6
-) RETURNING id, user_id, specialization, years_of_experience, education, certificate_number, bio
+) RETURNING id, user_id, specialization, years_of_experience, education, certificate_number, bio, consultation_fee
 `
 
 type CreateDoctorParams struct {
@@ -50,6 +50,7 @@ func (q *Queries) CreateDoctor(ctx context.Context, arg CreateDoctorParams) (Doc
 		&i.Education,
 		&i.CertificateNumber,
 		&i.Bio,
+		&i.ConsultationFee,
 	)
 	return i, err
 }
@@ -66,7 +67,7 @@ func (q *Queries) DeleteDoctor(ctx context.Context, id int64) error {
 
 const getAvailableDoctors = `-- name: GetAvailableDoctors :many
 SELECT DISTINCT
-    d.id, d.user_id, d.specialization, d.years_of_experience, d.education, d.certificate_number, d.bio,
+    d.id, d.user_id, d.specialization, d.years_of_experience, d.education, d.certificate_number, d.bio, d.consultation_fee,
     u.full_name
 FROM doctors d
 JOIN users u ON d.user_id = u.id
@@ -76,14 +77,15 @@ AND ts.booked_patients < ts.max_patients
 `
 
 type GetAvailableDoctorsRow struct {
-	ID                int64       `json:"id"`
-	UserID            int64       `json:"user_id"`
-	Specialization    pgtype.Text `json:"specialization"`
-	YearsOfExperience pgtype.Int4 `json:"years_of_experience"`
-	Education         pgtype.Text `json:"education"`
-	CertificateNumber pgtype.Text `json:"certificate_number"`
-	Bio               pgtype.Text `json:"bio"`
-	FullName          string      `json:"full_name"`
+	ID                int64         `json:"id"`
+	UserID            int64         `json:"user_id"`
+	Specialization    pgtype.Text   `json:"specialization"`
+	YearsOfExperience pgtype.Int4   `json:"years_of_experience"`
+	Education         pgtype.Text   `json:"education"`
+	CertificateNumber pgtype.Text   `json:"certificate_number"`
+	Bio               pgtype.Text   `json:"bio"`
+	ConsultationFee   pgtype.Float8 `json:"consultation_fee"`
+	FullName          string        `json:"full_name"`
 }
 
 func (q *Queries) GetAvailableDoctors(ctx context.Context, date pgtype.Date) ([]GetAvailableDoctorsRow, error) {
@@ -103,6 +105,7 @@ func (q *Queries) GetAvailableDoctors(ctx context.Context, date pgtype.Date) ([]
 			&i.Education,
 			&i.CertificateNumber,
 			&i.Bio,
+			&i.ConsultationFee,
 			&i.FullName,
 		); err != nil {
 			return nil, err
@@ -117,7 +120,7 @@ func (q *Queries) GetAvailableDoctors(ctx context.Context, date pgtype.Date) ([]
 
 const getDoctor = `-- name: GetDoctor :one
 SELECT 
-    d.id, d.user_id, d.specialization, d.years_of_experience, d.education, d.certificate_number, d.bio,
+    d.id, d.user_id, d.specialization, d.years_of_experience, d.education, d.certificate_number, d.bio, d.consultation_fee,
     u.id AS user_id,
     u.full_name AS name,
     u.role,
@@ -128,17 +131,18 @@ WHERE d.id = $1
 `
 
 type GetDoctorRow struct {
-	ID                int64       `json:"id"`
-	UserID            int64       `json:"user_id"`
-	Specialization    pgtype.Text `json:"specialization"`
-	YearsOfExperience pgtype.Int4 `json:"years_of_experience"`
-	Education         pgtype.Text `json:"education"`
-	CertificateNumber pgtype.Text `json:"certificate_number"`
-	Bio               pgtype.Text `json:"bio"`
-	UserID_2          int64       `json:"user_id_2"`
-	Name              string      `json:"name"`
-	Role              pgtype.Text `json:"role"`
-	Email             string      `json:"email"`
+	ID                int64         `json:"id"`
+	UserID            int64         `json:"user_id"`
+	Specialization    pgtype.Text   `json:"specialization"`
+	YearsOfExperience pgtype.Int4   `json:"years_of_experience"`
+	Education         pgtype.Text   `json:"education"`
+	CertificateNumber pgtype.Text   `json:"certificate_number"`
+	Bio               pgtype.Text   `json:"bio"`
+	ConsultationFee   pgtype.Float8 `json:"consultation_fee"`
+	UserID_2          int64         `json:"user_id_2"`
+	Name              string        `json:"name"`
+	Role              pgtype.Text   `json:"role"`
+	Email             string        `json:"email"`
 }
 
 func (q *Queries) GetDoctor(ctx context.Context, id int64) (GetDoctorRow, error) {
@@ -152,6 +156,7 @@ func (q *Queries) GetDoctor(ctx context.Context, id int64) (GetDoctorRow, error)
 		&i.Education,
 		&i.CertificateNumber,
 		&i.Bio,
+		&i.ConsultationFee,
 		&i.UserID_2,
 		&i.Name,
 		&i.Role,
@@ -161,7 +166,7 @@ func (q *Queries) GetDoctor(ctx context.Context, id int64) (GetDoctorRow, error)
 }
 
 const getDoctorByUserId = `-- name: GetDoctorByUserId :one
-SELECT id, user_id, specialization, years_of_experience, education, certificate_number, bio FROM doctors
+SELECT id, user_id, specialization, years_of_experience, education, certificate_number, bio, consultation_fee FROM doctors
 WHERE user_id = $1
 `
 
@@ -176,13 +181,14 @@ func (q *Queries) GetDoctorByUserId(ctx context.Context, userID int64) (Doctor, 
 		&i.Education,
 		&i.CertificateNumber,
 		&i.Bio,
+		&i.ConsultationFee,
 	)
 	return i, err
 }
 
 const getDoctorByUsername = `-- name: GetDoctorByUsername :one
 SELECT 
-    d.id, d.user_id, d.specialization, d.years_of_experience, d.education, d.certificate_number, d.bio,
+    d.id, d.user_id, d.specialization, d.years_of_experience, d.education, d.certificate_number, d.bio, d.consultation_fee,
     u.full_name AS name,
     u.role,
     u.email
@@ -192,16 +198,17 @@ WHERE u.username = $1
 `
 
 type GetDoctorByUsernameRow struct {
-	ID                int64       `json:"id"`
-	UserID            int64       `json:"user_id"`
-	Specialization    pgtype.Text `json:"specialization"`
-	YearsOfExperience pgtype.Int4 `json:"years_of_experience"`
-	Education         pgtype.Text `json:"education"`
-	CertificateNumber pgtype.Text `json:"certificate_number"`
-	Bio               pgtype.Text `json:"bio"`
-	Name              string      `json:"name"`
-	Role              pgtype.Text `json:"role"`
-	Email             string      `json:"email"`
+	ID                int64         `json:"id"`
+	UserID            int64         `json:"user_id"`
+	Specialization    pgtype.Text   `json:"specialization"`
+	YearsOfExperience pgtype.Int4   `json:"years_of_experience"`
+	Education         pgtype.Text   `json:"education"`
+	CertificateNumber pgtype.Text   `json:"certificate_number"`
+	Bio               pgtype.Text   `json:"bio"`
+	ConsultationFee   pgtype.Float8 `json:"consultation_fee"`
+	Name              string        `json:"name"`
+	Role              pgtype.Text   `json:"role"`
+	Email             string        `json:"email"`
 }
 
 func (q *Queries) GetDoctorByUsername(ctx context.Context, username string) (GetDoctorByUsernameRow, error) {
@@ -215,6 +222,7 @@ func (q *Queries) GetDoctorByUsername(ctx context.Context, username string) (Get
 		&i.Education,
 		&i.CertificateNumber,
 		&i.Bio,
+		&i.ConsultationFee,
 		&i.Name,
 		&i.Role,
 		&i.Email,
@@ -295,7 +303,7 @@ SET
     certificate_number = COALESCE($5, certificate_number),
     bio = COALESCE($6, bio)
     WHERE id = $1
-RETURNING id, user_id, specialization, years_of_experience, education, certificate_number, bio
+RETURNING id, user_id, specialization, years_of_experience, education, certificate_number, bio, consultation_fee
 `
 
 type UpdateDoctorParams struct {
@@ -325,6 +333,7 @@ func (q *Queries) UpdateDoctor(ctx context.Context, arg UpdateDoctorParams) (Doc
 		&i.Education,
 		&i.CertificateNumber,
 		&i.Bio,
+		&i.ConsultationFee,
 	)
 	return i, err
 }

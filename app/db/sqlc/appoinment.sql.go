@@ -145,6 +145,15 @@ func (q *Queries) CreateAppointment(ctx context.Context, arg CreateAppointmentPa
 	return i, err
 }
 
+const deleteAppointment = `-- name: DeleteAppointment :exec
+DELETE FROM appointments WHERE appointment_id = $1
+`
+
+func (q *Queries) DeleteAppointment(ctx context.Context, appointmentID int64) error {
+	_, err := q.db.Exec(ctx, deleteAppointment, appointmentID)
+	return err
+}
+
 const getAllAppointments = `-- name: GetAllAppointments :many
 SELECT 
     a.appointment_id,

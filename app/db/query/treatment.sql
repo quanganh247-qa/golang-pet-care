@@ -88,14 +88,6 @@ FROM phase_medicines pm
 JOIN treatment_phases tp ON pm.phase_id = tp.id
 WHERE tp.treatment_id = $1;
 
--- name: GetClinicInfo :one
-SELECT 
-    name, 
-    address, 
-    phone 
-FROM clinics 
-WHERE id = $1; -- Assuming a single clinic for simplicity, adjust as needed
-
 
 -- name: UpdateTreatmentStatus :exec
 UPDATE pet_treatments

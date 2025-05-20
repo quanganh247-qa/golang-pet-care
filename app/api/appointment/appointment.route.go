@@ -41,6 +41,8 @@ func Routes(routerGroup middleware.RouterGroup, taskDistributor worker.TaskDistr
 
 		authRoute.GET("appointment/:id", appointmentApi.controller.getAppointmentByID)
 
+		authRoute.DELETE("appointment/:id", appointmentApi.controller.deleteAppointment)
+
 		authRoute.GET("appointment/doctor/:doctor_id", appointmentApi.controller.getAppointmentsByDoctor)
 
 		authRoute.GET("appointments", appointmentApi.controller.getAllAppointments)

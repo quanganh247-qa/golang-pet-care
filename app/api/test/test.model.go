@@ -122,3 +122,9 @@ type TestByAppointment struct {
 type Test = TestItem
 type OrderedTest = OrderedItem
 type OrderedTestDetail = OrderedItemDetail
+
+type TestCategory struct {
+	ID          string `json:"id"`
+	Name        string `json:"name"`
+	Description string `json:"description"`
+}

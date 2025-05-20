@@ -37,7 +37,7 @@ INSERT INTO medicines (
   reorder_level
 )
 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
-RETURNING id, name, description, usage, dosage, frequency, duration, side_effects, expiration_date, quantity, unit_price, reorder_level, supplier_id, created_at, updated_at
+RETURNING id, name, description, usage, dosage, frequency, duration, side_effects, created_at, updated_at, expiration_date, quantity, unit_price, reorder_level, supplier_id
 `
 
 type CreateMedicineParams struct {
@@ -78,13 +78,13 @@ func (q *Queries) CreateMedicine(ctx context.Context, arg CreateMedicineParams) 
 		&i.Frequency,
 		&i.Duration,
 		&i.SideEffects,
+		&i.CreatedAt,
+		&i.UpdatedAt,
 		&i.ExpirationDate,
 		&i.Quantity,
 		&i.UnitPrice,
 		&i.ReorderLevel,
 		&i.SupplierID,
-		&i.CreatedAt,
-		&i.UpdatedAt,
 	)
 	return i, err
 }
@@ -443,7 +443,7 @@ func (q *Queries) GetLowStockMedicines(ctx context.Context) ([]GetLowStockMedici
 }
 
 const getMedicineByID = `-- name: GetMedicineByID :one
-SELECT id, name, description, usage, dosage, frequency, duration, side_effects, expiration_date, quantity, unit_price, reorder_level, supplier_id, created_at, updated_at FROM medicines
+SELECT id, name, description, usage, dosage, frequency, duration, side_effects, created_at, updated_at, expiration_date, quantity, unit_price, reorder_level, supplier_id FROM medicines
 WHERE id = $1 LIMIT 1
 `
 
@@ -459,13 +459,13 @@ func (q *Queries) GetMedicineByID(ctx context.Context, id int64) (Medicine, erro
 		&i.Frequency,
 		&i.Duration,
 		&i.SideEffects,
+		&i.CreatedAt,
+		&i.UpdatedAt,
 		&i.ExpirationDate,
 		&i.Quantity,
 		&i.UnitPrice,
 		&i.ReorderLevel,
 		&i.SupplierID,
-		&i.CreatedAt,
-		&i.UpdatedAt,
 	)
 	return i, err
 }
@@ -715,7 +715,7 @@ func (q *Queries) GetSupplierByID(ctx context.Context, id int64) (MedicineSuppli
 
 const listMedicinesByPet = `-- name: ListMedicinesByPet :many
 SELECT 
-    m.id, m.name, m.description, m.usage, m.dosage, m.frequency, m.duration, m.side_effects, m.expiration_date, m.quantity, m.unit_price, m.reorder_level, m.supplier_id, m.created_at, m.updated_at,
+    m.id, m.name, m.description, m.usage, m.dosage, m.frequency, m.duration, m.side_effects, m.created_at, m.updated_at, m.expiration_date, m.quantity, m.unit_price, m.reorder_level, m.supplier_id,
     pm.dosage,
     pm.frequency,
     pm.duration,
@@ -753,13 +753,13 @@ type ListMedicinesByPetRow struct {
 	Frequency          pgtype.Text        `json:"frequency"`
 	Duration           pgtype.Text        `json:"duration"`
 	SideEffects        pgtype.Text        `json:"side_effects"`
+	CreatedAt          pgtype.Timestamptz `json:"created_at"`
+	UpdatedAt          pgtype.Timestamptz `json:"updated_at"`
 	ExpirationDate     pgtype.Date        `json:"expiration_date"`
 	Quantity           pgtype.Int8        `json:"quantity"`
 	UnitPrice          pgtype.Float8      `json:"unit_price"`
 	ReorderLevel       pgtype.Int8        `json:"reorder_level"`
 	SupplierID         pgtype.Int8        `json:"supplier_id"`
-	CreatedAt          pgtype.Timestamptz `json:"created_at"`
-	UpdatedAt          pgtype.Timestamptz `json:"updated_at"`
 	Dosage_2           pgtype.Text        `json:"dosage_2"`
 	Frequency_2        pgtype.Text        `json:"frequency_2"`
 	Duration_2         pgtype.Text        `json:"duration_2"`
@@ -792,13 +792,13 @@ func (q *Queries) ListMedicinesByPet(ctx context.Context, arg ListMedicinesByPet
 			&i.Frequency,
 			&i.Duration,
 			&i.SideEffects,
+			&i.CreatedAt,
+			&i.UpdatedAt,
 			&i.ExpirationDate,
 			&i.Quantity,
 			&i.UnitPrice,
 			&i.ReorderLevel,
 			&i.SupplierID,
-			&i.CreatedAt,
-			&i.UpdatedAt,
 			&i.Dosage_2,
 			&i.Frequency_2,
 			&i.Duration_2,
@@ -818,7 +818,7 @@ func (q *Queries) ListMedicinesByPet(ctx context.Context, arg ListMedicinesByPet
 }
 
 const searchMedicinesByName = `-- name: SearchMedicinesByName :many
-SELECT id, name, description, usage, dosage, frequency, duration, side_effects, expiration_date, quantity, unit_price, reorder_level, supplier_id, created_at, updated_at FROM medicines
+SELECT id, name, description, usage, dosage, frequency, duration, side_effects, created_at, updated_at, expiration_date, quantity, unit_price, reorder_level, supplier_id FROM medicines
 WHERE name ILIKE $1
 ORDER BY name ASC
 LIMIT $2 OFFSET $3
@@ -848,13 +848,13 @@ func (q *Queries) SearchMedicinesByName(ctx context.Context, arg SearchMedicines
 			&i.Frequency,
 			&i.Duration,
 			&i.SideEffects,
+			&i.CreatedAt,
+			&i.UpdatedAt,
 			&i.ExpirationDate,
 			&i.Quantity,
 			&i.UnitPrice,
 			&i.ReorderLevel,
 			&i.SupplierID,
-			&i.CreatedAt,
-			&i.UpdatedAt,
 		); err != nil {
 			return nil, err
 		}

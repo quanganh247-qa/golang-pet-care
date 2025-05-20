@@ -210,30 +210,30 @@ func (service *DoctorService) GetDoctorProfile(ctx *gin.Context, username string
 }
 
 func (service *DoctorService) GetAllDoctorService(ctx *gin.Context) ([]DoctorDetail, error) {
-	// Try to get from cache first
-	if service.redis != nil {
-		doctorList, err := service.redis.DoctorsListLoadCache()
-		if err == nil {
-			// Found in cache
-			result := make([]DoctorDetail, len(doctorList))
-			for i, doc := range doctorList {
-				result[i] = DoctorDetail{
-					DoctorID:       doc.DoctorID,
-					Username:       doc.Username,
-					DoctorName:     doc.DoctorName,
-					Email:          doc.Email,
-					Role:           doc.Role,
-					Specialization: doc.Specialization,
-					YearsOfExp:     doc.YearsOfExp,
-					Education:      doc.Education,
-					Certificate:    doc.Certificate,
-					Bio:            doc.Bio,
-					DataImage:      doc.DataImage,
-				}
-			}
-			return result, nil
-		}
-	}
+	// // Try to get from cache first
+	// if service.redis != nil {
+	// 	doctorList, err := service.redis.DoctorsListLoadCache()
+	// 	if err == nil {
+	// 		// Found in cache
+	// 		result := make([]DoctorDetail, len(doctorList))
+	// 		for i, doc := range doctorList {
+	// 			result[i] = DoctorDetail{
+	// 				DoctorID:       doc.DoctorID,
+	// 				Username:       doc.Username,
+	// 				DoctorName:     doc.DoctorName,
+	// 				Email:          doc.Email,
+	// 				Role:           doc.Role,
+	// 				Specialization: doc.Specialization,
+	// 				YearsOfExp:     doc.YearsOfExp,
+	// 				Education:      doc.Education,
+	// 				Certificate:    doc.Certificate,
+	// 				Bio:            doc.Bio,
+	// 				DataImage:      doc.DataImage,
+	// 			}
+	// 		}
+	// 		return result, nil
+	// 	}
+	// }
 
 	// Cache miss, get from database
 	doctor, err := service.storeDB.ListDoctors(ctx)

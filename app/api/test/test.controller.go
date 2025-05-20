@@ -285,3 +285,16 @@ func (c *TestController) GetTestByAppointment(ctx *gin.Context) {
 		"data":    tests,
 	})
 }
+
+func (c *TestController) ListTestCategories(ctx *gin.Context) {
+	categories, err := c.service.ListTestCategories(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	ctx.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"message": "Test categories retrieved successfully",
+		"data":    categories,
+	})
+}

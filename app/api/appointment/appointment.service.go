@@ -40,6 +40,7 @@ type AppointmentServiceInterface interface {
 	HandleWebSocket(ctx *gin.Context)
 	GetAppointmentByState(ctx *gin.Context, stateID string) ([]Appointment, error)
 	GetCompletedAppointments(ctx *gin.Context, username string) ([]Appointment, error)
+	DeleteAppointment(ctx *gin.Context, appointmentID int64) error
 }
 
 func (s *AppointmentService) CreateAppointment(ctx *gin.Context, req createAppointmentRequest, username string) (*createAppointmentResponse, error) {
@@ -1475,4 +1476,67 @@ func (s *AppointmentService) GetCompletedAppointments(ctx *gin.Context, username
 		})
 	}
 	return a, nil
+}
+
+func (s *AppointmentService) DeleteAppointment(ctx *gin.Context, appointmentID int64) error {
+	err := s.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
+		// Fetch appointment details
+		appointment, err := q.GetAppointmentDetailByAppointmentID(ctx, appointmentID)
+		if err != nil {
+			return fmt.Errorf("failed to get appointment: %w", err)
+		}
+
+		// Check appointment state early to avoid unnecessary queries
+		state, err := q.GetState(ctx, int64(appointment.StateID.Int32))
+		if err != nil {
+			return fmt.Errorf("failed to get state: %w", err)
+		}
+		if state.State == "Confirmed" {
+			return errors.New("appointment is already paid")
+		}
+
+		// Fetch and validate time slot
+		timeSlot, err := q.GetTimeSlotForUpdate(ctx, appointment.TimeSlotID.Int64)
+		if err != nil {
+			return fmt.Errorf("failed to get time slot: %w", err)
+		}
+		if timeSlot.BookedPatients.Int32 >= timeSlot.MaxPatients.Int32 {
+			return errors.New("time slot is fully booked")
+		}
+
+		// Prepare updates in a single transaction
+		if err = q.UpdateTimeSlotBookedPatients(ctx, appointment.TimeSlotID.Int64); err != nil {
+			return fmt.Errorf("failed to update time slot: %w", err)
+		}
+
+		if err = q.UpdateAppointmentStatus(ctx, db.UpdateAppointmentStatusParams{
+			AppointmentID: appointmentID,
+			StateID:       pgtype.Int4{Int32: 3, Valid: true}, // Consider defining a constant for StateID
+		}); err != nil {
+			return fmt.Errorf("failed to update appointment status: %w", err)
+		}
+		return nil
+	})
+
+	// If the payment was successfully confirmed, clear related caches
+	if err == nil && redis.Client != nil {
+		// Clear the specific appointment cache
+		redis.Client.RemoveCacheByKey(GetAppointmentCacheKey(appointmentID))
+
+		// Get the appointment details to clear user and doctor caches
+		appDetail, detailErr := s.storeDB.GetAppointmentDetailByAppointmentID(ctx, appointmentID)
+		if detailErr == nil {
+			// Clear user cache if username exists
+			if appDetail.Username.Valid {
+				redis.Client.RemoveCacheByKey(GetAppointmentListByUserCacheKey(appDetail.Username.String))
+			}
+
+			// Clear doctor cache if doctor ID exists
+			if appDetail.DoctorID.Valid {
+				redis.Client.RemoveCacheByKey(GetAppointmentListByDoctorCacheKey(appDetail.DoctorID.Int64))
+			}
+		}
+	}
+
+	return err
 }

@@ -368,3 +368,7 @@ ORDER BY a.created_at DESC;
 
 -- name: GetAppointmentByID :one
 SELECT * FROM appointments WHERE appointment_id = $1;
+
+
+-- name: DeleteAppointment :exec
+DELETE FROM appointments WHERE appointment_id = $1;

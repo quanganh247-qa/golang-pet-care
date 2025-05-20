@@ -76,8 +76,8 @@ func (s *SMTPConfigService) CreateSMTPConfig(ctx *gin.Context) {
 		SMTPHost:  smtpConfig.SmtpHost,
 		SMTPPort:  smtpConfig.SmtpPort,
 		IsDefault: smtpConfig.IsDefault,
-		CreatedAt: smtpConfig.CreatedAt.Time,
-		UpdatedAt: smtpConfig.UpdatedAt.Time,
+		CreatedAt: smtpConfig.CreatedAt,
+		UpdatedAt: smtpConfig.UpdatedAt,
 	}
 
 	ctx.JSON(http.StatusOK, response)
@@ -102,8 +102,8 @@ func (s *SMTPConfigService) GetSMTPConfig(ctx *gin.Context) {
 		SMTPHost:  smtpConfig.SmtpHost,
 		SMTPPort:  smtpConfig.SmtpPort,
 		IsDefault: smtpConfig.IsDefault,
-		CreatedAt: smtpConfig.CreatedAt.Time,
-		UpdatedAt: smtpConfig.UpdatedAt.Time,
+		CreatedAt: smtpConfig.CreatedAt,
+		UpdatedAt: smtpConfig.UpdatedAt,
 	}
 
 	ctx.JSON(http.StatusOK, response)
@@ -124,8 +124,8 @@ func (s *SMTPConfigService) GetDefaultSMTPConfig(ctx *gin.Context) {
 		SMTPHost:  smtpConfig.SmtpHost,
 		SMTPPort:  smtpConfig.SmtpPort,
 		IsDefault: smtpConfig.IsDefault,
-		CreatedAt: smtpConfig.CreatedAt.Time,
-		UpdatedAt: smtpConfig.UpdatedAt.Time,
+		CreatedAt: smtpConfig.CreatedAt,
+		UpdatedAt: smtpConfig.UpdatedAt,
 	}
 
 	ctx.JSON(http.StatusOK, response)
@@ -148,8 +148,8 @@ func (s *SMTPConfigService) ListSMTPConfigs(ctx *gin.Context) {
 			SMTPHost:  config.SmtpHost,
 			SMTPPort:  config.SmtpPort,
 			IsDefault: config.IsDefault,
-			CreatedAt: config.CreatedAt.Time,
-			UpdatedAt: config.UpdatedAt.Time,
+			CreatedAt: config.CreatedAt,
+			UpdatedAt: config.UpdatedAt,
 		})
 	}
 
@@ -225,8 +225,8 @@ func (s *SMTPConfigService) UpdateSMTPConfig(ctx *gin.Context) {
 		SMTPHost:  smtpConfig.SmtpHost,
 		SMTPPort:  smtpConfig.SmtpPort,
 		IsDefault: smtpConfig.IsDefault,
-		CreatedAt: smtpConfig.CreatedAt.Time,
-		UpdatedAt: smtpConfig.UpdatedAt.Time,
+		CreatedAt: smtpConfig.CreatedAt,
+		UpdatedAt: smtpConfig.UpdatedAt,
 	}
 
 	ctx.JSON(http.StatusOK, response)
@@ -305,8 +305,8 @@ func (s *SMTPConfigService) SetDefaultSMTPConfig(ctx *gin.Context) {
 		SMTPHost:  smtpConfig.SmtpHost,
 		SMTPPort:  smtpConfig.SmtpPort,
 		IsDefault: smtpConfig.IsDefault,
-		CreatedAt: smtpConfig.CreatedAt.Time,
-		UpdatedAt: smtpConfig.UpdatedAt.Time,
+		CreatedAt: smtpConfig.CreatedAt,
+		UpdatedAt: smtpConfig.UpdatedAt,
 	}
 
 	ctx.JSON(http.StatusOK, response)

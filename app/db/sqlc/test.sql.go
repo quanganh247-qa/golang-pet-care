@@ -18,7 +18,7 @@ INSERT INTO ordered_tests (
     price_at_order
 ) VALUES (
     $1, $2, $3
-) RETURNING id, order_id, test_id, price_at_order, status, results, results_date, technician_notes, created_at, updated_at
+) RETURNING id, order_id, test_id, price_at_order, status, results, results_date, technician_notes, created_at, updated_at, doctor_id, next_due_date
 `
 
 type AddOrderedTestParams struct {
@@ -41,6 +41,8 @@ func (q *Queries) AddOrderedTest(ctx context.Context, arg AddOrderedTestParams) 
 		&i.TechnicianNotes,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.DoctorID,
+		&i.NextDueDate,
 	)
 	return i, err
 }
@@ -82,7 +84,7 @@ const createTest = `-- name: CreateTest :one
 INSERT INTO tests (test_id, category_id, name, description, price, turnaround_time)
 VALUES (
     $1, $2, $3, $4, $5, $6
-) RETURNING id, test_id, category_id, name, description, price, turnaround_time, is_active, created_at, updated_at, type, quantity, expiration_date, batch_number, supplier_id
+) RETURNING id, test_id, category_id, name, description, price, turnaround_time, is_active, created_at, updated_at, quantity, expiration_date, batch_number, supplier_id, type
 `
 
 type CreateTestParams struct {
@@ -115,11 +117,11 @@ func (q *Queries) CreateTest(ctx context.Context, arg CreateTestParams) (Test, e
 		&i.IsActive,
 		&i.CreatedAt,
 		&i.UpdatedAt,
-		&i.Type,
 		&i.Quantity,
 		&i.ExpirationDate,
 		&i.BatchNumber,
 		&i.SupplierID,
+		&i.Type,
 	)
 	return i, err
 }
@@ -300,7 +302,7 @@ func (q *Queries) GetOrderedTestsByAppointment(ctx context.Context, appointmentI
 }
 
 const getOrderedTestsByOrderID = `-- name: GetOrderedTestsByOrderID :many
-SELECT  ordered_tests.id, ordered_tests.order_id, ordered_tests.test_id, ordered_tests.price_at_order, ordered_tests.status, ordered_tests.results, ordered_tests.results_date, ordered_tests.technician_notes, ordered_tests.created_at, ordered_tests.updated_at, 
+SELECT  ordered_tests.id, ordered_tests.order_id, ordered_tests.test_id, ordered_tests.price_at_order, ordered_tests.status, ordered_tests.results, ordered_tests.results_date, ordered_tests.technician_notes, ordered_tests.created_at, ordered_tests.updated_at, ordered_tests.doctor_id, ordered_tests.next_due_date, 
         tests.name AS test_name,
         tests.description AS test_description,
         tests.price AS test_price
@@ -321,6 +323,8 @@ type GetOrderedTestsByOrderIDRow struct {
 	TechnicianNotes pgtype.Text        `json:"technician_notes"`
 	CreatedAt       pgtype.Timestamptz `json:"created_at"`
 	UpdatedAt       pgtype.Timestamptz `json:"updated_at"`
+	DoctorID        pgtype.Int4        `json:"doctor_id"`
+	NextDueDate     pgtype.Date        `json:"next_due_date"`
 	TestName        pgtype.Text        `json:"test_name"`
 	TestDescription pgtype.Text        `json:"test_description"`
 	TestPrice       pgtype.Float8      `json:"test_price"`
@@ -346,6 +350,8 @@ func (q *Queries) GetOrderedTestsByOrderID(ctx context.Context, orderID pgtype.I
 			&i.TechnicianNotes,
 			&i.CreatedAt,
 			&i.UpdatedAt,
+			&i.DoctorID,
+			&i.NextDueDate,
 			&i.TestName,
 			&i.TestDescription,
 			&i.TestPrice,
@@ -361,7 +367,7 @@ func (q *Queries) GetOrderedTestsByOrderID(ctx context.Context, orderID pgtype.I
 }
 
 const getTestByID = `-- name: GetTestByID :one
-SELECT id, test_id, category_id, name, description, price, turnaround_time, is_active, created_at, updated_at, type, quantity, expiration_date, batch_number, supplier_id FROM tests WHERE id = $1 AND is_active = true
+SELECT id, test_id, category_id, name, description, price, turnaround_time, is_active, created_at, updated_at, quantity, expiration_date, batch_number, supplier_id, type FROM tests WHERE id = $1 AND is_active = true
 `
 
 func (q *Queries) GetTestByID(ctx context.Context, id int32) (Test, error) {
@@ -378,11 +384,11 @@ func (q *Queries) GetTestByID(ctx context.Context, id int32) (Test, error) {
 		&i.IsActive,
 		&i.CreatedAt,
 		&i.UpdatedAt,
-		&i.Type,
 		&i.Quantity,
 		&i.ExpirationDate,
 		&i.BatchNumber,
 		&i.SupplierID,
+		&i.Type,
 	)
 	return i, err
 }
@@ -459,7 +465,7 @@ func (q *Queries) GetTestOrderByID(ctx context.Context, orderID int32) (TestOrde
 }
 
 const getTestsByCategory = `-- name: GetTestsByCategory :many
-SELECT id, test_id, category_id, name, description, price, turnaround_time, is_active, created_at, updated_at, type, quantity, expiration_date, batch_number, supplier_id FROM tests 
+SELECT id, test_id, category_id, name, description, price, turnaround_time, is_active, created_at, updated_at, quantity, expiration_date, batch_number, supplier_id, type FROM tests 
 WHERE category_id = $1 AND is_active = TRUE
 `
 
@@ -483,11 +489,43 @@ func (q *Queries) GetTestsByCategory(ctx context.Context, categoryID pgtype.Text
 			&i.IsActive,
 			&i.CreatedAt,
 			&i.UpdatedAt,
-			&i.Type,
 			&i.Quantity,
 			&i.ExpirationDate,
 			&i.BatchNumber,
 			&i.SupplierID,
+			&i.Type,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listTestCategories = `-- name: ListTestCategories :many
+SELECT id, category_id, name, description, icon_name, created_at, updated_at FROM test_categories
+`
+
+func (q *Queries) ListTestCategories(ctx context.Context) ([]TestCategory, error) {
+	rows, err := q.db.Query(ctx, listTestCategories)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []TestCategory{}
+	for rows.Next() {
+		var i TestCategory
+		if err := rows.Scan(
+			&i.ID,
+			&i.CategoryID,
+			&i.Name,
+			&i.Description,
+			&i.IconName,
+			&i.CreatedAt,
+			&i.UpdatedAt,
 		); err != nil {
 			return nil, err
 		}
@@ -500,7 +538,7 @@ func (q *Queries) GetTestsByCategory(ctx context.Context, categoryID pgtype.Text
 }
 
 const listTests = `-- name: ListTests :many
-SELECT id, test_id, category_id, name, description, price, turnaround_time, is_active, created_at, updated_at, type, quantity, expiration_date, batch_number, supplier_id FROM tests WHERE is_active is true
+SELECT id, test_id, category_id, name, description, price, turnaround_time, is_active, created_at, updated_at, quantity, expiration_date, batch_number, supplier_id, type FROM tests WHERE is_active is true
 `
 
 func (q *Queries) ListTests(ctx context.Context) ([]Test, error) {
@@ -523,11 +561,11 @@ func (q *Queries) ListTests(ctx context.Context) ([]Test, error) {
 			&i.IsActive,
 			&i.CreatedAt,
 			&i.UpdatedAt,
-			&i.Type,
 			&i.Quantity,
 			&i.ExpirationDate,
 			&i.BatchNumber,
 			&i.SupplierID,
+			&i.Type,
 		); err != nil {
 			return nil, err
 		}
@@ -554,7 +592,7 @@ const updateTest = `-- name: UpdateTest :one
 UPDATE tests
 SET name = $2, description = $3, price = $4, turnaround_time = $5
 WHERE test_id = $1
-RETURNING id, test_id, category_id, name, description, price, turnaround_time, is_active, created_at, updated_at, type, quantity, expiration_date, batch_number, supplier_id
+RETURNING id, test_id, category_id, name, description, price, turnaround_time, is_active, created_at, updated_at, quantity, expiration_date, batch_number, supplier_id, type
 `
 
 type UpdateTestParams struct {
@@ -585,11 +623,11 @@ func (q *Queries) UpdateTest(ctx context.Context, arg UpdateTestParams) (Test, e
 		&i.IsActive,
 		&i.CreatedAt,
 		&i.UpdatedAt,
-		&i.Type,
 		&i.Quantity,
 		&i.ExpirationDate,
 		&i.BatchNumber,
 		&i.SupplierID,
+		&i.Type,
 	)
 	return i, err
 }
@@ -614,7 +652,7 @@ const updateTestStatus = `-- name: UpdateTestStatus :one
 UPDATE ordered_tests
 SET status = $2
 WHERE id = $1
-RETURNING id, order_id, test_id, price_at_order, status, results, results_date, technician_notes, created_at, updated_at
+RETURNING id, order_id, test_id, price_at_order, status, results, results_date, technician_notes, created_at, updated_at, doctor_id, next_due_date
 `
 
 type UpdateTestStatusParams struct {
@@ -636,6 +674,8 @@ func (q *Queries) UpdateTestStatus(ctx context.Context, arg UpdateTestStatusPara
 		&i.TechnicianNotes,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.DoctorID,
+		&i.NextDueDate,
 	)
 	return i, err
 }

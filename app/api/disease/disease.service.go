@@ -31,8 +31,8 @@ type DiseaseServiceInterface interface {
 	CreateDisease(ctx context.Context, arg CreateDiseaseRequest) (*db.Disease, error)
 	GenerateMedicineOnlyPrescriptionPDF(ctx context.Context, treatmentID int64, outputFile string) (*PrescriptionResponse, error)
 
-	CreateAllergyService(ctx *gin.Context, petID int64, req CreateAllergyRequest) (*PetAllergy, error)
-	GetAllergiesByPetID(ctx *gin.Context, petID int64, pagination *util.Pagination) (*[]PetAllergy, error)
+	// CreateAllergyService(ctx *gin.Context, petID int64, req CreateAllergyRequest) (*PetAllergy, error)
+	// GetAllergiesByPetID(ctx *gin.Context, petID int64, pagination *util.Pagination) (*[]PetAllergy, error)
 }
 
 func (s *DiseaseService) CreateDisease(ctx context.Context, arg CreateDiseaseRequest) (*db.Disease, error) {
@@ -573,54 +573,54 @@ func (s *DiseaseService) GenerateMedicineOnlyPrescriptionPDF(ctx context.Context
 }
 
 // Allergy
-func (s *DiseaseService) CreateAllergyService(ctx *gin.Context, petID int64, req CreateAllergyRequest) (*PetAllergy, error) {
-	var res PetAllergy
-	err := s.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
-		// 2. Create allergy
-		allergy, err := q.CreatePetAllergy(ctx, db.CreatePetAllergyParams{
-			PetID:  pgtype.Int8{Int64: petID, Valid: true},
-			Type:   pgtype.Text{String: req.Type, Valid: true},
-			Detail: pgtype.Text{String: req.Detail, Valid: true},
-		})
-		if err != nil {
-			return fmt.Errorf("error while creating allergy: %w", err)
-		}
-		res = PetAllergy{
-			ID:     allergy.ID,
-			PetID:  petID,
-			Type:   allergy.Type.String,
-			Detail: allergy.Detail.String,
-		}
-		return nil
-	})
-	if err != nil {
-		return nil, fmt.Errorf("error while creating allergy: %w", err)
-	}
-	return &res, nil
-}
+// func (s *DiseaseService) CreateAllergyService(ctx *gin.Context, petID int64, req CreateAllergyRequest) (*PetAllergy, error) {
+// 	var res PetAllergy
+// 	err := s.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
+// 		// 2. Create allergy
+// 		allergy, err := q.CreatePetAllergy(ctx, db.CreatePetAllergyParams{
+// 			PetID:  pgtype.Int8{Int64: petID, Valid: true},
+// 			Type:   pgtype.Text{String: req.Type, Valid: true},
+// 			Detail: pgtype.Text{String: req.Detail, Valid: true},
+// 		})
+// 		if err != nil {
+// 			return fmt.Errorf("error while creating allergy: %w", err)
+// 		}
+// 		res = PetAllergy{
+// 			ID:     allergy.ID,
+// 			PetID:  petID,
+// 			Type:   allergy.Type.String,
+// 			Detail: allergy.Detail.String,
+// 		}
+// 		return nil
+// 	})
+// 	if err != nil {
+// 		return nil, fmt.Errorf("error while creating allergy: %w", err)
+// 	}
+// 	return &res, nil
+// }
 
-func (s *DiseaseService) GetAllergiesByPetID(ctx *gin.Context, petID int64, pagination *util.Pagination) (*[]PetAllergy, error) {
+// func (s *DiseaseService) GetAllergiesByPetID(ctx *gin.Context, petID int64, pagination *util.Pagination) (*[]PetAllergy, error) {
 
-	offset := (pagination.Page - 1) * pagination.PageSize
-	allergies, err := s.storeDB.ListPetAllergies(ctx, db.ListPetAllergiesParams{
-		PetID:  pgtype.Int8{Int64: petID, Valid: true},
-		Limit:  int32(pagination.PageSize),
-		Offset: int32(offset),
-	})
-	if err != nil {
-		return nil, fmt.Errorf("error while getting allergies by pet id: %w", err)
-	}
-	var res []PetAllergy
-	for _, allergy := range allergies {
-		res = append(res, PetAllergy{
-			ID:     allergy.ID,
-			PetID:  petID,
-			Type:   allergy.Type.String,
-			Detail: allergy.Detail.String,
-		})
-	}
-	return &res, nil
-}
+// 	offset := (pagination.Page - 1) * pagination.PageSize
+// 	allergies, err := s.storeDB.ListPetAllergies(ctx, db.ListPetAllergiesParams{
+// 		PetID:  pgtype.Int8{Int64: petID, Valid: true},
+// 		Limit:  int32(pagination.PageSize),
+// 		Offset: int32(offset),
+// 	})
+// 	if err != nil {
+// 		return nil, fmt.Errorf("error while getting allergies by pet id: %w", err)
+// 	}
+// 	var res []PetAllergy
+// 	for _, allergy := range allergies {
+// 		res = append(res, PetAllergy{
+// 			ID:     allergy.ID,
+// 			PetID:  petID,
+// 			Type:   allergy.Type.String,
+// 			Detail: allergy.Detail.String,
+// 		})
+// 	}
+// 	return &res, nil
+// }
 
 func (s *DiseaseService) UpdateTreatmentStatus(ctx *gin.Context, treatmentID int64, status string) error {
 	return s.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {

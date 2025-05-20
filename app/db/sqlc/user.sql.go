@@ -14,7 +14,7 @@ import (
 const createUser = `-- name: CreateUser :one
 INSERT INTO users (username, hashed_password, full_name, email, phone_number, address, data_image, original_image, role, created_at, is_verified_email)
 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, NOW(), $10)
-RETURNING id, username, hashed_password, full_name, email, phone_number, address, data_image, original_image, role, status, created_at, is_verified_email, removed_at
+RETURNING id, username, hashed_password, full_name, email, phone_number, address, data_image, original_image, role, created_at, is_verified_email, removed_at, status
 `
 
 type CreateUserParams struct {
@@ -55,10 +55,10 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 		&i.DataImage,
 		&i.OriginalImage,
 		&i.Role,
-		&i.Status,
 		&i.CreatedAt,
 		&i.IsVerifiedEmail,
 		&i.RemovedAt,
+		&i.Status,
 	)
 	return i, err
 }
@@ -98,7 +98,7 @@ func (q *Queries) GetAllRole(ctx context.Context) ([]pgtype.Text, error) {
 }
 
 const getAllUsers = `-- name: GetAllUsers :many
-SELECT id, username, hashed_password, full_name, email, phone_number, address, data_image, original_image, role, status, created_at, is_verified_email, removed_at FROM users
+SELECT id, username, hashed_password, full_name, email, phone_number, address, data_image, original_image, role, created_at, is_verified_email, removed_at, status FROM users
 `
 
 func (q *Queries) GetAllUsers(ctx context.Context) ([]User, error) {
@@ -121,10 +121,10 @@ func (q *Queries) GetAllUsers(ctx context.Context) ([]User, error) {
 			&i.DataImage,
 			&i.OriginalImage,
 			&i.Role,
-			&i.Status,
 			&i.CreatedAt,
 			&i.IsVerifiedEmail,
 			&i.RemovedAt,
+			&i.Status,
 		); err != nil {
 			return nil, err
 		}
@@ -178,7 +178,7 @@ func (q *Queries) GetUser(ctx context.Context, username string) (GetUserRow, err
 }
 
 const getUserByEmail = `-- name: GetUserByEmail :one
-SELECT id, username, hashed_password, full_name, email, phone_number, address, data_image, original_image, role, status, created_at, is_verified_email, removed_at
+SELECT id, username, hashed_password, full_name, email, phone_number, address, data_image, original_image, role, created_at, is_verified_email, removed_at, status
 FROM users
 WHERE email = $1
 `
@@ -197,10 +197,10 @@ func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error
 		&i.DataImage,
 		&i.OriginalImage,
 		&i.Role,
-		&i.Status,
 		&i.CreatedAt,
 		&i.IsVerifiedEmail,
 		&i.RemovedAt,
+		&i.Status,
 	)
 	return i, err
 }
@@ -247,7 +247,7 @@ func (q *Queries) GetUserByID(ctx context.Context, id int64) (GetUserByIDRow, er
 }
 
 const getUserByRole = `-- name: GetUserByRole :many
-SELECT id, username, hashed_password, full_name, email, phone_number, address, data_image, original_image, role, status, created_at, is_verified_email, removed_at FROM users
+SELECT id, username, hashed_password, full_name, email, phone_number, address, data_image, original_image, role, created_at, is_verified_email, removed_at, status FROM users
 WHERE role = $1
 `
 
@@ -271,10 +271,10 @@ func (q *Queries) GetUserByRole(ctx context.Context, role pgtype.Text) ([]User, 
 			&i.DataImage,
 			&i.OriginalImage,
 			&i.Role,
-			&i.Status,
 			&i.CreatedAt,
 			&i.IsVerifiedEmail,
 			&i.RemovedAt,
+			&i.Status,
 		); err != nil {
 			return nil, err
 		}
@@ -296,7 +296,7 @@ INSERT INTO Doctors (
     bio
 ) VALUES (
     $1, $2, $3, $4, $5, $6
-) RETURNING id, user_id, specialization, years_of_experience, education, certificate_number, bio
+) RETURNING id, user_id, specialization, years_of_experience, education, certificate_number, bio, consultation_fee
 `
 
 type InsertDoctorParams struct {
@@ -326,6 +326,7 @@ func (q *Queries) InsertDoctor(ctx context.Context, arg InsertDoctorParams) (Doc
 		&i.Education,
 		&i.CertificateNumber,
 		&i.Bio,
+		&i.ConsultationFee,
 	)
 	return i, err
 }
@@ -334,7 +335,7 @@ const updateAvatarUser = `-- name: UpdateAvatarUser :one
 UPDATE users
 SET data_image = $2, original_image = $3
 WHERE username = $1
-RETURNING id, username, hashed_password, full_name, email, phone_number, address, data_image, original_image, role, status, created_at, is_verified_email, removed_at
+RETURNING id, username, hashed_password, full_name, email, phone_number, address, data_image, original_image, role, created_at, is_verified_email, removed_at, status
 `
 
 type UpdateAvatarUserParams struct {
@@ -357,10 +358,10 @@ func (q *Queries) UpdateAvatarUser(ctx context.Context, arg UpdateAvatarUserPara
 		&i.DataImage,
 		&i.OriginalImage,
 		&i.Role,
-		&i.Status,
 		&i.CreatedAt,
 		&i.IsVerifiedEmail,
 		&i.RemovedAt,
+		&i.Status,
 	)
 	return i, err
 }
@@ -369,7 +370,7 @@ const updateUser = `-- name: UpdateUser :one
 UPDATE users
 SET full_name = $2, email = $3, phone_number = $4, address = $5
 WHERE username = $1
-RETURNING id, username, hashed_password, full_name, email, phone_number, address, data_image, original_image, role, status, created_at, is_verified_email, removed_at
+RETURNING id, username, hashed_password, full_name, email, phone_number, address, data_image, original_image, role, created_at, is_verified_email, removed_at, status
 `
 
 type UpdateUserParams struct {
@@ -400,10 +401,10 @@ func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, e
 		&i.DataImage,
 		&i.OriginalImage,
 		&i.Role,
-		&i.Status,
 		&i.CreatedAt,
 		&i.IsVerifiedEmail,
 		&i.RemovedAt,
+		&i.Status,
 	)
 	return i, err
 }
@@ -411,7 +412,7 @@ func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, e
 const updateUserPassword = `-- name: UpdateUserPassword :one
 UPDATE users
 SET hashed_password = $2
-WHERE username = $1 RETURNING id, username, hashed_password, full_name, email, phone_number, address, data_image, original_image, role, status, created_at, is_verified_email, removed_at
+WHERE username = $1 RETURNING id, username, hashed_password, full_name, email, phone_number, address, data_image, original_image, role, created_at, is_verified_email, removed_at, status
 `
 
 type UpdateUserPasswordParams struct {
@@ -433,10 +434,10 @@ func (q *Queries) UpdateUserPassword(ctx context.Context, arg UpdateUserPassword
 		&i.DataImage,
 		&i.OriginalImage,
 		&i.Role,
-		&i.Status,
 		&i.CreatedAt,
 		&i.IsVerifiedEmail,
 		&i.RemovedAt,
+		&i.Status,
 	)
 	return i, err
 }
@@ -445,7 +446,7 @@ const verifiedUser = `-- name: VerifiedUser :one
 UPDATE users
 SET is_verified_email = true
 WHERE username = $1
-RETURNING id, username, hashed_password, full_name, email, phone_number, address, data_image, original_image, role, status, created_at, is_verified_email, removed_at
+RETURNING id, username, hashed_password, full_name, email, phone_number, address, data_image, original_image, role, created_at, is_verified_email, removed_at, status
 `
 
 func (q *Queries) VerifiedUser(ctx context.Context, username string) (User, error) {
@@ -462,10 +463,10 @@ func (q *Queries) VerifiedUser(ctx context.Context, username string) (User, erro
 		&i.DataImage,
 		&i.OriginalImage,
 		&i.Role,
-		&i.Status,
 		&i.CreatedAt,
 		&i.IsVerifiedEmail,
 		&i.RemovedAt,
+		&i.Status,
 	)
 	return i, err
 }

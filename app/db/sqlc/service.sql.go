@@ -17,7 +17,7 @@ INSERT INTO services (
 ) VALUES (
     $1, $2, $3, $4, $5
 )
-RETURNING id, name, description, duration, cost, category, priority, created_at, removed_at, updated_at
+RETURNING id, name, description, duration, cost, category, created_at, priority, removed_at, updated_at
 `
 
 type CreateServiceParams struct {
@@ -44,8 +44,8 @@ func (q *Queries) CreateService(ctx context.Context, arg CreateServiceParams) (S
 		&i.Duration,
 		&i.Cost,
 		&i.Category,
-		&i.Priority,
 		&i.CreatedAt,
+		&i.Priority,
 		&i.RemovedAt,
 		&i.UpdatedAt,
 	)
@@ -64,7 +64,7 @@ func (q *Queries) DeleteService(ctx context.Context, id int64) error {
 }
 
 const getServiceByID = `-- name: GetServiceByID :one
-SELECT id, name, description, duration, cost, category, priority, created_at, removed_at, updated_at FROM services
+SELECT id, name, description, duration, cost, category, created_at, priority, removed_at, updated_at FROM services
 WHERE id = $1  AND removed_at is null
 `
 
@@ -78,8 +78,8 @@ func (q *Queries) GetServiceByID(ctx context.Context, id int64) (Service, error)
 		&i.Duration,
 		&i.Cost,
 		&i.Category,
-		&i.Priority,
 		&i.CreatedAt,
+		&i.Priority,
 		&i.RemovedAt,
 		&i.UpdatedAt,
 	)
@@ -87,7 +87,7 @@ func (q *Queries) GetServiceByID(ctx context.Context, id int64) (Service, error)
 }
 
 const getServices = `-- name: GetServices :many
-SELECT id, name, description, duration, cost, category, priority, created_at, removed_at, updated_at FROM services
+SELECT id, name, description, duration, cost, category, created_at, priority, removed_at, updated_at FROM services
 WHERE removed_at IS NULL
 ORDER BY name
 LIMIT $1 OFFSET $2
@@ -114,8 +114,8 @@ func (q *Queries) GetServices(ctx context.Context, arg GetServicesParams) ([]Ser
 			&i.Duration,
 			&i.Cost,
 			&i.Category,
-			&i.Priority,
 			&i.CreatedAt,
+			&i.Priority,
 			&i.RemovedAt,
 			&i.UpdatedAt,
 		); err != nil {
@@ -139,7 +139,7 @@ SET
     category = $6,
     updated_at = NOW()
 WHERE id = $1
-RETURNING id, name, description, duration, cost, category, priority, created_at, removed_at, updated_at
+RETURNING id, name, description, duration, cost, category, created_at, priority, removed_at, updated_at
 `
 
 type UpdateServiceParams struct {
@@ -168,8 +168,8 @@ func (q *Queries) UpdateService(ctx context.Context, arg UpdateServiceParams) (S
 		&i.Duration,
 		&i.Cost,
 		&i.Category,
-		&i.Priority,
 		&i.CreatedAt,
+		&i.Priority,
 		&i.RemovedAt,
 		&i.UpdatedAt,
 	)

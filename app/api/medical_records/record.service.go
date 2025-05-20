@@ -19,26 +19,26 @@ type MedicalRecordServiceInterface interface {
 	GetMedicalHistoryByID(ctx *gin.Context, medicalHistoryID int64) (*MedicalHistoryResponse, error)
 	GetMedicalHistoryByPetID(ctx *gin.Context, petID int64) ([]MedicalHistoryResponse, error)
 
-	// Updated methods for examinations
-	CreateExamination(ctx *gin.Context, req *ExaminationRequest) (*ExaminationResponse, error)
-	GetExamination(ctx *gin.Context, examinationID int64) (*ExaminationResponse, error)
-	ListExaminationsByMedicalHistory(ctx *gin.Context, medicalHistoryID int64, pagination *util.Pagination) ([]ExaminationResponse, error)
-	ListExaminationsByPet(ctx *gin.Context, petID int64, pagination *util.Pagination) ([]ExaminationResponse, error)
+	// // Updated methods for examinations
+	// CreateExamination(ctx *gin.Context, req *ExaminationRequest) (*ExaminationResponse, error)
+	// GetExamination(ctx *gin.Context, examinationID int64) (*ExaminationResponse, error)
+	// ListExaminationsByMedicalHistory(ctx *gin.Context, medicalHistoryID int64, pagination *util.Pagination) ([]ExaminationResponse, error)
+	// ListExaminationsByPet(ctx *gin.Context, petID int64, pagination *util.Pagination) ([]ExaminationResponse, error)
 
-	// Updated methods for prescriptions
-	CreatePrescription(ctx *gin.Context, req *PrescriptionRequest) (*PrescriptionResponse, error)
-	GetPrescription(ctx *gin.Context, prescriptionID int64) (*PrescriptionResponse, error)
-	ListPrescriptionsByMedicalHistory(ctx *gin.Context, medicalHistoryID int64, pagination *util.Pagination) ([]PrescriptionResponse, error)
-	ListPrescriptionsByPet(ctx *gin.Context, petID int64, pagination *util.Pagination) ([]PrescriptionResponse, error)
+	// // Updated methods for prescriptions
+	// CreatePrescription(ctx *gin.Context, req *PrescriptionRequest) (*PrescriptionResponse, error)
+	// GetPrescription(ctx *gin.Context, prescriptionID int64) (*PrescriptionResponse, error)
+	// ListPrescriptionsByMedicalHistory(ctx *gin.Context, medicalHistoryID int64, pagination *util.Pagination) ([]PrescriptionResponse, error)
+	// ListPrescriptionsByPet(ctx *gin.Context, petID int64, pagination *util.Pagination) ([]PrescriptionResponse, error)
 
-	// Updated methods for test results
-	CreateTestResult(ctx *gin.Context, req *TestResultRequest) (*TestResultResponse, error)
-	GetTestResult(ctx *gin.Context, testResultID int64) (*TestResultResponse, error)
-	ListTestResultsByMedicalHistory(ctx *gin.Context, medicalHistoryID int64, pagination *util.Pagination) ([]TestResultResponse, error)
-	ListTestResultsByPet(ctx *gin.Context, petID int64, pagination *util.Pagination) ([]TestResultResponse, error)
+	// // Updated methods for test results
+	// CreateTestResult(ctx *gin.Context, req *TestResultRequest) (*TestResultResponse, error)
+	// GetTestResult(ctx *gin.Context, testResultID int64) (*TestResultResponse, error)
+	// ListTestResultsByMedicalHistory(ctx *gin.Context, medicalHistoryID int64, pagination *util.Pagination) ([]TestResultResponse, error)
+	// ListTestResultsByPet(ctx *gin.Context, petID int64, pagination *util.Pagination) ([]TestResultResponse, error)
 
 	// Comprehensive medical history
-	GetCompleteMedicalHistory(ctx *gin.Context, petID int64) (*MedicalHistorySummary, error)
+	// GetCompleteMedicalHistory(ctx *gin.Context, petID int64) (*MedicalHistorySummary, error)
 	GetAllSoapNotesByPetID(ctx *gin.Context, petID int64) ([]SoapNoteResponse, error)
 
 	// New method for appointment visit summary
@@ -189,624 +189,604 @@ func (s *MedicalRecordService) GetMedicalHistoryByPetID(ctx *gin.Context, petID 
 
 // Examination-related service methods
 
-// CreateExamination creates a new examination record for a pet's medical history
-func (s *MedicalRecordService) CreateExamination(ctx *gin.Context, req *ExaminationRequest) (*ExaminationResponse, error) {
-	var examination ExaminationResponse
+// // CreateExamination creates a new examination record for a pet's medical history
+// func (s *MedicalRecordService) CreateExamination(ctx *gin.Context, req *ExaminationRequest) (*ExaminationResponse, error) {
+// 	var examination ExaminationResponse
 
-	// Parse the examination date from string to time.Time
-	layout := "2006-01-02 15:04:05"
-	examDate, err := time.Parse(layout, req.ExamDate)
-	if err != nil {
-		return nil, fmt.Errorf("invalid examination date format: %w", err)
-	}
+// 	// Parse the examination date from string to time.Time
+// 	layout := "2006-01-02 15:04:05"
+// 	examDate, err := time.Parse(layout, req.ExamDate)
+// 	if err != nil {
+// 		return nil, fmt.Errorf("invalid examination date format: %w", err)
+// 	}
 
-	// Begin transaction
-	err = s.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
-		// Check if medical history entry exists
-		medicalHistory, err := q.GetMedicalHistoryById(ctx, req.MedicalHistoryID)
-		if err != nil {
-			return fmt.Errorf("failed to get medical history: %w", err)
-		}
+// 	// Begin transaction
+// 	err = s.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
+// 		// Check if medical history entry exists
+// 		medicalHistory, err := q.GetMedicalHistoryById(ctx, req.MedicalHistoryID)
+// 		if err != nil {
+// 			return fmt.Errorf("failed to get medical history: %w", err)
+// 		}
 
-		// Check if doctor exists
-		doctor, err := q.GetDoctor(ctx, req.DoctorID)
-		if err != nil {
-			return fmt.Errorf("failed to get doctor: %w", err)
-		}
+// 		// Check if doctor exists
+// 		doctor, err := q.GetDoctor(ctx, req.DoctorID)
+// 		if err != nil {
+// 			return fmt.Errorf("failed to get doctor: %w", err)
+// 		}
 
-		// Create examination record
-		result, err := q.CreateExamination(ctx, db.CreateExaminationParams{
-			MedicalHistoryID: req.MedicalHistoryID,
-			ExamDate:         pgtype.Timestamp{Time: examDate, Valid: true},
-			ExamType:         req.ExamType,
-			Findings:         req.Findings,
-			VetNotes:         pgtype.Text{String: req.VetNotes, Valid: true},
-			DoctorID:         req.DoctorID,
-		})
-		if err != nil {
-			return fmt.Errorf("failed to create examination: %w", err)
-		}
+// 		// Create examination record
+// 		result, err := q.CreateExamination(ctx, db.CreateExaminationParams{
+// 			MedicalHistoryID: req.MedicalHistoryID,
+// 			ExamDate:         pgtype.Timestamp{Time: examDate, Valid: true},
+// 			ExamType:         req.ExamType,
+// 			Findings:         req.Findings,
+// 			VetNotes:         pgtype.Text{String: req.VetNotes, Valid: true},
+// 			DoctorID:         req.DoctorID,
+// 		})
+// 		if err != nil {
+// 			return fmt.Errorf("failed to create examination: %w", err)
+// 		}
 
-		// Populate response
-		examination = ExaminationResponse{
-			ID:               result.ID,
-			MedicalHistoryID: medicalHistory.ID,
-			ExamDate:         result.ExamDate.Time.Format(layout),
-			ExamType:         result.ExamType,
-			Findings:         result.Findings,
-			VetNotes:         result.VetNotes.String,
-			DoctorID:         doctor.ID,
-			DoctorName:       doctor.Name,
-			CreatedAt:        result.CreatedAt.Time.Format(layout),
-			UpdatedAt:        result.UpdatedAt.Time.Format(layout),
-		}
+// 		// Populate response
+// 		examination = ExaminationResponse{
+// 			ID:               result.ID,
+// 			MedicalHistoryID: medicalHistory.ID,
+// 			ExamDate:         result.ExamDate.Time.Format(layout),
+// 			ExamType:         result.ExamType,
+// 			Findings:         result.Findings,
+// 			VetNotes:         result.VetNotes.String,
+// 			DoctorID:         doctor.ID,
+// 			DoctorName:       doctor.Name,
+// 			CreatedAt:        result.CreatedAt.Time.Format(layout),
+// 			UpdatedAt:        result.UpdatedAt.Time.Format(layout),
+// 		}
 
-		return nil
-	})
+// 		return nil
+// 	})
 
-	if err != nil {
-		return nil, err
-	}
+// 	if err != nil {
+// 		return nil, err
+// 	}
 
-	return &examination, nil
-}
+// 	return &examination, nil
+// }
 
 // GetExamination retrieves an examination by ID
-func (s *MedicalRecordService) GetExamination(ctx *gin.Context, examinationID int64) (*ExaminationResponse, error) {
-	examination, err := s.storeDB.GetExaminationByID(ctx, examinationID)
-	if err != nil {
-		return nil, fmt.Errorf("failed to get examination: %w", err)
-	}
+// func (s *MedicalRecordService) GetExamination(ctx *gin.Context, examinationID int64) (*ExaminationResponse, error) {
+// 	examination, err := s.storeDB.GetExaminationByID(ctx, examinationID)
+// 	if err != nil {
+// 		return nil, fmt.Errorf("failed to get examination: %w", err)
+// 	}
 
-	// Get doctor info
-	doctor, err := s.storeDB.GetDoctor(ctx, examination.DoctorID)
-	if err != nil {
-		return nil, fmt.Errorf("failed to get doctor: %w", err)
-	}
+// 	// Get doctor info
+// 	doctor, err := s.storeDB.GetDoctor(ctx, examination.DoctorID)
+// 	if err != nil {
+// 		return nil, fmt.Errorf("failed to get doctor: %w", err)
+// 	}
 
-	layout := "2006-01-02 15:04:05"
-	return &ExaminationResponse{
-		ID:               examination.ID,
-		MedicalHistoryID: examination.MedicalHistoryID,
-		ExamDate:         examination.ExamDate.Time.Format(layout),
-		ExamType:         examination.ExamType,
-		Findings:         examination.Findings,
-		VetNotes:         examination.VetNotes.String,
-		DoctorID:         examination.DoctorID,
-		DoctorName:       doctor.Name,
-		CreatedAt:        examination.CreatedAt.Time.Format(layout),
-		UpdatedAt:        examination.UpdatedAt.Time.Format(layout),
-	}, nil
-}
+// 	layout := "2006-01-02 15:04:05"
+// 	return &ExaminationResponse{
+// 		ID:               examination.ID,
+// 		MedicalHistoryID: examination.MedicalHistoryID,
+// 		ExamDate:         examination.ExamDate.Time.Format(layout),
+// 		ExamType:         examination.ExamType,
+// 		Findings:         examination.Findings,
+// 		VetNotes:         examination.VetNotes.String,
+// 		DoctorID:         examination.DoctorID,
+// 		DoctorName:       doctor.Name,
+// 		CreatedAt:        examination.CreatedAt.Time.Format(layout),
+// 		UpdatedAt:        examination.UpdatedAt.Time.Format(layout),
+// 	}, nil
+// }
 
 // ListExaminationsByMedicalHistory lists all examinations for a medical history with pagination
-func (s *MedicalRecordService) ListExaminationsByMedicalHistory(ctx *gin.Context, medicalHistoryID int64, pagination *util.Pagination) ([]ExaminationResponse, error) {
-	offset := (pagination.Page - 1) * pagination.PageSize
+// func (s *MedicalRecordService) ListExaminationsByMedicalHistory(ctx *gin.Context, medicalHistoryID int64, pagination *util.Pagination) ([]ExaminationResponse, error) {
+// 	offset := (pagination.Page - 1) * pagination.PageSize
 
-	examinations, err := s.storeDB.ListExaminationsByMedicalHistory(ctx, db.ListExaminationsByMedicalHistoryParams{
-		MedicalHistoryID: medicalHistoryID,
-		Limit:            int32(pagination.PageSize),
-		Offset:           int32(offset),
-	})
-	if err != nil {
-		return nil, fmt.Errorf("failed to list examinations: %w", err)
-	}
+// 	examinations, err := s.storeDB.ListExaminationsByMedicalHistory(ctx, db.ListExaminationsByMedicalHistoryParams{
+// 		MedicalHistoryID: medicalHistoryID,
+// 		Limit:            int32(pagination.PageSize),
+// 		Offset:           int32(offset),
+// 	})
+// 	if err != nil {
+// 		return nil, fmt.Errorf("failed to list examinations: %w", err)
+// 	}
 
-	var results []ExaminationResponse
-	layout := "2006-01-02 15:04:05"
+// 	var results []ExaminationResponse
+// 	layout := "2006-01-02 15:04:05"
 
-	for _, examination := range examinations {
-		// Get doctor info
-		doctor, err := s.storeDB.GetDoctor(ctx, examination.DoctorID)
-		if err != nil {
-			return nil, fmt.Errorf("failed to get doctor: %w", err)
-		}
+// 	for _, examination := range examinations {
+// 		// Get doctor info
+// 		doctor, err := s.storeDB.GetDoctor(ctx, examination.DoctorID)
+// 		if err != nil {
+// 			return nil, fmt.Errorf("failed to get doctor: %w", err)
+// 		}
 
-		results = append(results, ExaminationResponse{
-			ID:               examination.ID,
-			MedicalHistoryID: examination.MedicalHistoryID,
-			ExamDate:         examination.ExamDate.Time.Format(layout),
-			ExamType:         examination.ExamType,
-			Findings:         examination.Findings,
-			VetNotes:         examination.VetNotes.String,
-			DoctorID:         examination.DoctorID,
-			DoctorName:       doctor.Name,
-			CreatedAt:        examination.CreatedAt.Time.Format(layout),
-			UpdatedAt:        examination.UpdatedAt.Time.Format(layout),
-		})
-	}
+// 		results = append(results, ExaminationResponse{
+// 			ID:               examination.ID,
+// 			MedicalHistoryID: examination.MedicalHistoryID,
+// 			ExamDate:         examination.ExamDate.Time.Format(layout),
+// 			ExamType:         examination.ExamType,
+// 			Findings:         examination.Findings,
+// 			VetNotes:         examination.VetNotes.String,
+// 			DoctorID:         examination.DoctorID,
+// 			DoctorName:       doctor.Name,
+// 			CreatedAt:        examination.CreatedAt.Time.Format(layout),
+// 			UpdatedAt:        examination.UpdatedAt.Time.Format(layout),
+// 		})
+// 	}
 
-	return results, nil
-}
+// 	return results, nil
+// }
 
-// ListExaminationsByPet lists all examinations for a pet with pagination
-func (s *MedicalRecordService) ListExaminationsByPet(ctx *gin.Context, petID int64, pagination *util.Pagination) ([]ExaminationResponse, error) {
-	// Get medical record for pet
-	medicalRecord, err := s.storeDB.GetMedicalRecord(ctx, pgtype.Int8{Int64: petID, Valid: true})
-	if err != nil {
-		return nil, fmt.Errorf("failed to get medical record: %w", err)
-	}
+// // ListExaminationsByPet lists all examinations for a pet with pagination
+// func (s *MedicalRecordService) ListExaminationsByPet(ctx *gin.Context, petID int64, pagination *util.Pagination) ([]ExaminationResponse, error) {
+// 	// Get medical record for pet
+// 	medicalRecord, err := s.storeDB.GetMedicalRecord(ctx, pgtype.Int8{Int64: petID, Valid: true})
+// 	if err != nil {
+// 		return nil, fmt.Errorf("failed to get medical record: %w", err)
+// 	}
 
-	// Use the ListExaminationsByMedicalHistory function
-	return s.ListExaminationsByMedicalHistory(ctx, medicalRecord.ID, pagination)
-}
+// 	// Use the ListExaminationsByMedicalHistory function
+// 	return s.ListExaminationsByMedicalHistory(ctx, medicalRecord.ID, pagination)
+// }
 
 // CreatePrescription creates a new prescription record
-func (s *MedicalRecordService) CreatePrescription(ctx *gin.Context, req *PrescriptionRequest) (*PrescriptionResponse, error) {
-	var prescriptionResponse PrescriptionResponse
+// func (s *MedicalRecordService) CreatePrescription(ctx *gin.Context, req *PrescriptionRequest) (*PrescriptionResponse, error) {
+// 	var prescriptionResponse PrescriptionResponse
 
-	// Parse the prescription date
-	layout := "2006-01-02 15:04:05"
-	prescriptionDate, err := time.Parse(layout, req.PrescriptionDate)
-	if err != nil {
-		return nil, fmt.Errorf("invalid prescription date format: %w", err)
-	}
+// 	// Parse the prescription date
+// 	layout := "2006-01-02 15:04:05"
+// 	prescriptionDate, err := time.Parse(layout, req.PrescriptionDate)
+// 	if err != nil {
+// 		return nil, fmt.Errorf("invalid prescription date format: %w", err)
+// 	}
 
-	// Begin transaction
-	err = s.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
-		// Verify that medical history exists
-		_, err := q.GetMedicalHistoryById(ctx, req.MedicalHistoryID)
-		if err != nil {
-			return fmt.Errorf("failed to get medical history: %w", err)
-		}
+// 	// Begin transaction
+// 	err = s.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
+// 		// Verify that medical history exists
+// 		_, err := q.GetMedicalHistoryById(ctx, req.MedicalHistoryID)
+// 		if err != nil {
+// 			return fmt.Errorf("failed to get medical history: %w", err)
+// 		}
 
-		// Verify that examination exists
-		examination, err := q.GetExaminationByID(ctx, req.ExaminationID)
-		if err != nil {
-			return fmt.Errorf("failed to get examination: %w", err)
-		}
+// 		// Verify that examination exists
+// 		examination, err := q.GetExaminationByID(ctx, req.ExaminationID)
+// 		if err != nil {
+// 			return fmt.Errorf("failed to get examination: %w", err)
+// 		}
 
-		// Verify that examination belongs to this medical history
-		if examination.MedicalHistoryID != req.MedicalHistoryID {
-			return fmt.Errorf("examination does not belong to the specified medical history")
-		}
+// 		// Verify that examination belongs to this medical history
+// 		if examination.MedicalHistoryID != req.MedicalHistoryID {
+// 			return fmt.Errorf("examination does not belong to the specified medical history")
+// 		}
 
-		// Verify that doctor exists
-		doctor, err := q.GetDoctor(ctx, req.DoctorID)
-		if err != nil {
-			return fmt.Errorf("failed to get doctor: %w", err)
-		}
+// 		// Verify that doctor exists
+// 		doctor, err := q.GetDoctor(ctx, req.DoctorID)
+// 		if err != nil {
+// 			return fmt.Errorf("failed to get doctor: %w", err)
+// 		}
 
-		// Create prescription
-		prescription, err := q.CreatePrescription(ctx, db.CreatePrescriptionParams{
-			MedicalHistoryID: req.MedicalHistoryID,
-			ExaminationID:    req.ExaminationID,
-			PrescriptionDate: pgtype.Timestamp{Time: prescriptionDate, Valid: true},
-			DoctorID:         req.DoctorID,
-			Notes:            pgtype.Text{String: req.Notes, Valid: true},
-		})
-		if err != nil {
-			return fmt.Errorf("failed to create prescription: %w", err)
-		}
+// 		// Create prescription
+// 		prescription, err := q.CreatePrescription(ctx, db.CreatePrescriptionParams{
+// 			MedicalHistoryID: req.MedicalHistoryID,
+// 			ExaminationID:    req.ExaminationID,
+// 			PrescriptionDate: pgtype.Timestamp{Time: prescriptionDate, Valid: true},
+// 			DoctorID:         req.DoctorID,
+// 			Notes:            pgtype.Text{String: req.Notes, Valid: true},
+// 		})
+// 		if err != nil {
+// 			return fmt.Errorf("failed to create prescription: %w", err)
+// 		}
 
-		// Add medications to the prescription
-		var medicationResponses []PrescriptionMedicationResponse
-		for _, medication := range req.Medications {
-			// Verify medicine exists
-			medicine, err := q.GetMedicineByID(ctx, medication.MedicineID)
-			if err != nil {
-				return fmt.Errorf("failed to get medicine (ID: %d): %w", medication.MedicineID, err)
-			}
+// 		// Add medications to the prescription
+// 		var medicationResponses []PrescriptionMedicationResponse
+// 		for _, medication := range req.Medications {
+// 			// Verify medicine exists
+// 			medicine, err := q.GetMedicineByID(ctx, medication.MedicineID)
+// 			if err != nil {
+// 				return fmt.Errorf("failed to get medicine (ID: %d): %w", medication.MedicineID, err)
+// 			}
 
-			// Create prescription medication entry
-			prescriptionMed, err := q.CreatePrescriptionMedication(ctx, db.CreatePrescriptionMedicationParams{
-				PrescriptionID: prescription.ID,
-				MedicineID:     medication.MedicineID,
-				Dosage:         medication.Dosage,
-				Frequency:      medication.Frequency,
-				Duration:       medication.Duration,
-				Instructions:   pgtype.Text{String: medication.Instructions, Valid: true},
-			})
-			if err != nil {
-				return fmt.Errorf("failed to add medicine to prescription: %w", err)
-			}
+// 			// Create prescription medication entry
+// 			prescriptionMed, err := q.CreatePrescriptionMedication(ctx, db.CreatePrescriptionMedicationParams{
+// 				PrescriptionID: prescription.ID,
+// 				MedicineID:     medication.MedicineID,
+// 				Dosage:         medication.Dosage,
+// 				Frequency:      medication.Frequency,
+// 				Duration:       medication.Duration,
+// 				Instructions:   pgtype.Text{String: medication.Instructions, Valid: true},
+// 			})
+// 			if err != nil {
+// 				return fmt.Errorf("failed to add medicine to prescription: %w", err)
+// 			}
 
-			medicationResponses = append(medicationResponses, PrescriptionMedicationResponse{
-				ID:             prescriptionMed.ID,
-				PrescriptionID: prescription.ID,
-				MedicineID:     medicine.ID,
-				MedicineName:   medicine.Name,
-				Dosage:         prescriptionMed.Dosage,
-				Frequency:      prescriptionMed.Frequency,
-				Duration:       prescriptionMed.Duration,
-				Instructions:   prescriptionMed.Instructions.String,
-			})
-		}
+// 			medicationResponses = append(medicationResponses, PrescriptionMedicationResponse{
+// 				ID:             prescriptionMed.ID,
+// 				PrescriptionID: prescription.ID,
+// 				MedicineID:     medicine.ID,
+// 				MedicineName:   medicine.Name,
+// 				Dosage:         prescriptionMed.Dosage,
+// 				Frequency:      prescriptionMed.Frequency,
+// 				Duration:       prescriptionMed.Duration,
+// 				Instructions:   prescriptionMed.Instructions.String,
+// 			})
+// 		}
 
-		// Populate response
-		prescriptionResponse = PrescriptionResponse{
-			ID:               prescription.ID,
-			MedicalHistoryID: prescription.MedicalHistoryID,
-			ExaminationID:    prescription.ExaminationID,
-			PrescriptionDate: prescription.PrescriptionDate.Time.Format(layout),
-			DoctorID:         prescription.DoctorID,
-			DoctorName:       doctor.Name,
-			Notes:            prescription.Notes.String,
-			Medications:      medicationResponses,
-			CreatedAt:        prescription.CreatedAt.Time.Format(layout),
-			UpdatedAt:        prescription.UpdatedAt.Time.Format(layout),
-		}
+// 		// Populate response
+// 		prescriptionResponse = PrescriptionResponse{
+// 			ID:               prescription.ID,
+// 			MedicalHistoryID: prescription.MedicalHistoryID,
+// 			ExaminationID:    prescription.ExaminationID,
+// 			PrescriptionDate: prescription.PrescriptionDate.Time.Format(layout),
+// 			DoctorID:         prescription.DoctorID,
+// 			DoctorName:       doctor.Name,
+// 			Notes:            prescription.Notes.String,
+// 			Medications:      medicationResponses,
+// 			CreatedAt:        prescription.CreatedAt.Time.Format(layout),
+// 			UpdatedAt:        prescription.UpdatedAt.Time.Format(layout),
+// 		}
 
-		return nil
-	})
+// 		return nil
+// 	})
 
-	if err != nil {
-		return nil, err
-	}
+// 	if err != nil {
+// 		return nil, err
+// 	}
 
-	return &prescriptionResponse, nil
-}
+// 	return &prescriptionResponse, nil
+// }
 
 // GetPrescription retrieves a prescription by ID with all medications
-func (s *MedicalRecordService) GetPrescription(ctx *gin.Context, prescriptionID int64) (*PrescriptionResponse, error) {
-	prescription, err := s.storeDB.GetPrescriptionByID(ctx, prescriptionID)
-	if err != nil {
-		return nil, fmt.Errorf("failed to get prescription: %w", err)
-	}
+// func (s *MedicalRecordService) GetPrescription(ctx *gin.Context, prescriptionID int64) (*PrescriptionResponse, error) {
+// 	prescription, err := s.storeDB.GetPrescriptionByID(ctx, prescriptionID)
+// 	if err != nil {
+// 		return nil, fmt.Errorf("failed to get prescription: %w", err)
+// 	}
 
-	// Get doctor info
-	doctor, err := s.storeDB.GetDoctor(ctx, prescription.DoctorID)
-	if err != nil {
-		return nil, fmt.Errorf("failed to get doctor: %w", err)
-	}
+// 	// Get doctor info
+// 	doctor, err := s.storeDB.GetDoctor(ctx, prescription.DoctorID)
+// 	if err != nil {
+// 		return nil, fmt.Errorf("failed to get doctor: %w", err)
+// 	}
 
-	// Get medications for this prescription
-	medications, err := s.storeDB.ListPrescriptionMedications(ctx, prescriptionID)
-	if err != nil {
-		return nil, fmt.Errorf("failed to get prescription medications: %w", err)
-	}
+// 	// Get medications for this prescription
+// 	medications, err := s.storeDB.ListPrescriptionMedications(ctx, prescriptionID)
+// 	if err != nil {
+// 		return nil, fmt.Errorf("failed to get prescription medications: %w", err)
+// 	}
 
-	var medicationResponses []PrescriptionMedicationResponse
-	for _, med := range medications {
-		// Get medicine details
-		medicine, err := s.storeDB.GetMedicineByID(ctx, med.MedicineID)
-		if err != nil {
-			return nil, fmt.Errorf("failed to get medicine details: %w", err)
-		}
+// 	var medicationResponses []PrescriptionMedicationResponse
+// 	for _, med := range medications {
+// 		// Get medicine details
+// 		medicine, err := s.storeDB.GetMedicineByID(ctx, med.MedicineID)
+// 		if err != nil {
+// 			return nil, fmt.Errorf("failed to get medicine details: %w", err)
+// 		}
 
-		medicationResponses = append(medicationResponses, PrescriptionMedicationResponse{
-			ID:             med.ID,
-			PrescriptionID: prescriptionID,
-			MedicineID:     med.MedicineID,
-			MedicineName:   medicine.Name,
-			Dosage:         med.Dosage,
-			Frequency:      med.Frequency,
-			Duration:       med.Duration,
-			Instructions:   med.Instructions.String,
-		})
-	}
+// 		medicationResponses = append(medicationResponses, PrescriptionMedicationResponse{
+// 			ID:             med.ID,
+// 			PrescriptionID: prescriptionID,
+// 			MedicineID:     med.MedicineID,
+// 			MedicineName:   medicine.Name,
+// 			Dosage:         med.Dosage,
+// 			Frequency:      med.Frequency,
+// 			Duration:       med.Duration,
+// 			Instructions:   med.Instructions.String,
+// 		})
+// 	}
 
-	layout := "2006-01-02 15:04:05"
-	return &PrescriptionResponse{
-		ID:               prescription.ID,
-		MedicalHistoryID: prescription.MedicalHistoryID,
-		ExaminationID:    prescription.ExaminationID,
-		PrescriptionDate: prescription.PrescriptionDate.Time.Format(layout),
-		DoctorID:         prescription.DoctorID,
-		DoctorName:       doctor.Name,
-		Notes:            prescription.Notes.String,
-		Medications:      medicationResponses,
-		CreatedAt:        prescription.CreatedAt.Time.Format(layout),
-		UpdatedAt:        prescription.UpdatedAt.Time.Format(layout),
-	}, nil
-}
+// 	layout := "2006-01-02 15:04:05"
+// 	return &PrescriptionResponse{
+// 		ID:               prescription.ID,
+// 		MedicalHistoryID: prescription.MedicalHistoryID,
+// 		ExaminationID:    prescription.ExaminationID,
+// 		PrescriptionDate: prescription.PrescriptionDate.Time.Format(layout),
+// 		DoctorID:         prescription.DoctorID,
+// 		DoctorName:       doctor.Name,
+// 		Notes:            prescription.Notes.String,
+// 		Medications:      medicationResponses,
+// 		CreatedAt:        prescription.CreatedAt.Time.Format(layout),
+// 		UpdatedAt:        prescription.UpdatedAt.Time.Format(layout),
+// 	}, nil
+// }
 
-// ListPrescriptionsByMedicalHistory lists all prescriptions for a medical history with pagination
-func (s *MedicalRecordService) ListPrescriptionsByMedicalHistory(ctx *gin.Context, medicalHistoryID int64, pagination *util.Pagination) ([]PrescriptionResponse, error) {
-	offset := (pagination.Page - 1) * pagination.PageSize
+// // ListPrescriptionsByMedicalHistory lists all prescriptions for a medical history with pagination
+// func (s *MedicalRecordService) ListPrescriptionsByMedicalHistory(ctx *gin.Context, medicalHistoryID int64, pagination *util.Pagination) ([]PrescriptionResponse, error) {
+// 	offset := (pagination.Page - 1) * pagination.PageSize
 
-	prescriptions, err := s.storeDB.ListPrescriptionsByMedicalHistory(ctx, db.ListPrescriptionsByMedicalHistoryParams{
-		MedicalHistoryID: medicalHistoryID,
-		Limit:            int32(pagination.PageSize),
-		Offset:           int32(offset),
-	})
-	if err != nil {
-		return nil, fmt.Errorf("failed to list prescriptions: %w", err)
-	}
+// 	prescriptions, err := s.storeDB.ListPrescriptionsByMedicalHistory(ctx, db.ListPrescriptionsByMedicalHistoryParams{
+// 		MedicalHistoryID: medicalHistoryID,
+// 		Limit:            int32(pagination.PageSize),
+// 		Offset:           int32(offset),
+// 	})
+// 	if err != nil {
+// 		return nil, fmt.Errorf("failed to list prescriptions: %w", err)
+// 	}
 
-	var results []PrescriptionResponse
-	// layout := "2006-01-02 15:04:05"
+// 	var results []PrescriptionResponse
+// 	// layout := "2006-01-02 15:04:05"
 
-	for _, prescription := range prescriptions {
-		// Get prescription with full details
-		prescriptionDetail, err := s.GetPrescription(ctx, prescription.ID)
-		if err != nil {
-			return nil, fmt.Errorf("failed to get prescription details: %w", err)
-		}
+// 	for _, prescription := range prescriptions {
+// 		// Get prescription with full details
+// 		prescriptionDetail, err := s.GetPrescription(ctx, prescription.ID)
+// 		if err != nil {
+// 			return nil, fmt.Errorf("failed to get prescription details: %w", err)
+// 		}
 
-		results = append(results, *prescriptionDetail)
-	}
+// 		results = append(results, *prescriptionDetail)
+// 	}
 
-	return results, nil
-}
+// 	return results, nil
+// }
 
-// ListPrescriptionsByPet lists all prescriptions for a pet with pagination
-func (s *MedicalRecordService) ListPrescriptionsByPet(ctx *gin.Context, petID int64, pagination *util.Pagination) ([]PrescriptionResponse, error) {
-	// Get medical histories for pet
-	histories, err := s.GetMedicalHistoryByPetID(ctx, petID)
-	if err != nil {
-		return nil, fmt.Errorf("failed to get medical histories: %w", err)
-	}
+// // ListPrescriptionsByPet lists all prescriptions for a pet with pagination
+// func (s *MedicalRecordService) ListPrescriptionsByPet(ctx *gin.Context, petID int64, pagination *util.Pagination) ([]PrescriptionResponse, error) {
+// 	// Get medical histories for pet
+// 	histories, err := s.GetMedicalHistoryByPetID(ctx, petID)
+// 	if err != nil {
+// 		return nil, fmt.Errorf("failed to get medical histories: %w", err)
+// 	}
 
-	if len(histories) == 0 {
-		return []PrescriptionResponse{}, nil
-	}
+// 	if len(histories) == 0 {
+// 		return []PrescriptionResponse{}, nil
+// 	}
 
-	// Get prescriptions for each medical history and combine them
-	var allPrescriptions []PrescriptionResponse
-	for _, history := range histories {
-		prescriptions, err := s.ListPrescriptionsByMedicalHistory(ctx, history.ID, pagination)
-		if err != nil {
-			// Log error but continue
-			log.Printf("Error fetching prescriptions for history ID %d: %v", history.ID, err)
-			continue
-		}
-		allPrescriptions = append(allPrescriptions, prescriptions...)
-	}
+// 	// Get prescriptions for each medical history and combine them
+// 	var allPrescriptions []PrescriptionResponse
+// 	for _, history := range histories {
+// 		prescriptions, err := s.ListPrescriptionsByMedicalHistory(ctx, history.ID, pagination)
+// 		if err != nil {
+// 			// Log error but continue
+// 			log.Printf("Error fetching prescriptions for history ID %d: %v", history.ID, err)
+// 			continue
+// 		}
+// 		allPrescriptions = append(allPrescriptions, prescriptions...)
+// 	}
 
-	return allPrescriptions, nil
-}
+// 	return allPrescriptions, nil
+// }
 
 // Test Result-related service methods
 
-// CreateTestResult creates a new test result record
-func (s *MedicalRecordService) CreateTestResult(ctx *gin.Context, req *TestResultRequest) (*TestResultResponse, error) {
-	var testResultResponse TestResultResponse
+// // CreateTestResult creates a new test result record
+// func (s *MedicalRecordService) CreateTestResult(ctx *gin.Context, req *TestResultRequest) (*TestResultResponse, error) {
+// 	var testResultResponse TestResultResponse
 
-	// Parse the test date
-	layout := "2006-01-02 15:04:05"
-	testDate, err := time.Parse(layout, req.TestDate)
-	if err != nil {
-		return nil, fmt.Errorf("invalid test date format: %w", err)
-	}
+// 	// Parse the test date
+// 	layout := "2006-01-02 15:04:05"
+// 	testDate, err := time.Parse(layout, req.TestDate)
+// 	if err != nil {
+// 		return nil, fmt.Errorf("invalid test date format: %w", err)
+// 	}
 
-	// Begin transaction
-	err = s.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
-		// Verify that medical history exists
-		_, err := q.GetMedicalHistoryById(ctx, req.MedicalHistoryID)
-		if err != nil {
-			return fmt.Errorf("failed to get medical history: %w", err)
-		}
+// 	// Begin transaction
+// 	err = s.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
+// 		// Verify that medical history exists
+// 		_, err := q.GetMedicalHistoryById(ctx, req.MedicalHistoryID)
+// 		if err != nil {
+// 			return fmt.Errorf("failed to get medical history: %w", err)
+// 		}
 
-		// Verify that examination exists
-		examination, err := q.GetExaminationByID(ctx, req.ExaminationID)
-		if err != nil {
-			return fmt.Errorf("failed to get examination: %w", err)
-		}
+// 		// Verify that examination exists
+// 		examination, err := q.GetExaminationByID(ctx, req.ExaminationID)
+// 		if err != nil {
+// 			return fmt.Errorf("failed to get examination: %w", err)
+// 		}
 
-		// Verify that examination belongs to this medical history
-		if examination.MedicalHistoryID != req.MedicalHistoryID {
-			return fmt.Errorf("examination does not belong to the specified medical history")
-		}
+// 		// Verify that examination belongs to this medical history
+// 		if examination.MedicalHistoryID != req.MedicalHistoryID {
+// 			return fmt.Errorf("examination does not belong to the specified medical history")
+// 		}
 
-		// Verify that doctor exists
-		doctor, err := q.GetDoctor(ctx, req.DoctorID)
-		if err != nil {
-			return fmt.Errorf("failed to get doctor: %w", err)
-		}
+// 		// Verify that doctor exists
+// 		doctor, err := q.GetDoctor(ctx, req.DoctorID)
+// 		if err != nil {
+// 			return fmt.Errorf("failed to get doctor: %w", err)
+// 		}
 
-		// Create test result
-		testResult, err := q.CreateTestResult(ctx, db.CreateTestResultParams{
-			MedicalHistoryID: req.MedicalHistoryID,
-			ExaminationID:    req.ExaminationID,
-			TestType:         req.TestType,
-			TestDate:         pgtype.Timestamp{Time: testDate, Valid: true},
-			Results:          req.Results,
-			Interpretation:   pgtype.Text{String: req.Interpretation, Valid: true},
-			FileUrl:          pgtype.Text{String: req.FileURL, Valid: true},
-			DoctorID:         req.DoctorID,
-		})
-		if err != nil {
-			return fmt.Errorf("failed to create test result: %w", err)
-		}
+// 		// Create test result
+// 		testResult, err := q.CreateTestResult(ctx, db.CreateTestResultParams{
+// 			MedicalHistoryID: req.MedicalHistoryID,
+// 			ExaminationID:    req.ExaminationID,
+// 			TestType:         req.TestType,
+// 			TestDate:         pgtype.Timestamp{Time: testDate, Valid: true},
+// 			Results:          req.Results,
+// 			Interpretation:   pgtype.Text{String: req.Interpretation, Valid: true},
+// 			FileUrl:          pgtype.Text{String: req.FileURL, Valid: true},
+// 			DoctorID:         req.DoctorID,
+// 		})
+// 		if err != nil {
+// 			return fmt.Errorf("failed to create test result: %w", err)
+// 		}
 
-		// Populate response
-		testResultResponse = TestResultResponse{
-			ID:               testResult.ID,
-			MedicalHistoryID: testResult.MedicalHistoryID,
-			ExaminationID:    testResult.ExaminationID,
-			TestType:         testResult.TestType,
-			TestDate:         testResult.TestDate.Time.Format(layout),
-			Results:          testResult.Results,
-			Interpretation:   testResult.Interpretation.String,
-			FileURL:          testResult.FileUrl.String,
-			DoctorID:         testResult.DoctorID,
-			DoctorName:       doctor.Name,
-			CreatedAt:        testResult.CreatedAt.Time.Format(layout),
-			UpdatedAt:        testResult.UpdatedAt.Time.Format(layout),
-		}
+// 		// Populate response
+// 		testResultResponse = TestResultResponse{
+// 			ID:               testResult.ID,
+// 			MedicalHistoryID: testResult.MedicalHistoryID,
+// 			ExaminationID:    testResult.ExaminationID,
+// 			TestType:         testResult.TestType,
+// 			TestDate:         testResult.TestDate.Time.Format(layout),
+// 			Results:          testResult.Results,
+// 			Interpretation:   testResult.Interpretation.String,
+// 			FileURL:          testResult.FileUrl.String,
+// 			DoctorID:         testResult.DoctorID,
+// 			DoctorName:       doctor.Name,
+// 			CreatedAt:        testResult.CreatedAt.Time.Format(layout),
+// 			UpdatedAt:        testResult.UpdatedAt.Time.Format(layout),
+// 		}
 
-		return nil
-	})
+// 		return nil
+// 	})
 
-	if err != nil {
-		return nil, err
-	}
+// 	if err != nil {
+// 		return nil, err
+// 	}
 
-	return &testResultResponse, nil
-}
+// 	return &testResultResponse, nil
+// }
 
 // GetTestResult retrieves a test result by ID
-func (s *MedicalRecordService) GetTestResult(ctx *gin.Context, testResultID int64) (*TestResultResponse, error) {
-	testResult, err := s.storeDB.GetTestResultByID(ctx, testResultID)
-	if err != nil {
-		return nil, fmt.Errorf("failed to get test result: %w", err)
-	}
+// func (s *MedicalRecordService) GetTestResult(ctx *gin.Context, testResultID int64) (*TestResultResponse, error) {
+// 	testResult, err := s.storeDB.GetTestResultByID(ctx, testResultID)
+// 	if err != nil {
+// 		return nil, fmt.Errorf("failed to get test result: %w", err)
+// 	}
 
-	// Get doctor info
-	doctor, err := s.storeDB.GetDoctor(ctx, testResult.DoctorID)
-	if err != nil {
-		return nil, fmt.Errorf("failed to get doctor: %w", err)
-	}
+// 	// Get doctor info
+// 	doctor, err := s.storeDB.GetDoctor(ctx, testResult.DoctorID)
+// 	if err != nil {
+// 		return nil, fmt.Errorf("failed to get doctor: %w", err)
+// 	}
 
-	layout := "2006-01-02 15:04:05"
-	return &TestResultResponse{
-		ID:               testResult.ID,
-		MedicalHistoryID: testResult.MedicalHistoryID,
-		ExaminationID:    testResult.ExaminationID,
-		TestType:         testResult.TestType,
-		TestDate:         testResult.TestDate.Time.Format(layout),
-		Results:          testResult.Results,
-		Interpretation:   testResult.Interpretation.String,
-		FileURL:          testResult.FileUrl.String,
-		DoctorID:         testResult.DoctorID,
-		DoctorName:       doctor.Name,
-		CreatedAt:        testResult.CreatedAt.Time.Format(layout),
-		UpdatedAt:        testResult.UpdatedAt.Time.Format(layout),
-	}, nil
-}
+// 	layout := "2006-01-02 15:04:05"
+// 	return &TestResultResponse{
+// 		ID:               testResult.ID,
+// 		MedicalHistoryID: testResult.MedicalHistoryID,
+// 		ExaminationID:    testResult.ExaminationID,
+// 		TestType:         testResult.TestType,
+// 		TestDate:         testResult.TestDate.Time.Format(layout),
+// 		Results:          testResult.Results,
+// 		Interpretation:   testResult.Interpretation.String,
+// 		FileURL:          testResult.FileUrl.String,
+// 		DoctorID:         testResult.DoctorID,
+// 		DoctorName:       doctor.Name,
+// 		CreatedAt:        testResult.CreatedAt.Time.Format(layout),
+// 		UpdatedAt:        testResult.UpdatedAt.Time.Format(layout),
+// 	}, nil
+// }
 
 // ListTestResultsByMedicalHistory lists all test results for a medical history with pagination
-func (s *MedicalRecordService) ListTestResultsByMedicalHistory(ctx *gin.Context, medicalHistoryID int64, pagination *util.Pagination) ([]TestResultResponse, error) {
-	offset := (pagination.Page - 1) * pagination.PageSize
+// func (s *MedicalRecordService) ListTestResultsByMedicalHistory(ctx *gin.Context, medicalHistoryID int64, pagination *util.Pagination) ([]TestResultResponse, error) {
+// 	offset := (pagination.Page - 1) * pagination.PageSize
 
-	testResults, err := s.storeDB.ListTestResultsByMedicalHistory(ctx, db.ListTestResultsByMedicalHistoryParams{
-		MedicalHistoryID: medicalHistoryID,
-		Limit:            int32(pagination.PageSize),
-		Offset:           int32(offset),
-	})
-	if err != nil {
-		return nil, fmt.Errorf("failed to list test results: %w", err)
-	}
+// 	testResults, err := s.storeDB.ListTestResultsByMedicalHistory(ctx, db.ListTestResultsByMedicalHistoryParams{
+// 		MedicalHistoryID: medicalHistoryID,
+// 		Limit:            int32(pagination.PageSize),
+// 		Offset:           int32(offset),
+// 	})
+// 	if err != nil {
+// 		return nil, fmt.Errorf("failed to list test results: %w", err)
+// 	}
 
-	var results []TestResultResponse
-	layout := "2006-01-02 15:04:05"
+// 	var results []TestResultResponse
+// 	layout := "2006-01-02 15:04:05"
 
-	for _, testResult := range testResults {
-		// Get doctor info
-		doctor, err := s.storeDB.GetDoctor(ctx, testResult.DoctorID)
-		if err != nil {
-			return nil, fmt.Errorf("failed to get doctor: %w", err)
-		}
+// 	for _, testResult := range testResults {
+// 		// Get doctor info
+// 		doctor, err := s.storeDB.GetDoctor(ctx, testResult.DoctorID)
+// 		if err != nil {
+// 			return nil, fmt.Errorf("failed to get doctor: %w", err)
+// 		}
 
-		results = append(results, TestResultResponse{
-			ID:               testResult.ID,
-			MedicalHistoryID: testResult.MedicalHistoryID,
-			ExaminationID:    testResult.ExaminationID,
-			TestType:         testResult.TestType,
-			TestDate:         testResult.TestDate.Time.Format(layout),
-			Results:          testResult.Results,
-			Interpretation:   testResult.Interpretation.String,
-			FileURL:          testResult.FileUrl.String,
-			DoctorID:         testResult.DoctorID,
-			DoctorName:       doctor.Name,
-			CreatedAt:        testResult.CreatedAt.Time.Format(layout),
-			UpdatedAt:        testResult.UpdatedAt.Time.Format(layout),
-		})
-	}
+// 		results = append(results, TestResultResponse{
+// 			ID:               testResult.ID,
+// 			MedicalHistoryID: testResult.MedicalHistoryID,
+// 			ExaminationID:    testResult.ExaminationID,
+// 			TestType:         testResult.TestType,
+// 			TestDate:         testResult.TestDate.Time.Format(layout),
+// 			Results:          testResult.Results,
+// 			Interpretation:   testResult.Interpretation.String,
+// 			FileURL:          testResult.FileUrl.String,
+// 			DoctorID:         testResult.DoctorID,
+// 			DoctorName:       doctor.Name,
+// 			CreatedAt:        testResult.CreatedAt.Time.Format(layout),
+// 			UpdatedAt:        testResult.UpdatedAt.Time.Format(layout),
+// 		})
+// 	}
 
-	return results, nil
-}
+// 	return results, nil
+// }
 
-// ListTestResultsByPet lists all test results for a pet with pagination
-func (s *MedicalRecordService) ListTestResultsByPet(ctx *gin.Context, petID int64, pagination *util.Pagination) ([]TestResultResponse, error) {
-	// Get medical histories for pet
-	histories, err := s.GetMedicalHistoryByPetID(ctx, petID)
-	if err != nil {
-		return nil, fmt.Errorf("failed to get medical histories: %w", err)
-	}
+// // ListTestResultsByPet lists all test results for a pet with pagination
+// func (s *MedicalRecordService) ListTestResultsByPet(ctx *gin.Context, petID int64, pagination *util.Pagination) ([]TestResultResponse, error) {
+// 	// Get medical histories for pet
+// 	histories, err := s.GetMedicalHistoryByPetID(ctx, petID)
+// 	if err != nil {
+// 		return nil, fmt.Errorf("failed to get medical histories: %w", err)
+// 	}
 
-	if len(histories) == 0 {
-		return []TestResultResponse{}, nil
-	}
+// 	if len(histories) == 0 {
+// 		return []TestResultResponse{}, nil
+// 	}
 
-	// Get test results for each medical history and combine them
-	var allTestResults []TestResultResponse
-	for _, history := range histories {
-		testResults, err := s.ListTestResultsByMedicalHistory(ctx, history.ID, pagination)
-		if err != nil {
-			// Log error but continue
-			log.Printf("Error fetching test results for history ID %d: %v", history.ID, err)
-			continue
-		}
-		allTestResults = append(allTestResults, testResults...)
-	}
+// 	// Get test results for each medical history and combine them
+// 	var allTestResults []TestResultResponse
+// 	for _, history := range histories {
+// 		testResults, err := s.ListTestResultsByMedicalHistory(ctx, history.ID, pagination)
+// 		if err != nil {
+// 			// Log error but continue
+// 			log.Printf("Error fetching test results for history ID %d: %v", history.ID, err)
+// 			continue
+// 		}
+// 		allTestResults = append(allTestResults, testResults...)
+// 	}
 
-	return allTestResults, nil
-}
+// 	return allTestResults, nil
+// }
 
-// Comprehensive medical history
-// GetCompleteMedicalHistory combines all medical history data for a pet in a single response
-func (s *MedicalRecordService) GetCompleteMedicalHistory(ctx *gin.Context, petID int64) (*MedicalHistorySummary, error) {
-	// Get or create medical record
-	medicalRecord, err := s.GetMedicalRecord(ctx, petID)
-	if err != nil {
-		// If medical record doesn't exist, try to create one
-		medicalRecord, err = s.CreateMedicalRecord(ctx, petID)
-		if err != nil {
-			return nil, fmt.Errorf("failed to get or create medical record: %w", err)
-		}
-	}
+// // Comprehensive medical history
+// // GetCompleteMedicalHistory combines all medical history data for a pet in a single response
+// func (s *MedicalRecordService) GetCompleteMedicalHistory(ctx *gin.Context, petID int64) (*MedicalHistorySummary, error) {
+// 	// Get or create medical record
+// 	medicalRecord, err := s.GetMedicalRecord(ctx, petID)
+// 	if err != nil {
+// 		// If medical record doesn't exist, try to create one
+// 		medicalRecord, err = s.CreateMedicalRecord(ctx, petID)
+// 		if err != nil {
+// 			return nil, fmt.Errorf("failed to get or create medical record: %w", err)
+// 		}
+// 	}
 
-	// Use unlimited pagination for comprehensive view
-	unlimitedPagination := &util.Pagination{
-		Page:     1,
-		PageSize: 1000, // Large number to get all records
-	}
+// 	// Use unlimited pagination for comprehensive view
+// 	unlimitedPagination := &util.Pagination{
+// 		Page:     1,
+// 		PageSize: 1000, // Large number to get all records
+// 	}
 
-	// Get all medical history entries
-	conditions, err := s.GetMedicalHistoryByPetID(ctx, petID)
-	if err != nil {
-		log.Printf("Error fetching medical conditions: %v", err)
-		// Don't return error, just provide empty list
-		conditions = []MedicalHistoryResponse{}
-	}
+// 	// Get all medical history entries
+// 	conditions, err := s.GetMedicalHistoryByPetID(ctx, petID)
+// 	if err != nil {
+// 		log.Printf("Error fetching medical conditions: %v", err)
+// 		// Don't return error, just provide empty list
+// 		conditions = []MedicalHistoryResponse{}
+// 	}
 
-	// Get all examinations
-	examinations, err := s.ListExaminationsByPet(ctx, petID, unlimitedPagination)
-	if err != nil {
-		log.Printf("Error fetching examinations: %v", err)
-		// Don't return error, just provide empty list
-		examinations = []ExaminationResponse{}
-	}
+// 	// Get all examinations
+// 	examinations, err := s.ListExaminationsByPet(ctx, petID, unlimitedPagination)
+// 	if err != nil {
+// 		log.Printf("Error fetching examinations: %v", err)
+// 		// Don't return error, just provide empty list
+// 		examinations = []ExaminationResponse{}
+// 	}
 
-	// Get all prescriptions
-	prescriptions, err := s.ListPrescriptionsByPet(ctx, petID, unlimitedPagination)
-	if err != nil {
-		log.Printf("Error fetching prescriptions: %v", err)
-		// Don't return error, just provide empty list
-		prescriptions = []PrescriptionResponse{}
-	}
+// 	// Get all prescriptions
+// 	prescriptions, err := s.ListPrescriptionsByPet(ctx, petID, unlimitedPagination)
+// 	if err != nil {
+// 		log.Printf("Error fetching prescriptions: %v", err)
+// 		// Don't return error, just provide empty list
+// 		prescriptions = []PrescriptionResponse{}
+// 	}
 
-	// Get all test results
-	testResults, err := s.ListTestResultsByPet(ctx, petID, unlimitedPagination)
-	if err != nil {
-		log.Printf("Error fetching test results: %v", err)
-		// Don't return error, just provide empty list
-		testResults = []TestResultResponse{}
-	}
+// 	// Get all test results
+// 	testResults, err := s.ListTestResultsByPet(ctx, petID, unlimitedPagination)
+// 	if err != nil {
+// 		log.Printf("Error fetching test results: %v", err)
+// 		// Don't return error, just provide empty list
+// 		testResults = []TestResultResponse{}
+// 	}
 
-	// Get all allergies by pet ID
-	allergies, err := s.storeDB.ListPetAllergies(ctx, db.ListPetAllergiesParams{
-		PetID:  pgtype.Int8{Int64: petID, Valid: true},
-		Limit:  1000, // Large number to get all records
-		Offset: 0,
-	})
-	if err != nil {
-		log.Printf("Error fetching allergies: %v", err)
-		// Don't return error, just provide empty list
-	}
+// 	// Construct comprehensive medical history
+// 	summary := &MedicalHistorySummary{
+// 		MedicalRecord: *medicalRecord,
+// 		Examinations:  examinations,
+// 		Prescriptions: prescriptions,
+// 		TestResults:   testResults,
+// 		Conditions:    conditions,
+// 	}
 
-	// Map allergies to our response format
-	allergyResponses := []Allergy{}
-	for _, allergy := range allergies {
-		allergyResponses = append(allergyResponses, Allergy{
-			ID: allergy.ID,
-		})
-	}
-
-	// Construct comprehensive medical history
-	summary := &MedicalHistorySummary{
-		MedicalRecord: *medicalRecord,
-		Examinations:  examinations,
-		Prescriptions: prescriptions,
-		TestResults:   testResults,
-		Conditions:    conditions,
-		Allergies:     allergyResponses,
-	}
-
-	return summary, nil
-}
+// 	return summary, nil
+// }
 
 // Get all soap notes by pet
 func (s *MedicalRecordService) GetAllSoapNotesByPetID(ctx *gin.Context, petID int64) ([]SoapNoteResponse, error) {

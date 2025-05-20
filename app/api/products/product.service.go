@@ -105,7 +105,7 @@ func (s *ProductService) CreateProductService(c *gin.Context, req CreateProductR
 		Category:      pgtype.Text{String: req.Category, Valid: true},
 		DataImage:     req.DataImage,
 		OriginalImage: pgtype.Text{String: req.OriginalImage, Valid: true},
-		IsAvailable:   pgtype.Bool{Bool: *req.IsAvailable, Valid: true},
+		IsAvailable:   pgtype.Bool{Bool: true, Valid: true},
 	})
 	if err != nil {
 		return nil, fmt.Errorf("failed to create product: %w", err)

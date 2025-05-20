@@ -28,6 +28,7 @@ type TestServiceInterface interface {
 	UpdateTest(ctx *gin.Context, req UpdateTestRequest) (*Test, error)
 	SoftDeleteTest(ctx *gin.Context, testID string) error
 	GetOrderedTestsByAppointment(ctx *gin.Context, appointmentID int64) (*[]OrderedTestDetail, error)
+	ListTestCategories(ctx *gin.Context) (*[]TestCategory, error)
 }
 
 func NewTestService(store db.Store, ws *websocket.WSClientManager) *TestService {
@@ -463,4 +464,23 @@ func (s *TestService) GetTestByAppointment(ctx *gin.Context, appointmentID int64
 	}
 
 	return &tests, nil
+}
+
+// ListTestCategories lists all test categories
+func (s *TestService) ListTestCategories(ctx *gin.Context) (*[]TestCategory, error) {
+	categories, err := s.storeDB.ListTestCategories(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed to list test categories: %w", err)
+	}
+
+	var res []TestCategory
+	for _, category := range categories {
+		res = append(res, TestCategory{
+			ID:          category.CategoryID,
+			Name:        category.Name,
+			Description: category.Description.String,
+		})
+	}
+
+	return &res, nil
 }

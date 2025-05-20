@@ -230,7 +230,7 @@ func (q *Queries) GetPetDetailByUserID(ctx context.Context, arg GetPetDetailByUs
 }
 
 const getPetProfileSummary = `-- name: GetPetProfileSummary :many
-SELECT p.petid, p.name, p.type, p.breed, p.age, p.gender, p.healthnotes, p.weight, p.birth_date, p.username, p.microchip_number, p.last_checkup_date, p.is_active, p.data_image, p.original_image, pt.id, pt.pet_id, pt.diseases, pt.start_date, pt.end_date, pt.status, pt.name, pt.type, pt.description, pt.created_at, pt.doctor_id, v.vaccinationid, v.petid, v.vaccinename, v.dateadministered, v.nextduedate, v.vaccineprovider, v.batchnumber, v.notes 
+SELECT p.petid, p.name, p.type, p.breed, p.age, p.gender, p.healthnotes, p.weight, p.birth_date, p.username, p.microchip_number, p.last_checkup_date, p.is_active, p.data_image, p.original_image, pt.id, pt.pet_id, pt.start_date, pt.end_date, pt.status, pt.description, pt.created_at, pt.doctor_id, pt.name, pt.type, pt.diseases, v.vaccinationid, v.petid, v.vaccinename, v.dateadministered, v.nextduedate, v.vaccineprovider, v.batchnumber, v.notes 
 FROM pets AS p
 LEFT JOIN pet_treatments AS pt ON p.petid = pt.pet_id
 LEFT JOIN vaccinations AS v ON p.petid = v.petid
@@ -255,15 +255,15 @@ type GetPetProfileSummaryRow struct {
 	OriginalImage    pgtype.Text        `json:"original_image"`
 	ID               pgtype.Int8        `json:"id"`
 	PetID            pgtype.Int8        `json:"pet_id"`
-	Diseases         pgtype.Text        `json:"diseases"`
 	StartDate        pgtype.Date        `json:"start_date"`
 	EndDate          pgtype.Date        `json:"end_date"`
 	Status           pgtype.Text        `json:"status"`
-	Name_2           pgtype.Text        `json:"name_2"`
-	Type_2           pgtype.Text        `json:"type_2"`
 	Description      pgtype.Text        `json:"description"`
 	CreatedAt        pgtype.Timestamptz `json:"created_at"`
 	DoctorID         pgtype.Int4        `json:"doctor_id"`
+	Name_2           pgtype.Text        `json:"name_2"`
+	Type_2           pgtype.Text        `json:"type_2"`
+	Diseases         pgtype.Text        `json:"diseases"`
 	Vaccinationid    pgtype.Int8        `json:"vaccinationid"`
 	Petid_2          pgtype.Int8        `json:"petid_2"`
 	Vaccinename      pgtype.Text        `json:"vaccinename"`
@@ -301,15 +301,15 @@ func (q *Queries) GetPetProfileSummary(ctx context.Context, petid int64) ([]GetP
 			&i.OriginalImage,
 			&i.ID,
 			&i.PetID,
-			&i.Diseases,
 			&i.StartDate,
 			&i.EndDate,
 			&i.Status,
-			&i.Name_2,
-			&i.Type_2,
 			&i.Description,
 			&i.CreatedAt,
 			&i.DoctorID,
+			&i.Name_2,
+			&i.Type_2,
+			&i.Diseases,
 			&i.Vaccinationid,
 			&i.Petid_2,
 			&i.Vaccinename,

@@ -35,23 +35,23 @@ func Routes(routerGroup middleware.RouterGroup) {
 
 		// New routes for comprehensive medical history
 
-		// Complete medical history endpoint
-		authRoute.GET("/pets/:pet_id/complete-medical-history", MedicalRecordApi.controller.GetCompleteMedicalHistory)
+		// // Complete medical history endpoint
+		// authRoute.GET("/pets/:pet_id/complete-medical-history", MedicalRecordApi.controller.GetCompleteMedicalHistory)
 
-		// Examination routes
-		authRoute.POST("/medical-records/examinations", MedicalRecordApi.controller.CreateExamination)
-		authRoute.GET("/medical-records/examinations/:examination_id", MedicalRecordApi.controller.GetExamination)
-		authRoute.GET("/medical-records/examinations", MedicalRecordApi.controller.ListExaminations)
+		// // Examination routes
+		// authRoute.POST("/medical-records/examinations", MedicalRecordApi.controller.CreateExamination)
+		// authRoute.GET("/medical-records/examinations/:examination_id", MedicalRecordApi.controller.GetExamination)
+		// authRoute.GET("/medical-records/examinations", MedicalRecordApi.controller.ListExaminations)
 
-		// Prescription routes
-		authRoute.POST("/medical-records/prescriptions", MedicalRecordApi.controller.CreatePrescription)
-		authRoute.GET("/medical-records/prescriptions/:prescription_id", MedicalRecordApi.controller.GetPrescription)
-		authRoute.GET("/medical-records/prescriptions", MedicalRecordApi.controller.ListPrescriptions)
+		// // Prescription routes
+		// authRoute.POST("/medical-records/prescriptions", MedicalRecordApi.controller.CreatePrescription)
+		// authRoute.GET("/medical-records/prescriptions/:prescription_id", MedicalRecordApi.controller.GetPrescription)
+		// authRoute.GET("/medical-records/prescriptions", MedicalRecordApi.controller.ListPrescriptions)
 
-		// Test result routes
-		authRoute.POST("/medical-records/test-results", MedicalRecordApi.controller.CreateTestResult)
-		authRoute.GET("/medical-records/test-results/:test_result_id", MedicalRecordApi.controller.GetTestResult)
-		authRoute.GET("/medical-records/test-results", MedicalRecordApi.controller.ListTestResults)
+		// // Test result routes
+		// authRoute.POST("/medical-records/test-results", MedicalRecordApi.controller.CreateTestResult)
+		// authRoute.GET("/medical-records/test-results/:test_result_id", MedicalRecordApi.controller.GetTestResult)
+		// authRoute.GET("/medical-records/test-results", MedicalRecordApi.controller.ListTestResults)
 
 		// SOAP Notes routes
 		authRoute.GET("/pets/:pet_id/soap-notes", MedicalRecordApi.controller.GetAllSoapNotes)

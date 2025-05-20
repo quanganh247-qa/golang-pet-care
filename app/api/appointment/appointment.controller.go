@@ -53,6 +53,9 @@ type AppointmentControllerInterface interface {
 	getNotificationsFromDB(ctx *gin.Context)
 	markNotificationAsRead(ctx *gin.Context)
 	markAllNotificationsAsRead(ctx *gin.Context)
+
+	// Delete appointment
+	deleteAppointment(ctx *gin.Context)
 }
 
 // createAppointment creates a new appointment
@@ -741,4 +744,68 @@ func (c *AppointmentController) getCompletedAppointments(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, appointments)
+}
+
+// deleteAppointment deletes an appointment by ID
+// @Summary Delete an appointment
+// @Description Delete an appointment by its unique identifier
+// @Accept json
+// @Produce json
+// @Param id path string true "Appointment ID"
+// @Success 200 {object} util.SuccessResponse "Appointment deleted successfully"
+// @Failure 400 {object} util.ErrorResponse "Invalid request"
+// @Failure 403 {object} util.ErrorResponse "Forbidden - Cannot delete a confirmed appointment"
+// @Failure 500 {object} util.ErrorResponse "Internal server error"
+// @Router /appointment/{id} [delete]
+func (c *AppointmentController) deleteAppointment(ctx *gin.Context) {
+	appointmentID := ctx.Param("id")
+	if appointmentID == "" {
+		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(fmt.Errorf("appointment ID is required")))
+		return
+	}
+
+	// Convert string to int64
+	id, err := strconv.ParseInt(appointmentID, 10, 64)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
+		return
+	}
+
+	// Check if the user has permission to delete this appointment
+	authPayload, err := middleware.GetAuthorizationPayload(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, util.ErrorResponse(err))
+		return
+	}
+
+	// Get the appointment to check ownership
+	appointment, err := c.service.GetAppointmentByID(ctx, id)
+	if err != nil {
+		ctx.JSON(http.StatusNotFound, util.ErrorResponse(err))
+		return
+	}
+
+	user, err := db.StoreDB.GetUser(ctx, authPayload.Username)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, util.ErrorResponse(err))
+		return
+	}
+
+	isAdmin := user.Role.String == "admin"
+	isReceptionist := user.Role.String == "receptionist"
+	isOwner := appointment.Owner.OwnerName == authPayload.Username
+
+	if !isAdmin && !isReceptionist && !isOwner {
+		ctx.JSON(http.StatusForbidden, util.ErrorResponse(fmt.Errorf("you don't have permission to delete this appointment")))
+		return
+	}
+
+	// Delete the appointment
+	err = c.service.DeleteAppointment(ctx, id)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
+		return
+	}
+
+	ctx.JSON(http.StatusOK, util.SuccessResponse("appointment deleted successfully", nil))
 }

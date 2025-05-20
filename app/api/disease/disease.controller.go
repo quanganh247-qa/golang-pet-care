@@ -24,8 +24,8 @@ type DiseaseControllerInterface interface {
 	UpdateTreatmentStatus(ctx *gin.Context)
 	GenerateMedicineOnlyPrescription(ctx *gin.Context)
 
-	CreateAllergy(ctx *gin.Context)
-	GetAllergiesByPetID(ctx *gin.Context)
+	// CreateAllergy(ctx *gin.Context)
+	// GetAllergiesByPetID(ctx *gin.Context)
 	// GetAllMedicines(ctx *gin.Context) // Add this new method
 	AnalyzeSymptoms(ctx *gin.Context)
 }
@@ -414,78 +414,78 @@ func (c *DiseaseController) GenerateMedicineOnlyPrescription(ctx *gin.Context) {
 	})
 }
 
-func (c *DiseaseController) CreateAllergy(ctx *gin.Context) {
-	petID := ctx.Param("pet_id")
-	id, err := strconv.ParseInt(petID, 10, 64)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"success": false,
-			"message": "Invalid pet ID",
-			"error":   err.Error(),
-		})
-		return
-	}
+// func (c *DiseaseController) CreateAllergy(ctx *gin.Context) {
+// 	petID := ctx.Param("pet_id")
+// 	id, err := strconv.ParseInt(petID, 10, 64)
+// 	if err != nil {
+// 		ctx.JSON(http.StatusBadRequest, gin.H{
+// 			"success": false,
+// 			"message": "Invalid pet ID",
+// 			"error":   err.Error(),
+// 		})
+// 		return
+// 	}
 
-	var req CreateAllergyRequest
-	if err := ctx.ShouldBindJSON(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"success": false,
-			"message": "Invalid allergy data",
-			"error":   err.Error(),
-		})
-		return
-	}
+// 	var req CreateAllergyRequest
+// 	if err := ctx.ShouldBindJSON(&req); err != nil {
+// 		ctx.JSON(http.StatusBadRequest, gin.H{
+// 			"success": false,
+// 			"message": "Invalid allergy data",
+// 			"error":   err.Error(),
+// 		})
+// 		return
+// 	}
 
-	allergy, err := c.service.CreateAllergyService(ctx, id, req)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"success": false,
-			"message": "Failed to create allergy",
-			"error":   err.Error(),
-		})
-		return
-	}
-	ctx.JSON(http.StatusOK, gin.H{
-		"success": true,
-		"message": "Allergy created successfully",
-		"data":    allergy,
-	})
-}
+// 	allergy, err := c.service.CreateAllergyService(ctx, id, req)
+// 	if err != nil {
+// 		ctx.JSON(http.StatusInternalServerError, gin.H{
+// 			"success": false,
+// 			"message": "Failed to create allergy",
+// 			"error":   err.Error(),
+// 		})
+// 		return
+// 	}
+// 	ctx.JSON(http.StatusOK, gin.H{
+// 		"success": true,
+// 		"message": "Allergy created successfully",
+// 		"data":    allergy,
+// 	})
+// }
 
-func (c *DiseaseController) GetAllergiesByPetID(ctx *gin.Context) {
-	petID := ctx.Param("pet_id")
-	id, err := strconv.ParseInt(petID, 10, 64)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"success": false,
-			"message": "Invalid pet ID",
-			"error":   err.Error(),
-		})
-	}
-	pagination, err := util.GetPageInQuery(ctx.Request.URL.Query())
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"success": false,
-			"message": "Invalid pagination parameters",
-			"error":   err.Error(),
-		})
-		return
-	}
-	allergies, err := c.service.GetAllergiesByPetID(ctx, id, pagination)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"success": false,
-			"message": "Failed to fetch allergies",
-			"error":   err.Error(),
-		})
-		return
-	}
-	ctx.JSON(http.StatusOK, gin.H{
-		"success": true,
-		"message": "Allergies retrieved successfully",
-		"data":    allergies,
-	})
-}
+// func (c *DiseaseController) GetAllergiesByPetID(ctx *gin.Context) {
+// 	petID := ctx.Param("pet_id")
+// 	id, err := strconv.ParseInt(petID, 10, 64)
+// 	if err != nil {
+// 		ctx.JSON(http.StatusBadRequest, gin.H{
+// 			"success": false,
+// 			"message": "Invalid pet ID",
+// 			"error":   err.Error(),
+// 		})
+// 	}
+// 	pagination, err := util.GetPageInQuery(ctx.Request.URL.Query())
+// 	if err != nil {
+// 		ctx.JSON(http.StatusBadRequest, gin.H{
+// 			"success": false,
+// 			"message": "Invalid pagination parameters",
+// 			"error":   err.Error(),
+// 		})
+// 		return
+// 	}
+// 	allergies, err := c.service.GetAllergiesByPetID(ctx, id, pagination)
+// 	if err != nil {
+// 		ctx.JSON(http.StatusInternalServerError, gin.H{
+// 			"success": false,
+// 			"message": "Failed to fetch allergies",
+// 			"error":   err.Error(),
+// 		})
+// 		return
+// 	}
+// 	ctx.JSON(http.StatusOK, gin.H{
+// 		"success": true,
+// 		"message": "Allergies retrieved successfully",
+// 		"data":    allergies,
+// 	})
+// }
 
 // // Add this method to your DiseaseController implementation
 // func (c *DiseaseController) GetAllMedicines(ctx *gin.Context) {

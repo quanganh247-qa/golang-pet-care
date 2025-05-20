@@ -16,20 +16,20 @@ type MedicalRecordControllerInterface interface {
 	GetMedicalHistoryByID(ctx *gin.Context)
 	GetMedicalHistoryByPetID(ctx *gin.Context)
 
-	// New methods for expanded functionality
-	CreateExamination(ctx *gin.Context)
-	GetExamination(ctx *gin.Context)
-	ListExaminations(ctx *gin.Context)
+	// // New methods for expanded functionality
+	// CreateExamination(ctx *gin.Context)
+	// GetExamination(ctx *gin.Context)
+	// ListExaminations(ctx *gin.Context)
 
-	CreatePrescription(ctx *gin.Context)
-	GetPrescription(ctx *gin.Context)
-	ListPrescriptions(ctx *gin.Context)
+	// CreatePrescription(ctx *gin.Context)
+	// GetPrescription(ctx *gin.Context)
+	// ListPrescriptions(ctx *gin.Context)
 
-	CreateTestResult(ctx *gin.Context)
-	GetTestResult(ctx *gin.Context)
-	ListTestResults(ctx *gin.Context)
+	// CreateTestResult(ctx *gin.Context)
+	// GetTestResult(ctx *gin.Context)
+	// ListTestResults(ctx *gin.Context)
 
-	GetCompleteMedicalHistory(ctx *gin.Context)
+	// GetCompleteMedicalHistory(ctx *gin.Context)
 
 	// New method for SOAP notes
 	GetAllSoapNotes(ctx *gin.Context)
@@ -151,256 +151,256 @@ func (c *MedicalRecordController) GetMedicalHistoryByPetID(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, util.SuccessResponse("Medical History", res))
 }
 
-// New controller methods for examinations
-func (c *MedicalRecordController) CreateExamination(ctx *gin.Context) {
-	var req ExaminationRequest
-	if err := ctx.ShouldBindJSON(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
-		return
-	}
+// // New controller methods for examinations
+// func (c *MedicalRecordController) CreateExamination(ctx *gin.Context) {
+// 	var req ExaminationRequest
+// 	if err := ctx.ShouldBindJSON(&req); err != nil {
+// 		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
+// 		return
+// 	}
 
-	res, err := c.service.CreateExamination(ctx, &req)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-	ctx.JSON(http.StatusOK, util.SuccessResponse("Examination", res))
-}
+// 	res, err := c.service.CreateExamination(ctx, &req)
+// 	if err != nil {
+// 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+// 		return
+// 	}
+// 	ctx.JSON(http.StatusOK, util.SuccessResponse("Examination", res))
+// }
 
-func (c *MedicalRecordController) GetExamination(ctx *gin.Context) {
-	examinationID := ctx.Param("examination_id")
-	id, err := strconv.ParseInt(examinationID, 10, 64)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
-		return
-	}
+// func (c *MedicalRecordController) GetExamination(ctx *gin.Context) {
+// 	examinationID := ctx.Param("examination_id")
+// 	id, err := strconv.ParseInt(examinationID, 10, 64)
+// 	if err != nil {
+// 		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
+// 		return
+// 	}
 
-	res, err := c.service.GetExamination(ctx, id)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-	ctx.JSON(http.StatusOK, util.SuccessResponse("Examination", res))
-}
+// 	res, err := c.service.GetExamination(ctx, id)
+// 	if err != nil {
+// 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+// 		return
+// 	}
+// 	ctx.JSON(http.StatusOK, util.SuccessResponse("Examination", res))
+// }
 
-func (c *MedicalRecordController) ListExaminations(ctx *gin.Context) {
-	petID := ctx.Query("pet_id")
-	recordID := ctx.Query("medical_record_id")
+// func (c *MedicalRecordController) ListExaminations(ctx *gin.Context) {
+// 	petID := ctx.Query("pet_id")
+// 	recordID := ctx.Query("medical_record_id")
 
-	pagination, err := util.GetPageInQuery(ctx.Request.URL.Query())
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
-		return
-	}
+// 	pagination, err := util.GetPageInQuery(ctx.Request.URL.Query())
+// 	if err != nil {
+// 		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
+// 		return
+// 	}
 
-	var res []ExaminationResponse
+// 	var res []ExaminationResponse
 
-	if petID != "" {
-		// List by pet ID
-		id, err := strconv.ParseInt(petID, 10, 64)
-		if err != nil {
-			ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
-			return
-		}
+// 	if petID != "" {
+// 		// List by pet ID
+// 		id, err := strconv.ParseInt(petID, 10, 64)
+// 		if err != nil {
+// 			ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
+// 			return
+// 		}
 
-		res, err = c.service.ListExaminationsByPet(ctx, id, pagination)
-		if err != nil {
-			ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-			return
-		}
-	} else if recordID != "" {
-		// List by medical record ID
-		id, err := strconv.ParseInt(recordID, 10, 64)
-		if err != nil {
-			ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
-			return
-		}
+// 		res, err = c.service.ListExaminationsByPet(ctx, id, pagination)
+// 		if err != nil {
+// 			ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+// 			return
+// 		}
+// 	} else if recordID != "" {
+// 		// List by medical record ID
+// 		id, err := strconv.ParseInt(recordID, 10, 64)
+// 		if err != nil {
+// 			ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
+// 			return
+// 		}
 
-		res, err = c.service.ListExaminationsByMedicalHistory(ctx, id, pagination)
-		if err != nil {
-			ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-			return
-		}
-	} else {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Either pet_id or medical_record_id is required"})
-		return
-	}
+// 		res, err = c.service.ListExaminationsByMedicalHistory(ctx, id, pagination)
+// 		if err != nil {
+// 			ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+// 			return
+// 		}
+// 	} else {
+// 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Either pet_id or medical_record_id is required"})
+// 		return
+// 	}
 
-	ctx.JSON(http.StatusOK, util.SuccessResponse("Examinations", res))
-}
+// 	ctx.JSON(http.StatusOK, util.SuccessResponse("Examinations", res))
+// }
 
-// New controller methods for prescriptions
-func (c *MedicalRecordController) CreatePrescription(ctx *gin.Context) {
-	var req PrescriptionRequest
-	if err := ctx.ShouldBindJSON(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
-		return
-	}
+// // New controller methods for prescriptions
+// func (c *MedicalRecordController) CreatePrescription(ctx *gin.Context) {
+// 	var req PrescriptionRequest
+// 	if err := ctx.ShouldBindJSON(&req); err != nil {
+// 		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
+// 		return
+// 	}
 
-	res, err := c.service.CreatePrescription(ctx, &req)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-	ctx.JSON(http.StatusOK, util.SuccessResponse("Prescription", res))
-}
+// 	res, err := c.service.CreatePrescription(ctx, &req)
+// 	if err != nil {
+// 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+// 		return
+// 	}
+// 	ctx.JSON(http.StatusOK, util.SuccessResponse("Prescription", res))
+// }
 
-func (c *MedicalRecordController) GetPrescription(ctx *gin.Context) {
-	prescriptionID := ctx.Param("prescription_id")
-	id, err := strconv.ParseInt(prescriptionID, 10, 64)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
-		return
-	}
+// func (c *MedicalRecordController) GetPrescription(ctx *gin.Context) {
+// 	prescriptionID := ctx.Param("prescription_id")
+// 	id, err := strconv.ParseInt(prescriptionID, 10, 64)
+// 	if err != nil {
+// 		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
+// 		return
+// 	}
 
-	res, err := c.service.GetPrescription(ctx, id)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-	ctx.JSON(http.StatusOK, util.SuccessResponse("Prescription", res))
-}
+// 	res, err := c.service.GetPrescription(ctx, id)
+// 	if err != nil {
+// 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+// 		return
+// 	}
+// 	ctx.JSON(http.StatusOK, util.SuccessResponse("Prescription", res))
+// }
 
-func (c *MedicalRecordController) ListPrescriptions(ctx *gin.Context) {
-	petID := ctx.Query("pet_id")
-	recordID := ctx.Query("medical_record_id")
+// func (c *MedicalRecordController) ListPrescriptions(ctx *gin.Context) {
+// 	petID := ctx.Query("pet_id")
+// 	recordID := ctx.Query("medical_record_id")
 
-	pagination, err := util.GetPageInQuery(ctx.Request.URL.Query())
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
-		return
-	}
+// 	pagination, err := util.GetPageInQuery(ctx.Request.URL.Query())
+// 	if err != nil {
+// 		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
+// 		return
+// 	}
 
-	var res []PrescriptionResponse
+// 	var res []PrescriptionResponse
 
-	if petID != "" {
-		// List by pet ID
-		id, err := strconv.ParseInt(petID, 10, 64)
-		if err != nil {
-			ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
-			return
-		}
+// 	if petID != "" {
+// 		// List by pet ID
+// 		id, err := strconv.ParseInt(petID, 10, 64)
+// 		if err != nil {
+// 			ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
+// 			return
+// 		}
 
-		res, err = c.service.ListPrescriptionsByPet(ctx, id, pagination)
-		if err != nil {
-			ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-			return
-		}
-	} else if recordID != "" {
-		// List by medical record ID
-		id, err := strconv.ParseInt(recordID, 10, 64)
-		if err != nil {
-			ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
-			return
-		}
+// 		res, err = c.service.ListPrescriptionsByPet(ctx, id, pagination)
+// 		if err != nil {
+// 			ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+// 			return
+// 		}
+// 	} else if recordID != "" {
+// 		// List by medical record ID
+// 		id, err := strconv.ParseInt(recordID, 10, 64)
+// 		if err != nil {
+// 			ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
+// 			return
+// 		}
 
-		res, err = c.service.ListPrescriptionsByMedicalHistory(ctx, id, pagination)
-		if err != nil {
-			ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-			return
-		}
-	} else {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Either pet_id or medical_record_id is required"})
-		return
-	}
+// 		res, err = c.service.ListPrescriptionsByMedicalHistory(ctx, id, pagination)
+// 		if err != nil {
+// 			ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+// 			return
+// 		}
+// 	} else {
+// 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Either pet_id or medical_record_id is required"})
+// 		return
+// 	}
 
-	ctx.JSON(http.StatusOK, util.SuccessResponse("Prescriptions", res))
-}
+// 	ctx.JSON(http.StatusOK, util.SuccessResponse("Prescriptions", res))
+// }
 
-// New controller methods for test results
-func (c *MedicalRecordController) CreateTestResult(ctx *gin.Context) {
-	var req TestResultRequest
-	if err := ctx.ShouldBindJSON(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
-		return
-	}
+// // New controller methods for test results
+// func (c *MedicalRecordController) CreateTestResult(ctx *gin.Context) {
+// 	var req TestResultRequest
+// 	if err := ctx.ShouldBindJSON(&req); err != nil {
+// 		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
+// 		return
+// 	}
 
-	res, err := c.service.CreateTestResult(ctx, &req)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-	ctx.JSON(http.StatusOK, util.SuccessResponse("Test Result", res))
-}
+// 	res, err := c.service.CreateTestResult(ctx, &req)
+// 	if err != nil {
+// 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+// 		return
+// 	}
+// 	ctx.JSON(http.StatusOK, util.SuccessResponse("Test Result", res))
+// }
 
-func (c *MedicalRecordController) GetTestResult(ctx *gin.Context) {
-	testResultID := ctx.Param("test_result_id")
-	id, err := strconv.ParseInt(testResultID, 10, 64)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
-		return
-	}
+// func (c *MedicalRecordController) GetTestResult(ctx *gin.Context) {
+// 	testResultID := ctx.Param("test_result_id")
+// 	id, err := strconv.ParseInt(testResultID, 10, 64)
+// 	if err != nil {
+// 		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
+// 		return
+// 	}
 
-	res, err := c.service.GetTestResult(ctx, id)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-	ctx.JSON(http.StatusOK, util.SuccessResponse("Test Result", res))
-}
+// 	res, err := c.service.GetTestResult(ctx, id)
+// 	if err != nil {
+// 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+// 		return
+// 	}
+// 	ctx.JSON(http.StatusOK, util.SuccessResponse("Test Result", res))
+// }
 
-func (c *MedicalRecordController) ListTestResults(ctx *gin.Context) {
-	petID := ctx.Query("pet_id")
-	recordID := ctx.Query("medical_record_id")
+// func (c *MedicalRecordController) ListTestResults(ctx *gin.Context) {
+// 	petID := ctx.Query("pet_id")
+// 	recordID := ctx.Query("medical_record_id")
 
-	pagination, err := util.GetPageInQuery(ctx.Request.URL.Query())
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
-		return
-	}
+// 	pagination, err := util.GetPageInQuery(ctx.Request.URL.Query())
+// 	if err != nil {
+// 		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
+// 		return
+// 	}
 
-	var res []TestResultResponse
+// 	var res []TestResultResponse
 
-	if petID != "" {
-		// List by pet ID
-		id, err := strconv.ParseInt(petID, 10, 64)
-		if err != nil {
-			ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
-			return
-		}
+// 	if petID != "" {
+// 		// List by pet ID
+// 		id, err := strconv.ParseInt(petID, 10, 64)
+// 		if err != nil {
+// 			ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
+// 			return
+// 		}
 
-		res, err = c.service.ListTestResultsByPet(ctx, id, pagination)
-		if err != nil {
-			ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-			return
-		}
-	} else if recordID != "" {
-		// List by medical record ID
-		id, err := strconv.ParseInt(recordID, 10, 64)
-		if err != nil {
-			ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
-			return
-		}
+// 		res, err = c.service.ListTestResultsByPet(ctx, id, pagination)
+// 		if err != nil {
+// 			ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+// 			return
+// 		}
+// 	} else if recordID != "" {
+// 		// List by medical record ID
+// 		id, err := strconv.ParseInt(recordID, 10, 64)
+// 		if err != nil {
+// 			ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
+// 			return
+// 		}
 
-		res, err = c.service.ListTestResultsByMedicalHistory(ctx, id, pagination)
-		if err != nil {
-			ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-			return
-		}
-	} else {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Either pet_id or medical_record_id is required"})
-		return
-	}
+// 		res, err = c.service.ListTestResultsByMedicalHistory(ctx, id, pagination)
+// 		if err != nil {
+// 			ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+// 			return
+// 		}
+// 	} else {
+// 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Either pet_id or medical_record_id is required"})
+// 		return
+// 	}
 
-	ctx.JSON(http.StatusOK, util.SuccessResponse("Test Results", res))
-}
+// 	ctx.JSON(http.StatusOK, util.SuccessResponse("Test Results", res))
+// }
 
-// Complete medical history method
-func (c *MedicalRecordController) GetCompleteMedicalHistory(ctx *gin.Context) {
-	petID := ctx.Param("pet_id")
-	id, err := strconv.ParseInt(petID, 10, 64)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
-		return
-	}
+// // Complete medical history method
+// func (c *MedicalRecordController) GetCompleteMedicalHistory(ctx *gin.Context) {
+// 	petID := ctx.Param("pet_id")
+// 	id, err := strconv.ParseInt(petID, 10, 64)
+// 	if err != nil {
+// 		ctx.JSON(http.StatusBadRequest, util.ErrorResponse(err))
+// 		return
+// 	}
 
-	res, err := c.service.GetCompleteMedicalHistory(ctx, id)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-	ctx.JSON(http.StatusOK, util.SuccessResponse("Medical History", res))
-}
+// 	res, err := c.service.GetCompleteMedicalHistory(ctx, id)
+// 	if err != nil {
+// 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+// 		return
+// 	}
+// 	ctx.JSON(http.StatusOK, util.SuccessResponse("Medical History", res))
+// }
 
 // New controller method for SOAP notes
 func (c *MedicalRecordController) GetAllSoapNotes(ctx *gin.Context) {

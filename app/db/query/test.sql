@@ -15,6 +15,9 @@ SELECT * FROM test_categories WHERE category_id = $1;
 -- name: GetTestByID :one
 SELECT * FROM tests WHERE id = $1 AND is_active = true;
 
+-- name: ListTestCategories :many
+SELECT * FROM test_categories;
+
 -- name: UpdateTest :one
 UPDATE tests
 SET name = $2, description = $3, price = $4, turnaround_time = $5

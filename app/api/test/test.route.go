@@ -22,19 +22,10 @@ func Routes(routerGroup middleware.RouterGroup, ws *websocket.WSClientManager) {
 		permsRoute([]perms.Permission{perms.ManageTest}).GET("/item/:id", controller.GetItemByID)
 		permsRoute([]perms.Permission{perms.ManageTest}).GET("/test-orders", controller.GetOrderedItemsByAppointment)
 		permsRoute([]perms.Permission{perms.ManageTest}).DELETE("/item/:item_id", controller.SoftDeleteItem)
-
+		permsRoute([]perms.Permission{perms.ManageTest}).GET("/test-categories", controller.ListTestCategories)
 		// Vaccine-specific routes
 		permsRoute([]perms.Permission{perms.ManageTest}).GET("/vaccines", controller.ListVaccines)
 	}
-
-	// Legacy routes for backward compatibility
-	// {
-	// 	permsRoute([]perms.Permission{perms.ManageTest}).GET("/tests", controller.ListTests)
-	// 	// permsRoute([]perms.Permission{perms.ManageTest}).POST("/test-orders", controller.CreateTestOrder)
-	// 	permsRoute([]perms.Permission{perms.ManageTest}).GET("/test/:id", controller.GetTestByID)
-	// 	// permsRoute([]perms.Permission{perms.ManageTest}).GET("/test-orders", controller.GetOrderedTestsByAppointment)
-	// 	permsRoute([]perms.Permission{perms.ManageTest}).DELETE("/test/:test_id", controller.SoftDeleteTest)
-	// }
 
 	{
 		permsRoute([]perms.Permission{perms.ManageTest}).GET("/appointments/test-orders", controller.GetAllAppointmentsWithOrders)

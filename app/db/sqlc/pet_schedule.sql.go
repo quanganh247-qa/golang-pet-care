@@ -37,7 +37,7 @@ INSERT INTO pet_schedule (
    end_date,
    notes,
    is_active
-) VALUES ($1, $2, $3, $4, $5, $6, $7, true) RETURNING id, pet_id, title, reminder_datetime, event_repeat, end_type, end_date, notes, is_active, created_at
+) VALUES ($1, $2, $3, $4, $5, $6, $7, true) RETURNING id, pet_id, title, reminder_datetime, event_repeat, end_type, end_date, notes, is_active, created_at, removedat
 `
 
 type CreatePetScheduleParams struct {
@@ -72,13 +72,14 @@ func (q *Queries) CreatePetSchedule(ctx context.Context, arg CreatePetSchedulePa
 		&i.Notes,
 		&i.IsActive,
 		&i.CreatedAt,
+		&i.Removedat,
 	)
 	return i, err
 }
 
 const deletePetSchedule = `-- name: DeletePetSchedule :one
 DELETE FROM pet_schedule
-WHERE id = $1 RETURNING id, pet_id, title, reminder_datetime, event_repeat, end_type, end_date, notes, is_active, created_at
+WHERE id = $1 RETURNING id, pet_id, title, reminder_datetime, event_repeat, end_type, end_date, notes, is_active, created_at, removedat
 `
 
 func (q *Queries) DeletePetSchedule(ctx context.Context, id int64) (PetSchedule, error) {
@@ -95,12 +96,13 @@ func (q *Queries) DeletePetSchedule(ctx context.Context, id int64) (PetSchedule,
 		&i.Notes,
 		&i.IsActive,
 		&i.CreatedAt,
+		&i.Removedat,
 	)
 	return i, err
 }
 
 const getAllSchedulesByPet = `-- name: GetAllSchedulesByPet :many
-SELECT id, pet_id, title, reminder_datetime, event_repeat, end_type, end_date, notes, is_active, created_at FROM pet_schedule 
+SELECT id, pet_id, title, reminder_datetime, event_repeat, end_type, end_date, notes, is_active, created_at, removedat FROM pet_schedule 
 WHERE pet_id = $1 
 ORDER BY reminder_datetime 
 LIMIT $2 OFFSET $3
@@ -132,6 +134,7 @@ func (q *Queries) GetAllSchedulesByPet(ctx context.Context, arg GetAllSchedulesB
 			&i.Notes,
 			&i.IsActive,
 			&i.CreatedAt,
+			&i.Removedat,
 		); err != nil {
 			return nil, err
 		}
@@ -144,7 +147,7 @@ func (q *Queries) GetAllSchedulesByPet(ctx context.Context, arg GetAllSchedulesB
 }
 
 const getPetScheduleById = `-- name: GetPetScheduleById :one
-SELECT id, pet_id, title, reminder_datetime, event_repeat, end_type, end_date, notes, is_active, created_at FROM pet_schedule
+SELECT id, pet_id, title, reminder_datetime, event_repeat, end_type, end_date, notes, is_active, created_at, removedat FROM pet_schedule
 WHERE id = $1
 `
 
@@ -162,12 +165,13 @@ func (q *Queries) GetPetScheduleById(ctx context.Context, id int64) (PetSchedule
 		&i.Notes,
 		&i.IsActive,
 		&i.CreatedAt,
+		&i.Removedat,
 	)
 	return i, err
 }
 
 const listPetSchedulesByPetID = `-- name: ListPetSchedulesByPetID :many
-SELECT id, pet_id, title, reminder_datetime, event_repeat, end_type, end_date, notes, is_active, created_at FROM pet_schedule
+SELECT id, pet_id, title, reminder_datetime, event_repeat, end_type, end_date, notes, is_active, created_at, removedat FROM pet_schedule
 WHERE pet_id = $1 
 ORDER BY reminder_datetime 
 LIMIT $2 OFFSET $3
@@ -199,6 +203,7 @@ func (q *Queries) ListPetSchedulesByPetID(ctx context.Context, arg ListPetSchedu
 			&i.Notes,
 			&i.IsActive,
 			&i.CreatedAt,
+			&i.Removedat,
 		); err != nil {
 			return nil, err
 		}
@@ -282,7 +287,7 @@ SET title = $2,
     end_date = $6,
     notes = $7,
     is_active = $8
-WHERE id = $1 RETURNING id, pet_id, title, reminder_datetime, event_repeat, end_type, end_date, notes, is_active, created_at
+WHERE id = $1 RETURNING id, pet_id, title, reminder_datetime, event_repeat, end_type, end_date, notes, is_active, created_at, removedat
 `
 
 type UpdatePetScheduleParams struct {
@@ -319,6 +324,7 @@ func (q *Queries) UpdatePetSchedule(ctx context.Context, arg UpdatePetSchedulePa
 		&i.Notes,
 		&i.IsActive,
 		&i.CreatedAt,
+		&i.Removedat,
 	)
 	return i, err
 }
