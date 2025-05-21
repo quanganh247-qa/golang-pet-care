@@ -64,9 +64,9 @@ func main() {
 
 	// Initialize Redis Task Distributor
 	redisOpt := asynq.RedisClientOpt{
-		Addr:     config.RedisAddress,
-		Username: config.RedisUsername,
-		Password: config.RedisPassword,
+		Addr: config.RedisAddress,
+		// Username: config.RedisUsername,
+		// Password: config.RedisPassword,
 	}
 	taskDistributor := worker.NewRedisTaskDistributor(redisOpt)
 

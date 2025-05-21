@@ -84,7 +84,7 @@ func (s *ProductService) GetProductByID(c *gin.Context, productID int64) (*Produ
 		Description:   product.Description.String,
 		IsAvailable:   &product.IsAvailable.Bool,
 		Name:          product.Name,
-		Price:         product.Price,
+		Price:         product.Price * 1000, // Multiply by 1000 to restore original format
 		Stock:         product.StockQuantity.Int32,
 		Category:      product.Category.String,
 		DataImage:     product.DataImage,
@@ -96,19 +96,53 @@ func (s *ProductService) GetProductByID(c *gin.Context, productID int64) (*Produ
 
 // create product
 func (s *ProductService) CreateProductService(c *gin.Context, req CreateProductRequest) (*ProductResponse, error) {
-	// insert product
-	product, err := s.storeDB.InsertProduct(c, db.InsertProductParams{
-		Name:          req.Name,
-		Description:   pgtype.Text{String: req.Description, Valid: true},
-		Price:         req.Price,
-		StockQuantity: pgtype.Int4{Int32: int32(req.StockQuantity), Valid: true},
-		Category:      pgtype.Text{String: req.Category, Valid: true},
-		DataImage:     req.DataImage,
-		OriginalImage: pgtype.Text{String: req.OriginalImage, Valid: true},
-		IsAvailable:   pgtype.Bool{Bool: true, Valid: true},
+	var product db.Product
+
+	err := s.storeDB.ExecWithTransaction(c, func(q *db.Queries) error {
+		// Insert product
+		var err error
+		product, err = q.InsertProduct(c, db.InsertProductParams{
+			Name:          req.Name,
+			Description:   pgtype.Text{String: req.Description, Valid: true},
+			Price:         req.Price,
+			StockQuantity: pgtype.Int4{Int32: int32(req.StockQuantity), Valid: true},
+			Category:      pgtype.Text{String: req.Category, Valid: true},
+			DataImage:     req.DataImage,
+			OriginalImage: pgtype.Text{String: req.OriginalImage, Valid: true},
+			IsAvailable:   pgtype.Bool{Bool: true, Valid: true},
+		})
+		if err != nil {
+			return fmt.Errorf("failed to create product: %w", err)
+		}
+
+		// Calculate total price for initial stock
+		totalPrice := req.Price * float64(req.StockQuantity)
+		totalPriceNumeric := pgtype.Numeric{}
+
+		// Format with limited decimal places to prevent overflow
+		// Convert the calculated total price to pgtype.Numeric
+		err = totalPriceNumeric.Scan(fmt.Sprintf("%f", totalPrice))
+		if err != nil {
+			return fmt.Errorf("failed to convert total price to numeric: %w", err)
+		}
+		// Create initial stock movement record
+		movementArg := db.CreateProductStockMovementParams{
+			ProductID:    product.ProductID,
+			MovementType: "import", // Initial stock is considered an import
+			Quantity:     int32(req.StockQuantity),
+			Reason:       pgtype.Text{String: "Initial stock", Valid: true},
+			Price:        totalPriceNumeric,
+		}
+		_, err = q.CreateProductStockMovement(c, movementArg)
+		if err != nil {
+			return fmt.Errorf("failed to create initial stock movement record: %w", err)
+		}
+
+		return nil
 	})
+
 	if err != nil {
-		return nil, fmt.Errorf("failed to create product: %w", err)
+		return nil, err
 	}
 
 	// Clear caches when a new product is created
@@ -122,6 +156,7 @@ func (s *ProductService) CreateProductService(c *gin.Context, req CreateProductR
 		Category:      product.Category.String,
 		DataImage:     product.DataImage,
 		OriginalImage: product.OriginalImage.String,
+		IsAvailable:   &product.IsAvailable.Bool,
 	}
 
 	return &productResponse, nil
@@ -195,6 +230,7 @@ func (s *ProductService) ImportStock(ctx context.Context, productID int64, req I
 			bf.SetInt(movement.Price.Int)
 			bf.Quo(bf, big.NewFloat(0).SetInt(new(big.Int).Exp(big.NewInt(10), big.NewInt(int64(movement.Price.Exp)), nil)))
 			movementPriceFloat, _ = bf.Float64()
+			movementPriceFloat = movementPriceFloat * 0.1 // Multiply by 1000 to restore original format
 		}
 	}
 
@@ -323,6 +359,7 @@ func (s *ProductService) GetProductStockMovements(ctx context.Context, productID
 				bf.SetInt(m.Price.Int)
 				bf.Quo(bf, big.NewFloat(0).SetInt(new(big.Int).Exp(big.NewInt(10), big.NewInt(int64(m.Price.Exp)), nil)))
 				movementPriceFloat, _ = bf.Float64()
+				movementPriceFloat = movementPriceFloat * 0.01 // Multiply by 1000 to restore original format
 			}
 		}
 
@@ -363,12 +400,19 @@ func (s *ProductService) GetAllProductStockMovements(ctx context.Context, pagina
 				bf.SetInt(m.Price.Int)
 				bf.Quo(bf, big.NewFloat(0).SetInt(new(big.Int).Exp(big.NewInt(10), big.NewInt(int64(m.Price.Exp)), nil)))
 				movementPriceFloat, _ = bf.Float64()
+				movementPriceFloat = movementPriceFloat * 0.01 // Multiply by 1000 to restore original format
 			}
+		}
+
+		product, err := s.storeDB.GetProductByID(ctx, m.ProductID)
+		if err != nil {
+			return nil, fmt.Errorf("failed to get product: %w", err)
 		}
 
 		response = append(response, ProductStockMovementResponse{
 			ID:           m.MovementID,
 			ProductID:    m.ProductID,
+			CurrentStock: product.StockQuantity.Int32,
 			MovementType: string(m.MovementType),
 			Quantity:     int64(m.Quantity),
 			Reason:       m.Reason.String,
