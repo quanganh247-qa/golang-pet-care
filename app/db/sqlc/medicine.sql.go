@@ -32,11 +32,12 @@ INSERT INTO medicines (
   duration, 
   side_effects, 
   expiration_date, 
+  supplier_id,
   quantity,
   unit_price,
   reorder_level
 )
-VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
 RETURNING id, name, description, usage, dosage, frequency, duration, side_effects, created_at, updated_at, expiration_date, quantity, unit_price, reorder_level, supplier_id
 `
 
@@ -49,6 +50,7 @@ type CreateMedicineParams struct {
 	Duration       pgtype.Text   `json:"duration"`
 	SideEffects    pgtype.Text   `json:"side_effects"`
 	ExpirationDate pgtype.Date   `json:"expiration_date"`
+	SupplierID     pgtype.Int8   `json:"supplier_id"`
 	Quantity       pgtype.Int8   `json:"quantity"`
 	UnitPrice      pgtype.Float8 `json:"unit_price"`
 	ReorderLevel   pgtype.Int8   `json:"reorder_level"`
@@ -64,6 +66,7 @@ func (q *Queries) CreateMedicine(ctx context.Context, arg CreateMedicineParams) 
 		arg.Duration,
 		arg.SideEffects,
 		arg.ExpirationDate,
+		arg.SupplierID,
 		arg.Quantity,
 		arg.UnitPrice,
 		arg.ReorderLevel,

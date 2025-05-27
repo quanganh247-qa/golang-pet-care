@@ -63,12 +63,12 @@ UPDATE treatment_phases
 SET status = $2, updated_at = now()
 WHERE id = $1;
 
--- name: GetActiveTreatments :many
-SELECT t.id, pets.name AS pet_name, d.name AS disease, t.start_date, t.end_date, t.status
-FROM pet_treatments t
-JOIN pets ON t.pet_id = pets.petid
-JOIN diseases d ON t.disease_id = d.id
-WHERE t.status = 'ongoing' AND pets.petid = $1 LIMIT $2 OFFSET $3;
+-- -- name: GetActiveTreatments :many
+-- SELECT t.id, pets.name AS pet_name, d.name AS disease, t.start_date, t.end_date, t.status
+-- FROM pet_treatments t
+-- JOIN pets ON t.pet_id = pets.petid
+-- JOIN diseases d ON t.disease_id = d.id
+-- WHERE t.status = 'ongoing' AND pets.petid = $1 LIMIT $2 OFFSET $3;
 
 -- name: GetTreatmentProgress :many
 SELECT tp.phase_name, tp.status, tp.start_date,COUNT(pm.medicine_id) AS num_medicines

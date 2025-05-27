@@ -17,6 +17,7 @@ func Routes(routerGroup middleware.RouterGroup, ws *websocket.WSClientManager) {
 	// Test/Vaccine API routes (combined functionality)
 	{
 		// Generic item routes (handle both tests and vaccines)
+		permsRoute([]perms.Permission{perms.ManageTest}).POST("/items", controller.CreateTest)
 		permsRoute([]perms.Permission{perms.ManageTest}).GET("/items", controller.ListAllItems)
 		permsRoute([]perms.Permission{perms.ManageTest}).POST("/test-orders", controller.CreateOrder)
 		permsRoute([]perms.Permission{perms.ManageTest}).GET("/item/:id", controller.GetItemByID)

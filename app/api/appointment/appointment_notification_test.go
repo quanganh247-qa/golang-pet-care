@@ -36,7 +36,7 @@ func TestNotificationManager_AddNotification(t *testing.T) {
 
 	// Tạo thông báo test
 	notification := AppointmentNotification{
-		ID:            "test-1",
+		ID:            1,
 		Title:         "Test Notification",
 		AppointmentID: 123,
 		Pet: Pet{
@@ -61,7 +61,7 @@ func TestNotificationManager_AddNotification(t *testing.T) {
 		t.Errorf("Expected 1 notification for user1, got %d", len(notifications))
 	}
 
-	if notifications[0].ID != "test-1" {
+	if notifications[0].ID != 1 {
 		t.Errorf("Expected notification ID 'test-1', got %s", notifications[0].ID)
 	}
 
@@ -83,7 +83,7 @@ func TestNotificationManager_BroadcastNotificationByRole(t *testing.T) {
 
 	// Tạo thông báo test
 	notification := AppointmentNotification{
-		ID:            "test-broadcast-1",
+		ID:            1,
 		Title:         "Test Broadcast",
 		AppointmentID: 123,
 	}
@@ -114,7 +114,7 @@ func TestNotificationManager_WaitForNotificationWithExistingNotification(t *test
 
 	// Tạo thông báo test
 	notification := AppointmentNotification{
-		ID:            "test-wait-1",
+		ID:            1,
 		Title:         "Test Wait",
 		AppointmentID: 123,
 	}
@@ -129,7 +129,7 @@ func TestNotificationManager_WaitForNotificationWithExistingNotification(t *test
 		t.Error("Expected to receive a notification, but didn't")
 	}
 
-	if receivedNotification.ID != "test-wait-1" {
+	if receivedNotification.ID != 1 {
 		t.Errorf("Expected notification ID 'test-wait-1', got %s", receivedNotification.ID)
 	}
 
@@ -160,7 +160,7 @@ func TestNotificationManager_WaitForNotificationAsync(t *testing.T) {
 	// Chạy WaitForNotification trong một goroutine
 	go func() {
 		notification := AppointmentNotification{
-			ID:            "test-async",
+			ID:            1,
 			Title:         "Test Async",
 			AppointmentID: 123,
 		}
@@ -178,7 +178,7 @@ func TestNotificationManager_WaitForNotificationAsync(t *testing.T) {
 
 		if !hasNotification {
 			t.Error("Expected to receive a notification, but didn't")
-		} else if receivedNotification.ID != "test-async" {
+		} else if receivedNotification.ID != 1 {
 			t.Errorf("Expected notification ID 'test-async', got %s", receivedNotification.ID)
 		}
 
@@ -200,7 +200,7 @@ func TestNotificationManager_ClearNotifications(t *testing.T) {
 	// Tạo và thêm một số thông báo
 	for i := 0; i < 3; i++ {
 		notification := AppointmentNotification{
-			ID:            "test-clear",
+			ID:            1,
 			Title:         "Test Clear",
 			AppointmentID: int64(i),
 		}

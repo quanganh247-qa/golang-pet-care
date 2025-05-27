@@ -11,7 +11,7 @@ import (
 )
 
 type DiseaseControllerInterface interface {
-	CreateDisease(ctx *gin.Context)
+	// CreateDisease(ctx *gin.Context)
 	CreateTreatment(ctx *gin.Context)
 	CreateTreatmentPhase(ctx *gin.Context)
 	AssignMedicineToTreatmentPhase(ctx *gin.Context)
@@ -19,7 +19,7 @@ type DiseaseControllerInterface interface {
 	GetTreatmentPhasesByTreatmentID(ctx *gin.Context)
 	GetMedicinesByPhaseID(ctx *gin.Context)
 	UpdateTreatmentPhaseStatus(ctx *gin.Context)
-	GetActiveTreatments(ctx *gin.Context)
+	// GetActiveTreatments(ctx *gin.Context)
 	GetTreatmentProgress(ctx *gin.Context)
 	UpdateTreatmentStatus(ctx *gin.Context)
 	GenerateMedicineOnlyPrescription(ctx *gin.Context)
@@ -30,42 +30,32 @@ type DiseaseControllerInterface interface {
 	AnalyzeSymptoms(ctx *gin.Context)
 }
 
-// @Summary Create a new disease
-// @Description Create a new disease with the given details
-// @Tags disease
-// @Accept json
-// @Produce json
-// @Param disease body CreateDiseaseRequest true "Disease details"
-// @Success 200 {object} SuccessResponse "Disease created successfully"
-// @Failure 400 {object} ErrorResponse "Invalid request data"
-// @Failure 500 {object} ErrorResponse "Failed to create disease"
-// @Router /disease [post]
-func (c *DiseaseController) CreateDisease(ctx *gin.Context) {
-	var disease CreateDiseaseRequest
-	if err := ctx.ShouldBindJSON(&disease); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"success": false,
-			"message": "Invalid request data",
-			"error":   err.Error(),
-		})
-		return
-	}
+// func (c *DiseaseController) CreateDisease(ctx *gin.Context) {
+// 	var disease CreateDiseaseRequest
+// 	if err := ctx.ShouldBindJSON(&disease); err != nil {
+// 		ctx.JSON(http.StatusBadRequest, gin.H{
+// 			"success": false,
+// 			"message": "Invalid request data",
+// 			"error":   err.Error(),
+// 		})
+// 		return
+// 	}
 
-	res, err := c.service.CreateDisease(ctx, disease)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"success": false,
-			"message": "Failed to create disease",
-			"error":   err.Error(),
-		})
-		return
-	}
-	ctx.JSON(http.StatusOK, gin.H{
-		"success": true,
-		"message": "Disease created successfully",
-		"data":    res,
-	})
-}
+// 	res, err := c.service.CreateDisease(ctx, disease)
+// 	if err != nil {
+// 		ctx.JSON(http.StatusInternalServerError, gin.H{
+// 			"success": false,
+// 			"message": "Failed to create disease",
+// 			"error":   err.Error(),
+// 		})
+// 		return
+// 	}
+// 	ctx.JSON(http.StatusOK, gin.H{
+// 		"success": true,
+// 		"message": "Disease created successfully",
+// 		"data":    res,
+// 	})
+// }
 
 func (c *DiseaseController) CreateTreatment(ctx *gin.Context) {
 	var treatmentPhase CreateTreatmentRequest
@@ -320,43 +310,43 @@ func (c *DiseaseController) UpdateTreatmentPhaseStatus(ctx *gin.Context) {
 	})
 }
 
-func (c *DiseaseController) GetActiveTreatments(ctx *gin.Context) {
-	petID := ctx.Query("pet_id")
-	id, err := strconv.ParseInt(petID, 10, 64)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"success": false,
-			"message": "Invalid pet ID",
-			"error":   err.Error(),
-		})
-		return
-	}
+// func (c *DiseaseController) GetActiveTreatments(ctx *gin.Context) {
+// 	petID := ctx.Query("pet_id")
+// 	id, err := strconv.ParseInt(petID, 10, 64)
+// 	if err != nil {
+// 		ctx.JSON(http.StatusBadRequest, gin.H{
+// 			"success": false,
+// 			"message": "Invalid pet ID",
+// 			"error":   err.Error(),
+// 		})
+// 		return
+// 	}
 
-	pagination, err := util.GetPageInQuery(ctx.Request.URL.Query())
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"success": false,
-			"message": "Invalid pagination parameters",
-			"error":   err.Error(),
-		})
-		return
-	}
+// 	pagination, err := util.GetPageInQuery(ctx.Request.URL.Query())
+// 	if err != nil {
+// 		ctx.JSON(http.StatusBadRequest, gin.H{
+// 			"success": false,
+// 			"message": "Invalid pagination parameters",
+// 			"error":   err.Error(),
+// 		})
+// 		return
+// 	}
 
-	treatments, err := c.service.GetActiveTreatments(ctx, id, pagination)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"success": false,
-			"message": "Failed to fetch active treatments",
-			"error":   err.Error(),
-		})
-		return
-	}
-	ctx.JSON(http.StatusOK, gin.H{
-		"success": true,
-		"message": "Active treatments retrieved successfully",
-		"data":    treatments,
-	})
-}
+// 	treatments, err := c.service.GetActiveTreatments(ctx, id, pagination)
+// 	if err != nil {
+// 		ctx.JSON(http.StatusInternalServerError, gin.H{
+// 			"success": false,
+// 			"message": "Failed to fetch active treatments",
+// 			"error":   err.Error(),
+// 		})
+// 		return
+// 	}
+// 	ctx.JSON(http.StatusOK, gin.H{
+// 		"success": true,
+// 		"message": "Active treatments retrieved successfully",
+// 		"data":    treatments,
+// 	})
+// }
 
 func (c *DiseaseController) GetTreatmentProgress(ctx *gin.Context) {
 	treatmentID := ctx.Param("treatment_id")

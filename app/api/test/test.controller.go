@@ -298,3 +298,20 @@ func (c *TestController) ListTestCategories(ctx *gin.Context) {
 		"data":    categories,
 	})
 }
+
+// CreateTest creates a new test or vaccine
+func (c *TestController) CreateTest(ctx *gin.Context) {
+	var req CreateTestRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	test, err := c.service.CreateTest(ctx, req)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusCreated, gin.H{"message": "Test created successfully", "data": test})
+}

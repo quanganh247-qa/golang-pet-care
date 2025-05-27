@@ -298,7 +298,7 @@ type NewPet struct {
 }
 
 type AppointmentNotification struct {
-	ID            string   `json:"id"`
+	ID            int64    `json:"id"`
 	Title         string   `json:"title"`
 	AppointmentID int64    `json:"appointment_id"`
 	Pet           Pet      `json:"pet"`

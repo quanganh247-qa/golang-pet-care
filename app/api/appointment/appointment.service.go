@@ -171,7 +171,7 @@ func (s *AppointmentService) CreateAppointment(ctx *gin.Context, req createAppoi
 	title := fmt.Sprintf("New Appointment for %s", detail.PetName.String)
 
 	notification := AppointmentNotification{
-		ID:            fmt.Sprintf("%s-%d-%s-%s", "app", appointment.AppointmentID, detail.PetName.String, doctor.Name),
+		ID:            appointment.AppointmentID,
 		Title:         title,
 		AppointmentID: appointment.AppointmentID,
 		Doctor: Doctor{

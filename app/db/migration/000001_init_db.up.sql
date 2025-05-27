@@ -17,23 +17,6 @@ CREATE TABLE public.consultations (
 CREATE INDEX idx_consultations_appointment_id ON public.consultations USING btree (appointment_id);
 
 
--- public.diseases definition
-
--- Drop table
-
--- DROP TABLE public.diseases;
-
-CREATE TABLE public.diseases (
-	id bigserial NOT NULL,
-	"name" varchar(255) NOT NULL,
-	description text NULL,
-	symptoms jsonb NULL,
-	created_at timestamptz DEFAULT CURRENT_TIMESTAMP NULL,
-	updated_at timestamptz DEFAULT CURRENT_TIMESTAMP NULL,
-	CONSTRAINT diseases_pkey PRIMARY KEY (id)
-);
-CREATE INDEX idx_diseases_name ON public.diseases USING btree (name);
-
 
 -- public.invoices definition
 
@@ -59,41 +42,6 @@ CREATE TABLE public.invoices (
 	CONSTRAINT invoices_pkey PRIMARY KEY (id)
 );
 
-
--- public.medical_history definition
-
--- Drop table
-
--- DROP TABLE public.medical_history;
-
-CREATE TABLE public.medical_history (
-	id bigserial NOT NULL,
-	medical_record_id int8 NULL,
-	"condition" varchar NULL,
-	diagnosis_date timestamp NULL,
-	notes text NULL,
-	created_at timestamp NULL,
-	updated_at timestamp NULL,
-	CONSTRAINT medical_history_pk PRIMARY KEY (id)
-);
-CREATE INDEX idx_medical_history_diagnosis_date ON public.medical_history USING btree (diagnosis_date);
-CREATE INDEX idx_medical_history_medical_record_id ON public.medical_history USING btree (medical_record_id);
-
-
--- public.medical_records definition
-
--- Drop table
-
--- DROP TABLE public.medical_records;
-
-CREATE TABLE public.medical_records (
-	id bigserial NOT NULL,
-	pet_id int8 NULL,
-	created_at timestamp NULL,
-	updated_at timestamp NULL,
-	CONSTRAINT medical_records_pk PRIMARY KEY (id)
-);
-CREATE INDEX idx_medical_records_pet_id ON public.medical_records USING btree (pet_id);
 
 
 -- public.medicine_suppliers definition
@@ -363,32 +311,6 @@ CREATE INDEX idx_doctors_specialization ON public.doctors USING btree (specializ
 CREATE INDEX idx_doctors_user_id ON public.doctors USING btree (user_id);
 
 
--- public.examinations definition
-
--- Drop table
-
--- DROP TABLE public.examinations;
-
-CREATE TABLE public.examinations (
-	id bigserial NOT NULL,
-	medical_history_id int8 NOT NULL,
-	exam_date timestamp NOT NULL,
-	exam_type varchar(100) NOT NULL,
-	findings text NOT NULL,
-	vet_notes text NULL,
-	doctor_id int8 NOT NULL,
-	created_at timestamp DEFAULT CURRENT_TIMESTAMP NULL,
-	updated_at timestamp DEFAULT CURRENT_TIMESTAMP NULL,
-	CONSTRAINT examinations_pkey PRIMARY KEY (id),
-	CONSTRAINT examinations_doctor_id_fkey FOREIGN KEY (doctor_id) REFERENCES public.doctors(id),
-	CONSTRAINT examinations_medical_history_id_fkey FOREIGN KEY (medical_history_id) REFERENCES public.medical_history(id) ON DELETE CASCADE
-);
-CREATE INDEX idx_examinations_doctor_id ON public.examinations USING btree (doctor_id);
-CREATE INDEX idx_examinations_exam_date ON public.examinations USING btree (exam_date);
-CREATE INDEX idx_examinations_exam_type ON public.examinations USING btree (exam_type);
-CREATE INDEX idx_examinations_medical_history_id ON public.examinations USING btree (medical_history_id);
-
-
 -- public.invoice_items definition
 
 -- Drop table
@@ -483,32 +405,6 @@ CREATE INDEX idx_pets_name ON public.pets USING btree (name);
 CREATE INDEX idx_pets_username ON public.pets USING btree (username);
 
 
--- public.prescriptions definition
-
--- Drop table
-
--- DROP TABLE public.prescriptions;
-
-CREATE TABLE public.prescriptions (
-	id bigserial NOT NULL,
-	medical_history_id int8 NOT NULL,
-	examination_id int8 NOT NULL,
-	prescription_date timestamp NOT NULL,
-	doctor_id int8 NOT NULL,
-	notes text NULL,
-	created_at timestamp DEFAULT CURRENT_TIMESTAMP NULL,
-	updated_at timestamp DEFAULT CURRENT_TIMESTAMP NULL,
-	CONSTRAINT prescriptions_pkey PRIMARY KEY (id),
-	CONSTRAINT prescriptions_doctor_id_fkey FOREIGN KEY (doctor_id) REFERENCES public.doctors(id),
-	CONSTRAINT prescriptions_examination_id_fkey FOREIGN KEY (examination_id) REFERENCES public.examinations(id) ON DELETE CASCADE,
-	CONSTRAINT prescriptions_medical_history_id_fkey FOREIGN KEY (medical_history_id) REFERENCES public.medical_history(id) ON DELETE CASCADE
-);
-CREATE INDEX idx_prescriptions_doctor_id ON public.prescriptions USING btree (doctor_id);
-CREATE INDEX idx_prescriptions_examination_id ON public.prescriptions USING btree (examination_id);
-CREATE INDEX idx_prescriptions_medical_history_id ON public.prescriptions USING btree (medical_history_id);
-CREATE INDEX idx_prescriptions_prescription_date ON public.prescriptions USING btree (prescription_date);
-
-
 -- public.product_stock_movements definition
 
 -- Drop table
@@ -549,37 +445,6 @@ CREATE TABLE public.shifts (
 	CONSTRAINT shifts_doctor_id_fkey FOREIGN KEY (doctor_id) REFERENCES public.doctors(id) ON DELETE CASCADE
 );
 CREATE INDEX idx_shifts_doctor_id ON public.shifts USING btree (doctor_id);
-
-
--- public.test_results definition
-
--- Drop table
-
--- DROP TABLE public.test_results;
-
-CREATE TABLE public.test_results (
-	id bigserial NOT NULL,
-	medical_history_id int8 NOT NULL,
-	examination_id int8 NOT NULL,
-	test_type varchar(100) NOT NULL,
-	test_date timestamp NOT NULL,
-	results text NOT NULL,
-	interpretation text NULL,
-	file_url text NULL,
-	doctor_id int8 NOT NULL,
-	created_at timestamp DEFAULT CURRENT_TIMESTAMP NULL,
-	updated_at timestamp DEFAULT CURRENT_TIMESTAMP NULL,
-	CONSTRAINT test_results_pkey PRIMARY KEY (id),
-	CONSTRAINT test_results_doctor_id_fkey FOREIGN KEY (doctor_id) REFERENCES public.doctors(id),
-	CONSTRAINT test_results_examination_id_fkey FOREIGN KEY (examination_id) REFERENCES public.examinations(id) ON DELETE CASCADE,
-	CONSTRAINT test_results_medical_history_id_fkey FOREIGN KEY (medical_history_id) REFERENCES public.medical_history(id) ON DELETE CASCADE
-);
-CREATE INDEX idx_test_results_doctor_id ON public.test_results USING btree (doctor_id);
-CREATE INDEX idx_test_results_examination_id ON public.test_results USING btree (examination_id);
-CREATE INDEX idx_test_results_medical_history_id ON public.test_results USING btree (medical_history_id);
-CREATE INDEX idx_test_results_test_date ON public.test_results USING btree (test_date);
-CREATE INDEX idx_test_results_test_type ON public.test_results USING btree (test_type);
-
 
 -- public.tests definition
 

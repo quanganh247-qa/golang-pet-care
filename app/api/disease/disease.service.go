@@ -3,7 +3,6 @@ package disease
 import (
 	"bytes"
 	"context"
-	"encoding/json"
 	"fmt"
 	"log"
 	"sync"
@@ -24,43 +23,43 @@ type DiseaseServiceInterface interface {
 	GetTreatmentPhasesByTreatmentID(ctx *gin.Context, treatmentID int64, pagination *util.Pagination) (*[]TreatmentPhase, error)
 	GetMedicinesByPhase(ctx *gin.Context, phaseID int64, pagination *util.Pagination) ([]PhaseMedicine, error)
 	UpdateTreatmentPhaseStatus(ctx *gin.Context, phaseID int64, req UpdateTreatmentPhaseStatusRequest) error
-	GetActiveTreatments(ctx *gin.Context, petID int64, pagination *util.Pagination) ([]Treatment, error)
+	// GetActiveTreatments(ctx *gin.Context, petID int64, pagination *util.Pagination) ([]Treatment, error)
 	GetTreatmentProgress(ctx *gin.Context, id int64) ([]TreatmentProgressDetail, error)
 	UpdateTreatmentStatus(ctx *gin.Context, treatmentID int64, status string) error
 
-	CreateDisease(ctx context.Context, arg CreateDiseaseRequest) (*db.Disease, error)
+	// CreateDisease(ctx context.Context, arg CreateDiseaseRequest) (*db.Disease, error)
 	GenerateMedicineOnlyPrescriptionPDF(ctx context.Context, treatmentID int64, outputFile string) (*PrescriptionResponse, error)
 
 	// CreateAllergyService(ctx *gin.Context, petID int64, req CreateAllergyRequest) (*PetAllergy, error)
 	// GetAllergiesByPetID(ctx *gin.Context, petID int64, pagination *util.Pagination) (*[]PetAllergy, error)
 }
 
-func (s *DiseaseService) CreateDisease(ctx context.Context, arg CreateDiseaseRequest) (*db.Disease, error) {
-	var disease db.Disease
-	var err error
+// func (s *DiseaseService) CreateDisease(ctx context.Context, arg CreateDiseaseRequest) (*db.Disease, error) {
+// 	var disease db.Disease
+// 	var err error
 
-	symptomsJSON, err := json.Marshal(arg.Symptoms)
-	if err != nil {
-		return nil, fmt.Errorf("error marshaling symptoms: %w", err)
-	}
+// 	symptomsJSON, err := json.Marshal(arg.Symptoms)
+// 	if err != nil {
+// 		return nil, fmt.Errorf("error marshaling symptoms: %w", err)
+// 	}
 
-	err = s.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
-		disease, err = q.CreateDisease(ctx, db.CreateDiseaseParams{
-			Name:        arg.Name,
-			Description: pgtype.Text{String: arg.Description, Valid: true},
-			Symptoms:    symptomsJSON,
-		})
-		if err != nil {
-			return fmt.Errorf("error while creating disease: %w", err)
-		}
-		return nil
-	})
-	if err != nil {
-		return nil, err
-	}
+// 	err = s.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
+// 		disease, err = q.CreateDisease(ctx, db.CreateDiseaseParams{
+// 			Name:        arg.Name,
+// 			Description: pgtype.Text{String: arg.Description, Valid: true},
+// 			Symptoms:    symptomsJSON,
+// 		})
+// 		if err != nil {
+// 			return fmt.Errorf("error while creating disease: %w", err)
+// 		}
+// 		return nil
+// 	})
+// 	if err != nil {
+// 		return nil, err
+// 	}
 
-	return &disease, nil
-}
+// 	return &disease, nil
+// }
 
 func (s *DiseaseService) CreateTreatmentService(ctx *gin.Context, treatmentPhase CreateTreatmentRequest) (*db.PetTreatment, error) {
 	var PetTreatment db.PetTreatment
@@ -395,31 +394,31 @@ func (s *DiseaseService) UpdateTreatmentPhaseStatus(ctx *gin.Context, phaseID in
 }
 
 // Get All Active Treatments
-func (s *DiseaseService) GetActiveTreatments(ctx *gin.Context, petID int64, pagination *util.Pagination) ([]Treatment, error) {
-	offset := (pagination.Page - 1) * pagination.PageSize
+// func (s *DiseaseService) GetActiveTreatments(ctx *gin.Context, petID int64, pagination *util.Pagination) ([]Treatment, error) {
+// 	offset := (pagination.Page - 1) * pagination.PageSize
 
-	treatments, err := s.storeDB.GetActiveTreatments(ctx, db.GetActiveTreatmentsParams{
-		Petid:  petID,
-		Limit:  int32(pagination.PageSize),
-		Offset: int32(offset),
-	})
-	if err != nil {
-		log.Println("error while getting active treatments: ", err)
-		return nil, fmt.Errorf("error while getting active treatments: %w", err)
-	}
+// 	treatments, err := s.storeDB.GetActiveTreatments(ctx, db.GetActiveTreatmentsParams{
+// 		Petid:  petID,
+// 		Limit:  int32(pagination.PageSize),
+// 		Offset: int32(offset),
+// 	})
+// 	if err != nil {
+// 		log.Println("error while getting active treatments: ", err)
+// 		return nil, fmt.Errorf("error while getting active treatments: %w", err)
+// 	}
 
-	var result []Treatment
-	for _, treatment := range treatments {
-		result = append(result, Treatment{
-			ID:        treatment.ID,
-			Disease:   treatment.Disease,
-			StartDate: treatment.StartDate.Time.Format("2006-01-02"),
-			EndDate:   treatment.EndDate.Time.Format("2006-01-02"),
-			Status:    treatment.Status.String,
-		})
-	}
-	return result, nil
-}
+// 	var result []Treatment
+// 	for _, treatment := range treatments {
+// 		result = append(result, Treatment{
+// 			ID:        treatment.ID,
+// 			Disease:   treatment.Disease,
+// 			StartDate: treatment.StartDate.Time.Format("2006-01-02"),
+// 			EndDate:   treatment.EndDate.Time.Format("2006-01-02"),
+// 			Status:    treatment.Status.String,
+// 		})
+// 	}
+// 	return result, nil
+// }
 
 // Get Treatment Progress
 func (s *DiseaseService) GetTreatmentProgress(ctx *gin.Context, id int64) ([]TreatmentProgressDetail, error) {

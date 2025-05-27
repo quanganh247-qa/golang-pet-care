@@ -128,3 +128,15 @@ type TestCategory struct {
 	Name        string `json:"name"`
 	Description string `json:"description"`
 }
+
+// CreateTestRequest defines the request payload for creating a new test or vaccine
+type CreateTestRequest struct {
+	TestID         string   `json:"test_id" binding:"required"`
+	CategoryID     string   `json:"category_id" binding:"required"`
+	Name           string   `json:"name" binding:"required"`
+	Description    string   `json:"description"`
+	Price          float64  `json:"price" binding:"required"`
+	TurnaroundTime string   `json:"turnaround_time"`
+	Type           ItemType `json:"type" binding:"required"` // "test" or "vaccine"
+	MedicineID     *int64   `json:"medicine_id,omitempty"`   // Pointer to allow null/omitted value for tests
+}

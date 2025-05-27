@@ -29,6 +29,7 @@ type TestServiceInterface interface {
 	SoftDeleteTest(ctx *gin.Context, testID string) error
 	GetOrderedTestsByAppointment(ctx *gin.Context, appointmentID int64) (*[]OrderedTestDetail, error)
 	ListTestCategories(ctx *gin.Context) (*[]TestCategory, error)
+	CreateTest(ctx *gin.Context, req CreateTestRequest) (*db.Test, error)
 }
 
 func NewTestService(store db.Store, ws *websocket.WSClientManager) *TestService {
@@ -483,4 +484,38 @@ func (s *TestService) ListTestCategories(ctx *gin.Context) (*[]TestCategory, err
 	}
 
 	return &res, nil
+}
+
+// CreateTest creates a new test or vaccine
+func (s *TestService) CreateTest(ctx *gin.Context, req CreateTestRequest) (*db.Test, error) {
+	// Validate medicine_id for vaccines
+	if req.Type == TypeVaccine && req.MedicineID == nil {
+		return nil, fmt.Errorf("medicine_id is required for vaccines")
+	}
+
+	// Set medicine_id to null if it's not a vaccine or not provided
+	var medicineID pgtype.Int8
+	if req.Type == TypeVaccine && req.MedicineID != nil {
+		medicineID = pgtype.Int8{Int64: *req.MedicineID, Valid: true}
+	} else {
+		medicineID = pgtype.Int8{Valid: false} // Explicitly set to NULL for non-vaccines or if not provided
+	}
+
+	arg := db.CreateTestParams{
+		TestID:         req.TestID,
+		CategoryID:     pgtype.Text{String: req.CategoryID, Valid: req.CategoryID != ""},
+		Name:           req.Name,
+		Description:    pgtype.Text{String: req.Description, Valid: req.Description != ""},
+		Price:          req.Price,
+		TurnaroundTime: req.TurnaroundTime,
+		Type:           pgtype.Text{String: string(req.Type), Valid: req.Type != ""},
+		MedicineID:     medicineID,
+	}
+
+	test, err := s.storeDB.CreateTest(ctx, arg)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create test: %w", err)
+	}
+
+	return &test, nil
 }

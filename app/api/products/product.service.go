@@ -17,6 +17,8 @@ type ProductServiceInterface interface {
 	CreateProductService(c *gin.Context, req CreateProductRequest) (*ProductResponse, error)
 	GetProducts(c *gin.Context, pagination *util.Pagination) ([]ProductResponse, error)
 	GetProductByID(c *gin.Context, productID int64) (*ProductResponse, error)
+	UpdateProduct(ctx context.Context, productID int64, req UpdateProductRequest) (*ProductResponse, error)
+	DeleteProduct(ctx context.Context, productID int64) error
 	ImportStock(ctx context.Context, productID int64, req ImportStockRequest) (*ProductStockMovementResponse, error)
 	ExportStock(ctx context.Context, productID int64, req ExportStockRequest) (*ProductStockMovementResponse, error)
 	GetProductStockMovements(ctx context.Context, productID int64, pagination *util.Pagination) ([]ProductStockMovementResponse, error)
@@ -116,7 +118,7 @@ func (s *ProductService) CreateProductService(c *gin.Context, req CreateProductR
 		}
 
 		// Calculate total price for initial stock
-		totalPrice := req.Price * float64(req.StockQuantity)
+		totalPrice := req.Price * float64(req.StockQuantity) * 0.01
 		totalPriceNumeric := pgtype.Numeric{}
 
 		// Format with limited decimal places to prevent overflow
@@ -412,6 +414,7 @@ func (s *ProductService) GetAllProductStockMovements(ctx context.Context, pagina
 		response = append(response, ProductStockMovementResponse{
 			ID:           m.MovementID,
 			ProductID:    m.ProductID,
+			ProductName:  product.Name,
 			CurrentStock: product.StockQuantity.Int32,
 			MovementType: string(m.MovementType),
 			Quantity:     int64(m.Quantity),
@@ -422,4 +425,117 @@ func (s *ProductService) GetAllProductStockMovements(ctx context.Context, pagina
 	}
 
 	return response, nil
+}
+
+// UpdateProduct updates an existing product with the provided data
+func (s *ProductService) UpdateProduct(ctx context.Context, productID int64, req UpdateProductRequest) (*ProductResponse, error) {
+	// Get the existing product first
+	existingProduct, err := s.storeDB.GetProductByID(ctx, productID)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, fmt.Errorf("product with ID %d not found", productID)
+		}
+		return nil, fmt.Errorf("failed to get product: %w", err)
+	}
+
+	// Prepare the update parameters, using existing values if not provided in request
+	updateParams := db.UpdateProductParams{
+		ProductID: productID,
+	}
+
+	// Use new values if provided, otherwise keep existing values
+	if req.Name != "" {
+		updateParams.Name = req.Name
+	} else {
+		updateParams.Name = existingProduct.Name
+	}
+
+	if req.Description != "" {
+		updateParams.Description = pgtype.Text{String: req.Description, Valid: true}
+	} else {
+		updateParams.Description = existingProduct.Description
+	}
+
+	if req.Price > 0 {
+		updateParams.Price = req.Price
+	} else {
+		updateParams.Price = existingProduct.Price
+	}
+
+	if req.Category != "" {
+		updateParams.Category = pgtype.Text{String: req.Category, Valid: true}
+	} else {
+		updateParams.Category = existingProduct.Category
+	}
+
+	if req.StockQuantity >= 0 {
+		updateParams.StockQuantity = pgtype.Int4{Int32: int32(req.StockQuantity), Valid: true}
+	} else {
+		updateParams.StockQuantity = existingProduct.StockQuantity
+	}
+
+	if len(req.DataImage) > 0 {
+		updateParams.DataImage = req.DataImage
+	} else {
+		updateParams.DataImage = existingProduct.DataImage
+	}
+
+	if req.OriginalImage != "" {
+		updateParams.OriginalImage = pgtype.Text{String: req.OriginalImage, Valid: true}
+	} else {
+		updateParams.OriginalImage = existingProduct.OriginalImage
+	}
+
+	if req.IsAvailable != nil {
+		updateParams.IsAvailable = pgtype.Bool{Bool: *req.IsAvailable, Valid: true}
+	} else {
+		updateParams.IsAvailable = existingProduct.IsAvailable
+	}
+
+	// Update the product
+	updatedProduct, err := s.storeDB.UpdateProduct(ctx, updateParams)
+	if err != nil {
+		return nil, fmt.Errorf("failed to update product: %w", err)
+	}
+
+	// Clear product cache
+	redisCache.Client.RemoveProductInfoCache(productID)
+	redisCache.Client.ClearProductInfoCache()
+
+	// Return the updated product
+	return &ProductResponse{
+		ProductID:     updatedProduct.ProductID,
+		Name:          updatedProduct.Name,
+		Description:   updatedProduct.Description.String,
+		Price:         updatedProduct.Price,
+		Stock:         updatedProduct.StockQuantity.Int32,
+		Category:      updatedProduct.Category.String,
+		DataImage:     updatedProduct.DataImage,
+		OriginalImage: updatedProduct.OriginalImage.String,
+		IsAvailable:   &updatedProduct.IsAvailable.Bool,
+	}, nil
+}
+
+// DeleteProduct deletes a product from the database
+func (s *ProductService) DeleteProduct(ctx context.Context, productID int64) error {
+	// Check if product exists
+	_, err := s.storeDB.GetProductByID(ctx, productID)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return fmt.Errorf("product with ID %d not found", productID)
+		}
+		return fmt.Errorf("failed to get product: %w", err)
+	}
+
+	// Delete the product
+	err = s.storeDB.DeleteProduct(ctx, productID)
+	if err != nil {
+		return fmt.Errorf("failed to delete product: %w", err)
+	}
+
+	// Clear product cache
+	redisCache.Client.RemoveProductInfoCache(productID)
+	redisCache.Client.ClearProductInfoCache()
+
+	return nil
 }

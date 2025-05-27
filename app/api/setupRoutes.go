@@ -12,7 +12,6 @@ import (
 	"github.com/quanganh247-qa/go-blog-be/app/api/doctor"
 	"github.com/quanganh247-qa/go-blog-be/app/api/invoice"
 	"github.com/quanganh247-qa/go-blog-be/app/api/location"
-	"github.com/quanganh247-qa/go-blog-be/app/api/medical_records"
 	"github.com/quanganh247-qa/go-blog-be/app/api/medications"
 	"github.com/quanganh247-qa/go-blog-be/app/api/payment"
 	"github.com/quanganh247-qa/go-blog-be/app/api/pet"
@@ -78,7 +77,7 @@ func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor, config
 	payment.Routes(routerGroup, &config)
 	cart.Routes(routerGroup)
 	products.Routes(routerGroup)
-	medical_records.Routes(routerGroup)
+	// medical_records.Routes(routerGroup)
 	test.Routes(routerGroup, ws)
 	medications.Routes(routerGroup, taskDistributor, ws)
 	doctor.Routes(routerGroup)

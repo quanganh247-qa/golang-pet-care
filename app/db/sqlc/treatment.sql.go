@@ -180,56 +180,6 @@ func (q *Queries) DeleteTreatmentPhase(ctx context.Context, id int64) error {
 	return err
 }
 
-const getActiveTreatments = `-- name: GetActiveTreatments :many
-SELECT t.id, pets.name AS pet_name, d.name AS disease, t.start_date, t.end_date, t.status
-FROM pet_treatments t
-JOIN pets ON t.pet_id = pets.petid
-JOIN diseases d ON t.disease_id = d.id
-WHERE t.status = 'ongoing' AND pets.petid = $1 LIMIT $2 OFFSET $3
-`
-
-type GetActiveTreatmentsParams struct {
-	Petid  int64 `json:"petid"`
-	Limit  int32 `json:"limit"`
-	Offset int32 `json:"offset"`
-}
-
-type GetActiveTreatmentsRow struct {
-	ID        int64       `json:"id"`
-	PetName   string      `json:"pet_name"`
-	Disease   string      `json:"disease"`
-	StartDate pgtype.Date `json:"start_date"`
-	EndDate   pgtype.Date `json:"end_date"`
-	Status    pgtype.Text `json:"status"`
-}
-
-func (q *Queries) GetActiveTreatments(ctx context.Context, arg GetActiveTreatmentsParams) ([]GetActiveTreatmentsRow, error) {
-	rows, err := q.db.Query(ctx, getActiveTreatments, arg.Petid, arg.Limit, arg.Offset)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	items := []GetActiveTreatmentsRow{}
-	for rows.Next() {
-		var i GetActiveTreatmentsRow
-		if err := rows.Scan(
-			&i.ID,
-			&i.PetName,
-			&i.Disease,
-			&i.StartDate,
-			&i.EndDate,
-			&i.Status,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
-}
-
 const getAllTreatmentPhasesByTreatmentID = `-- name: GetAllTreatmentPhasesByTreatmentID :many
 SELECT id, treatment_id, phase_name, description, status, start_date, created_at, updated_at, is_locked FROM treatment_phases
 WHERE treatment_id = $1
@@ -480,6 +430,7 @@ func (q *Queries) GetTreatmentPhasesByTreatment(ctx context.Context, arg GetTrea
 }
 
 const getTreatmentProgress = `-- name: GetTreatmentProgress :many
+
 SELECT tp.phase_name, tp.status, tp.start_date,COUNT(pm.medicine_id) AS num_medicines
 FROM treatment_phases tp
 LEFT JOIN phase_medicines pm ON tp.id = pm.phase_id
@@ -494,6 +445,12 @@ type GetTreatmentProgressRow struct {
 	NumMedicines int64       `json:"num_medicines"`
 }
 
+// -- name: GetActiveTreatments :many
+// SELECT t.id, pets.name AS pet_name, d.name AS disease, t.start_date, t.end_date, t.status
+// FROM pet_treatments t
+// JOIN pets ON t.pet_id = pets.petid
+// JOIN diseases d ON t.disease_id = d.id
+// WHERE t.status = 'ongoing' AND pets.petid = $1 LIMIT $2 OFFSET $3;
 func (q *Queries) GetTreatmentProgress(ctx context.Context, id int64) ([]GetTreatmentProgressRow, error) {
 	rows, err := q.db.Query(ctx, getTreatmentProgress, id)
 	if err != nil {

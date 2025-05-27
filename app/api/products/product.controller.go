@@ -16,6 +16,8 @@ type ProductControllerInterface interface {
 	CreateProduct(c *gin.Context)
 	GetProducts(c *gin.Context)
 	GetProductByID(c *gin.Context)
+	UpdateProduct(c *gin.Context)
+	DeleteProduct(c *gin.Context)
 	ImportStock(c *gin.Context)
 	ExportStock(c *gin.Context)
 	GetProductStockMovements(c *gin.Context)
@@ -175,4 +177,77 @@ func (controller *ProductController) GetAllProductStockMovements(c *gin.Context)
 		return
 	}
 	c.JSON(http.StatusOK, util.SuccessResponse("All stock movements retrieved successfully", movements))
+}
+
+func (controller *ProductController) UpdateProduct(ctx *gin.Context) {
+	// Get product ID from URL parameter
+	id := ctx.Param("product_id")
+	productID, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid product ID"})
+		return
+	}
+
+	var req UpdateProductRequest
+
+	// Check if there's JSON data in the "data" form field (for multipart form with image)
+	jsonData := ctx.PostForm("data")
+	if jsonData != "" {
+		// Parse the JSON data from the "data" form field
+		if err := json.Unmarshal([]byte(jsonData), &req); err != nil {
+			ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid JSON data"})
+			return
+		}
+
+		// Handle image upload if present
+		dataImage, originalImageName, err := util.HandleImageUpload(ctx, "image")
+		if err == nil {
+			// Only update image if upload was successful
+			req.DataImage = dataImage
+			req.OriginalImage = originalImageName
+		}
+		// If image upload fails, we ignore it and continue with other updates
+	} else {
+		// Parse JSON body directly
+		if err := ctx.ShouldBindJSON(&req); err != nil {
+			ctx.JSON(http.StatusBadRequest, util.ErrorValidator(err))
+			return
+		}
+	}
+
+	// Call service to update product
+	updatedProduct, err := controller.service.UpdateProduct(ctx.Request.Context(), productID, req)
+	if err != nil {
+		if err.Error() == fmt.Sprintf("product with ID %d not found", productID) {
+			ctx.JSON(http.StatusNotFound, util.ErrorResponse(err))
+		} else {
+			ctx.JSON(http.StatusInternalServerError, util.ErrorResponse(err))
+		}
+		return
+	}
+
+	ctx.JSON(http.StatusOK, util.SuccessResponse("Product updated successfully", updatedProduct))
+}
+
+func (controller *ProductController) DeleteProduct(ctx *gin.Context) {
+	// Get product ID from URL parameter
+	id := ctx.Param("product_id")
+	productID, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid product ID"})
+		return
+	}
+
+	// Call service to delete product
+	err = controller.service.DeleteProduct(ctx.Request.Context(), productID)
+	if err != nil {
+		if err.Error() == fmt.Sprintf("product with ID %d not found", productID) {
+			ctx.JSON(http.StatusNotFound, util.ErrorResponse(err))
+		} else {
+			ctx.JSON(http.StatusInternalServerError, util.ErrorResponse(err))
+		}
+		return
+	}
+
+	ctx.JSON(http.StatusOK, util.SuccessResponse("Product deleted successfully", nil))
 }

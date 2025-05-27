@@ -407,7 +407,7 @@ func (nm *NotificationManager) GetNotificationsFromDB(ctx context.Context, usern
 // ConvertDBToAppointmentNotification chuyển đổi thông báo từ DB sang AppointmentNotification
 func (nm *NotificationManager) ConvertDBToAppointmentNotification(dbNotification DatabaseNotification) AppointmentNotification {
 	// ID mặc định
-	id := fmt.Sprintf("db-%d", dbNotification.ID)
+	id := dbNotification.ID
 
 	// Mặc định cho các trường khác
 	notification := AppointmentNotification{

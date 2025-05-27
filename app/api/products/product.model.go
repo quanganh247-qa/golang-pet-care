@@ -45,6 +45,18 @@ type CreateProductRequest struct {
 	IsAvailable   *bool   `json:"is_available,omitempty" default:"true"` // Availability status (optional, default true)
 }
 
+// UpdateProductRequest represents the structure for updating an existing product
+type UpdateProductRequest struct {
+	Name          string  `json:"name,omitempty"`           // Product name (optional)
+	Description   string  `json:"description,omitempty"`    // Product description (optional)
+	Price         float64 `json:"price,omitempty"`          // Product price (optional)
+	StockQuantity int     `json:"stock_quantity,omitempty"` // Stock quantity (optional)
+	Category      string  `json:"category,omitempty"`       // Product category (optional)
+	DataImage     []byte  `json:"data_image,omitempty"`     // Binary image data (optional)
+	OriginalImage string  `json:"original_image,omitempty"` // Image file name or URL (optional)
+	IsAvailable   *bool   `json:"is_available,omitempty"`   // Availability status (optional)
+}
+
 // ImportStockRequest represents the structure for importing stock
 type ImportStockRequest struct {
 	Quantity  int     `json:"quantity" validate:"required,gt=0"`   // Quantity to import (must be positive)
@@ -63,6 +75,7 @@ type ExportStockRequest struct {
 type ProductStockMovementResponse struct {
 	ID           int64     `json:"id"`
 	ProductID    int64     `json:"product_id"`
+	ProductName  string    `json:"product_name"`
 	MovementType string    `json:"movement_type"` // "import" or "export"
 	Quantity     int64     `json:"quantity"`
 	Reason       string    `json:"reason,omitempty"`

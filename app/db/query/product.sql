@@ -18,3 +18,19 @@ SET stock_quantity = $2,
 WHERE product_id = $1
 RETURNING *;
 
+-- name: UpdateProduct :one
+UPDATE Products
+SET name = $2,
+    description = $3,
+    price = $4,
+    category = $5,
+    stock_quantity = $6,
+    data_image = $7,
+    original_image = $8,
+    is_available = $9
+WHERE product_id = $1
+RETURNING *;
+
+
+-- name: DeleteProduct :exec
+DELETE FROM Products WHERE product_id = $1;

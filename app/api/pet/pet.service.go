@@ -69,9 +69,9 @@ func (s *PetService) CreatePet(ctx *gin.Context, username string, req createPetR
 			return fmt.Errorf("failed to create pet: %w", err)
 		}
 
-		if _, err := q.CreateMedicalRecord(ctx, pgtype.Int8{Int64: res.Petid, Valid: true}); err != nil {
-			return fmt.Errorf("failed to create medical record: %w", err)
-		}
+		// if _, err := q.CreateMedicalRecord(ctx, pgtype.Int8{Int64: res.Petid, Valid: true}); err != nil {
+		// 	return fmt.Errorf("failed to create medical record: %w", err)
+		// }
 
 		pet = CreatePetResponse{
 			Petid:           res.Petid,

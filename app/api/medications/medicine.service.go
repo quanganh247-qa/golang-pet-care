@@ -60,14 +60,51 @@ func (s *MedicineService) CreateMedicine(ctx *gin.Context, username string, req 
 		SideEffects:    pgtype.Text{String: req.SideEffects, Valid: true},
 		Quantity:       pgtype.Int8{Int64: req.Quantity, Valid: true},
 		ExpirationDate: pgtype.Date{Time: expirationDate, Valid: req.ExpirationDate != ""},
+		SupplierID:     pgtype.Int8{Int64: req.SupplierID, Valid: req.SupplierID > 0},
 		UnitPrice:      pgtype.Float8{Float64: req.UnitPrice, Valid: req.UnitPrice > 0},
 		ReorderLevel:   pgtype.Int8{Int64: req.ReorderLevel, Valid: req.ReorderLevel > 0},
 	}
 
-	medicine, err := s.storeDB.CreateMedicine(ctx, arg)
-	if err != nil {
-		return nil, fmt.Errorf("failed to create medicine: %w", err)
-	}
+	var medicine db.Medicine
+
+	err = s.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
+		medicine, err = q.CreateMedicine(ctx, arg)
+		if err != nil {
+			return fmt.Errorf("failed to create medicine: %w", err)
+		}
+
+		// Create the transaction record
+		txParam := db.CreateMedicineTransactionParams{
+			MedicineID:      medicine.ID,
+			Quantity:        req.Quantity,
+			TransactionType: "import",
+			UnitPrice:       pgtype.Float8{Float64: req.UnitPrice, Valid: req.UnitPrice > 0},
+			TotalAmount:     pgtype.Float8{Float64: req.UnitPrice * float64(req.Quantity), Valid: true},
+			SupplierID:      pgtype.Int8{Int64: req.SupplierID, Valid: req.SupplierID > 0},
+			ExpirationDate:  pgtype.Date{Time: expirationDate, Valid: req.ExpirationDate != ""},
+			Notes:           pgtype.Text{String: "New medicine imported", Valid: false},
+			PrescriptionID:  pgtype.Int8{Int64: 0, Valid: false},
+			AppointmentID:   pgtype.Int8{Int64: 0, Valid: false},
+			CreatedBy:       pgtype.Text{String: username, Valid: true},
+		}
+
+		_, err := q.CreateMedicineTransaction(ctx, txParam)
+		if err != nil {
+			return fmt.Errorf("failed to create medicine transaction: %w", err)
+		}
+
+		// Update medicine quantity
+		qtyChange := req.Quantity
+
+		err = q.UpdateMedicineQuantity(ctx, db.UpdateMedicineQuantityParams{
+			ID:       medicine.ID,
+			Quantity: pgtype.Int8{Int64: qtyChange, Valid: true},
+		})
+		if err != nil {
+			return fmt.Errorf("failed to update medicine quantity: %w", err)
+		}
+		return nil
+	})
 
 	return &createMedicineResponse{
 		MedicineName:   medicine.Name,
@@ -220,7 +257,7 @@ func (s *MedicineService) CreateMedicineTransaction(ctx *gin.Context, username s
 	}
 
 	// Calculate total amount
-	totalAmount := req.UnitPrice * float64(req.Quantity)
+	totalAmount := req.UnitPrice * float64(req.Quantity) * 0.01
 
 	// Begin a transaction
 	err = s.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {

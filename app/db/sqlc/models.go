@@ -110,15 +110,6 @@ type DeviceToken struct {
 	ExpiredAt  pgtype.Timestamp `json:"expired_at"`
 }
 
-type Disease struct {
-	ID          int64              `json:"id"`
-	Name        string             `json:"name"`
-	Description pgtype.Text        `json:"description"`
-	Symptoms    []byte             `json:"symptoms"`
-	CreatedAt   pgtype.Timestamptz `json:"created_at"`
-	UpdatedAt   pgtype.Timestamptz `json:"updated_at"`
-}
-
 type Doctor struct {
 	ID                int64         `json:"id"`
 	UserID            int64         `json:"user_id"`
@@ -128,18 +119,6 @@ type Doctor struct {
 	CertificateNumber pgtype.Text   `json:"certificate_number"`
 	Bio               pgtype.Text   `json:"bio"`
 	ConsultationFee   pgtype.Float8 `json:"consultation_fee"`
-}
-
-type Examination struct {
-	ID               int64            `json:"id"`
-	MedicalHistoryID int64            `json:"medical_history_id"`
-	ExamDate         pgtype.Timestamp `json:"exam_date"`
-	ExamType         string           `json:"exam_type"`
-	Findings         string           `json:"findings"`
-	VetNotes         pgtype.Text      `json:"vet_notes"`
-	DoctorID         int64            `json:"doctor_id"`
-	CreatedAt        pgtype.Timestamp `json:"created_at"`
-	UpdatedAt        pgtype.Timestamp `json:"updated_at"`
 }
 
 type File struct {
@@ -174,23 +153,6 @@ type InvoiceItem struct {
 	Name      string  `json:"name"`
 	Price     float64 `json:"price"`
 	Quantity  int32   `json:"quantity"`
-}
-
-type MedicalHistory struct {
-	ID              int64            `json:"id"`
-	MedicalRecordID pgtype.Int8      `json:"medical_record_id"`
-	Condition       pgtype.Text      `json:"condition"`
-	DiagnosisDate   pgtype.Timestamp `json:"diagnosis_date"`
-	Notes           pgtype.Text      `json:"notes"`
-	CreatedAt       pgtype.Timestamp `json:"created_at"`
-	UpdatedAt       pgtype.Timestamp `json:"updated_at"`
-}
-
-type MedicalRecord struct {
-	ID        int64            `json:"id"`
-	PetID     pgtype.Int8      `json:"pet_id"`
-	CreatedAt pgtype.Timestamp `json:"created_at"`
-	UpdatedAt pgtype.Timestamp `json:"updated_at"`
 }
 
 type Medicine struct {
@@ -367,17 +329,6 @@ type PhaseMedicine struct {
 	IsReceived pgtype.Bool        `json:"is_received"`
 }
 
-type Prescription struct {
-	ID               int64            `json:"id"`
-	MedicalHistoryID int64            `json:"medical_history_id"`
-	ExaminationID    int64            `json:"examination_id"`
-	PrescriptionDate pgtype.Timestamp `json:"prescription_date"`
-	DoctorID         int64            `json:"doctor_id"`
-	Notes            pgtype.Text      `json:"notes"`
-	CreatedAt        pgtype.Timestamp `json:"created_at"`
-	UpdatedAt        pgtype.Timestamp `json:"updated_at"`
-}
-
 type Product struct {
 	ProductID      int64            `json:"product_id"`
 	Name           string           `json:"name"`
@@ -471,6 +422,8 @@ type Test struct {
 	BatchNumber    pgtype.Text        `json:"batch_number"`
 	SupplierID     pgtype.Int4        `json:"supplier_id"`
 	Type           pgtype.Text        `json:"type"`
+	// References medicine inventory for vaccines (null for regular tests)
+	MedicineID pgtype.Int8 `json:"medicine_id"`
 }
 
 type TestCategory struct {
@@ -492,20 +445,6 @@ type TestOrder struct {
 	Notes         pgtype.Text        `json:"notes"`
 	CreatedAt     pgtype.Timestamptz `json:"created_at"`
 	UpdatedAt     pgtype.Timestamptz `json:"updated_at"`
-}
-
-type TestResult struct {
-	ID               int64            `json:"id"`
-	MedicalHistoryID int64            `json:"medical_history_id"`
-	ExaminationID    int64            `json:"examination_id"`
-	TestType         string           `json:"test_type"`
-	TestDate         pgtype.Timestamp `json:"test_date"`
-	Results          string           `json:"results"`
-	Interpretation   pgtype.Text      `json:"interpretation"`
-	FileUrl          pgtype.Text      `json:"file_url"`
-	DoctorID         int64            `json:"doctor_id"`
-	CreatedAt        pgtype.Timestamp `json:"created_at"`
-	UpdatedAt        pgtype.Timestamp `json:"updated_at"`
 }
 
 type TimeSlot struct {

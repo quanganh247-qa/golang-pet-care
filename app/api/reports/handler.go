@@ -387,9 +387,10 @@ func (h *Handler) getTotalExaminations(ctx *gin.Context, startDate, endDate time
 	var count int64
 	result, err := h.store.ExecStatementOne(ctx, `
 		SELECT COUNT(*) 
-		FROM appointments
-		WHERE date BETWEEN $1 AND $2
-		AND state_id = (SELECT id FROM states WHERE state = 'Completed')
+		FROM consultations c
+		JOIN appointments a ON c.appointment_id = a.appointment_id
+		WHERE c.created_at BETWEEN $1 AND $2
+		AND a.state_id = (SELECT id FROM states WHERE state = 'Completed')
 	`, []interface{}{startDate, endDate}, []string{"count"})
 
 	if err != nil && err != sql.ErrNoRows {
@@ -409,24 +410,31 @@ func (h *Handler) getCommonDiseases(ctx *gin.Context, startDate, endDate time.Ti
 	results, err := h.store.ExecStatementMany(ctx, `
 		WITH disease_counts AS (
 			SELECT 
-				mh.condition as disease,
+				COALESCE(c.assessment->>'diagnosis', 'Unknown') as disease,
 				COUNT(*) as count
 			FROM 
-				medical_history mh
+				consultations c
 			JOIN 
-				medical_records mr ON mh.medical_record_id = mr.id
+				appointments a ON c.appointment_id = a.appointment_id
 			WHERE 
-				mh.diagnosis_date BETWEEN $1 AND $2
+				c.created_at BETWEEN $1 AND $2
+				AND c.assessment IS NOT NULL
+				AND c.assessment->>'diagnosis' IS NOT NULL
+				AND c.assessment->>'diagnosis' != ''
 			GROUP BY 
-				mh.condition
+				c.assessment->>'diagnosis'
 			ORDER BY 
 				count DESC
 			LIMIT 10
 		),
 		total AS (
 			SELECT COUNT(*) as total 
-			FROM medical_history mh
-			WHERE mh.diagnosis_date BETWEEN $1 AND $2
+			FROM consultations c
+			JOIN appointments a ON c.appointment_id = a.appointment_id
+			WHERE c.created_at BETWEEN $1 AND $2
+			AND c.assessment IS NOT NULL
+			AND c.assessment->>'diagnosis' IS NOT NULL
+			AND c.assessment->>'diagnosis' != ''
 		)
 		SELECT 
 			dc.disease,
@@ -520,15 +528,17 @@ func (h *Handler) getMonthlyExaminationTrends(ctx *gin.Context, startDate, endDa
 		),
 		exams_data AS (
 			SELECT 
-				date_trunc('month', a.date) as month,
+				date_trunc('month', c.created_at) as month,
 				COUNT(*) as count
 			FROM 
-				appointments a
+				consultations c
+			JOIN 
+				appointments a ON c.appointment_id = a.appointment_id
 			WHERE 
-				a.date BETWEEN $1 AND $2
+				c.created_at BETWEEN $1 AND $2
 				AND a.state_id = (SELECT id FROM states WHERE state = 'Completed')
 			GROUP BY 
-				date_trunc('month', a.date)
+				date_trunc('month', c.created_at)
 		)
 		SELECT 
 			to_char(m.month_start, 'YYYY-MM') as month,
@@ -559,278 +569,4 @@ func (h *Handler) getMonthlyExaminationTrends(ctx *gin.Context, startDate, endDa
 	}
 
 	return trends, nil
-}
-
-// Performance reports
-type PerformanceReportRequest struct {
-	StartDate string `form:"start_date" binding:"required"`
-	EndDate   string `form:"end_date" binding:"required"`
-}
-
-type PerformanceReportResponse struct {
-	StaffPerformance     []StaffPerformanceStats  `json:"staff_performance"`
-	AverageTimeStats     TimeStats                `json:"average_time_stats"`
-	ServiceEfficiency    []ServiceEfficiencyStats `json:"service_efficiency"`
-	CustomerSatisfaction float64                  `json:"customer_satisfaction"`
-}
-
-type StaffPerformanceStats struct {
-	DoctorID     int64   `json:"doctor_id"`
-	DoctorName   string  `json:"doctor_name"`
-	Appointments int     `json:"appointments"`
-	AvgDuration  float64 `json:"avg_duration_minutes"`
-	Revenue      float64 `json:"revenue"`
-}
-
-type TimeStats struct {
-	AvgWaitingTime     float64 `json:"avg_waiting_time_minutes"`
-	AvgExaminationTime float64 `json:"avg_examination_time_minutes"`
-	AvgTotalTime       float64 `json:"avg_total_time_minutes"`
-}
-
-type ServiceEfficiencyStats struct {
-	ServiceID        int64   `json:"service_id"`
-	ServiceName      string  `json:"service_name"`
-	AvgDuration      float64 `json:"avg_duration_minutes"`
-	StandardDuration int     `json:"standard_duration"`
-	Efficiency       float64 `json:"efficiency_percentage"`
-}
-
-func (h *Handler) GetPerformanceReport(ctx *gin.Context) {
-	var req PerformanceReportRequest
-	if err := ctx.ShouldBindQuery(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	startDate, err := time.Parse("2006-01-02", req.StartDate)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid start date format. Use YYYY-MM-DD"})
-		return
-	}
-
-	endDate, err := time.Parse("2006-01-02", req.EndDate)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid end date format. Use YYYY-MM-DD"})
-		return
-	}
-
-	// Get staff performance statistics
-	staffPerformance, err := h.getStaffPerformance(ctx, startDate, endDate)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get staff performance"})
-		return
-	}
-
-	// Get average time statistics
-	timeStats, err := h.getAverageTimeStats(ctx, startDate, endDate)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get average time statistics"})
-		return
-	}
-
-	// Get service efficiency
-	serviceEfficiency, err := h.getServiceEfficiency(ctx, startDate, endDate)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get service efficiency"})
-		return
-	}
-
-	// Get customer satisfaction rating
-	satisfaction, err := h.getCustomerSatisfaction(ctx, startDate, endDate)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get customer satisfaction"})
-		return
-	}
-
-	response := PerformanceReportResponse{
-		StaffPerformance:     staffPerformance,
-		AverageTimeStats:     timeStats,
-		ServiceEfficiency:    serviceEfficiency,
-		CustomerSatisfaction: satisfaction,
-	}
-
-	ctx.JSON(http.StatusOK, response)
-}
-
-func (h *Handler) getStaffPerformance(ctx *gin.Context, startDate, endDate time.Time) ([]StaffPerformanceStats, error) {
-	var stats []StaffPerformanceStats
-
-	results, err := h.store.ExecStatementMany(ctx, `
-		SELECT 
-			d.user_id as doctor_id,
-			u.full_name as doctor_name,
-			COUNT(a.id) as appointments,
-			AVG(EXTRACT(EPOCH FROM (c.end_time - c.start_time)) / 60) as avg_duration_minutes,
-			COALESCE(SUM(p.amount), 0) as revenue
-		FROM 
-			doctors d
-		JOIN 
-			users u ON d.user_id = u.id
-		LEFT JOIN 
-			appointments a ON a.doctor_id = d.user_id
-		LEFT JOIN 
-			consultations c ON c.appointment_id = a.id
-		LEFT JOIN 
-			payments p ON p.appointment_id = a.id AND p.payment_status = 'completed'
-		WHERE 
-			a.date BETWEEN $1 AND $2
-			AND a.state_id = (SELECT id FROM states WHERE state = 'Completed')
-		GROUP BY 
-			d.user_id, u.full_name
-		ORDER BY 
-			appointments DESC
-	`, []interface{}{startDate, endDate})
-
-	if err != nil {
-		return nil, err
-	}
-
-	for _, result := range results {
-		var s StaffPerformanceStats
-
-		if doctorID, ok := result["doctor_id"].(int64); ok {
-			s.DoctorID = doctorID
-		}
-		if doctorName, ok := result["doctor_name"].(string); ok {
-			s.DoctorName = doctorName
-		}
-		if appointments, ok := result["appointments"].(int); ok {
-			s.Appointments = appointments
-		}
-		if avgDuration, ok := result["avg_duration_minutes"].(float64); ok {
-			s.AvgDuration = avgDuration
-		}
-		if revenue, ok := result["revenue"].(float64); ok {
-			s.Revenue = revenue
-		}
-
-		stats = append(stats, s)
-	}
-
-	return stats, nil
-}
-
-func (h *Handler) getAverageTimeStats(ctx *gin.Context, startDate, endDate time.Time) (TimeStats, error) {
-	var stats TimeStats
-
-	results, err := h.store.ExecStatementMany(ctx, `
-		WITH appointment_times AS (
-			SELECT 
-				a.id,
-				EXTRACT(EPOCH FROM (a.checked_in_time - a.scheduled_time)) / 60 as waiting_time,
-				EXTRACT(EPOCH FROM (c.end_time - c.start_time)) / 60 as examination_time,
-				EXTRACT(EPOCH FROM (c.end_time - a.scheduled_time)) / 60 as total_time
-			FROM 
-				appointments a
-			JOIN 
-				consultations c ON c.appointment_id = a.id
-			WHERE 
-				a.date BETWEEN $1 AND $2
-				AND a.state_id = (SELECT id FROM states WHERE state = 'Completed')
-				AND a.checked_in_time IS NOT NULL
-		)
-		SELECT 
-			AVG(waiting_time) as avg_waiting_time,
-			AVG(examination_time) as avg_examination_time,
-			AVG(total_time) as avg_total_time
-		FROM 
-			appointment_times
-	`, []interface{}{startDate, endDate})
-
-	if err != nil {
-		return TimeStats{}, err
-	}
-
-	for _, result := range results {
-		if avgWaitingTime, ok := result["avg_waiting_time"].(float64); ok {
-			stats.AvgWaitingTime = avgWaitingTime
-		}
-		if avgExaminationTime, ok := result["avg_examination_time"].(float64); ok {
-			stats.AvgExaminationTime = avgExaminationTime
-		}
-		if avgTotalTime, ok := result["avg_total_time"].(float64); ok {
-			stats.AvgTotalTime = avgTotalTime
-		}
-	}
-
-	return stats, nil
-}
-
-func (h *Handler) getServiceEfficiency(ctx *gin.Context, startDate, endDate time.Time) ([]ServiceEfficiencyStats, error) {
-	var stats []ServiceEfficiencyStats
-
-	results, err := h.store.ExecStatementMany(ctx, `
-		SELECT 
-			s.id as service_id,
-			s.name as service_name,
-			AVG(EXTRACT(EPOCH FROM (c.end_time - c.start_time)) / 60) as avg_duration_minutes,
-			s.duration as standard_duration,
-			(s.duration / NULLIF(AVG(EXTRACT(EPOCH FROM (c.end_time - c.start_time)) / 60), 0)) * 100 as efficiency_percentage
-		FROM 
-			services s
-		JOIN 
-			appointments a ON a.service_id = s.id
-		JOIN 
-			consultations c ON c.appointment_id = a.id
-		WHERE 
-			a.date BETWEEN $1 AND $2
-			AND a.state_id = (SELECT id FROM states WHERE state = 'Completed')
-		GROUP BY 
-			s.id, s.name, s.duration
-		ORDER BY 
-			efficiency_percentage DESC
-	`, []interface{}{startDate, endDate})
-
-	if err != nil {
-		return nil, err
-	}
-
-	for _, result := range results {
-		var s ServiceEfficiencyStats
-
-		if serviceID, ok := result["service_id"].(int64); ok {
-			s.ServiceID = serviceID
-		}
-		if serviceName, ok := result["service_name"].(string); ok {
-			s.ServiceName = serviceName
-		}
-		if avgDuration, ok := result["avg_duration_minutes"].(float64); ok {
-			s.AvgDuration = avgDuration
-		}
-
-		stats = append(stats, s)
-	}
-
-	return stats, nil
-}
-
-func (h *Handler) getCustomerSatisfaction(ctx *gin.Context, startDate, endDate time.Time) (float64, error) {
-	var satisfaction float64
-
-	// This assumes you have a rating field in consultations or a separate feedback table
-	// Adjust according to your actual schema
-	results, err := h.store.ExecStatementMany(ctx, `
-		SELECT 
-			COALESCE(AVG(c.rating), 0) as avg_rating
-		FROM 
-			consultations c
-		JOIN 
-			appointments a ON c.appointment_id = a.id
-		WHERE 
-			a.date BETWEEN $1 AND $2
-			AND c.rating IS NOT NULL
-	`, []interface{}{startDate, endDate})
-
-	if err != nil {
-		return 0, err
-	}
-
-	for _, result := range results {
-		if avgRating, ok := result["avg_rating"].(float64); ok {
-			satisfaction = avgRating
-		}
-	}
-
-	return satisfaction, nil
 }

@@ -11,6 +11,15 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+const deleteProduct = `-- name: DeleteProduct :exec
+DELETE FROM Products WHERE product_id = $1
+`
+
+func (q *Queries) DeleteProduct(ctx context.Context, productID int64) error {
+	_, err := q.db.Exec(ctx, deleteProduct, productID)
+	return err
+}
+
 const getAllProducts = `-- name: GetAllProducts :many
 SELECT product_id, name, description, price, stock_quantity, category, data_image, original_image, created_at, is_available, removed_at, expiration_date, reorder_level, supplier_id, updated_at from Products  ORDER BY name  LIMIT $1 OFFSET $2
 `
@@ -137,6 +146,65 @@ func (q *Queries) InsertProduct(ctx context.Context, arg InsertProductParams) (P
 		arg.DataImage,
 		arg.OriginalImage,
 		arg.CreatedAt,
+		arg.IsAvailable,
+	)
+	var i Product
+	err := row.Scan(
+		&i.ProductID,
+		&i.Name,
+		&i.Description,
+		&i.Price,
+		&i.StockQuantity,
+		&i.Category,
+		&i.DataImage,
+		&i.OriginalImage,
+		&i.CreatedAt,
+		&i.IsAvailable,
+		&i.RemovedAt,
+		&i.ExpirationDate,
+		&i.ReorderLevel,
+		&i.SupplierID,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const updateProduct = `-- name: UpdateProduct :one
+UPDATE Products
+SET name = $2,
+    description = $3,
+    price = $4,
+    category = $5,
+    stock_quantity = $6,
+    data_image = $7,
+    original_image = $8,
+    is_available = $9
+WHERE product_id = $1
+RETURNING product_id, name, description, price, stock_quantity, category, data_image, original_image, created_at, is_available, removed_at, expiration_date, reorder_level, supplier_id, updated_at
+`
+
+type UpdateProductParams struct {
+	ProductID     int64       `json:"product_id"`
+	Name          string      `json:"name"`
+	Description   pgtype.Text `json:"description"`
+	Price         float64     `json:"price"`
+	Category      pgtype.Text `json:"category"`
+	StockQuantity pgtype.Int4 `json:"stock_quantity"`
+	DataImage     []byte      `json:"data_image"`
+	OriginalImage pgtype.Text `json:"original_image"`
+	IsAvailable   pgtype.Bool `json:"is_available"`
+}
+
+func (q *Queries) UpdateProduct(ctx context.Context, arg UpdateProductParams) (Product, error) {
+	row := q.db.QueryRow(ctx, updateProduct,
+		arg.ProductID,
+		arg.Name,
+		arg.Description,
+		arg.Price,
+		arg.Category,
+		arg.StockQuantity,
+		arg.DataImage,
+		arg.OriginalImage,
 		arg.IsAvailable,
 	)
 	var i Product

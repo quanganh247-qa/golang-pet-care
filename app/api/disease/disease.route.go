@@ -53,8 +53,4 @@ func Routes(routerGroup middleware.RouterGroup) {
 		perRoute([]perms.Permission{perms.ManageTreatment}).GET("/treatment/:treatment_id/prescription", diseaseApi.controller.GenerateMedicineOnlyPrescription)
 	}
 
-	dicease.POST("/disease", diseaseApi.controller.CreateDisease)
-
-	dicease.POST("/symptom-analysis", diseaseApi.controller.AnalyzeSymptoms)
-
 }

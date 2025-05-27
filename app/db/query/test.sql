@@ -1,12 +1,11 @@
-
 -- name: AddTestCategory :exec
 INSERT INTO test_categories (category_id, name, description, icon_name)
 VALUES ($1, $2, $3, $4);
 
 -- name: CreateTest :one
-INSERT INTO tests (test_id, category_id, name, description, price, turnaround_time)
+INSERT INTO tests (test_id, category_id, name, description, price, turnaround_time, type, medicine_id)
 VALUES (
-    $1, $2, $3, $4, $5, $6
+    $1, $2, $3, $4, $5, $6, $7, $8
 ) RETURNING *;
 
 -- name: GetTestCategoryByID :one
