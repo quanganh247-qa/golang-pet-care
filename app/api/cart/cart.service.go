@@ -15,7 +15,7 @@ import (
 type CartServiceInterface interface {
 	AddToCartService(c *gin.Context, req CartItemRequest, username string) (*CartItem, error)
 	GetCartItemsService(c *gin.Context, username string) ([]CartItemResponse, error)
-	CreateOrderService(c *gin.Context, username string, arg PlaceOrderRequest) (*OrderResponse, error)
+	CreateOrderService(c *gin.Context, username string) (*OrderResponse, error)
 	GetOrdersService(c *gin.Context, username string) ([]OrderResponse, error)
 	GetOrderByIdService(c *gin.Context, username string, orderID int64) (*Order, error)
 	DeleteItemFromCartService(c *gin.Context, username string, itemID int64) error
@@ -193,7 +193,7 @@ func (s *CartService) GetCartItemsService(c *gin.Context, username string) ([]Ca
 
 }
 
-func (s *CartService) CreateOrderService(c *gin.Context, username string, arg PlaceOrderRequest) (*OrderResponse, error) {
+func (s *CartService) CreateOrderService(c *gin.Context, username string) (*OrderResponse, error) {
 	user, err := s.redis.UserInfoLoadCache(username)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get user info: %w", err)
@@ -229,7 +229,6 @@ func (s *CartService) CreateOrderService(c *gin.Context, username string, arg Pl
 			TotalAmount:     float64(totalPriceRow),
 			CartItems:       jsonData,
 			ShippingAddress: pgtype.Text{String: user.Address, Valid: true},
-			Notes:           pgtype.Text{String: arg.Notes, Valid: true},
 		})
 		if err != nil {
 			return err

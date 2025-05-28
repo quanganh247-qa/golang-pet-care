@@ -64,19 +64,19 @@ func (c *CartController) GetCartItems(ctx *gin.Context) {
 
 func (c *CartController) CreateOrder(ctx *gin.Context) {
 
-	var req PlaceOrderRequest
+	// var req PlaceOrderRequest
 
-	if err := ctx.ShouldBindBodyWithJSON(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
+	// if err := ctx.ShouldBindBodyWithJSON(&req); err != nil {
+	// 	ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	// 	return
+	// }
 
 	authPayload, err := middleware.GetAuthorizationPayload(ctx)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	res, err := c.service.CreateOrderService(ctx, authPayload.Username, req)
+	res, err := c.service.CreateOrderService(ctx, authPayload.Username)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
