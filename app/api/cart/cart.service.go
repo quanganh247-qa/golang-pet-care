@@ -164,11 +164,6 @@ func (s *CartService) GetCartItemsService(c *gin.Context, username string) ([]Ca
 	if err != nil {
 		return nil, fmt.Errorf("failed to get cart by user id: %w", err)
 	}
-
-	if len(cart) == 0 {
-		return nil, fmt.Errorf("cart not found")
-	}
-
 	cartItems, err := s.storeDB.GetCartItems(c, cart[0].ID)
 	if err != nil {
 		return nil, err
@@ -176,19 +171,22 @@ func (s *CartService) GetCartItemsService(c *gin.Context, username string) ([]Ca
 
 	var items []CartItemResponse
 
-	for _, cart := range cartItems {
+	if len(cartItems) > 0 {
 
-		product, _ := s.storeDB.GetProductByID(c, cart.ProductID)
+		for _, cart := range cartItems {
 
-		items = append(items, CartItemResponse{
-			ID:          cart.ID,
-			CartID:      cart.CartID,
-			ProductName: product.Name,
-			UnitPrice:   product.Price,
-			ProductID:   cart.ProductID,
-			Quantity:    cart.Quantity.Int32,
-			TotalPrice:  cart.TotalPrice.Float64,
-		})
+			product, _ := s.storeDB.GetProductByID(c, cart.ProductID)
+
+			items = append(items, CartItemResponse{
+				ID:          cart.ID,
+				CartID:      cart.CartID,
+				ProductName: product.Name,
+				UnitPrice:   product.Price,
+				ProductID:   cart.ProductID,
+				Quantity:    cart.Quantity.Int32,
+				TotalPrice:  cart.TotalPrice.Float64,
+			})
+		}
 	}
 
 	return items, nil
