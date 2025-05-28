@@ -501,8 +501,16 @@ func (s *TestService) CreateTest(ctx *gin.Context, req CreateTestRequest) (*db.T
 		medicineID = pgtype.Int8{Valid: false} // Explicitly set to NULL for non-vaccines or if not provided
 	}
 
+	// Get all items from database
+	res, err := s.storeDB.ListTests(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed to list items: %w", err)
+	}
+
+	test_id := fmt.Sprintf("tst0%d", len(res)+1)
+
 	arg := db.CreateTestParams{
-		TestID:         req.TestID,
+		TestID:         test_id,
 		CategoryID:     pgtype.Text{String: req.CategoryID, Valid: req.CategoryID != ""},
 		Name:           req.Name,
 		Description:    pgtype.Text{String: req.Description, Valid: req.Description != ""},

@@ -230,7 +230,7 @@ func (s *CartService) CreateOrderService(c *gin.Context, username string, arg Pl
 			UserID:          user.UserID,
 			TotalAmount:     float64(totalPriceRow),
 			CartItems:       jsonData,
-			ShippingAddress: pgtype.Text{String: arg.ShippingAddress, Valid: true},
+			ShippingAddress: pgtype.Text{String: user.Address, Valid: true},
 			Notes:           pgtype.Text{String: arg.Notes, Valid: true},
 		})
 		if err != nil {

@@ -31,8 +31,8 @@ type CartItemResponse struct {
 
 // PlaceOrderRequest represents the request body for placing an order
 type PlaceOrderRequest struct {
-	ShippingAddress string `json:"shipping_address" binding:"required"` // Shipping address
-	Notes           string `json:"notes"`                               // Optional notes
+	// ShippingAddress string `json:"shipping_address"`
+	Notes string `json:"notes"`
 }
 
 type Order struct {
