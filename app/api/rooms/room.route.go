@@ -18,9 +18,9 @@ func Routes(routerGroup middleware.RouterGroup) {
 		},
 	}
 
-	authRoute.POST("room/", roomAPI.controller.CreateRoom)
-	// User routes
-	authRoute.GET("rooms/", roomAPI.controller.ListRooms)
-	authRoute.GET("room/:id", roomAPI.controller.GetRoomByID)
+	// Public routes
+	room.GET("/rooms", roomAPI.controller.ListRooms)
 
+	// Protected routes
+	authRoute.POST("/room", roomAPI.controller.CreateRoom)
 }

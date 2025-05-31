@@ -333,7 +333,7 @@ func (service *UserService) updateUserService(ctx *gin.Context, username string,
 		return nil
 	})
 
-	go service.redis.RemoveUserInfoCache(username)
+	service.redis.RemoveUserInfoCache(username)
 
 	return &UserResponse{
 		Username:      res.Username,
@@ -365,7 +365,7 @@ func (service *UserService) updateUserImageService(ctx *gin.Context, username st
 	}
 
 	// remove cache
-	go service.redis.RemoveUserInfoCache(username)
+	service.redis.RemoveUserInfoCache(username)
 
 	return nil
 }

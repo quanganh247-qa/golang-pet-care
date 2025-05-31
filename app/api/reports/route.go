@@ -20,4 +20,12 @@ func Routes(routerGroup middleware.RouterGroup) {
 	// Set up report endpoints with proper permissions
 	perRoute([]perms.Permission{perms.ViewReports}).GET("/financial", handler.GetFinancialReport)
 	perRoute([]perms.Permission{perms.ViewReports}).GET("/medical", handler.GetMedicalRecordsReport)
+
+	// Doctor statistics endpoints
+	// perRoute([]perms.Permission{perms.ViewReports}).GET("/doctors/stats", handler.GetAllDoctorsStats)
+	perRoute([]perms.Permission{perms.ViewReports}).GET("/doctors/:id/stats", handler.GetDoctorStats)
+
+	reportsRouter.GET("/doctors", handler.GetAllDoctorsStats)
+	reportsRouter.GET("/rooms", handler.ListRoomHandler)
+
 }

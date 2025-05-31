@@ -1,9 +1,7 @@
 -- name: GetAvailableRooms :many
 SELECT id, name, type, status, current_appointment_id, available_at
 FROM rooms
-WHERE status = 'available' 
-LIMIT $1 OFFSET $2;
-  
+WHERE status = 'available' ;  
 -- name: AssignRoomToAppointment :exec
 UPDATE rooms 
 SET current_appointment_id = $2

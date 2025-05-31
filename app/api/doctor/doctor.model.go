@@ -43,6 +43,16 @@ type WorkHours struct {
 	IsAvailable bool      `json:"is_available"`
 }
 
+type ResetDoctorPasswordRequest struct {
+	DoctorUsername string `json:"doctor_username" binding:"required"`
+	Email          string `json:"email" binding:"required,email"`
+}
+
+// Reset Doctor Password Response
+type ResetDoctorPasswordResponse struct {
+	Message string `json:"message"`
+}
+
 type DoctorPerformance struct {
 	DoctorID              int64   `json:"doctor_id"`
 	ServiceCompletionRate float64 `json:"service_completion_rate"`

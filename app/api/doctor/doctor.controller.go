@@ -20,6 +20,7 @@ type DoctorControllerInterface interface {
 	getShiftByDoctorId(ctx *gin.Context)
 	getDoctorById(ctx *gin.Context)
 	deleteShift(ctx *gin.Context)
+	resetDoctorPassword(ctx *gin.Context)
 }
 
 func (c *DoctorController) loginDoctor(ctx *gin.Context) {
@@ -159,4 +160,19 @@ func (c *DoctorController) deleteShift(ctx *gin.Context) {
 		return
 	}
 	ctx.JSON(http.StatusOK, util.SuccessResponse("Success", nil))
+}
+
+func (c *DoctorController) resetDoctorPassword(ctx *gin.Context) {
+	var req ResetDoctorPasswordRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, util.ErrorValidator(err))
+		return
+	}
+
+	err := c.service.ResetDoctorPasswordService(ctx, req)
+	if err != nil {
+		return // Error already handled in service
+	}
+
+	ctx.JSON(http.StatusOK, util.SuccessResponse("Doctor password reset successfully. New password sent to email.", nil))
 }

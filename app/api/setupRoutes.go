@@ -1,7 +1,6 @@
 package api
 
 import (
-	"github.com/gin-gonic/gin"
 	"github.com/quanganh247-qa/go-blog-be/app/api/appointment"
 	"github.com/quanganh247-qa/go-blog-be/app/api/cache"
 	"github.com/quanganh247-qa/go-blog-be/app/api/cart"
@@ -35,36 +34,40 @@ import (
 )
 
 func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor, config util.Config, ws *websocket.WSClientManager) {
-	gin.SetMode(gin.ReleaseMode)
-	routerDefault := gin.New()
-	routerDefault.SetTrustedProxies(nil)
-	routerDefault.Static("/static", "app/static")
+	// gin.SetMode(gin.ReleaseMode) // This should ideally be set in main() before server instantiation.
+	// server.Router (gin.Default()) will inherit the mode set prior to its creation.
 
-	// Apply global security middlewares
-	routerDefault.Use(middleware.LoggingMiddleware())
-	routerDefault.Use(middleware.CORSMiddleware())
+	// Configure server.Router directly
+	// server.Router is gin.Default(), so it already has Logger and Recovery middleware.
+	server.Router.SetTrustedProxies(nil)
+	server.Router.Static("/static", "app/static")
+
+	// Apply global custom middlewares to server.Router
+	// If LoggingMiddleware is just gin.Logger(), it's redundant as server.Router (gin.Default()) already includes it.
+	server.Router.Use(middleware.LoggingMiddleware())
+	server.Router.Use(middleware.CORSMiddleware()) // Ensure CORS is on the actual running router
 
 	// Setup route handlers
 	chatHandler := handlers.NewChatHandler(config.GoogleAPIKey)
 	// Add Roboflow inference handler
 	inferenceHandler := inference.NewInferenceHandler(config.RoboflowAPIKey)
 
-	v1 := routerDefault.Group(util.Configs.ApiPrefix)
+	v1 := server.Router.Group(util.Configs.ApiPrefix) // Use server.Router
 	router := v1.Group("/")
 	routerGroup := middleware.RouterGroup{
 		RouterDefault: router,
 	}
-	routerDefault.GET("/ws", server.ws.HandleWebSocket)
+	server.Router.GET("/ws", server.ws.HandleWebSocket) // Attach WebSocket to server.Router
 
 	// Health check endpoint
-	router.GET("/health", server.healthCheck)
+	router.GET("/health", server.healthCheck) // This will be /api/v1/health
 
-	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler)) // This will be /api/v1/swagger/*any
 
 	// Register all API routes
 	chatbot.Routes(routerGroup, chatHandler)
 	// Register inference routes
-	inferenceHandler.RegisterRoutes(router)
+	inferenceHandler.RegisterRoutes(router) // inferenceHandler takes router, which is part of server.Router
 	user.Routes(routerGroup, taskDistributor, config)
 	pet.Routes(routerGroup)
 	service.Routes(routerGroup)
@@ -81,15 +84,14 @@ func (server *Server) SetupRoutes(taskDistributor worker.TaskDistributor, config
 	test.Routes(routerGroup, ws)
 	medications.Routes(routerGroup, taskDistributor, ws)
 	doctor.Routes(routerGroup)
-	rooms.Routes(routerGroup)
+	rooms.Routes(routerGroup) // Now uses the correct routerGroup
 	invoice.Routes(routerGroup)
 	reports.Routes(routerGroup)
 	// Register SMTP configuration routes
-	smtp.RegisterRoutes(router, config, server.store)
+	smtp.RegisterRoutes(router, config, server.store) // smtp takes router, which is fine
 	// Register the cache routes
 	cache.Routes(routerGroup)
 
-	minioHandler := minio.NewMinioHandler(routerDefault)
+	minioHandler := minio.NewMinioHandler(server.Router) // Pass server.Router
 	minio.Routes(routerGroup, minioHandler)
-	server.Router = routerDefault
 }

@@ -30,10 +30,12 @@ func Routes(routerGroup middleware.RouterGroup) {
 		authRoute.GET("/doctor/profile", doctorApi.controller.getDoctorProfile)
 		authRoute.PUT("/doctor/profile", doctorApi.controller.editDoctorProfile)
 		// Private routes
-		perRoute([]perms.Permission{perms.ManageDoctor}).GET("/doctor/shifts", doctorApi.controller.getShifts)
-		perRoute([]perms.Permission{perms.ManageDoctor}).POST("/doctor/shifts", doctorApi.controller.createShift)
-		perRoute([]perms.Permission{perms.ManageDoctor}).GET("/doctor/:doctor_id/shifts", doctorApi.controller.getShiftByDoctorId)
-		perRoute([]perms.Permission{perms.ManageDoctor}).DELETE("/doctor/shifts/:shift_id", doctorApi.controller.deleteShift)
+		perRoute([]perms.Permission{perms.ReadShift}).GET("/doctor/shifts", doctorApi.controller.getShifts)
+		perRoute([]perms.Permission{perms.ManageShift}).POST("/doctor/shifts", doctorApi.controller.createShift)
+		perRoute([]perms.Permission{perms.ReadShift}).GET("/doctor/:doctor_id/shifts", doctorApi.controller.getShiftByDoctorId)
+		perRoute([]perms.Permission{perms.ManageShift}).DELETE("/doctor/shifts/:shift_id", doctorApi.controller.deleteShift)
+		// Admin operations
+		perRoute([]perms.Permission{perms.ManageDoctors}).POST("/doctor/reset-password", doctorApi.controller.resetDoctorPassword)
 
 	}
 }

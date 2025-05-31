@@ -73,17 +73,11 @@ func (q *Queries) DeleteRoom(ctx context.Context, id int64) error {
 const getAvailableRooms = `-- name: GetAvailableRooms :many
 SELECT id, name, type, status, current_appointment_id, available_at
 FROM rooms
-WHERE status = 'available' 
-LIMIT $1 OFFSET $2
+WHERE status = 'available'
 `
 
-type GetAvailableRoomsParams struct {
-	Limit  int32 `json:"limit"`
-	Offset int32 `json:"offset"`
-}
-
-func (q *Queries) GetAvailableRooms(ctx context.Context, arg GetAvailableRoomsParams) ([]Room, error) {
-	rows, err := q.db.Query(ctx, getAvailableRooms, arg.Limit, arg.Offset)
+func (q *Queries) GetAvailableRooms(ctx context.Context) ([]Room, error) {
+	rows, err := q.db.Query(ctx, getAvailableRooms)
 	if err != nil {
 		return nil, err
 	}

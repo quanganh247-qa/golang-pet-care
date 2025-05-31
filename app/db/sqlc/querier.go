@@ -116,7 +116,7 @@ type Querier interface {
 	GetAppointmentsOfDoctorWithDetails(ctx context.Context, id int64) ([]GetAppointmentsOfDoctorWithDetailsRow, error)
 	GetAppointmentsQueue(ctx context.Context, arg GetAppointmentsQueueParams) ([]Appointment, error)
 	GetAvailableDoctors(ctx context.Context, date pgtype.Date) ([]GetAvailableDoctorsRow, error)
-	GetAvailableRooms(ctx context.Context, arg GetAvailableRoomsParams) ([]Room, error)
+	GetAvailableRooms(ctx context.Context) ([]Room, error)
 	GetAvailableRoomsForDuration(ctx context.Context, arg GetAvailableRoomsForDurationParams) ([]Room, error)
 	GetAvailableTimeSlots(ctx context.Context, arg GetAvailableTimeSlotsParams) ([]GetAvailableTimeSlotsRow, error)
 	GetCartByCartId(ctx context.Context, id int64) (Cart, error)

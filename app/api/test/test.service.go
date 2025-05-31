@@ -70,6 +70,8 @@ func (s *TestService) ListItems(ctx *gin.Context, itemType ItemType) (*[]TestCat
 			TestID:         r.TestID,
 			Type:           ItemType(r.Type.String),
 			IsActive:       r.IsActive.Bool,
+			BatchNumber:    r.BatchNumber.String,
+			ExpirationDate: r.ExpirationDate.Time.Format("2006-01-02"),
 			CreatedAt:      r.CreatedAt.Time.String(),
 			UpdatedAt:      r.UpdatedAt.Time.String(),
 		}

@@ -55,12 +55,9 @@ func (s *RoomService) GetRoomByID(ctx context.Context, roomID int64) (*RoomRespo
 
 func (s *RoomService) ListRooms(ctx context.Context, pagination *util.Pagination) ([]RoomResponse, error) {
 
-	offset := (pagination.Page - 1) * pagination.PageSize
+	// offset := (pagination.Page - 1) * pagination.PageSize
 
-	rooms, err := s.storeDB.GetAvailableRooms(ctx, db.GetAvailableRoomsParams{
-		Offset: int32(offset),
-		Limit:  int32(pagination.PageSize),
-	})
+	rooms, err := s.storeDB.GetAvailableRooms(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("failed to list rooms: %v", err)
 	}

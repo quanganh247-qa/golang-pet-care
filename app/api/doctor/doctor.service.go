@@ -10,6 +10,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5/pgtype"
 	db "github.com/quanganh247-qa/go-blog-be/app/db/sqlc"
+	"github.com/quanganh247-qa/go-blog-be/app/service/mail"
 	"github.com/quanganh247-qa/go-blog-be/app/service/token"
 	"github.com/quanganh247-qa/go-blog-be/app/util"
 )
@@ -24,6 +25,7 @@ type DoctorServiceInterface interface {
 	GetShiftByDoctorId(ctx *gin.Context, doctorId int64) ([]ShiftResponse, error)
 	GetDoctorById(ctx *gin.Context, doctorId int64) (DoctorDetail, error)
 	DeleteShift(ctx *gin.Context, shiftId int64) error
+	ResetDoctorPasswordService(ctx *gin.Context, req ResetDoctorPasswordRequest) error
 }
 
 func (service *DoctorService) LoginDoctorService(ctx *gin.Context, req loginDoctorRequest) (*loginDoctorResponse, error) {
@@ -583,4 +585,107 @@ func (service *DoctorService) DeleteShift(ctx *gin.Context, shiftId int64) error
 	}
 
 	return err
+}
+
+// ResetDoctorPasswordService allows admin to reset doctor password
+func (service *DoctorService) ResetDoctorPasswordService(ctx *gin.Context, req ResetDoctorPasswordRequest) error {
+	// Get the user by username
+	user, err := service.storeDB.GetUser(ctx, req.DoctorUsername)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			ctx.JSON(http.StatusNotFound, "doctor not found")
+			return fmt.Errorf("doctor not found")
+		}
+		ctx.JSON(http.StatusInternalServerError, "internal server error")
+		return fmt.Errorf("internal server error: %v", err)
+	}
+
+	// Verify that the user is actually a doctor
+	if user.Role.String == "user" {
+		ctx.JSON(http.StatusBadRequest, "user is not a doctor")
+		return fmt.Errorf("user is not a doctor")
+	}
+
+	// Verify that the email matches
+	if user.Email != req.Email {
+		ctx.JSON(http.StatusBadRequest, "email does not match doctor's email")
+		return fmt.Errorf("email does not match doctor's email")
+	}
+
+	// Generate a new password
+	customConfig := util.PasswordConfig{
+		Length:        12,
+		IncludeUpper:  true,
+		IncludeLower:  true,
+		IncludeNumber: true,
+		IncludeSymbol: true,
+	}
+	newPassword, err := util.GeneratePassword(customConfig)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, "failed to generate password")
+		return fmt.Errorf("failed to generate password: %w", err)
+	}
+
+	// Hash the new password
+	hashedPassword, err := util.HashPassword(newPassword)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, "failed to hash password")
+		return fmt.Errorf("failed to hash password: %w", err)
+	}
+
+	// Get email sender
+	emailSender := mail.GetEmailSender(util.Configs, service.storeDB)
+
+	// Create email content
+	subject := "Password Reset - Pet Care App"
+	content := fmt.Sprintf(`
+<!DOCTYPE html>
+<html>
+<body>
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+        <h2 style="color: #333;">Password Reset Notification</h2>
+        <p>Dear Dr. %s,</p>
+        <p>Your password has been reset by an administrator. Your new temporary password is:</p>
+        <div style="background-color: #f5f5f5; padding: 15px; text-align: center; margin: 20px 0; border-radius: 5px;">
+            <h3 style="color: #4a90e2; font-size: 18px; margin: 0; font-family: monospace;">%s</h3>
+        </div>
+        <p><strong>Important:</strong> Please change this password after your next login for security purposes.</p>
+        <p>You can log in to your account using your username and this new password.</p>
+        <p>If you did not request this password reset, please contact the administrator immediately.</p>
+        <p>Best regards,<br>Pet Care App Administration Team</p>
+    </div>
+</body>
+</html>`, user.FullName, newPassword)
+
+	// Send email
+	to := []string{user.Email}
+	err = emailSender.SendEmail(subject, content, to, nil, nil, nil)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, "failed to send email")
+		return fmt.Errorf("failed to send email: %w", err)
+	}
+
+	// Update password in database
+	err = service.storeDB.ExecWithTransaction(ctx, func(q *db.Queries) error {
+		_, err := q.UpdateUserPassword(ctx, db.UpdateUserPasswordParams{
+			Username:       req.DoctorUsername,
+			HashedPassword: hashedPassword,
+		})
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, "failed to update password")
+			return fmt.Errorf("failed to update password: %w", err)
+		}
+		return nil
+	})
+
+	if err != nil {
+		return fmt.Errorf("failed to update doctor password: %w", err)
+	}
+
+	// Clear cache if available
+	if service.redis != nil {
+		service.redis.RemoveDoctorByUsernameCache(req.DoctorUsername)
+	}
+
+	return nil
 }

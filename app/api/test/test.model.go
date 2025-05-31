@@ -34,6 +34,8 @@ type TestItem struct {
 	Price          float64  `json:"price"`
 	TurnaroundTime string   `json:"turnaround_time"`
 	Type           ItemType `json:"type"` // "test" or "vaccine"
+	BatchNumber    string   `json:"batch_number"`
+	ExpirationDate string   `json:"expiration_date"`
 	IsActive       bool     `json:"is_active"`
 	CreatedAt      string   `json:"created_at"`
 	UpdatedAt      string   `json:"updated_at"`

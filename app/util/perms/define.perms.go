@@ -56,6 +56,16 @@ const (
 
 	// System
 	ManageSystem Permission = "MANAGE_SYSTEM"
+
+	// Shift
+	ManageShift Permission = "MANAGE_SHIFT"
+	ReadShift   Permission = "READ_SHIFT"
+
+	// Attendance
+	ReadAttendance Permission = "READ_ATTENDANCE"
+	// Payroll
+	ReadPayroll   Permission = "READ_PAYROLL"
+	ManagePayroll Permission = "MANAGE_PAYROLL"
 )
 
 // RolePermissions maps roles to their respective permissions
@@ -65,20 +75,20 @@ var RolePermissions = map[string][]Permission{
 		ViewReports, ManageServices, ManageMedicalRecords,
 		ManageTest, ManageDisease, ManageTreatment,
 		ManagePets, ReadPet, CreatePet, UpdatePet, DeletePet,
-		ManageDoctor, ManageSystem},
+		ManageDoctor, ManageSystem, ManageShift, ManagePayroll, ReadShift},
 	RoleReceptionist: {CreateAppointment, ReadAppointment, UpdateAppointment,
 		DeleteAppointment, ManageUsers, ManageDoctors,
 		ReadMedicalRecord, ReadService, ReadPet, ReadTest,
 		ViewReports, ManageServices, ManageMedicalRecords,
 		ManageTreatment, ManageDisease, ManageDoctor,
-		ManageTest,
+		ManageTest, ReadShift, ReadAttendance, ReadPayroll,
 	},
 	RoleDoctor: {CreateAppointment, ReadAppointment, UpdateAppointment,
 		DeleteAppointment, ManageUsers, ManageDoctors,
 		ReadMedicalRecord, ReadService, ReadPet, ReadTest,
 		ViewReports, ManageServices, ManageMedicalRecords,
 		ManageTreatment, ManageDisease, ManageDoctor,
-		ManageTest,
+		ManageTest, ReadShift, ReadAttendance, ReadPayroll,
 	},
 	RoleUser: {CreateAppointment, ReadAppointment, ReadMedicalRecord,
 		ReadService, ReadPet, ReadTest},
