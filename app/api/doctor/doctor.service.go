@@ -144,10 +144,9 @@ func (service *DoctorService) EditDoctorProfileService(ctx *gin.Context, usernam
 	if service.redis != nil {
 		// Clear doctor by ID cache
 		service.redis.RemoveDoctorCache(doctor.ID)
-		// Clear doctor by username cache
 		service.redis.RemoveDoctorByUsernameCache(username)
-		// Clear all doctors list cache
-		service.redis.ClearAllDoctorCache()
+		service.redis.RemoveUserInfoCache(username)
+
 	}
 
 	return nil
@@ -212,32 +211,6 @@ func (service *DoctorService) GetDoctorProfile(ctx *gin.Context, username string
 }
 
 func (service *DoctorService) GetAllDoctorService(ctx *gin.Context) ([]DoctorDetail, error) {
-	// // Try to get from cache first
-	// if service.redis != nil {
-	// 	doctorList, err := service.redis.DoctorsListLoadCache()
-	// 	if err == nil {
-	// 		// Found in cache
-	// 		result := make([]DoctorDetail, len(doctorList))
-	// 		for i, doc := range doctorList {
-	// 			result[i] = DoctorDetail{
-	// 				DoctorID:       doc.DoctorID,
-	// 				Username:       doc.Username,
-	// 				DoctorName:     doc.DoctorName,
-	// 				Email:          doc.Email,
-	// 				Role:           doc.Role,
-	// 				Specialization: doc.Specialization,
-	// 				YearsOfExp:     doc.YearsOfExp,
-	// 				Education:      doc.Education,
-	// 				Certificate:    doc.Certificate,
-	// 				Bio:            doc.Bio,
-	// 				DataImage:      doc.DataImage,
-	// 			}
-	// 		}
-	// 		return result, nil
-	// 	}
-	// }
-
-	// Cache miss, get from database
 	doctor, err := service.storeDB.ListDoctors(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get all doctor: %w", err)
@@ -614,7 +587,7 @@ func (service *DoctorService) ResetDoctorPasswordService(ctx *gin.Context, req R
 
 	// Generate a new password
 	customConfig := util.PasswordConfig{
-		Length:        12,
+		Length:        8,
 		IncludeUpper:  true,
 		IncludeLower:  true,
 		IncludeNumber: true,
@@ -658,7 +631,7 @@ func (service *DoctorService) ResetDoctorPasswordService(ctx *gin.Context, req R
 </html>`, user.FullName, newPassword)
 
 	// Send email
-	to := []string{user.Email}
+	to := []string{req.Email}
 	err = emailSender.SendEmail(subject, content, to, nil, nil, nil)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, "failed to send email")
@@ -685,6 +658,7 @@ func (service *DoctorService) ResetDoctorPasswordService(ctx *gin.Context, req R
 	// Clear cache if available
 	if service.redis != nil {
 		service.redis.RemoveDoctorByUsernameCache(req.DoctorUsername)
+		service.redis.RemoveUserInfoCache(req.DoctorUsername)
 	}
 
 	return nil

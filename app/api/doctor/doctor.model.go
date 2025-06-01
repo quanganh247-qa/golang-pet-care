@@ -76,7 +76,7 @@ type PerformanceReview struct {
 
 type loginDoctorRequest struct {
 	Username string `json:"username" binding:"required,alphanum"`
-	Password string `json:"password" binding:"required,min=6,max=25"`
+	Password string `json:"password" binding:"required,min=1"`
 }
 
 type loginDoctorResponse struct {
